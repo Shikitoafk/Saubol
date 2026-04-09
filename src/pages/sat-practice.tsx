@@ -77,6 +77,16 @@ function cleanQuestion(raw: string): string {
   // "pi" after an operator/digit  (e.g. "= 16pi.")
   out = out.replace(/([\d\s*+\-/(=,])pi([\s*+\-/)^,.])/g, "$1\\pi$2");
 
+  // Common OCR artifact: x2 / y3 / t10 intended as powers.
+  // Convert standalone variable+digits tokens to caret form.
+  out = applyToTextParts(out, (seg) => {
+    // x2 -> x^2, y10 -> y^10
+    seg = seg.replace(/\b([a-zA-Z])(\d{1,2})\b/g, "$1^$2");
+    // 4x2 -> 4x^2 (keeps coefficient)
+    seg = seg.replace(/(\d)([a-zA-Z])(\d{1,2})(?!\d)/g, "$1$2^$3");
+    return seg;
+  });
+
   // ── 2. Wrap \LaTeX commands in $…$ (skip existing math regions) ──
   out = applyToTextParts(out, (seg) =>
     seg.replace(
