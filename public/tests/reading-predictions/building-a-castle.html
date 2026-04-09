@@ -1,0 +1,1318 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Building a Castle - IELTS Reading Test</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --day-bg: #f8f9fa;
+            --day-text: #212529;
+            --day-primary: #4e7ae4;
+            --day-secondary: #e9ecef;
+            --day-highlight: #fff9c4;
+            --day-highlight-blue: #bbdefb;
+            --day-card: #ffffff;
+            --day-shadow: rgba(0, 0, 0, 0.08);
+            
+            --night-bg: #1a1a2e;
+            --night-text: #e6e6e6;
+            --night-primary: #6c8dfa;
+            --night-secondary: #2d3748;
+            --night-highlight: #5a4c08;
+            --night-highlight-blue: #1e3a5f;
+            --night-card: #252947;
+            --night-shadow: rgba(0, 0, 0, 0.3);
+            
+            --sepia-bg: #f5ecd7;
+            --sepia-text: #3c2f2f;
+            --sepia-primary: #8b5a2b;
+            --sepia-secondary: #e4d5b7;
+            --sepia-highlight: #d9c7a5;
+            --sepia-highlight-blue: #c3d0e0;
+            --sepia-card: #f0e5cf;
+            --sepia-shadow: rgba(118, 93, 63, 0.15);
+            
+            --transition: all 0.3s ease;
+            --radius: 12px;
+            --radius-sm: 8px;
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: var(--day-bg);
+            color: var(--day-text);
+            transition: var(--transition);
+            line-height: 1.6;
+        }
+
+        body.night-mode {
+            background-color: var(--night-bg);
+            color: var(--night-text);
+        }
+
+        body.sepia-mode {
+            background-color: var(--sepia-bg);
+            color: var(--sepia-text);
+        }
+
+        .container {
+            display: flex;
+            flex-direction: row;
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        @media (max-width: 992px) {
+            .container {
+                flex-direction: column;
+            }
+        }
+
+        .passage-container, .questions-container {
+            overflow-y: auto;
+            padding: 20px;
+            height: 100%;
+            box-sizing: border-box;
+            scroll-behavior: smooth;
+        }
+
+        .passage-container {
+            width: 50%;
+            border-right: 2px solid;
+            border-color: var(--day-secondary);
+            background-color: var(--day-card);
+            box-shadow: 4px 0 10px var(--day-shadow);
+        }
+
+        .night-mode .passage-container {
+            border-color: var(--night-secondary);
+            background-color: var(--night-card);
+            box-shadow: 4px 0 10px var(--night-shadow);
+        }
+
+        .sepia-mode .passage-container {
+            border-color: var(--sepia-secondary);
+            background-color: var(--sepia-card);
+            box-shadow: 4px 0 10px var(--sepia-shadow);
+        }
+
+        .questions-container {
+            width: 50%;
+            padding: 25px;
+        }
+
+        @media (max-width: 992px) {
+            .passage-container, .questions-container {
+                width: 100%;
+                height: 50%;
+                border-right: none;
+                border-bottom: 2px solid var(--day-secondary);
+            }
+            
+            .night-mode .passage-container, .night-mode .questions-container {
+                border-color: var(--night-secondary);
+            }
+            
+            .sepia-mode .passage-container, .sepia-mode .questions-container {
+                border-color: var(--sepia-secondary);
+            }
+        }
+
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 25px;
+            background: linear-gradient(135deg, var(--day-primary) 0%, #3a5fca 100%);
+            color: white;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+
+        .night-mode header {
+            background: linear-gradient(135deg, var(--night-primary) 0%, #4a6bca 100%);
+        }
+
+        .sepia-mode header {
+            background: linear-gradient(135deg, var(--sepia-primary) 0%, #6b4623 100%);
+        }
+
+        .theme-switcher {
+            display: flex;
+            gap: 10px;
+        }
+
+        .theme-btn {
+            background: rgba(255, 255, 255, 0.2);
+            border: none;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: var(--transition);
+        }
+
+        .theme-btn:hover {
+            background: rgba(255, 255, 255, 0.3);
+            transform: scale(1.1);
+        }
+
+        .timer {
+            font-size: 1.2rem;
+            font-weight: bold;
+            background: rgba(0, 0, 0, 0.2);
+            padding: 8px 18px;
+            border-radius: 30px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .timer i {
+            font-size: 1.1rem;
+        }
+
+        .timer.warning {
+            color: #ff6b6b;
+            animation: pulse 1s infinite;
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+
+        
+
+        
+
+        h1 {
+            font-size: 1.8rem;
+            margin: 0 0 15px 0;
+            text-align: center;
+            color: var(--day-primary);
+        }
+
+        .night-mode h1 {
+            color: var(--night-primary);
+        }
+
+        .sepia-mode h1 {
+            color: var(--sepia-primary);
+        }
+
+        h2 {
+            font-size: 1.4rem;
+            color: var(--day-primary);
+            padding-bottom: 8px;
+            margin-top: 25px;
+            margin-bottom: 15px;
+            border-bottom: 2px solid var(--day-primary);
+        }
+
+        .night-mode h2 {
+            color: var(--night-primary);
+            border-color: var(--night-primary);
+        }
+
+        .sepia-mode h2 {
+            color: var(--sepia-primary);
+            border-color: var(--sepia-primary);
+        }
+
+        .passage-content {
+            font-size: 1.1rem;
+            line-height: 1.8;
+        }
+
+        .passage-content p {
+            margin-bottom: 18px;
+        }
+
+        .highlight-menu {
+            position: absolute;
+            background: white;
+            border: 1px solid #ddd;
+            border-radius: var(--radius-sm);
+            padding: 8px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            display: flex;
+            z-index: 1000;
+            gap: 5px;
+        }
+
+        .highlight-btn {
+            width: 36px;
+            height: 36px;
+            border: none;
+            border-radius: var(--radius-sm);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: var(--transition);
+            font-size: 1rem;
+        }
+
+        .highlight-btn:hover {
+            transform: scale(1.1);
+        }
+
+        .yellow-highlight {
+            background-color: #fff9c4;
+        }
+
+        .blue-highlight {
+            background-color: #bbdefb;
+        }
+
+        .clear-highlight {
+            background-color: #f8f9fa;
+        }
+
+        .question-block {
+            margin-bottom: 25px;
+            padding: 20px;
+            border-radius: var(--radius);
+            background-color: var(--day-card);
+            box-shadow: 0 4px 12px var(--day-shadow);
+            transition: var(--transition);
+        }
+
+        .night-mode .question-block {
+            background-color: var(--night-card);
+            box-shadow: 0 4px 12px var(--night-shadow);
+        }
+
+        .sepia-mode .question-block {
+            background-color: var(--sepia-card);
+            box-shadow: 0 4px 12px var(--sepia-shadow);
+        }
+
+        .question-title {
+            font-weight: 600;
+            margin-bottom: 15px;
+            font-size: 1.1rem;
+            color: var(--day-primary);
+        }
+
+        .night-mode .question-title {
+            color: var(--night-primary);
+        }
+
+        .sepia-mode .question-title {
+            color: var(--sepia-primary);
+        }
+
+        .options-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+            display: grid;
+            gap: 10px;
+        }
+
+        .option-item {
+            padding: 14px 16px;
+            border-radius: var(--radius-sm);
+            background-color: rgba(255, 255, 255, 0.8);
+            cursor: pointer;
+            transition: var(--transition);
+            border: 1px solid transparent;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .night-mode .option-item {
+            background-color: rgba(0, 0, 0, 0.15);
+        }
+
+        .sepia-mode .option-item {
+            background-color: rgba(255, 255, 255, 0.6);
+        }
+
+        .option-item:hover {
+            background-color: rgba(78, 122, 228, 0.1);
+            border-color: var(--day-primary);
+            transform: translateY(-2px);
+        }
+
+        .night-mode .option-item:hover {
+            background-color: rgba(108, 141, 250, 0.2);
+            border-color: var(--night-primary);
+        }
+
+        .sepia-mode .option-item:hover {
+            background-color: rgba(139, 90, 43, 0.1);
+            border-color: var(--sepia-primary);
+        }
+
+        .option-item.selected {
+            background-color: var(--day-primary);
+            color: white;
+            border-color: var(--day-primary);
+            box-shadow: 0 4px 8px rgba(78, 122, 228, 0.3);
+        }
+
+        .night-mode .option-item.selected {
+            background-color: var(--night-primary);
+            border-color: var(--night-primary);
+            box-shadow: 0 4px 8px rgba(108, 141, 250, 0.3);
+        }
+
+        .sepia-mode .option-item.selected {
+            background-color: var(--sepia-primary);
+            border-color: var(--sepia-primary);
+            box-shadow: 0 4px 8px rgba(139, 90, 43, 0.3);
+        }
+
+        .option-badge {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 26px;
+            height: 26px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.2);
+            font-weight: bold;
+        }
+
+        .input-answer {
+            width: 100%;
+            padding: 14px 16px;
+            border: 1px solid #ddd;
+            border-radius: var(--radius-sm);
+            font-size: 1rem;
+            background-color: rgba(255, 255, 255, 0.8);
+            color: var(--day-text);
+            transition: var(--transition);
+            margin-top: 8px;
+        }
+
+        .night-mode .input-answer {
+            background-color: rgba(0, 0, 0, 0.15);
+            border-color: #444;
+            color: var(--night-text);
+        }
+
+        .sepia-mode .input-answer {
+            background-color: rgba(255, 255, 255, 0.6);
+            color: var(--sepia-text);
+        }
+
+        .input-answer:focus {
+            outline: none;
+            border-color: var(--day-primary);
+            box-shadow: 0 0 0 3px rgba(78, 122, 228, 0.2);
+        }
+
+        .night-mode .input-answer:focus {
+            border-color: var(--night-primary);
+            box-shadow: 0 0 0 3px rgba(108, 141, 250, 0.2);
+        }
+
+        .sepia-mode .input-answer:focus {
+            border-color: var(--sepia-primary);
+            box-shadow: 0 0 0 3px rgba(139, 90, 43, 0.2);
+        }
+
+        .submit-btn {
+            display: block;
+            width: 100%;
+            padding: 16px;
+            background: linear-gradient(135deg, var(--day-primary) 0%, #3a5fca 100%);
+            color: white;
+            border: none;
+            border-radius: var(--radius);
+            font-size: 1.2rem;
+            font-weight: 600;
+            cursor: pointer;
+            margin-top: 30px;
+            transition: var(--transition);
+            box-shadow: 0 4px 12px rgba(78, 122, 228, 0.3);
+        }
+
+        .night-mode .submit-btn {
+            background: linear-gradient(135deg, var(--night-primary) 0%, #4a6bca 100%);
+            box-shadow: 0 4px 12px rgba(108, 141, 250, 0.3);
+        }
+
+        .sepia-mode .submit-btn {
+            background: linear-gradient(135deg, var(--sepia-primary) 0%, #6b4623 100%);
+            box-shadow: 0 4px 12px rgba(139, 90, 43, 0.3);
+        }
+
+        .submit-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+        }
+
+        .submit-btn:active {
+            transform: translateY(-1px);
+        }
+
+        .results-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: var(--day-bg);
+            color: var(--day-text);
+            z-index: 2000;
+            overflow-y: auto;
+            padding: 30px;
+            box-sizing: border-box;
+            display: none;
+        }
+
+        .night-mode .results-container {
+            background-color: var(--night-bg);
+            color: var(--night-text);
+        }
+
+        .sepia-mode .results-container {
+            background-color: var(--sepia-bg);
+            color: var(--sepia-text);
+        }
+
+        .results-header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        .score-display {
+            font-size: 2.8rem;
+            font-weight: bold;
+            color: var(--day-primary);
+            margin: 25px 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 15px;
+        }
+
+        .night-mode .score-display {
+            color: var(--night-primary);
+        }
+
+        .sepia-mode .score-display {
+            color: var(--sepia-primary);
+        }
+
+        .result-item {
+            margin-bottom: 20px;
+            padding: 20px;
+            border-radius: var(--radius);
+            background-color: var(--day-card);
+            box-shadow: 0 4px 12px var(--day-shadow);
+        }
+
+        .night-mode .result-item {
+            background-color: var(--night-card);
+            box-shadow: 0 4px 12px var(--night-shadow);
+        }
+
+        .sepia-mode .result-item {
+            background-color: var(--sepia-card);
+            box-shadow: 0 4px 12px var(--sepia-shadow);
+        }
+
+        .correct {
+            color: #28a745;
+        }
+
+        .incorrect {
+            color: #dc3545;
+        }
+
+        .close-results {
+            display: block;
+            margin: 30px auto;
+            padding: 12px 30px;
+            background: var(--day-primary);
+            color: white;
+            border: none;
+            border-radius: var(--radius);
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition);
+            box-shadow: 0 4px 12px rgba(78, 122, 228, 0.3);
+        }
+
+        .night-mode .close-results {
+            background: var(--night-primary);
+            box-shadow: 0 4px 12px rgba(108, 141, 250, 0.3);
+        }
+
+        .sepia-mode .close-results {
+            background: var(--sepia-primary);
+            box-shadow: 0 4px 12px rgba(139, 90, 43, 0.3);
+        }
+
+        .close-results:hover {
+            opacity: 0.9;
+            transform: scale(1.05);
+        }
+
+        .answer-reference {
+            font-style: italic;
+            margin-top: 10px;
+            font-size: 0.95rem;
+            color: #6c757d;
+            padding: 12px;
+            border-left: 3px solid var(--day-primary);
+            background-color: rgba(78, 122, 228, 0.05);
+            border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+        }
+
+        .night-mode .answer-reference {
+            color: #a0aec0;
+            border-left-color: var(--night-primary);
+            background-color: rgba(108, 141, 250, 0.05);
+        }
+
+        .sepia-mode .answer-reference {
+            color: #8b7d6b;
+            border-left-color: var(--sepia-primary);
+            background-color: rgba(139, 90, 43, 0.05);
+        }
+
+        .drag-handle {
+            position: absolute;
+            width: 5px;
+            background: linear-gradient(to bottom, var(--day-primary), #3a5fca);
+            cursor: col-resize;
+            height: 100%;
+            right: 0;
+            top: 0;
+            border-radius: 0 3px 3px 0;
+        }
+
+        .night-mode .drag-handle {
+            background: linear-gradient(to bottom, var(--night-primary), #4a6bca);
+        }
+
+        .sepia-mode .drag-handle {
+            background: linear-gradient(to bottom, var(--sepia-primary), #6b4623);
+        }
+
+        @media (max-width: 992px) {
+            .drag-handle {
+                display: none;
+            }
+        }
+
+        .flow-chart {
+            background: white;
+            border-radius: var(--radius);
+            padding: 20px;
+            margin-top: 15px;
+            box-shadow: 0 4px 12px var(--day-shadow);
+        }
+
+        .night-mode .flow-chart {
+            background: var(--night-card);
+            box-shadow: 0 4px 12px var(--night-shadow);
+        }
+
+        .sepia-mode .flow-chart {
+            background: var(--sepia-card);
+            box-shadow: 0 4px 12px var(--sepia-shadow);
+        }
+
+        .flow-step {
+            display: flex;
+            align-items: center;
+            margin-bottom: 15px;
+            padding: 15px;
+            border-radius: var(--radius-sm);
+            background: #f8f9fa;
+            border-left: 4px solid var(--day-primary);
+        }
+
+        .night-mode .flow-step {
+            background: #2a2f4c;
+            border-left: 4px solid var(--night-primary);
+        }
+
+        .sepia-mode .flow-step {
+            background: #f0e5cf;
+            border-left: 4px solid var(--sepia-primary);
+        }
+
+        .flow-number {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            background: var(--day-primary);
+            color: white;
+            font-weight: bold;
+            margin-right: 15px;
+            flex-shrink: 0;
+        }
+
+        .night-mode .flow-number {
+            background: var(--night-primary);
+        }
+
+        .sepia-mode .flow-number {
+            background: var(--sepia-primary);
+        }
+
+        .flow-text {
+            flex-grow: 1;
+        }
+
+        .flow-input {
+            width: 120px;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: var(--radius-sm);
+            margin: 0 8px;
+            background: white;
+        }
+
+        .night-mode .flow-input {
+            background: #1a1a2e;
+            border-color: #444;
+            color: var(--night-text);
+        }
+
+        .sepia-mode .flow-input {
+            background: #f5ecd7;
+            color: var(--sepia-text);
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="theme-switcher">
+            <button class="theme-btn" id="day-theme" title="Day Mode"><i class="fas fa-sun"></i></button>
+            <button class="theme-btn" id="night-theme" title="Night Mode"><i class="fas fa-moon"></i></button>
+            <button class="theme-btn" id="sepia-theme" title="Sepia Mode"><i class="fas fa-book"></i></button>
+        </div>
+        <div class="timer" id="timer"><i class="fas fa-clock"></i> <span>20:00</span></div>
+        
+    </header>
+
+    <div class="container">
+        <div class="passage-container">
+            <div class="drag-handle" id="drag-handle"></div>
+            <h1>Building a Castle</h1>
+            <div class="passage-content" id="passage-content">
+                <p><strong>READING PASSAGE 1</strong></p>
+                <p><em>You should spend about 20 minutes on Questions 1-13, which are based on Reading Passage 1 on page 2 and 3.</em></p>
+                
+                <p><strong>BUILDING A CASTLE</strong></p>
+                
+                <p>Guédelon is no ordinary building site. There is no rumble of diggers or shriek of circular saws. All is peaceful and quiet, save for the continual tapping of the small army of stonemasons, the quacking of the ducks or the occasional crow of the cockerel. Slowly but surely, a brand new medieval castle is rising from the woods of Guédelon, Yonne, home to the Burgundy vineyards in the heart of France. The year is 1229 that is, for the purposes of this project: to build a prince's 'château fort' using only the techniques and tools of the 13th century.</p>
+                
+                <p>'The project has four main aims,' explains Macyline Martin, managing director for Guédelon. 'The first is experimental archaeology – to try and verify all the theories, based on documents of the time. There's also a social aim, because this region is very poor, with high unemployment: so it provides jobs. Then there's tourism: the project couldn't work without visitors because a lot of money is needed to pay people working here and to run the site. And finally, we want to open experimental archaeology to everybody – because in France, history and architecture are still very much oriented to academics.'</p>
+                
+                <p>The idea for the project emerged about five years ago. It was the brainchild of Michel Guyot, who bought and renovated the nearby castle of Saint-Fargeau, which was built and rebuilt between the 10th and 18th centuries. Beneath the historical castle were the original foundations of the 13th-century building. Guyot thought it would be fun to construct a château to the same plans, but this proved too big to attempt. So Jacques Moulin, managing director for the local historical monuments, drew up plans for a smaller castle that would still be ambitious, but realistic. Five months later, having managed to get together 600,000 Euros in funding, they began looking for a site that would provide all the materials they needed: stone, water, sand, wood, iron and clay. They found it at Guédelon.</p>
+                
+                <p>The only major cheat so far was early on when a mechanical earthmover was brought in to raise the castle floor. Archaeologists know how it was done in the 13th century: by backbreaking, tedious work. 'To do it by hand would have added ten years to the project,' says Franck, one of the site's guides. It's still a long, painstaking task. Next to the beginnings of the east wall is the quarry, where masons extract the ferruginous limestone to build the thick castle walls. They bore lines of holes into the rocks and then they hammer metal wedges into them until the rock splits along the line. It is then hewn into bricks, and cemented together with a mortar of chalk, sand and quicklime. Quicklime is made by heating limestone to 800°C – done off-site because of the poisonous gases that come from the process. Little wonder that 13th-century limeburners had a life expectancy of only 25-30 years. 'The bricks are laid horizontally for the first metre of the wall, and vertically thereafter,' says Franck, 'because if there was a shock from, say, a catapult, and the stones were all laid in the same way, the shockwave would shatter the wall.'</p>
+                
+                <p>The scientists and craftspeople alike are learning on the job, as they don't know exactly why or how things were done as the historical evidence suggests. One such discovery was the significance of the marks that masons carved into each finished stone. It was thought that these probably had superstitious meaning, but experience and archaeological research reveals three very practical uses: to establish how much each mason should be paid; to keep track of who made what, in case of any problems; and to specify where the stone should be placed in the castle reconstruction.</p>
+                
+                <p>Guédelon has a scientific committee of archaeologists that discusses ideas and problems as they emerge, and will approve works and practices only when its members are sure that they are true to the 13th century. Reaching unanimity is not always easy. 'All the big plans for the castle itself are done but the details aren't settled,' says Martin. 'So, during the winter, the site manager and I visit other castles in the region. When we see something we want to do here, we draw a sketch, make plans and show this to the committee.'</p>
+                
+                <p>The castle will take at least a decade longer to build than it would have in the 13th century. 'With the same number of workers it would have taken 15 years then,' says Franck. 'But we could do this too if we had only professional workers, if the site wasn't open to the public and if we worked harder – today it's illegal to work more than 8 hours a day, as they did at the time.'</p>
+                
+                <p>Workers come and go but at any one time about 40 people are working on the site. Some are students, others have 'downshifted' from other careers, others are local unemployed people learning skills they might use elsewhere – say, in château restorations around France. They are trained on the site as the need arises, and in the winter they may be trained in modern techniques as part of Guédelon's social remit.</p>
+                
+                <p>So, indeed, what will happen when Guédelon's magical-looking castle is complete? They might build houses around it; perhaps villages may develop, testing out 13th-century agricultural techniques. If they can build this castle, anything seems possible.</p>
+            </div>
+        </div>
+
+        <div class="questions-container">
+            <h2>Questions 1-4</h2>
+            <p>Do the following statements agree with the information given in Reading Passage 1?</p>
+            <p>In boxes 1-4 on your answer sheet, write</p>
+            <p><strong>TRUE</strong> if the statement agrees with the information<br>
+            <strong>FALSE</strong> if the statement contradicts the information<br>
+            <strong>NOT GIVEN</strong> if there is no information on this</p>
+
+            <div class="question-block">
+                <div class="question-title">1. One of the reasons for building the castle is to make history more accessible to the general public.</div>
+                <ul class="options-list" id="q1">
+                    <li class="option-item" data-value="TRUE"><span class="option-badge">T</span> TRUE</li>
+                    <li class="option-item" data-value="FALSE"><span class="option-badge">F</span> FALSE</li>
+                    <li class="option-item" data-value="NOT GIVEN"><span class="option-badge">NG</span> NOT GIVEN</li>
+                </ul>
+            </div>
+
+            <div class="question-block">
+                <div class="question-title">2. Guyot was reluctant to abandon his original idea in favour of a more realistic project.</div>
+                <ul class="options-list" id="q2">
+                    <li class="option-item" data-value="TRUE"><span class="option-badge">T</span> TRUE</li>
+                    <li class="option-item" data-value="FALSE"><span class="option-badge">F</span> FALSE</li>
+                    <li class="option-item" data-value="NOT GIVEN"><span class="option-badge">NG</span> NOT GIVEN</li>
+                </ul>
+            </div>
+
+            <div class="question-block">
+                <div class="question-title">3. The lime-burners did not live long because their bodies were damaged by the extreme heat.</div>
+                <ul class="options-list" id="q3">
+                    <li class="option-item" data-value="TRUE"><span class="option-badge">T</span> TRUE</li>
+                    <li class="option-item" data-value="FALSE"><span class="option-badge">F</span> FALSE</li>
+                    <li class="option-item" data-value="NOT GIVEN"><span class="option-badge">NG</span> NOT GIVEN</li>
+                </ul>
+            </div>
+
+            <div class="question-block">
+                <div class="question-title">4. The bricks used to be laid in different ways to lessen the impact of an attack.</div>
+                <ul class="options-list" id="q4">
+                    <li class="option-item" data-value="TRUE"><span class="option-badge">T</span> TRUE</li>
+                    <li class="option-item" data-value="FALSE"><span class="option-badge">F</span> FALSE</li>
+                    <li class="option-item" data-value="NOT GIVEN"><span class="option-badge">NG</span> NOT GIVEN</li>
+                </ul>
+            </div>
+
+            <h2>Questions 5-7</h2>
+            <p>Choose THREE letters, A-H.</p>
+            <p>Write the correct letters in boxes 5-7 on your answer sheet.</p>
+            <p>The list below gives reasons why the castle may be taking a long time to build.</p>
+            <p>Which THREE reasons are mentioned by the writer of the text?</p>
+
+            <div class="question-block">
+                <ul class="options-list" id="q5-7">
+                    <li class="option-item" data-value="A"><span class="option-badge">A</span> the reluctance of workers to commit themselves to the project</li>
+                    <li class="option-item" data-value="B"><span class="option-badge">B</span> the lengthy training programmes the workers have to do</li>
+                    <li class="option-item" data-value="C"><span class="option-badge">C</span> having to abide by modern employment regulations</li>
+                    <li class="option-item" data-value="D"><span class="option-badge">D</span> the inability of committee members to reach any decisions</li>
+                    <li class="option-item" data-value="E"><span class="option-badge">E</span> tourists who come and visit the site</li>
+                    <li class="option-item" data-value="F"><span class="option-badge">F</span> the number of unskilled workers employed</li>
+                    <li class="option-item" data-value="G"><span class="option-badge">G</span> having to do everything by hand</li>
+                    <li class="option-item" data-value="H"><span class="option-badge">H</span> the difficulty of finding authentic raw materials</li>
+                </ul>
+            </div>
+
+            <h2>Questions 8-13</h2>
+            <p>Complete the flow-chart below.</p>
+            <p>Choose NO MORE THAN TWO WORDS from the passage for each answer.</p>
+            <p>Write your answers in boxes 8-13 on your answer sheet.</p>
+
+            <div class="question-block">
+                <div class="question-title">How the limestone is extracted and used</div>
+                <div class="flow-chart">
+                    <div class="flow-step">
+                        <div class="flow-number">1</div>
+                        <div class="flow-text">The <input type="text" class="flow-input" id="q8"> drill rows of <input type="text" class="flow-input" id="q9"></div>
+                    </div>
+                    <div class="flow-step">
+                        <div class="flow-number">2</div>
+                        <div class="flow-text"><input type="text" class="flow-input" id="q10"> are used</div>
+                    </div>
+                    <div class="flow-step">
+                        <div class="flow-number">3</div>
+                        <div class="flow-text">The result is that the rock eventually <input type="text" class="flow-input" id="q11"></div>
+                    </div>
+                    <div class="flow-step">
+                        <div class="flow-number">4</div>
+                        <div class="flow-text">Once extracted, the limestone is made into <input type="text" class="flow-input" id="q12"></div>
+                    </div>
+                    <div class="flow-step">
+                        <div class="flow-number">5</div>
+                        <div class="flow-text">or, through a <input type="text" class="flow-input" id="q13"> process, can be used to make quicklime</div>
+                    </div>
+                </div>
+            </div>
+
+            <button class="submit-btn" id="submit-btn">Submit Answers</button>
+        </div>
+    </div>
+
+    <div class="results-container" id="results-container">
+        <div class="results-header">
+            <h2>Test Results</h2>
+            <div class="score-display" id="score-display">Score: 0/13</div>
+        </div>
+        
+        <div id="results-content">
+            <!-- Results will be inserted here -->
+        </div>
+        
+        <button class="close-results" id="close-results">Close Results</button>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Theme switching
+            const body = document.body;
+            const dayThemeBtn = document.getElementById('day-theme');
+            const nightThemeBtn = document.getElementById('night-theme');
+            const sepiaThemeBtn = document.getElementById('sepia-theme');
+            
+            dayThemeBtn.addEventListener('click', () => {
+                body.className = '';
+            });
+            
+            nightThemeBtn.addEventListener('click', () => {
+                body.className = 'night-mode';
+            });
+            
+            sepiaThemeBtn.addEventListener('click', () => {
+                body.className = 'sepia-mode';
+            });
+            
+            // Timer functionality
+            const timerElement = document.getElementById('timer');
+            let timeLeft = 20 * 60; // 20 minutes in seconds
+            let timerInterval;
+            
+            function startTimer() {
+                clearInterval(timerInterval);
+                timerInterval = setInterval(updateTimer, 1000);
+            }
+            
+            function updateTimer() {
+                if (timeLeft <= 0) {
+                    clearInterval(timerInterval);
+                    submitAnswers();
+                    return;
+                }
+                
+                timeLeft--;
+                
+                const minutes = Math.floor(timeLeft / 60);
+                const seconds = timeLeft % 60;
+                
+                timerElement.querySelector('span').textContent = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+                
+                if (timeLeft === 5 * 60) { // 5 minutes warning
+                    timerElement.classList.add('warning');
+                }
+            }
+            
+            startTimer();
+            
+            // Answer selection for single-choice questions
+            const singleOptionItems = document.querySelectorAll('#q1 .option-item, #q2 .option-item, #q3 .option-item, #q4 .option-item');
+            singleOptionItems.forEach(item => {
+                item.addEventListener('click', function() {
+                    const parentList = this.parentElement;
+                    const questionId = parentList.id;
+                    
+                    // Remove selected class from all options in this question
+                    parentList.querySelectorAll('.option-item').forEach(opt => {
+                        opt.classList.remove('selected');
+                    });
+                    
+                    // Add selected class to clicked option
+                    this.classList.add('selected');
+                    
+                    // Store the answer
+                    sessionStorage.setItem(questionId, this.getAttribute('data-value'));
+                });
+            });
+            
+            // Answer selection for multiple-choice questions (Questions 5-7)
+            const multiOptionItems = document.querySelectorAll('#q5-7 .option-item');
+            const selectedOptions = {
+                'q5-7': []
+            };
+            
+            multiOptionItems.forEach(item => {
+                item.addEventListener('click', function() {
+                    const value = this.getAttribute('data-value');
+                    const index = selectedOptions['q5-7'].indexOf(value);
+                    
+                    if (index === -1) {
+                        // Add selection if not already selected (max 3)
+                        if (selectedOptions['q5-7'].length < 3) {
+                            selectedOptions['q5-7'].push(value);
+                            this.classList.add('selected');
+                        }
+                    } else {
+                        // Remove selection if already selected
+                        selectedOptions['q5-7'].splice(index, 1);
+                        this.classList.remove('selected');
+                    }
+                    
+                    // Store the answers
+                    sessionStorage.setItem('q5-7', JSON.stringify(selectedOptions['q5-7']));
+                });
+            });
+            
+            // Text input answers
+            const inputAnswers = document.querySelectorAll('.flow-input');
+            inputAnswers.forEach(input => {
+                input.addEventListener('input', function() {
+                    sessionStorage.setItem(this.id, this.value.trim().toLowerCase());
+                });
+            });
+            
+            // Load saved answers if any
+            function loadSavedAnswers() {
+                // Load single choice answers
+                singleOptionItems.forEach(item => {
+                    const parentList = item.parentElement;
+                    const questionId = parentList.id;
+                    const savedAnswer = sessionStorage.getItem(questionId);
+                    
+                    if (savedAnswer && item.getAttribute('data-value') === savedAnswer) {
+                        item.classList.add('selected');
+                    }
+                });
+                
+                // Load multiple choice answers
+                const savedMultiAnswers = sessionStorage.getItem('q5-7');
+                if (savedMultiAnswers) {
+                    selectedOptions['q5-7'] = JSON.parse(savedMultiAnswers);
+                    multiOptionItems.forEach(item => {
+                        if (selectedOptions['q5-7'].includes(item.getAttribute('data-value'))) {
+                            item.classList.add('selected');
+                        }
+                    });
+                }
+                
+                // Load text input answers
+                inputAnswers.forEach(input => {
+                    const savedAnswer = sessionStorage.getItem(input.id);
+                    if (savedAnswer) {
+                        input.value = savedAnswer;
+                    }
+                });
+            }
+            
+            loadSavedAnswers();
+            
+            // Submit button
+            const submitBtn = document.getElementById('submit-btn');
+            submitBtn.addEventListener('click', submitAnswers);
+            
+            // Close results button
+            const closeResultsBtn = document.getElementById('close-results');
+            closeResultsBtn.addEventListener('click', function() {
+                document.getElementById('results-container').style.display = 'none';
+            });
+            
+            // Correct answers
+            const correctAnswers = {
+                q1: 'TRUE',
+                q2: 'NOT GIVEN',
+                q3: 'FALSE',
+                q4: 'TRUE',
+                'q5-7': ['C', 'E', 'F'], // Multiple correct answers for questions 5-7
+                q8: 'masons',
+                q9: 'holes',
+                q10: 'metal wedges',
+                q11: 'splits',
+                q12: 'bricks',
+                q13: 'heating'
+            };
+            
+            // Answer references
+            const answerReferences = {
+                q1: "Reference: Paragraph 2 - 'And finally, we want to open experimental archaeology to everybody'",
+                q2: "Reference: Paragraph 3 - No information is provided about Guyot's reluctance to change plans",
+                q3: "Reference: Paragraph 4 - 'Little wonder that 13th-century limeburners had a life expectancy of only 25-30 years' due to 'poisonous gases', not extreme heat",
+                q4: "Reference: Paragraph 4 - 'The bricks are laid horizontally for the first metre of the wall, and vertically thereafter... because if there was a shock from, say, a catapult... the shockwave would shatter the wall'",
+                'q5-7': "Reference: Paragraph 7 - Reasons mentioned: C (employment regulations), E (site open to public), F (unskilled workers)",
+                q8: "Reference: Paragraph 4 - 'masons extract the ferruginous limestone... They bore lines of holes into the rocks'",
+                q9: "Reference: Paragraph 4 - 'They bore lines of holes into the rocks'",
+                q10: "Reference: Paragraph 4 - 'they hammer metal wedges into them'",
+                q11: "Reference: Paragraph 4 - 'until the rock splits along the line'",
+                q12: "Reference: Paragraph 4 - 'It is then hewn into bricks'",
+                q13: "Reference: Paragraph 4 - 'Quicklime is made by heating limestone to 800°C'"
+            };
+            
+            // Submit answers function
+            function submitAnswers() {
+                clearInterval(timerInterval);
+                
+                let score = 0;
+                const results = [];
+                
+                // Check True/False/Not Given questions
+                for (let i = 1; i <= 4; i++) {
+                    const questionId = 'q' + i;
+                    const userAnswer = sessionStorage.getItem(questionId) || '';
+                    const isCorrect = userAnswer === correctAnswers[questionId];
+                    
+                    if (isCorrect) score++;
+                    
+                    results.push({
+                        question: i,
+                        userAnswer: userAnswer,
+                        correctAnswer: correctAnswers[questionId],
+                        isCorrect: isCorrect,
+                        reference: answerReferences[questionId]
+                    });
+                }
+                
+                // Check multiple choice questions (5-7)
+                const userMultiAnswers = JSON.parse(sessionStorage.getItem('q5-7') || '[]');
+                const correctMultiAnswers = correctAnswers['q5-7'];
+                
+                // Count correct answers for multiple choice (each correct selection is worth 1 point)
+                let multiScore = 0;
+                userMultiAnswers.forEach(answer => {
+                    if (correctMultiAnswers.includes(answer)) {
+                        multiScore++;
+                    }
+                });
+                
+                score += multiScore;
+                
+                results.push({
+                    question: '5-7',
+                    userAnswer: userMultiAnswers.join(', '),
+                    correctAnswer: correctMultiAnswers.join(', '),
+                    isCorrect: multiScore === 3,
+                    score: multiScore,
+                    maxScore: 3,
+                    reference: answerReferences['q5-7']
+                });
+                
+                // Check text input questions
+                for (let i = 8; i <= 13; i++) {
+                    const questionId = 'q' + i;
+                    const userAnswer = sessionStorage.getItem(questionId) || '';
+                    const isCorrect = userAnswer === correctAnswers[questionId];
+                    
+                    if (isCorrect) score++;
+                    
+                    results.push({
+                        question: i,
+                        userAnswer: userAnswer,
+                        correctAnswer: correctAnswers[questionId],
+                        isCorrect: isCorrect,
+                        reference: answerReferences[questionId]
+                    });
+                }
+                
+                // Display results
+                displayResults(score, results);
+            }
+            
+            // Display results function
+            function displayResults(score, results) {
+                const scoreDisplay = document.getElementById('score-display');
+                const resultsContent = document.getElementById('results-content');
+                
+                scoreDisplay.textContent = `Score: ${score}/13`;
+                resultsContent.innerHTML = '';
+                
+                results.forEach(result => {
+                    const resultItem = document.createElement('div');
+                    resultItem.className = 'result-item';
+                    
+                    let statusHTML = '';
+                    
+                    if (result.question === '5-7') {
+                        // Special handling for multiple choice questions
+                        statusHTML = `
+                            <div><strong>Questions ${result.question}:</strong> 
+                            <span class="${result.score === 3 ? 'correct' : 'incorrect'}">
+                            ${result.score === 3 ? '✓' : '✗'} Your answers: ${result.userAnswer || 'Not answered'} 
+                            ${result.score < 3 ? ` | Correct answers: ${result.correctAnswer}` : ''}
+                            (Score: ${result.score}/${result.maxScore})
+                            </span></div>
+                        `;
+                    } else {
+                        // Standard handling for other questions
+                        const statusClass = result.isCorrect ? 'correct' : 'incorrect';
+                        const statusIcon = result.isCorrect ? '✓' : '✗';
+                        
+                        statusHTML = `
+                            <div><strong>Question ${result.question}:</strong> 
+                            <span class="${statusClass}">${statusIcon} Your answer: ${result.userAnswer || 'Not answered'} 
+                            ${!result.isCorrect ? ` | Correct answer: ${result.correctAnswer}` : ''}</span></div>
+                        `;
+                    }
+                    
+                    resultItem.innerHTML = statusHTML + `<div class="answer-reference">${result.reference}</div>`;
+                    resultsContent.appendChild(resultItem);
+                });
+                
+                document.getElementById('results-container').style.display = 'block';
+            }
+            
+            // Text highlighting functionality
+            const passageContent = document.getElementById('passage-content');
+            let highlightMenu = null;
+            
+            function createHighlightMenu() {
+                if (highlightMenu) {
+                    document.body.removeChild(highlightMenu);
+                }
+                
+                highlightMenu = document.createElement('div');
+                highlightMenu.className = 'highlight-menu';
+                highlightMenu.style.display = 'none';
+                
+                const yellowBtn = document.createElement('button');
+                yellowBtn.className = 'highlight-btn yellow-highlight';
+                yellowBtn.title = 'Yellow Highlight';
+                yellowBtn.innerHTML = '<i class="fas fa-highlighter"></i>';
+                yellowBtn.addEventListener('click', () => applyHighlight('#fff9c4'));
+                
+                const blueBtn = document.createElement('button');
+                blueBtn.className = 'highlight-btn blue-highlight';
+                blueBtn.title = 'Blue Highlight';
+                blueBtn.innerHTML = '<i class="fas fa-highlighter"></i>';
+                blueBtn.addEventListener('click', () => applyHighlight('#bbdefb'));
+                
+                const clearBtn = document.createElement('button');
+                clearBtn.className = 'highlight-btn clear-highlight';
+                clearBtn.title = 'Clear Highlight';
+                clearBtn.innerHTML = '<i class="fas fa-eraser"></i>';
+                clearBtn.addEventListener('click', clearHighlight);
+                
+                highlightMenu.appendChild(yellowBtn);
+                highlightMenu.appendChild(blueBtn);
+                highlightMenu.appendChild(clearBtn);
+                
+                document.body.appendChild(highlightMenu);
+            }
+            
+            function showHighlightMenu(x, y) {
+                if (!highlightMenu) createHighlightMenu();
+                
+                highlightMenu.style.display = 'flex';
+                highlightMenu.style.left = `${x}px`;
+                highlightMenu.style.top = `${y}px`;
+            }
+            
+            function hideHighlightMenu() {
+                if (highlightMenu) {
+                    highlightMenu.style.display = 'none';
+                }
+            }
+            
+            function applyHighlight(color) {
+                const selection = window.getSelection();
+                if (!selection.rangeCount) return;
+                
+                const range = selection.getRangeAt(0);
+                const selectedText = range.toString();
+                
+                if (!selectedText.trim()) return;
+                
+                const span = document.createElement('span');
+                span.style.backgroundColor = color;
+                span.textContent = selectedText;
+                
+                range.deleteContents();
+                range.insertNode(span);
+                
+                selection.removeAllRanges();
+                hideHighlightMenu();
+            }
+            
+            function clearHighlight() {
+                const selection = window.getSelection();
+                if (!selection.rangeCount) return;
+                
+                const range = selection.getRangeAt(0);
+                const selectedText = range.toString();
+                
+                if (!selectedText.trim()) return;
+                
+                // Create a text node to replace the highlighted content
+                const textNode = document.createTextNode(selectedText);
+                
+                range.deleteContents();
+                range.insertNode(textNode);
+                
+                selection.removeAllRanges();
+                hideHighlightMenu();
+            }
+            
+            // Event listeners for text highlighting
+            passageContent.addEventListener('mouseup', function(e) {
+                const selection = window.getSelection();
+                const selectedText = selection.toString();
+                
+                if (selectedText.trim()) {
+                    const range = selection.getRangeAt(0);
+                    const rect = range.getBoundingClientRect();
+                    
+                    showHighlightMenu(e.pageX, rect.top + window.scrollY - 40);
+                } else {
+                    hideHighlightMenu();
+                }
+            });
+            
+            document.addEventListener('mousedown', function(e) {
+                if (highlightMenu && !highlightMenu.contains(e.target)) {
+                    hideHighlightMenu();
+                }
+            });
+            
+            // Panel resizing
+            const dragHandle = document.getElementById('drag-handle');
+            const passageContainer = document.querySelector('.passage-container');
+            const questionsContainer = document.querySelector('.questions-container');
+            let isResizing = false;
+            
+            dragHandle.addEventListener('mousedown', function(e) {
+                isResizing = true;
+                document.body.style.cursor = 'col-resize';
+                e.preventDefault();
+            });
+            
+            document.addEventListener('mousemove', function(e) {
+                if (!isResizing) return;
+                
+                const containerWidth = document.querySelector('.container').offsetWidth;
+                const newPassageWidth = (e.pageX / containerWidth) * 100;
+                
+                if (newPassageWidth > 20 && newPassageWidth < 80) {
+                    passageContainer.style.width = `${newPassageWidth}%`;
+                    questionsContainer.style.width = `${100 - newPassageWidth}%`;
+                }
+            });
+            
+            document.addEventListener('mouseup', function() {
+                isResizing = false;
+                document.body.style.cursor = 'default';
+            });
+            
+            // Mobile touch events for resizing
+            dragHandle.addEventListener('touchstart', function(e) {
+                isResizing = true;
+                e.preventDefault();
+            });
+            
+            document.addEventListener('touchmove', function(e) {
+                if (!isResizing) return;
+                
+                const touch = e.touches[0];
+                const containerWidth = document.querySelector('.container').offsetWidth;
+                const newPassageWidth = (touch.pageX / containerWidth) * 100;
+                
+                if (newPassageWidth > 20 && newPassageWidth < 80) {
+                    passageContainer.style.width = `${newPassageWidth}%`;
+                    questionsContainer.style.width = `${100 - newPassageWidth}%`;
+                }
+                
+                e.preventDefault();
+            });
+            
+            document.addEventListener('touchend', function() {
+                isResizing = false;
+            });
+        });
+    </script>
+</body>
+</html>

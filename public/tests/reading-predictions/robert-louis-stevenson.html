@@ -1,0 +1,1342 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>IELTS Reading Comprehension - Robert Louis Stevenson</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --bg-color: #ffffff;
+            --text-color: #333333;
+            --passage-bg: #f8f9fa;
+            --questions-bg: #ffffff;
+            --border-color: #e0e0e0;
+            --highlight-color: #ffff00;
+            --header-bg: #F8F8F8;
+            --header-text: #333333;
+            --button-bg: #CC0000;
+            --button-hover: #A30000;
+            --correct-color: #28a745;
+            --incorrect-color: #dc3545;
+            --progress-complete: #28a745;
+            --progress-incomplete: #bdbdbd;
+            --timer-bg: #ffebee;
+            --timer-text: #d32f2f;
+            --footer-bg: #f5f5f5;
+            --telegram-color: #0088cc;
+        }
+
+        .night-mode {
+            --bg-color: #121212;
+            --text-color: #e0e0e0;
+            --passage-bg: #1e1e1e;
+            --questions-bg: #1e1e1e;
+            --border-color: #424242;
+            --highlight-color: #cccc00;
+            --header-bg: #1a1a1a;
+            --header-text: #ffffff;
+            --button-bg: #990000;
+            --button-hover: #7a0000;
+            --correct-color: #218838;
+            --incorrect-color: #c82333;
+            --progress-complete: #218838;
+            --progress-incomplete: #616161;
+            --timer-bg: #420000;
+            --timer-text: #ffcdd2;
+            --footer-bg: #121212;
+            --telegram-color: #33a8e0;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            transition: background-color 0.3s, color 0.3s;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            line-height: 1.6;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        header {
+            background-color: var(--header-bg);
+            color: var(--header-text);
+            padding: 12px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            z-index: 100;
+        }
+
+        .header-left {
+            display: flex;
+            align-items: center;
+        }
+
+        .telegram-btn {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            background-color: var(--telegram-color);
+            color: white;
+            text-decoration: none;
+            padding: 8px 15px;
+            border-radius: 50px;
+            font-weight: 600;
+            font-size: 14px;
+            transition: background-color 0.3s, transform 0.2s;
+        }
+
+        .telegram-btn:hover {
+            background-color: #0077b5;
+            transform: translateY(-2px);
+        }
+
+        .header-controls {
+            display: flex;
+            gap: 15px;
+            align-items: center;
+        }
+
+        .timer-container {
+            background-color: var(--timer-bg);
+            color: var(--timer-text);
+            padding: 8px 15px;
+            border-radius: 50px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .timer-controls {
+            display: flex;
+            gap: 8px;
+        }
+
+        .timer-controls button {
+            background: none;
+            border: none;
+            color: var(--timer-text);
+            cursor: pointer;
+            font-size: 16px;
+            padding: 4px;
+            border-radius: 50%;
+            width: 28px;
+            height: 28px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .timer-controls button:hover {
+            background-color: rgba(0,0,0,0.1);
+        }
+        .night-mode .timer-controls button:hover {
+            background-color: rgba(255,255,255,0.2);
+        }
+
+        .mode-toggle {
+            background: none;
+            border: none;
+            color: var(--header-text);
+            cursor: pointer;
+            font-size: 20px;
+            padding: 6px;
+            border-radius: 50%;
+            width: 36px;
+            height: 36px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .mode-toggle:hover {
+            background-color: rgba(0,0,0,0.1);
+        }
+        .night-mode .mode-toggle:hover {
+            background-color: rgba(255,255,255,0.2);
+        }
+
+        main {
+            display: flex;
+            flex: 1;
+            overflow: hidden;
+        }
+
+        .passage-container, .questions-container {
+            height: 100%;
+            overflow-y: auto;
+            padding: 20px;
+        }
+
+        .passage-container {
+            width: 50%;
+            background-color: var(--passage-bg);
+            border-right: 1px solid var(--border-color);
+            position: relative;
+        }
+
+        .questions-container {
+            width: 50%;
+            background-color: var(--questions-bg);
+        }
+
+        .passage-content {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .passage-title {
+            font-size: 24px;
+            font-weight: 700;
+            margin-bottom: 20px;
+            color: var(--text-color);
+            padding-bottom: 10px;
+            border-bottom: 2px solid var(--border-color);
+        }
+
+        .passage-text {
+            font-size: 17px;
+        }
+
+        .question-text {
+            font-size: 17px;
+            line-height: 1.8;
+        }
+
+        .passage-text p {
+            margin-bottom: 20px;
+            text-align: justify;
+        }
+
+        .highlight {
+            background-color: var(--highlight-color);
+            cursor: pointer;
+            position: relative;
+        }
+
+        .highlight-tooltip {
+            position: absolute;
+            background-color: #333;
+            color: white;
+            padding: 5px 10px;
+            border-radius: 4px;
+            font-size: 14px;
+            z-index: 1000;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            top: -30px;
+            left: 50%;
+            transform: translateX(-50%);
+        }
+
+        .section-title {
+            font-size: 18px;
+            font-weight: 600;
+            margin: 25px 0 15px;
+            color: var(--text-color);
+            padding-bottom: 8px;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .question-group {
+            margin-bottom: 30px;
+        }
+
+        .question {
+            margin-bottom: 25px;
+            padding: 15px;
+            border-radius: 8px;
+            background-color: var(--passage-bg);
+            border-left: 4px solid var(--border-color);
+        }
+
+        .question-title {
+            font-weight: 600;
+            margin-bottom: 12px;
+            display: flex;
+            align-items: baseline;
+        }
+
+        .question-number {
+            display: inline-block;
+            width: 28px;
+            height: 28px;
+            background-color: var(--progress-incomplete);
+            color: white;
+            border-radius: 50%;
+            text-align: center;
+            line-height: 28px;
+            margin-right: 10px;
+            font-size: 14px;
+            flex-shrink: 0;
+        }
+
+        .question.answered .question-number {
+            background-color: var(--progress-complete);
+        }
+
+        .options {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            margin-top: 8px;
+        }
+
+        .option {
+            display: flex;
+            align-items: flex-start;
+            cursor: pointer;
+            padding: 5px 0;
+        }
+
+        .option input {
+            margin-right: 10px;
+            margin-top: 3px;
+        }
+
+        .fill-in-the-blank, .question select {
+            background: transparent;
+            border: none;
+            border-bottom: 2px solid var(--text-color);
+            width: 150px;
+            font-family: inherit;
+            font-size: 1em;
+            color: inherit;
+            padding: 0 4px 2px 4px;
+            margin: 0 3px;
+            vertical-align: baseline;
+            text-align: center;
+            outline: none;
+            transition: border-color 0.3s;
+        }
+
+        .fill-in-the-blank:focus, .question select:focus {
+            border-bottom-color: var(--button-bg);
+        }
+
+        .yes-no-options {
+            display: flex;
+            gap: 15px;
+            margin-top: 10px;
+        }
+
+        .yes-no-option {
+            display: flex;
+            align-items: center;
+            cursor: pointer;
+        }
+
+        .instructions {
+            font-size: 14px;
+            color: #757575;
+            margin-top: 5px;
+            font-style: italic;
+        }
+
+        .summary-options {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin: 15px 0;
+        }
+
+        .summary-option {
+            padding: 8px 15px;
+            border: 1px solid var(--border-color);
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        .summary-option:hover {
+            background-color: rgba(0,0,0,0.05);
+        }
+
+        footer {
+            background-color: var(--footer-bg);
+            padding: 15px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-top: 1px solid var(--border-color);
+            box-shadow: 0 -2px 5px rgba(0,0,0,0.05);
+        }
+
+        .progress-container {
+            display: flex;
+            gap: 8px;
+        }
+
+        .progress-item {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            background-color: var(--progress-incomplete);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+
+        .progress-item:hover {
+            transform: scale(1.1);
+        }
+
+        .progress-item.completed {
+            background-color: var(--progress-complete);
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 12px;
+        }
+
+        button {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: background-color 0.3s, border-color 0.3s, color 0.3s;
+        }
+
+        .btn-primary {
+            background-color: var(--button-bg);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background-color: var(--button-hover);
+        }
+
+        .btn-secondary {
+            background-color: transparent;
+            border: 1px solid var(--button-bg);
+            color: var(--button-bg);
+        }
+
+        .btn-secondary:hover {
+            background-color: rgba(204, 0, 0, 0.1);
+        }
+        .night-mode .btn-secondary:hover {
+            background-color: rgba(153, 0, 0, 0.2);
+        }
+
+        .feedback-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.7);
+            z-index: 1000;
+            display: none;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .feedback-container {
+            background-color: var(--passage-bg);
+            width: 90%;
+            max-width: 900px;
+            height: 90%;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+            display: flex;
+            flex-direction: column;
+        }
+
+        .feedback-header {
+            padding: 20px;
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .feedback-title {
+            font-size: 22px;
+            font-weight: 700;
+            color: var(--text-color);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        #close-feedback {
+            font-size: 24px;
+            background: none;
+            border: none;
+            color: var(--text-color);
+            cursor: pointer;
+        }
+
+        .score-display {
+            font-size: 24px;
+            font-weight: 700;
+            margin-left: 10px;
+        }
+
+        .feedback-body {
+            padding: 20px;
+            overflow-y: auto;
+        }
+
+        .feedback-item {
+            margin-bottom: 25px;
+            padding: 15px;
+            border-radius: 8px;
+            background-color: var(--questions-bg);
+        }
+
+        .feedback-question {
+            font-weight: 600;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+        }
+
+        .feedback-answer {
+            margin-bottom: 10px;
+            padding: 8px 12px;
+            border-radius: 4px;
+            background-color: rgba(0,0,0,0.05);
+        }
+
+        .correct {
+            color: var(--correct-color);
+        }
+
+        .incorrect {
+            color: var(--incorrect-color);
+        }
+
+        .feedback-explanation {
+            margin-top: 10px;
+            padding: 10px;
+            border-left: 3px solid var(--button-bg);
+            background-color: rgba(0,0,0,0.03);
+        }
+
+        .feedback-passage {
+            margin-top: 8px;
+            font-style: italic;
+            color: #757575;
+        }
+
+        @media (max-width: 900px) {
+            main {
+                flex-direction: column;
+            }
+            
+            .passage-container, .questions-container {
+                width: 100%;
+                height: 50%;
+            }
+            
+            .passage-container {
+                border-right: none;
+                border-bottom: 1px solid var(--border-color);
+            }
+            
+            .progress-container {
+                flex-wrap: wrap;
+                max-width: 60%;
+            }
+        }
+
+        @media (max-width: 600px) {
+            header {
+                flex-direction: column;
+                gap: 10px;
+                padding: 10px;
+            }
+            .header-left, .header-controls {
+                width: 100%;
+                justify-content: center;
+            }
+            .progress-container {
+                max-width: 50%;
+            }
+            .progress-item {
+                width: 26px;
+                height: 26px;
+                font-size: 12px;
+            }
+            footer {
+                flex-direction: column;
+                gap: 15px;
+            }
+            .action-buttons {
+                width: 100%;
+                justify-content: center;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="header-left">
+            
+        </div>
+        <div class="header-controls">
+            <div class="timer-container">
+                <i class="fas fa-clock"></i>
+                <span id="timer">20:00</span>
+                <div class="timer-controls">
+                    <button id="start-timer" title="Start"><i class="fas fa-play"></i></button>
+                    <button id="pause-timer" title="Pause"><i class="fas fa-pause"></i></button>
+                    <button id="reset-timer" title="Reset"><i class="fas fa-redo"></i></button>
+                </div>
+            </div>
+            <button class="mode-toggle" id="night-mode-toggle" title="Toggle Night Mode">
+                <i class="fas fa-moon"></i>
+            </button>
+        </div>
+    </header>
+
+    <main>
+        <div class="passage-container" id="passage-container">
+            <div class="passage-content">
+                <div class="passage-title">Reading Passage 3: Robert Louis Stevenson</div>
+                <div class="passage-text" id="passage-text">
+                    <p>It has been more than 100 years since the death of the Scottish writer Robert Louis Stevenson on the South Pacific island of Samoa. It seems that time has not been kind to Stevenson's memory. Immediately after his death, his family and friends set to work to fashion the legend of Robert Louis Stevenson, or R.L.S. as he became known—one of the few writers familiar from his initials alone. Subsequent works of biography then turned him into a writer of almost religious importance. One example was history critic Balfour, who in 1901 portrayed Stevenson's family as ministering angels to the dying genius during his final illness. Similarly, the biographer Crouch absurdly overstated Stevenson's significance by placing him in the same company as those most revered figures in English literature: Shakespeare and Keats. The reaction to this nonsense was a number of highly critical assessments of Stevenson's legacy in the 1920s.</p>
+                    
+                    <p>Normally, the critical pendulum can be relied on to swing back again, but several aspects of Stevenson's work have, until recently, acted against a more balanced appraisal. First is the allegation that Stevenson was a mere master of linguistic fireworks who lacked moral depth. Some critics accused him of being a literary charlatan, of juggling words very prettily to strike effects that overawed an ignorant public and served to distract from the inadequacy of his ideas.</p>
+                    
+                    <p>Then there has been a prejudice against the adventure story as a proper medium for deep moral seriousness, a prejudice which is still extremely influential today. It seems that we can accept that an adventure film can successfully express profound moral truths, but we reject the same idea for a book. The absurdity of this becomes apparent when we think of writers like Joseph Conrad and Graham Greene, but it is no use pretending that this bias against adventure stories is not part of our high culture. A further problem is that Stevenson has often not found favour in the land of his birth because his conservatism so often collides with the strong radical tradition in Scotland. His many escapist stories and preference for living abroad have led to accusations that he camouflaged Scotland's real problems. Lastly, the high adventure of Stevenson's own lifestyle has sometimes obscured his output. His globe-trotting, and above all the final phase of his life in Samoa, tended to make his own life a greater story than any he could devise. This was precisely what his friends feared would happen towards the end of his short life: his art might be overwhelmed by the drama of life in Samoa.</p>
+                    
+                    <p>One consequence of this has been that Stevenson's influence on other writers has too often been neglected. The writer and poet Oscar Wilde was deeply influenced by Stevenson, even though he declared that Stevenson would have produced better work if he had lived in London rather than Samoa. Stevenson tends to stick in the throat even of those writers who would like to spit him out, such as Shaw, who claimed to have learned from him that the romantic hero is always mocked by reality. Likewise, the writer Galsworthy, who was a determined critic, later changed his mind and said that the superiority of Stevenson over the novelist Hardy was that Stevenson was all life and Hardy, all death. The influence on the novelist Chesterton would also repay detailed study, for it was through him that Stevenson has managed to cross the ages, emerging as an influence on the modernist movement and our own contemporary Latin American school of magical realism.</p>
+                    
+                    <p>When making an assessment of his life and work, one question must inevitably be asked: was Robert Louis Stevenson Scotland's greatest writer of English prose? For most commentators, this honour falls to Sir Walter Scott, author of Ivanhoe among many other classic novels, and it is true that in terms of craftsmanship, precision and the ability to minutely regulate language to create the desired effect, Scott takes the prize. However, this is not the same thing at all as inherent talent. By way of comparison, one may take the example of the two great Russian composers Shostakovich and Prokofiev, of whom the former had learned more precise skills of execution but the latter's intrinsic genius was greater, and so it seems to be with Scott and Stevenson. Admittedly, Scott's detailed style does permit his stories to explore levels of tragedy that are beyond Stevenson's reach, but in this regard, they have the musty smell of the museum, somehow artificial and removed from modern-day reality. On the other hand, Stevenson's skill with plotting and narrative gives his books a timeless quality, so that they still live today. And Stevenson was also the shrewder judge of behaviour and psychology. For example, his compelling description of a man with a split personality in The Strange Case of Dr. Jekyll and Mr. Hyde has proved so accessible and accurate that the expression 'Jekyll and Hyde' has entered common English usage. Even if we do not see a revival of critical interest in this great Scottish writer, it is to be hoped that readers go back to Robert Louis Stevenson's magnificent stories and reassess this neglected genius.</p>
+                </div>
+            </div>
+        </div>
+        
+        <div class="questions-container" id="questions-container">
+            <div class="section-title">Questions 27-31</div>
+            <div class="instructions">Choose the correct letter, A, B, C, or D.</div>
+            <div class="question-group">
+                <div class="question" id="q27">
+                    <div class="question-title">
+                        <div class="question-number">27</div>
+                        <div class="question-text">In the opinion of the writer, the biographers Balfour and Crouch</div>
+                    </div>
+                    <div class="options">
+                        <label class="option"><input type="radio" name="q27" value="A"> A misunderstood Stevenson's religious belief</label>
+                        <label class="option"><input type="radio" name="q27" value="B"> B overestimated other writers' influence on Stevenson</label>
+                        <label class="option"><input type="radio" name="q27" value="C"> C elevated Stevenson above his true status as a writer</label>
+                        <label class="option"><input type="radio" name="q27" value="D"> D understated the role played by Stevenson's family</label>
+                    </div>
+                </div>
+                <div class="question" id="q28">
+                    <div class="question-title">
+                        <div class="question-number">28</div>
+                        <div class="question-text">What is the writer's main point about Stevenson in the second paragraph?</div>
+                    </div>
+                    <div class="options">
+                        <label class="option"><input type="radio" name="q28" value="A"> A The ethical nature of his stories was often criticized</label>
+                        <label class="option"><input type="radio" name="q28" value="B"> B The public judges him more fairly than the critics</label>
+                        <label class="option"><input type="radio" name="q28" value="C"> C Recent criticism of him has been justified</label>
+                        <label class="option"><input type="radio" name="q28" value="D"> D Critics argued that his style covered up his faults</label>
+                    </div>
+                </div>
+                <div class="question" id="q29">
+                    <div class="question-title">
+                        <div class="question-number">29</div>
+                        <div class="question-text">According to the writer, the adventure story</div>
+                    </div>
+                    <div class="options">
+                        <label class="option"><input type="radio" name="q29" value="A"> A can be used by writers to tell moral stories</label>
+                        <label class="option"><input type="radio" name="q29" value="B"> B is more fashionable today than in the past</label>
+                        <label class="option"><input type="radio" name="q29" value="C"> C has been used by other writers but not Stevenson</label>
+                        <label class="option"><input type="radio" name="q29" value="D"> D is more appropriate for books than film</label>
+                    </div>
+                </div>
+                <div class="question" id="q30">
+                    <div class="question-title">
+                        <div class="question-number">30</div>
+                        <div class="question-text">What point does the writer make about Stevenson and Scotland?</div>
+                    </div>
+                    <div class="options">
+                        <label class="option"><input type="radio" name="q30" value="A"> A His unflattering stories about Scotland angered many Scots</label>
+                        <label class="option"><input type="radio" name="q30" value="B"> B His ideas contrasted with those of many Scots</label>
+                        <label class="option"><input type="radio" name="q30" value="C"> C He demonstrated great sympathy for Scotland's problems</label>
+                        <label class="option"><input type="radio" name="q30" value="D"> D He was not considered a true Scot as he was not born there</label>
+                    </div>
+                </div>
+                <div class="question" id="q31">
+                    <div class="question-title">
+                        <div class="question-number">31</div>
+                        <div class="question-text">According to the writer, Stevenson's own lifestyle</div>
+                    </div>
+                    <div class="options">
+                        <label class="option"><input type="radio" name="q31" value="A"> A attracted more attention than his books</label>
+                        <label class="option"><input type="radio" name="q31" value="B"> B did not prepare him for living in Samoa</label>
+                        <label class="option"><input type="radio" name="q31" value="C"> C was envied by his friends</label>
+                        <label class="option"><input type="radio" name="q31" value="D"> D was responsible for his early death</label>
+                    </div>
+                </div>
+            </div>
+
+            <div class="section-title">Questions 32-35</div>
+            <div class="instructions">Do the following statements agree with the information given in Reading Passage 3?<br>In boxes 32-35 on your answer sheet, write:</div>
+            <div class="question-group">
+                <div class="question" id="q32">
+                    <div class="question-title">
+                        <div class="question-number">32</div>
+                        <div class="question-text">Oscar Wilde believed Robert could write a better novel.</div>
+                    </div>
+                    <div class="yes-no-options">
+                        <label class="yes-no-option"><input type="radio" name="q32" value="YES"> YES</label>
+                        <label class="yes-no-option"><input type="radio" name="q32" value="NO"> NO</label>
+                        <label class="yes-no-option"><input type="radio" name="q32" value="NOT GIVEN"> NOT GIVEN</label>
+                    </div>
+                </div>
+                <div class="question" id="q33">
+                    <div class="question-title">
+                        <div class="question-number">33</div>
+                        <div class="question-text">Robert's influence on other writers can be controversial.</div>
+                    </div>
+                    <div class="yes-no-options">
+                        <label class="yes-no-option"><input type="radio" name="q33" value="YES"> YES</label>
+                        <label class="yes-no-option"><input type="radio" name="q33" value="NO"> NO</label>
+                        <label class="yes-no-option"><input type="radio" name="q33" value="NOT GIVEN"> NOT GIVEN</label>
+                    </div>
+                </div>
+                <div class="question" id="q34">
+                    <div class="question-title">
+                        <div class="question-number">34</div>
+                        <div class="question-text">Galsworthy thought Robert's work is better than that of writer Hardy.</div>
+                    </div>
+                    <div class="yes-no-options">
+                        <label class="yes-no-option"><input type="radio" name="q34" value="YES"> YES</label>
+                        <label class="yes-no-option"><input type="radio" name="q34" value="NO"> NO</label>
+                        <label class="yes-no-option"><input type="radio" name="q34" value="NOT GIVEN"> NOT GIVEN</label>
+                    </div>
+                </div>
+                <div class="question" id="q35">
+                    <div class="question-title">
+                        <div class="question-number">35</div>
+                        <div class="question-text">In this paper, the author is critical of Robert Louis Stevenson.</div>
+                    </div>
+                    <div class="yes-no-options">
+                        <label class="yes-no-option"><input type="radio" name="q35" value="YES"> YES</label>
+                        <label class="yes-no-option"><input type="radio" name="q35" value="NO"> NO</label>
+                        <label class="yes-no-option"><input type="radio" name="q35" value="NOT GIVEN"> NOT GIVEN</label>
+                    </div>
+                </div>
+            </div>
+
+            <div class="section-title">Questions 36-40</div>
+            <div class="instructions">Complete the notes using the list of words, A-I, below. Write the correct letter, A-I, in boxes 36-40 on your answer sheet.</div>
+            <div class="question-group">
+                <div class="question" id="q36">
+                    <div class="question-title">
+                        <div class="question-number">36</div>
+                        <div class="question-text">Sir Walter Scott is more proficient in <select name="q36">
+                            <option value="">Select...</option>
+                            <option value="A">A</option>
+                            <option value="B">B</option>
+                            <option value="C">C</option>
+                            <option value="D">D</option>
+                            <option value="E">E</option>
+                            <option value="F">F</option>
+                            <option value="G">G</option>
+                            <option value="H">H</option>
+                            <option value="I">I</option>
+                        </select>, while Stevenson has better</div>
+                    </div>
+                </div>
+                <div class="question" id="q37">
+                    <div class="question-title">
+                        <div class="question-number">37</div>
+                        <div class="question-text"><select name="q37">
+                            <option value="">Select...</option>
+                            <option value="A">A</option>
+                            <option value="B">B</option>
+                            <option value="C">C</option>
+                            <option value="D">D</option>
+                            <option value="E">E</option>
+                            <option value="F">F</option>
+                            <option value="G">G</option>
+                            <option value="H">H</option>
+                            <option value="I">I</option>
+                        </select></div>
+                    </div>
+                </div>
+                <div class="question" id="q38">
+                    <div class="question-title">
+                        <div class="question-number">38</div>
+                        <div class="question-text">Scott's books illustrate <select name="q38">
+                            <option value="">Select...</option>
+                            <option value="A">A</option>
+                            <option value="B">B</option>
+                            <option value="C">C</option>
+                            <option value="D">D</option>
+                            <option value="E">E</option>
+                            <option value="F">F</option>
+                            <option value="G">G</option>
+                            <option value="H">H</option>
+                            <option value="I">I</option>
+                        </select> especially in terms of tragedy, but a lot of readers prefer Stevenson's</div>
+                    </div>
+                </div>
+                <div class="question" id="q39">
+                    <div class="question-title">
+                        <div class="question-number">39</div>
+                        <div class="question-text"><select name="q39">
+                            <option value="">Select...</option>
+                            <option value="A">A</option>
+                            <option value="B">B</option>
+                            <option value="C">C</option>
+                            <option value="D">D</option>
+                            <option value="E">E</option>
+                            <option value="F">F</option>
+                            <option value="G">G</option>
+                            <option value="H">H</option>
+                            <option value="I">I</option>
+                        </select></div>
+                    </div>
+                </div>
+                <div class="question" id="q40">
+                    <div class="question-title">
+                        <div class="question-number">40</div>
+                        <div class="question-text">What's more, Stevenson's understanding of <select name="q40">
+                            <option value="">Select...</option>
+                            <option value="A">A</option>
+                            <option value="B">B</option>
+                            <option value="C">C</option>
+                            <option value="D">D</option>
+                            <option value="E">E</option>
+                            <option value="F">F</option>
+                            <option value="G">G</option>
+                            <option value="H">H</option>
+                            <option value="I">I</option>
+                        </select> made his works have the most unique expression of Scottish people.</div>
+                    </div>
+                </div>
+            </div>
+            <div class="instructions">Word List for Questions 36-40:</div>
+            <div class="summary-options">
+                <div class="summary-option" data-value="A">A natural ability</div>
+                <div class="summary-option" data-value="B">B romance</div>
+                <div class="summary-option" data-value="C">C colorful language</div>
+                <div class="summary-option" data-value="D">D critical acclaim</div>
+                <div class="summary-option" data-value="E">E humor</div>
+                <div class="summary-option" data-value="F">F technical control</div>
+                <div class="summary-option" data-value="G">G storytelling</div>
+                <div class="summary-option" data-value="H">H depth</div>
+                <div class="summary-option" data-value="I">I human nature</div>
+            </div>
+        </div>
+    </main>
+
+    <footer>
+        <div class="progress-container" id="progress-container"></div>
+        <div class="action-buttons">
+            <button class="btn-secondary" id="reset-btn">Reset Answers</button>
+            <button class="btn-primary" id="submit-btn">Submit Answers</button>
+        </div>
+    </footer>
+
+    <div class="feedback-overlay" id="feedback-overlay">
+        <div class="feedback-container" id="feedback-container">
+            <div class="feedback-header">
+                <div class="feedback-title">
+                    <i class="fas fa-chart-bar"></i> Your Results
+                    <span class="score-display" id="score-display">0/14</span>
+                </div>
+                <button id="close-feedback" title="Close"><i class="fas fa-times"></i></button>
+            </div>
+            <div class="feedback-body" id="feedback-body"></div>
+        </div>
+    </div>
+
+    <script>
+        // Timer functionality
+        let timerInterval;
+        let seconds = 1200; // 20 minutes
+        let timerRunning = false;
+
+        const timerDisplay = document.getElementById('timer');
+        const startTimer = document.getElementById('start-timer');
+        const pauseTimer = document.getElementById('pause-timer');
+        const resetTimer = document.getElementById('reset-timer');
+
+        function formatTime(seconds) {
+            const mins = Math.floor(seconds / 60).toString().padStart(2, '0');
+            const secs = (seconds % 60).toString().padStart(2, '0');
+            return `${mins}:${secs}`;
+        }
+
+        function updateTimer() {
+            timerDisplay.textContent = formatTime(seconds);
+            if (seconds <= 0) {
+                clearInterval(timerInterval);
+                timerRunning = false;
+                document.getElementById('submit-btn').click();
+            }
+        }
+
+        startTimer.addEventListener('click', () => {
+            if (!timerRunning) {
+                timerRunning = true;
+                timerInterval = setInterval(() => {
+                    seconds--;
+                    updateTimer();
+                }, 1000);
+            }
+        });
+
+        pauseTimer.addEventListener('click', () => {
+            if (timerRunning) {
+                clearInterval(timerInterval);
+                timerRunning = false;
+            }
+        });
+
+        resetTimer.addEventListener('click', () => {
+            clearInterval(timerInterval);
+            timerRunning = false;
+            seconds = 1200;
+            updateTimer();
+        });
+
+        // Night mode toggle
+        const nightModeToggle = document.getElementById('night-mode-toggle');
+        nightModeToggle.addEventListener('click', () => {
+            document.body.classList.toggle('night-mode');
+            const icon = nightModeToggle.querySelector('i');
+            if (document.body.classList.contains('night-mode')) {
+                icon.classList.remove('fa-moon');
+                icon.classList.add('fa-sun');
+            } else {
+                icon.classList.remove('fa-sun');
+                icon.classList.add('fa-moon');
+            }
+        });
+
+        // Create progress indicators
+        const progressContainer = document.getElementById('progress-container');
+        for (let i = 27; i <= 40; i++) {
+            const progressItem = document.createElement('div');
+            progressItem.className = 'progress-item';
+            progressItem.textContent = i;
+            progressItem.dataset.question = i;
+            progressContainer.appendChild(progressItem);
+            
+            progressItem.addEventListener('click', () => {
+                const questionElement = document.getElementById(`q${i}`);
+                if (questionElement) {
+                    questionElement.scrollIntoView({ behavior: 'smooth' });
+                }
+            });
+        }
+
+        // Text highlighting functionality
+        let highlightTooltip = null;
+        let selectedHighlight = null;
+
+        function handleMouseUp(e) {
+            const container = e.currentTarget;
+            const selection = window.getSelection();
+            if (selection.toString().trim() !== '' && container.contains(selection.anchorNode)) {
+                const range = selection.getRangeAt(0);
+                const rect = range.getBoundingClientRect();
+
+                const startContainer = range.startContainer.nodeType === 3 ? range.startContainer.parentElement : range.startContainer;
+                const endContainer = range.endContainer.nodeType === 3 ? range.endContainer.parentElement : range.endContainer;
+                
+                let parentElement, isPassage;
+                const passageText = document.getElementById('passage-text');
+                const questionsContainer = document.getElementById('questions-container');
+                
+                if (passageText.contains(startContainer) && passageText.contains(endContainer)) {
+                    parentElement = startContainer.closest('p');
+                    isPassage = true;
+                } else if (questionsContainer.contains(startContainer) && questionsContainer.contains(endContainer)) {
+                    parentElement = startContainer.closest('.question-text');
+                    isPassage = false;
+                } else {
+                    alert('Please select text within a single paragraph or question.');
+                    selection.removeAllRanges();
+                    if (highlightTooltip) {
+                        highlightTooltip.remove();
+                        highlightTooltip = null;
+                    }
+                    return;
+                }
+
+                if (!parentElement || startContainer.closest(parentElement.tagName) !== endContainer.closest(parentElement.tagName)) {
+                    alert('Please select text within a single ' + (isPassage ? 'paragraph' : 'question') + '.');
+                    selection.removeAllRanges();
+                    if (highlightTooltip) {
+                        highlightTooltip.remove();
+                        highlightTooltip = null;
+                    }
+                    return;
+                }
+
+                const existingHighlights = parentElement.querySelectorAll('.highlight');
+                let hasOverlap = false;
+
+                existingHighlights.forEach(highlight => {
+                    const highlightRange = document.createRange();
+                    highlightRange.selectNodeContents(highlight);
+                    
+                    const startCompare = range.compareBoundaryPoints(Range.START_TO_START, highlightRange);
+                    const endCompare = range.compareBoundaryPoints(Range.END_TO_END, highlightRange);
+                    const startToEnd = range.compareBoundaryPoints(Range.START_TO_END, highlightRange);
+                    const endToStart = range.compareBoundaryPoints(Range.END_TO_START, highlightRange);
+                    
+                    if (
+                        (startCompare >= 0 && startCompare <= 0 && endCompare >= 0) ||
+                        (endCompare <= 0 && startCompare <= 0 && startToEnd >= 0) ||
+                        (startCompare <= 0 && endCompare >= 0) ||
+                        (startCompare >= 0 && endCompare <= 0)
+                    ) {
+                        hasOverlap = true;
+                    }
+                });
+
+                if (hasOverlap) {
+                    alert('Cannot highlight overlapping elements. Please try a different selection.');
+                    selection.removeAllRanges();
+                    if (highlightTooltip) {
+                        highlightTooltip.remove();
+                        highlightTooltip = null;
+                    }
+                    return;
+                }
+
+                const originalContent = range.cloneContents();
+
+                if (highlightTooltip) {
+                    highlightTooltip.remove();
+                    highlightTooltip = null;
+                }
+
+                highlightTooltip = document.createElement('div');
+                highlightTooltip.className = 'highlight-tooltip';
+                highlightTooltip.innerHTML = '<i class="fas fa-highlighter"></i> Highlight';
+                highlightTooltip.style.position = 'fixed';
+                highlightTooltip.style.top = `${rect.top - 40}px`;
+                highlightTooltip.style.left = `${rect.left}px`;
+                document.body.appendChild(highlightTooltip);
+
+                highlightTooltip.addEventListener('click', () => {
+                    try {
+                        const span = document.createElement('span');
+                        span.className = 'highlight';
+                        span.appendChild(range.extractContents());
+                        range.insertNode(span);
+                        span.addEventListener('click', handleHighlightClick);
+                        selection.removeAllRanges();
+                        highlightTooltip.remove();
+                        highlightTooltip = null;
+                        parentElement.normalize();
+                    } catch (error) {
+                        console.error('Error applying highlight:', error);
+                        alert('Failed to apply highlight. Restoring original text.');
+                        range.deleteContents();
+                        range.insertNode(originalContent.cloneNode(true));
+                        parentElement.normalize();
+                        if (highlightTooltip) {
+                            highlightTooltip.remove();
+                            highlightTooltip = null;
+                        }
+                    }
+                });
+            }
+        }
+
+        function handleHighlightClick(e) {
+            if (selectedHighlight && selectedHighlight !== e.target) {
+                selectedHighlight.classList.remove('selected-highlight');
+            }
+            selectedHighlight = e.target;
+            selectedHighlight.classList.toggle('selected-highlight');
+
+            if (highlightTooltip) {
+                highlightTooltip.remove();
+                highlightTooltip = null;
+            }
+
+            highlightTooltip = document.createElement('div');
+            highlightTooltip.className = 'highlight-tooltip';
+            highlightTooltip.innerHTML = '<i class="fas fa-eraser"></i> Unhighlight';
+            highlightTooltip.style.position = 'absolute';
+            highlightTooltip.style.top = '-30px';
+            highlightTooltip.style.left = '50%';
+            highlightTooltip.style.transform = 'translateX(-50%)';
+            e.target.appendChild(highlightTooltip);
+
+            highlightTooltip.addEventListener('click', () => {
+                const parent = e.target.parentNode;
+                try {
+                    while (e.target.firstChild) {
+                        parent.insertBefore(e.target.firstChild, e.target);
+                    }
+                    parent.removeChild(e.target);
+                    parent.normalize();
+                    if (highlightTooltip) {
+                        highlightTooltip.remove();
+                        highlightTooltip = null;
+                    }
+                    selectedHighlight = null;
+                } catch (error) {
+                    console.error('Error removing highlight:', error);
+                    alert('Failed to remove highlight. Please try again.');
+                }
+            });
+        }
+
+        document.getElementById('passage-text').addEventListener('mouseup', handleMouseUp);
+        document.getElementById('questions-container').addEventListener('mouseup', handleMouseUp);
+
+        document.addEventListener('mousedown', (e) => {
+            if (highlightTooltip && !highlightTooltip.contains(e.target) && e.target.className !== 'highlight') {
+                highlightTooltip.remove();
+                highlightTooltip = null;
+                if (selectedHighlight) {
+                    selectedHighlight.classList.remove('selected-highlight');
+                    selectedHighlight = null;
+                }
+                window.getSelection().removeAllRanges();
+            }
+        });
+
+        // Track answered questions
+        const questions = document.querySelectorAll('.question');
+        const progressItems = document.querySelectorAll('.progress-item');
+
+        function updateProgress() {
+            let answeredCount = 0;
+            
+            questions.forEach((question, index) => {
+                const questionNumber = 27 + index;
+                let answered = false;
+                
+                if (questionNumber <= 31) {
+                    const selectedOption = question.querySelector('input:checked');
+                    answered = selectedOption !== null;
+                } else if (questionNumber <= 35) {
+                    const selectedOption = question.querySelector('input:checked');
+                    answered = selectedOption !== null;
+                } else {
+                    const select = question.querySelector('select');
+                    answered = select.value !== '';
+                }
+                
+                if (answered) {
+                    question.classList.add('answered');
+                    progressItems[index].classList.add('completed');
+                    answeredCount++;
+                } else {
+                    question.classList.remove('answered');
+                    progressItems[index].classList.remove('completed');
+                }
+            });
+            
+            return answeredCount;
+        }
+
+        document.querySelectorAll('input[type="radio"], select').forEach(input => {
+            input.addEventListener('change', updateProgress);
+        });
+
+        // Summary options click functionality
+        document.querySelectorAll('.summary-option').forEach(option => {
+            option.addEventListener('click', () => {
+                const value = option.getAttribute('data-value');
+                // This would need more complex logic to assign to the correct dropdown
+                // For simplicity, we'll just update the first empty dropdown
+                const emptySelects = document.querySelectorAll('select[name^="q"]');
+                for (let select of emptySelects) {
+                    if (select.value === '') {
+                        select.value = value;
+                        updateProgress();
+                        break;
+                    }
+                }
+            });
+        });
+
+        // Reset button
+        document.getElementById('reset-btn').addEventListener('click', () => {
+            document.querySelectorAll('input[type="radio"]').forEach(radio => {
+                radio.checked = false;
+            });
+            
+            document.querySelectorAll('select').forEach(select => {
+                select.value = '';
+            });
+            
+            document.querySelectorAll('.highlight').forEach(highlight => {
+                const parent = highlight.parentNode;
+                try {
+                    while (highlight.firstChild) {
+                        parent.insertBefore(highlight.firstChild, highlight);
+                    }
+                    parent.removeChild(highlight);
+                    parent.normalize();
+                } catch (error) {
+                    console.error('Error resetting highlights:', error);
+                    alert('Failed to reset highlights. Please try again.');
+                }
+            });
+            
+            updateProgress();
+            document.getElementById('feedback-overlay').style.display = 'none';
+        });
+
+        // Submit and Feedback functionality
+        const feedbackOverlay = document.getElementById('feedback-overlay');
+        const closeFeedbackBtn = document.getElementById('close-feedback');
+
+        document.getElementById('submit-btn').addEventListener('click', () => {
+            pauseTimer.click();
+            
+            const answers = {
+                27: 'C', 28: 'D', 29: 'A', 30: 'B', 31: 'A',
+                32: 'YES', 33: 'YES', 34: 'YES', 35: 'NO',
+                36: 'F', 37: 'A', 38: 'H', 39: 'G', 40: 'I'
+            };
+            
+            const explanations = {
+                27: "The first paragraph states that Balfour and Crouch 'overstated Stevenson's significance' and placed him with 'most revered figures' like Shakespeare.",
+                28: "The second paragraph discusses critics who accused Stevenson of using style to 'distract from the inadequacy of his ideas'.",
+                29: "The third paragraph argues against prejudice that adventure stories cannot convey moral truths, suggesting they can.",
+                30: "The third paragraph mentions that Stevenson's conservatism 'collides with the strong radical tradition in Scotland'.",
+                31: "The third paragraph states that Stevenson's lifestyle 'tended to make his own life a greater story than any he could devise'.",
+                32: "The fourth paragraph states that Wilde believed Stevenson 'would have produced better work if he had lived in London'.",
+                33: "The fourth paragraph shows various writers had conflicting views about Stevenson's influence.",
+                34: "The fourth paragraph states Galsworthy said 'the superiority of Stevenson over the novelist Hardy'.",
+                35: "The overall tone of the passage is defensive of Stevenson, not critical.",
+                36: "The final paragraph states Scott was better in 'craftsmanship, precision and the ability to minutely regulate language' (technical control).",
+                37: "The final paragraph compares Stevenson to Prokofiev who had 'intrinsic genius' (natural ability).",
+                38: "The final paragraph mentions Scott's stories explore 'levels of tragedy' showing depth.",
+                39: "The final paragraph praises Stevenson's 'skill with plotting and narrative' (storytelling).",
+                40: "The final paragraph states Stevenson was 'the shrewder judge of behaviour and psychology' (human nature)."
+            };
+            
+            const passageReferences = {
+                27: "the biographer Crouch absurdly overstated Stevenson's significance by placing him in the same company as those most revered figures in English literature: Shakespeare and Keats",
+                28: "Some critics accused him of being a literary charlatan, of juggling words very prettily to strike effects that overawed an ignorant public and served to distract from the inadequacy of his ideas",
+                29: "The absurdity of this becomes apparent when we think of writers like Joseph Conrad and Graham Greene",
+                30: "A further problem is that Stevenson has often not found favour in the land of his birth because his conservatism so often collides with the strong radical tradition in Scotland",
+                31: "His globe-trotting, and above all the final phase of his life in Samoa, tended to make his own life a greater story than any he could devise",
+                32: "Oscar Wilde was deeply influenced by Stevenson, even though he declared that Stevenson would have produced better work if he had lived in London rather than Samoa",
+                33: "Stevenson tends to stick in the throat even of those writers who would like to spit him out",
+                34: "the writer Galsworthy... said that the superiority of Stevenson over the novelist Hardy was that Stevenson was all life and Hardy, all death",
+                35: "it is to be hoped that readers go back to Robert Louis Stevenson's magnificent stories and reassess this neglected genius",
+                36: "in terms of craftsmanship, precision and the ability to minutely regulate language to create the desired effect, Scott takes the prize",
+                37: "the latter's intrinsic genius was greater, and so it seems to be with Scott and Stevenson",
+                38: "Scott's detailed style does permit his stories to explore levels of tragedy that are beyond Stevenson's reach",
+                39: "Stevenson's skill with plotting and narrative gives his books a timeless quality",
+                40: "Stevenson was also the shrewder judge of behaviour and psychology"
+            };
+            
+            let correctCount = 0;
+            const feedbackBody = document.getElementById('feedback-body');
+            feedbackBody.innerHTML = '';
+            
+            for (let i = 27; i <= 40; i++) {
+                let userAnswer, isCorrect, questionHTML;
+                const feedbackItem = document.createElement('div');
+                feedbackItem.className = 'feedback-item';
+                
+                const questionDiv = document.querySelector(`#q${i} .question-text`);
+
+                if (i <= 31) {
+                    const selectedOption = document.querySelector(`input[name="q${i}"]:checked`);
+                    userAnswer = selectedOption ? selectedOption.value : 'Not answered';
+                    isCorrect = userAnswer === answers[i];
+                    questionHTML = questionDiv.textContent;
+                } else if (i <= 35) {
+                    const selectedOption = document.querySelector(`input[name="q${i}"]:checked`);
+                    userAnswer = selectedOption ? selectedOption.value : 'Not answered';
+                    isCorrect = userAnswer === answers[i];
+                    questionHTML = questionDiv.textContent;
+                } else {
+                    const select = document.querySelector(`select[name="q${i}"]`);
+                    userAnswer = select.value;
+                    isCorrect = userAnswer === answers[i];
+                    questionHTML = questionDiv.innerHTML.replace(/<select.*?<\/select>/, `<strong><em>${getOptionText(answers[i])}</em></strong>`);
+                }
+                
+                if (isCorrect) correctCount++;
+                
+                feedbackItem.innerHTML = `
+                    <div class="feedback-question">
+                        <span class="${isCorrect ? 'correct' : 'incorrect'}">Question ${i}:</span>
+                        ${isCorrect ? `<i class="fas fa-check correct" style="margin-left: 5px;"></i>` : `<i class="fas fa-times incorrect" style="margin-left: 5px;"></i>`}
+                    </div>
+                    <p><em>${questionHTML}</em></p>
+                    <div class="feedback-answer">
+                        <strong>Your answer:</strong> ${userAnswer || 'Not answered'}<br>
+                        ${!isCorrect ? `<strong>Correct answer:</strong> ${i <= 35 ? answers[i] : getOptionText(answers[i])}` : ''}
+                    </div>
+                    <div class="feedback-explanation">
+                        <strong>Explanation:</strong> ${explanations[i]}
+                    </div>
+                    <div class="feedback-passage">
+                        <strong>Relevant passage:</strong> "${passageReferences[i]}"
+                    </div>
+                `;
+                
+                feedbackBody.appendChild(feedbackItem);
+            }
+            
+            document.getElementById('score-display').textContent = `${correctCount}/14`;
+            feedbackOverlay.style.display = 'flex';
+        });
+
+        function getOptionText(letter) {
+            const options = {
+                'A': 'natural ability',
+                'B': 'romance', 
+                'C': 'colorful language',
+                'D': 'critical acclaim',
+                'E': 'humor',
+                'F': 'technical control',
+                'G': 'storytelling',
+                'H': 'depth',
+                'I': 'human nature'
+            };
+            return options[letter] || letter;
+        }
+
+        closeFeedbackBtn.addEventListener('click', () => {
+            feedbackOverlay.style.display = 'none';
+        });
+
+        feedbackOverlay.addEventListener('click', (e) => {
+            if (e.target === feedbackOverlay) {
+                feedbackOverlay.style.display = 'none';
+            }
+        });
+
+        // Initialize timer display and progress
+        updateProgress();
+        updateTimer();
+    </script>
+</body>
+</html>

@@ -1,0 +1,833 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>IELTS Reading Test - The Pearl</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        /* CSS переменные для тем */
+        .theme-day {
+            --bg-primary: #f0f8ff;
+            --bg-secondary: #ffffff;
+            --bg-tertiary: #f5f5f5;
+            --text-primary: #333333;
+            --text-secondary: #666666;
+            --border-color: #dddddd;
+            --accent-color: #0066cc;
+            --highlight-bg: rgba(0, 102, 204, 0.1);
+            --timer-bg: #e6f2ff;
+            --header-bg: #ffffff;
+            --modal-bg: #ffffff;
+            --correct-color: #28a745;
+            --incorrect-color: #dc3545;
+        }
+
+        .theme-night {
+            --bg-primary: #1a1a2e;
+            --bg-secondary: #16213e;
+            --bg-tertiary: #0f3460;
+            --text-primary: #e6e6e6;
+            --text-secondary: #b3b3b3;
+            --border-color: #2d3748;
+            --accent-color: #4fc3f7;
+            --highlight-bg: rgba(79, 195, 247, 0.2);
+            --timer-bg: #2d3748;
+            --header-bg: #16213e;
+            --modal-bg: #1a1a2e;
+            --correct-color: #4caf50;
+            --incorrect-color: #f44336;
+            color-scheme: dark;
+        }
+
+        .theme-sepia {
+            --bg-primary: #f8f3e6;
+            --bg-secondary: #f4ecd8;
+            --bg-tertiary: #e8dfca;
+            --text-primary: #5d4037;
+            --text-secondary: #8d6e63;
+            --border-color: #d7ccc8;
+            --accent-color: #8d6e63;
+            --highlight-bg: rgba(141, 110, 99, 0.15);
+            --timer-bg: #e8dfca;
+            --header-bg: #f4ecd8;
+            --modal-bg: #f8f3e6;
+            --correct-color: #689f38;
+            --incorrect-color: #d32f2f;
+        }
+
+        /* Основные стили */
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: Arial, sans-serif;
+            overflow: hidden;
+            background-color: var(--bg-primary);
+            color: var(--text-primary);
+            transition: all 0.4s ease;
+        }
+
+        .test-wrapper {
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+        }
+        
+        .test-container {
+            display: flex;
+            flex: 1;
+            overflow: hidden;
+        }
+
+        /* Шапка */
+        .header {
+            background-color: var(--header-bg);
+            border-bottom: 1px solid var(--border-color);
+            padding: 10px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: all 0.4s ease;
+        }
+
+        .header__logo img {
+            height: 40px;
+        }
+
+        .header__timer {
+            font-size: 1.2rem;
+            font-weight: bold;
+            color: var(--text-primary);
+            background-color: var(--timer-bg);
+            padding: 5px 15px;
+            border-radius: 20px;
+            border: 1px solid var(--border-color);
+            transition: all 0.3s ease;
+        }
+
+        .header__icons {
+            display: flex;
+            gap: 15px;
+            align-items: center;
+        }
+
+        .header__icon {
+            font-size: 1.2rem;
+            color: var(--text-secondary);
+            cursor: pointer;
+            transition: color 0.3s ease;
+        }
+
+        .header__icon:hover {
+            color: var(--accent-color);
+        }
+
+        /* Переключатель тем */
+        .theme-switcher {
+            display: flex;
+            gap: 5px;
+            background: var(--bg-tertiary);
+            border-radius: 20px;
+            padding: 4px;
+            border: 1px solid var(--border-color);
+        }
+
+        .theme-btn {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            border: none;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.9rem;
+            transition: all 0.3s ease;
+            background: transparent;
+            color: var(--text-secondary);
+        }
+
+        .theme-btn.active {
+            background: var(--accent-color);
+            color: white;
+            transform: scale(1.1);
+        }
+
+        .theme-btn:hover {
+            transform: scale(1.05);
+        }
+
+        /* Контейнеры текста и вопросов */
+        .passage-container {
+            width: 45%;
+            height: 100%;
+            overflow-y: auto;
+            padding: 20px;
+            box-sizing: border-box;
+            background-color: var(--bg-primary);
+            position: relative;
+            -webkit-user-select: text;
+            user-select: text;
+            transition: all 0.4s ease;
+        }
+
+        .questions-container {
+            flex: 1;
+            overflow-y: auto;
+            padding: 20px;
+            box-sizing: border-box;
+            background-color: var(--bg-primary);
+            -webkit-user-select: text;
+            user-select: text;
+            transition: all 0.4s ease;
+        }
+
+        /* Разделитель */
+        .divider {
+            width: 10px;
+            background: var(--border-color);
+            cursor: col-resize;
+            position: relative;
+            transition: all 0.4s ease;
+        }
+
+        .divider-handle {
+            width: 4px;
+            height: 40px;
+            background: var(--text-secondary);
+            border-radius: 2px;
+            position: absolute;
+            top: 50%;
+            left: 3px;
+            transform: translateY(-50%);
+            transition: all 0.4s ease;
+        }
+
+        /* Стили вопросов */
+        .question {
+            margin-bottom: 30px;
+        }
+
+        .question-rubric {
+            margin-bottom: 15px;
+            font-weight: bold;
+            color: var(--text-primary);
+        }
+
+        .matching-heading-option {
+            display: flex;
+            align-items: center;
+            margin: 5px 0;
+        }
+
+        .matching-heading-option select {
+            min-width: 120px;
+            padding: 5px;
+            border: 1px solid var(--border-color);
+            border-radius: 4px;
+            margin-left: 10px;
+            background: var(--bg-secondary);
+            color: var(--text-primary);
+            transition: all 0.3s ease;
+        }
+
+        .sentence-completion-container {
+            margin-top: 20px;
+        }
+
+        .sentence-text p {
+            line-height: 2.5;
+            font-size: 16px;
+            color: var(--text-primary);
+        }
+
+        .sentence-input {
+            width: 150px;
+            padding: 5px;
+            border: 2px dashed var(--text-secondary);
+            border-radius: 4px;
+            margin: 0 5px;
+            font-size: 15px;
+            font-weight: bold;
+            background-color: var(--highlight-bg);
+            color: var(--text-primary);
+            transition: all 0.3s ease;
+        }
+
+        .sentence-input.correct {
+            border-color: var(--correct-color);
+            background-color: rgba(76, 175, 80, 0.1);
+            border-style: solid;
+        }
+
+        .sentence-input.incorrect {
+            border-color: var(--incorrect-color);
+            background-color: rgba(244, 67, 54, 0.1);
+            border-style: solid;
+        }
+
+        .true-false-option {
+            margin: 10px 0;
+        }
+
+        .true-false-option label {
+            margin-left: 10px;
+            color: var(--text-primary);
+        }
+
+        /* Подвал */
+        .footer {
+            background: var(--bg-tertiary);
+            border-top: 1px solid var(--border-color);
+            padding: 10px;
+            transition: all 0.4s ease;
+        }
+
+        .nav-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .footer__questionWrapper {
+            display: flex;
+            align-items: center;
+        }
+
+        .footer__subquestionWrapper {
+            display: flex;
+            flex-wrap: wrap;
+            margin-left: 10px;
+        }
+
+        .subQuestion {
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            border: 1px solid var(--border-color);
+            background: var(--bg-secondary);
+            margin: 2px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--text-secondary);
+            transition: all 0.3s ease;
+        }
+
+        .subQuestion.active {
+            background: var(--accent-color);
+            color: white;
+            border-color: var(--accent-color);
+        }
+
+        .subQuestion.attempted {
+            background: var(--accent-color);
+            color: white;
+        }
+
+        .footer__deliverButton {
+            background: var(--accent-color);
+            color: white;
+            border: none;
+            padding: 8px 15px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: all 0.3s ease;
+        }
+
+        .footer__deliverButton:hover {
+            opacity: 0.9;
+            transform: translateY(-1px);
+        }
+
+        /* Модальные окна */
+        .submission-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: rgba(0,0,0,0.8);
+            z-index: 2000;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .submission-content {
+            background-color: var(--modal-bg);
+            width: 80%;
+            max-width: 800px;
+            border-radius: 10px;
+            padding: 30px;
+            box-shadow: 0 5px 30px rgba(0,0,0,0.5);
+            max-height: 80vh;
+            overflow-y: auto;
+            transition: all 0.4s ease;
+        }
+
+        .answer-item {
+            padding: 10px;
+            margin-bottom: 8px;
+            border-radius: 4px;
+            border-left: 4px solid var(--border-color);
+            background-color: var(--bg-secondary);
+            transition: all 0.3s ease;
+        }
+
+        .answer-item.correct {
+            border-left-color: var(--correct-color);
+            background-color: rgba(76, 175, 80, 0.1);
+        }
+
+        .answer-item.incorrect {
+            border-left-color: var(--incorrect-color);
+            background-color: rgba(244, 67, 54, 0.1);
+        }
+
+        /* Дополнительные стили */
+        .sectionRubric {
+            margin: 1em;
+            width: calc(100% - 4em - 3px);
+            border-radius: 4px;
+            padding: 0.75em 1em;
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-color);
+            transition: all 0.4s ease;
+        }
+
+        .highlight {
+            position: relative;
+            border-radius: 2px;
+            padding: 0 1px;
+            margin: 0 -1px;
+            transition: all 0.3s ease;
+        }
+
+        .highlight.yellow { background-color: rgba(255, 255, 0, 0.3); }
+        .highlight.green { background-color: rgba(0, 255, 0, 0.3); }
+        .highlight.pink { background-color: rgba(255, 105, 180, 0.3); }
+        .highlight.blue { background-color: rgba(0, 191, 255, 0.3); }
+
+        * {
+            transition: background-color 0.4s ease, color 0.4s ease, border-color 0.4s ease;
+        }
+    </style>
+</head>
+<body class="theme-day">
+    <div class="test-wrapper">
+        <header class="header">
+            <div class="header__logo">
+                <img src="https://d2snzxottmona5.cloudfront.net/releases/3.46.0/images/logo/ielts.svg" alt="IELTS Logo">
+                
+            </div>
+            <div class="header__timer" id="testTimer">00:00</div>
+            <div class="header__icons">
+                <div class="theme-switcher">
+                    <button class="theme-btn active" data-theme="day" title="Day Mode">
+                        <i class="fas fa-sun"></i>
+                    </button>
+                    <button class="theme-btn" data-theme="night" title="Night Mode">
+                        <i class="fas fa-moon"></i>
+                    </button>
+                    <button class="theme-btn" data-theme="sepia" title="Sepia Mode">
+                        <i class="fas fa-book"></i>
+                    </button>
+                </div>
+                <i class="fas fa-cog header__icon" id="settingsButton"></i>
+            </div>
+        </header>
+
+        <div class="sectionRubric">
+            <h2>Part 1</h2>
+            <p>You should spend about 20 minutes on Questions 1-13, which are based on Reading Passage 1 below.</p>
+        </div>
+
+        <div class="test-container">
+            <div class="passage-container" id="passage-container">
+                <div id="passageContent">
+                    <h2 style="text-align: center;">The Pearl</h2>
+                    
+                    <p><strong>A</strong> The pearl has always had a special status in the rich and powerful all through the history. For instance, women from ancient Rome went to bed with pearls on them, so that they could remind themselves how wealthy they were after waking up. Pearls used to have more commercial value than diamonds until jewellers learnt to cut gems. In the eastern countries like Persia, ground pearl powders could be used as a medicine to cure anything including heart diseases and epilepsy.</p>
+                    
+                    <p><strong>B</strong> Pearls can generally be divided into three categories: natural, cultured and imitation. When an irritant (such as a grain of sand) gets inside a certain type of oyster, mussel, or clam, the mollusc will secrete a fluid as a means of defence to coat the irritant. Gradually, layers are accumulated around the irritant until a lustrous natural pearl is formed.</p>
+                    
+                    <p><strong>C</strong> A cultured pearl undergoes the same process. There is only one difference between cultured pearls and natural ones: in cultured pearls, the irritant is a head called 'mother of pearl' and is placed in the oyster through surgical implantation. This results in much larger cores in cultivated pearls than those in natural pearls. As long as there are enough layers of nacre (the secreted fluid covering the irritant) to create a gorgeous, gem-quality pearl; the size of the nucleus wouldn't make a difference to beauty or durability.</p>
+                    
+                    <p><strong>D</strong> Pearls can come from both salt and freshwater sources. Typically, pearls from salt water usually have high quality, although several freshwater pearls are considered high in quality, too. In addition, freshwater pearls often have irregular shapes, with a puffed rice appearance. Nevertheless, it is the individual merits that determine the pearl's value more than the sources of pearls. Saltwater pearl oysters are usually cultivated in protected lagoons or volcanic atolls, while most freshwater cultured pearls sold today come from China. There are a number of options for producing cultured pearls: use fresh water or sea water shells, transplant the graft into the mantle or into the gonad, add a spherical bead or do it nonbeaded.</p>
+                    
+                    <p><strong>E</strong> No matter which method is used to get pearls, the process usually takes several years. Mussels must reach a mature age, which may take up almost three years, and then be transplanted an irritant. When the irritant is put in place, it takes approximately another three years for a pearl to reach its full size. Sometimes, the irritant may be rejected. As a result, the pearl may be seriously deformed, or the oyster may directly die from such numerous complications as diseases. At the end of a 5- to 10-year circle, only half of the oysters may have made it through. Among the pearls that are actually produced in the end, only about 5% of them will be high-quality enough for the jewellery makers.</p>
+                    
+                    <p><strong>F</strong> Imitation pearls are of another different story. The Island of Mallorca in Spain is renowned for its imitation pearl industry. In most cases, a bead is dipped into a solution made from fish scales. But this coating is quite thin and often wears off. One way to distinguish the imitation pearls is to have a bite on it. Fake pearls glide through your teeth, while the layers of nacre on the real pearls feel gritty.</p>
+                    
+                    <p><strong>G</strong> Several factors are taken into account to evaluate a pearl: size, shape, Colour, the quality of surface and luster. Generally, the three types of pearls come in such order (with the value decreasing): natural pearls, cultured pearls and imitation pearls (which basically are worthless). For jewellers, one way to tell whether a pearl is natural or cultured is to send it to a gem lab and perform an X-ray on it. High-quality natural pearls are extremely rare. Japan's Akoya pearls are one of the glossiest pearls out there, while the south sea water of Australia is a cradle to bigger pearls.</p>
+                    
+                    <p><strong>H</strong> Historically, the pearls with the highest quality around the globe are found in the Persian Gulf, particularly around Bahrain. These pearls have to be hand-harvested by divers with no advanced equipment. Unfortunately, when the large reserve of oil was discovered in the early 1930s, Persian Gulf's natural pearl industry came to a sudden end because the contaminated water destroyed the once pristine pearls. In the present days, India probably has the largest stock of natural pearls. However, it is quite an irony that a large part of India's stock of natural pearls are originally from Bahrain.</p>
+                </div>
+            </div>
+
+            <div class="divider" id="divider">
+                <div class="divider-handle"></div>
+            </div>
+
+            <div class="questions-container" id="questions-container">
+                <!-- Questions 1-4 - Matching Information -->
+                <div class="question">
+                    <div class="question-rubric">
+                        <h3>Questions 1-4</h3>
+                        <p>Reading Passage 1 has eight paragraphs, <strong>A-H</strong>.</p>
+                        <p>Which paragraph contains the following information?</p>
+                        <p>Write the correct letter, <strong>A-H</strong>, in boxes <strong>1-4</strong> on your answer sheet.</p>
+                    </div>
+                    <div class="question-content">
+                        <div class="question-item">
+                            <p><span class="question-number">1</span> ancient stories around pearls and its customers</p>
+                            <div class="matching-heading-option">
+                                <select name="q1" id="q1">
+                                    <option value="">--</option>
+                                    <option value="A">A</option>
+                                    <option value="B">B</option>
+                                    <option value="C">C</option>
+                                    <option value="D">D</option>
+                                    <option value="E">E</option>
+                                    <option value="F">F</option>
+                                    <option value="G">G</option>
+                                    <option value="H">H</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="question-item">
+                            <p><span class="question-number">2</span> difficulties in cultivating process</p>
+                            <div class="matching-heading-option">
+                                <select name="q2" id="q2">
+                                    <option value="">--</option>
+                                    <option value="A">A</option>
+                                    <option value="B">B</option>
+                                    <option value="C">C</option>
+                                    <option value="D">D</option>
+                                    <option value="E">E</option>
+                                    <option value="F">F</option>
+                                    <option value="G">G</option>
+                                    <option value="H">H</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="question-item">
+                            <p><span class="question-number">3</span> factors which decide the value of natural pearls</p>
+                            <div class="matching-heading-option">
+                                <select name="q3" id="q3">
+                                    <option value="">--</option>
+                                    <option value="A">A</option>
+                                    <option value="B">B</option>
+                                    <option value="C">C</option>
+                                    <option value="D">D</option>
+                                    <option value="E">E</option>
+                                    <option value="F">F</option>
+                                    <option value="G">G</option>
+                                    <option value="H">H</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="question-item">
+                            <p><span class="question-number">4</span> a growth mechanism that distinguishes cultured pearls from natural ones</p>
+                            <div class="matching-heading-option">
+                                <select name="q4" id="q4">
+                                    <option value="">--</option>
+                                    <option value="A">A</option>
+                                    <option value="B">B</option>
+                                    <option value="C">C</option>
+                                    <option value="D">D</option>
+                                    <option value="E">E</option>
+                                    <option value="F">F</option>
+                                    <option value="G">G</option>
+                                    <option value="H">H</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Questions 5-10 - Summary Completion -->
+                <div class="question">
+                    <div class="question-rubric">
+                        <h3>Questions 5-10</h3>
+                        <p>Complete the summary below.</p>
+                        <p>Choose <strong>NO MORE THAN TWO WORDS</strong> from the passage for each answer.</p>
+                        <p>Write your answers in boxes <strong>5-10</strong> on your answer sheet.</p>
+                    </div>
+                    <div class="question-content">
+                        <div class="sentence-completion-container">
+                            <div class="sentence-text">
+                                <p>In history, pearls have had great importance within the men of wealth and power, which were treated as gems for women in <input type="text" class="sentence-input" id="q5" name="q5">. Also, pearls were even used as a medicine for people in <input type="text" class="sentence-input" id="q6" name="q6">. There are essentially three types of pearls: natural, cultured and imitation. Most freshwater cultured pearls sold today come from China while <input type="text" class="sentence-input" id="q7" name="q7"> Island is famous for its imitation pearl industry. Good-quality natural pearls are exceedingly unusual. <input type="text" class="sentence-input" id="q8" name="q8"> often manufactures some of the glitteriest pearls while <input type="text" class="sentence-input" id="q9" name="q9"> produces larger size ones due to the favourable environment along the coastline. In the past, <input type="text" class="sentence-input" id="q10" name="q10"> in Persian Gulf produced the world's best pearls. Nowadays, the major remaining suppliers of natural pearls belong to India.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Questions 11-13 - True/False/Not Given -->
+                <div class="question">
+                    <div class="question-rubric">
+                        <h3>Questions 11-13</h3>
+                        <p>Do the following statements agree with the information given in Reading Passage 1?</p>
+                        <p>In boxes 11-13 on your answer sheet, write</p>
+                        <p><strong>TRUE</strong> if the statement is true<br>
+                        <strong>FALSE</strong> if the statement is false<br>
+                        <strong>NOT GIVEN</strong> if the information is not given in the passage</p>
+                    </div>
+                    <div class="question-content">
+                        <div class="question-item">
+                            <p><span class="question-number">11</span> Generally speaking, the centre of cultured pearl is significantly larger than that of a natural pearl.</p>
+                            <div class="true-false-option">
+                                <input type="radio" name="q11" id="q11_true" value="TRUE">
+                                <label for="q11_true">TRUE</label>
+                                <input type="radio" name="q11" id="q11_false" value="FALSE">
+                                <label for="q11_false">FALSE</label>
+                                <input type="radio" name="q11" id="q11_ng" value="NOT GIVEN">
+                                <label for="q11_ng">NOT GIVEN</label>
+                            </div>
+                        </div>
+                        <div class="question-item">
+                            <p><span class="question-number">12</span> Sometimes, fake pearls can be more expensive.</p>
+                            <div class="true-false-option">
+                                <input type="radio" name="q12" id="q12_true" value="TRUE">
+                                <label for="q12_true">TRUE</label>
+                                <input type="radio" name="q12" id="q12_false" value="FALSE">
+                                <label for="q12_false">FALSE</label>
+                                <input type="radio" name="q12" id="q12_ng" value="NOT GIVEN">
+                                <label for="q12_ng">NOT GIVEN</label>
+                            </div>
+                        </div>
+                        <div class="question-item">
+                            <p><span class="question-number">13</span> The size of the pearls produced in Japan is usually smaller than those in Australia.</p>
+                            <div class="true-false-option">
+                                <input type="radio" name="q13" id="q13_true" value="TRUE">
+                                <label for="q13_true">TRUE</label>
+                                <input type="radio" name="q13" id="q13_false" value="FALSE">
+                                <label for="q13_false">FALSE</label>
+                                <input type="radio" name="q13" id="q13_ng" value="NOT GIVEN">
+                                <label for="q13_ng">NOT GIVEN</label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <footer class="footer">
+            <nav class="nav-row">
+                <div class="footer__questionWrapper">
+                    <div class="footer__subquestionWrapper">
+                        <button class="subQuestion" data-ordernumber="1">1</button>
+                        <button class="subQuestion" data-ordernumber="2">2</button>
+                        <button class="subQuestion" data-ordernumber="3">3</button>
+                        <button class="subQuestion" data-ordernumber="4">4</button>
+                        <button class="subQuestion" data-ordernumber="5">5</button>
+                        <button class="subQuestion" data-ordernumber="6">6</button>
+                        <button class="subQuestion" data-ordernumber="7">7</button>
+                        <button class="subQuestion" data-ordernumber="8">8</button>
+                        <button class="subQuestion" data-ordernumber="9">9</button>
+                        <button class="subQuestion" data-ordernumber="10">10</button>
+                        <button class="subQuestion" data-ordernumber="11">11</button>
+                        <button class="subQuestion" data-ordernumber="12">12</button>
+                        <button class="subQuestion" data-ordernumber="13">13</button>
+                    </div>
+                </div>
+                <button id="deliver-button" class="footer__deliverButton">
+                    <i class="fas fa-check"></i> Submit
+                </button>
+            </nav>
+        </footer>
+    </div>
+
+    <!-- Submission Modal -->
+    <div class="submission-modal" id="submissionModal">
+        <div class="submission-content">
+            <h2>Test Results</h2>
+            <div class="score-display">
+                <div>Your Score:</div>
+                <div class="score-number" id="userScore">0</div>
+                <div class="score-total">out of <span id="totalQuestions">13</span></div>
+            </div>
+            <p>Here are your answers with the correct solutions:</p>
+            <div class="answers-section">
+                <h3>Your Answers:</h3>
+                <div id="answersList"></div>
+            </div>
+            <div class="submission-buttons">
+                <button class="confirm" id="closeSubmission">Close</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Correct answers
+        const correctAnswers = {
+            1: "A",
+            2: "E", 
+            3: "G",
+            4: "C",
+            5: "ancient Rome",
+            6: "Persia",
+            7: "Mallorca",
+            8: "Japan",
+            9: "Australia",
+            10: "Bahrain",
+            11: "TRUE",
+            12: "NOT GIVEN",
+            13: "TRUE"
+        };
+
+        // Theme switching
+        const themeButtons = document.querySelectorAll('.theme-btn');
+        const body = document.body;
+
+        themeButtons.forEach(button => {
+            button.addEventListener('click', function() {
+                const theme = this.dataset.theme;
+                themeButtons.forEach(btn => btn.classList.remove('active'));
+                this.classList.add('active');
+                body.className = `theme-${theme}`;
+                localStorage.setItem('preferred-theme', theme);
+            });
+        });
+
+        // Load saved theme
+        const savedTheme = localStorage.getItem('preferred-theme') || 'day';
+        document.querySelector(`.theme-btn[data-theme="${savedTheme}"]`).click();
+
+        // Timer
+        let totalSeconds = 0;
+        const timerElement = document.getElementById('testTimer');
+        let testSubmitted = false;
+
+        function updateTimer() {
+            if (testSubmitted) return;
+            const minutes = Math.floor(totalSeconds / 60);
+            const seconds = totalSeconds % 60;
+            timerElement.textContent = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+            totalSeconds++;
+        }
+
+        const timerInterval = setInterval(updateTimer, 1000);
+
+        // Question navigation
+        document.querySelectorAll('.subQuestion').forEach(button => {
+            button.addEventListener('click', function() {
+                const questionNumber = parseInt(this.textContent);
+                document.querySelectorAll('.subQuestion').forEach(btn => btn.classList.remove('active'));
+                this.classList.add('active');
+                
+                // Scroll to question section
+                if (questionNumber <= 4) {
+                    document.querySelector('.question:nth-child(1)').scrollIntoView({behavior: 'smooth'});
+                } else if (questionNumber <= 10) {
+                    document.querySelector('.question:nth-child(2)').scrollIntoView({behavior: 'smooth'});
+                } else {
+                    document.querySelector('.question:nth-child(3)').scrollIntoView({behavior: 'smooth'});
+                }
+            });
+        });
+
+        // Mark questions as attempted
+        document.querySelectorAll('select, input[type="text"], input[type="radio"]').forEach(input => {
+            input.addEventListener('change', function() {
+                let questionNumber;
+                if (this.name.startsWith('q')) {
+                    questionNumber = parseInt(this.name.replace('q', ''));
+                    const questionButton = document.querySelector(`.subQuestion[data-ordernumber="${questionNumber}"]`);
+                    if (questionButton && (this.value || this.value.trim() || this.checked)) {
+                        questionButton.classList.add('attempted');
+                    }
+                }
+            });
+        });
+
+        // Submit functionality
+        document.getElementById('deliver-button').addEventListener('click', function() {
+            if (testSubmitted) return;
+            if (confirm('Are you sure you want to submit your test?')) {
+                clearInterval(timerInterval);
+                testSubmitted = true;
+                showResults();
+            }
+        });
+
+        function showResults() {
+            const modal = document.getElementById('submissionModal');
+            const answersList = document.getElementById('answersList');
+            answersList.innerHTML = '';
+            let score = 0;
+
+            // Check answers
+            for (let i = 1; i <= 13; i++) {
+                let userAnswer = '';
+                let isCorrect = false;
+
+                if (i <= 4) {
+                    // Matching questions
+                    const select = document.getElementById(`q${i}`);
+                    userAnswer = select.value || 'Not answered';
+                    isCorrect = userAnswer === correctAnswers[i];
+                } else if (i <= 10) {
+                    // Summary completion
+                    const input = document.getElementById(`q${i}`);
+                    userAnswer = input.value.trim() || 'Not answered';
+                    isCorrect = userAnswer.toLowerCase() === correctAnswers[i].toLowerCase();
+                } else {
+                    // True/False/Not Given
+                    const radio = document.querySelector(`input[name="q${i}"]:checked`);
+                    userAnswer = radio ? radio.value : 'Not answered';
+                    isCorrect = userAnswer === correctAnswers[i];
+                }
+
+                if (isCorrect) score++;
+
+                const answerItem = document.createElement('div');
+                answerItem.className = `answer-item ${isCorrect ? 'correct' : 'incorrect'}`;
+                answerItem.innerHTML = `
+                    <div class="answer-text">Question ${i}: ${userAnswer}</div>
+                    <span class="${isCorrect ? 'correct-answer' : 'incorrect-answer'}">
+                        (Correct: ${correctAnswers[i]})
+                    </span>
+                `;
+                answersList.appendChild(answerItem);
+            }
+
+            document.getElementById('userScore').textContent = score;
+            modal.style.display = 'flex';
+        }
+
+        // Close modal
+        document.getElementById('closeSubmission').addEventListener('click', function() {
+            document.getElementById('submissionModal').style.display = 'none';
+        });
+
+        // Draggable divider
+        const divider = document.getElementById('divider');
+        const passageContainer = document.getElementById('passage-container');
+        let isDragging = false;
+
+        divider.addEventListener('mousedown', function(e) {
+            isDragging = true;
+            document.addEventListener('mousemove', onMouseMove);
+            document.addEventListener('mouseup', onMouseUp);
+        });
+
+        function onMouseMove(e) {
+            if (!isDragging) return;
+            const newWidth = (e.clientX / window.innerWidth) * 100;
+            if (newWidth > 30 && newWidth < 70) {
+                passageContainer.style.width = `${newWidth}%`;
+            }
+        }
+
+        function onMouseUp() {
+            isDragging = false;
+            document.removeEventListener('mousemove', onMouseMove);
+            document.removeEventListener('mouseup', onMouseUp);
+        }
+    </script>
+</body>
+</html>

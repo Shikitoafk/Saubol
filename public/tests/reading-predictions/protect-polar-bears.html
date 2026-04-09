@@ -1,0 +1,336 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Reading Passage 1 — Why we need to protect polar bears</title>
+<style>
+  :root{--brand:#2563eb;--ink:#111827;--bg:#f7f7fb;--ok:#16a34a;--bad:#dc2626;--muted:#6b7280}
+  *{box-sizing:border-box}
+  body{margin:0;font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;background:var(--bg);color:#111}
+  .container{display:flex;gap:20px;max-width:1200px;margin:0 auto;padding:20px 20px 96px}
+  .card{background:#fff;border-radius:12px;box-shadow:0 4px 14px rgba(0,0,0,.08);padding:20px;overflow:auto;max-height:90vh}
+  .passage{flex:1}
+  .questions{flex:1}
+  h1{color:var(--ink);border-bottom:2px solid var(--brand);padding-bottom:10px;margin:0 0 14px}
+  h2{color:var(--brand);margin:22px 0 10px}
+  h3{margin:8px 0 0}
+  .muted{color:var(--muted)}
+
+  /* Timer */
+  .timerWrap{position:fixed;top:16px;right:16px;display:flex;align-items:center;gap:8px;z-index:10}
+  .timer{background:var(--brand);color:#fff;padding:10px 14px;border-radius:8px;font-weight:700}
+  .tbtn{border:1px solid #e5e7eb;background:#fff;color:#111;padding:8px 10px;border-radius:8px;cursor:pointer}
+
+  /* Questions */
+  .qsection{margin:14px 0 6px}
+  .qblock{padding:14px;border:1px solid #e5e7eb;border-radius:12px;margin:12px 0}
+  .qhead{font-weight:600;margin-bottom:8px}
+  .options{margin-top:8px}
+  .options label{display:block;margin:6px 0}
+  select,input[type="text"]{padding:8px;border-radius:8px;border:1px solid #e5e7eb;width:100%;max-width:520px}
+  .submit{background:var(--brand);color:#fff;border:0;padding:12px 18px;border-radius:8px;cursor:pointer;font-size:16px;margin-top:16px}
+  .submit:hover{filter:brightness(.95)}
+
+  /* Results */
+  .results{display:none;margin-top:18px;background:#f8f9fa;border-radius:10px;padding:16px}
+  .results ul{list-style:none;padding:0;margin:8px 0 0}
+  .results li{margin:6px 0;padding:8px;border-radius:8px}
+  .results li.ok{background:#ecfdf5;color:#065f46}
+  .results li.bad{background:#fef2f2;color:#991b1b}
+  .results .meta{font-size:13px;color:var(--muted)}
+
+  /* Footer chips */
+  .footerNav{position:fixed;left:0;right:0;bottom:0;background:#fff;border-top:1px solid #e5e7eb;padding:10px 12px;display:flex;flex-wrap:wrap;gap:8px;align-items:center;z-index:9}
+  .chip{border:1px solid #d1d5db;background:#fff;color:#111;padding:6px 10px;border-radius:999px;cursor:pointer;font-size:14px}
+  .chip.answered{border-color:#9ca3af;background:#f3f4f6}
+
+  .table-box{background:#f8f9fa;padding:20px;border-radius:8px;margin:15px 0;border-left:4px solid var(--brand)}
+</style>
+</head>
+<body>
+  <div class="timerWrap">
+    <div class="timer" id="timer">20:00</div>
+    <button class="tbtn" id="pauseBtn">⏸️ Pause</button>
+    <button class="tbtn" id="resumeBtn" disabled>▶️ Resume</button>
+  </div>
+
+  <div class="container">
+    <div class="card passage">
+      <h1>Reading Passage 1</h1>
+      <div class="muted">You should spend about 20 minutes on Questions 1–13, which are based on Reading Passage 1 below.</div>
+
+      <h2>Why we need to protect polar bears</h2>
+
+      <p>Polar bears are being increasingly threatened by the effects of climate change, but their disappearance could have far-reaching consequences. They are uniquely adapted to the extreme conditions of the Arctic Circle, where temperatures can reach −40°C. One reason for this is that they have up to 11 centimetres of fat underneath their skin. Humans with comparative levels of adipose tissue would be considered obese and would be likely to suffer from diabetes and heart disease. Yet the polar bear experiences no such consequences.</p>
+
+      <p>A 2014 study by Shi Ping Liu and colleagues sheds light on this mystery. They compared the genetic structure of polar bears with that of their closest relatives from a warmer climate, the brown bears. This allowed them to determine the genes that have allowed polar bears to survive in one of the toughest environments on Earth. Liu and his colleagues found the polar bears had a gene known as APoB, which reduces levels of low-density lipoproteins (LDLs) — a form of 'bad' cholesterol. In humans, mutations of this gene are associated with increased risk of heart disease. Polar bears may therefore be an important study model to understand heart disease in humans.</p>
+
+      <p>The genome of the polar bear may also provide the solution for another condition, one that particularly affects our older generation: osteoporosis. This is a disease where bones show reduced density, usually caused by insufficient exercise, reduced calcium intake or food starvation. Bone tissue is constantly being remodelled, meaning that bone is added or removed, depending on nutrient availability and the stress that the bone is under. Female polar bears, however, undergo extreme conditions during every pregnancy. Once autumn comes around, these females will dig maternity dens in the snow and will remain there throughout the winter, both before and after the birth of their cubs. This process results in about six months of fasting, where the female bears have to keep themselves and their cubs alive, depleting their own calcium and calorie reserves. Despite this, their bones remain strong and dense.</p>
+
+      <p>Physiologists Alanda Lennox and Allen Goodship found an explanation for this paradox in 2008. They discovered that pregnant bears were able to increase the density of their bones before they started to build their dens. In addition, six months later, when they finally emerged from the den with their cubs, there was no evidence of significant loss of bone density. Hibernating brown bears do not have this capacity and must therefore resort to major bone reformation in the following spring. If the mechanism of bone remodelling in polar bears can be understood, many bedridden humans, and even astronauts, could potentially benefit.</p>
+
+      <p>The medical benefits of the polar bear for humanity certainly have their importance in our conservation efforts, but these should not be the only factors taken into consideration. We tend to want to protect animals we think are intelligent and possess emotions, such as elephants and primates. Bears, on the other hand, seem to be perceived as stupid and in many cases violent. And yet anecdotal evidence from the field challenges those assumptions, suggesting for example that polar bears have good problem-solving abilities. A male bear called GoGo in Tennoji Zoo, Osaka, has even been observed making use of a tool to manipulate his environment. The bear used a tree branch on multiple occasions to dislodge a piece of meat hung out of his reach. Problem-solving ability has also been witnessed in wild polar bears, although not as obviously as with GoGo. A calculated move by a male bear involved running and jumping onto barrels in an attempt to get to a photographer standing on a platform four metres high.</p>
+
+      <p>In other studies, such as one by Alison Ames in 2008, polar bears showed deliberate and focussed manipulation. For example, Ames observed bears putting objects in piles and then knocking them over in what appeared to be a game. The study demonstrates that bears are capable of agile and thought-out behaviours. These examples suggest bears have greater creativity and problem-solving abilities than previously thought.</p>
+
+      <p>As for emotions, while the evidence is once again anecdotal, many bears have been seen to hit out at ice and snow — seemingly out of frustration — when they have just missed out on a kill. Moreover, polar bears can form unusual relationships with other species, including playing with the dogs used to pull sleds in the Arctic. Remarkably, one hand-raised polar bear called Agee has formed a close relationship with her owner Mark Dumas to the point where they even swim together. This is even more astonishing since polar bears are known to actively hunt humans in the wild.</p>
+
+      <p>If climate change were to lead to their extinction, this would mean not only the loss of potential breakthroughs in human medicine, but more importantly, the disappearance of an intelligent, majestic animal.</p>
+    </div>
+
+    <div class="card questions">
+      <h1>Questions</h1>
+      <div id="qroot"></div>
+      <button class="submit" id="submitBtn">Submit Answers</button>
+      <div class="results" id="results">
+        <h2>Your Results</h2>
+        <div id="score" class="meta"></div>
+        <ul id="answers"></ul>
+      </div>
+    </div>
+  </div>
+
+  <div class="footerNav" id="footerNav"></div>
+
+<script>
+const CONFIG = {
+  title: "READING PASSAGE 1 — Why we need to protect polar bears",
+  subtitle: "You should spend about 20 minutes on Questions 1–13.",
+  durationMinutes: 20,
+  showFooterNavigator: true,
+
+  sections: [
+    {
+      type: "truefalse",
+      heading: "Questions 1–7",
+      instructions: [
+        "Do the following statements agree with the information given in Reading Passage 1?",
+        "In boxes 1–7 on your answer sheet, write",
+        "TRUE if the statement agrees with the information",
+        "FALSE if the statement contradicts the information",
+        "NOT GIVEN if there is no information on this"
+      ],
+      items: [
+        { id: 1, text: "Polar bears suffer from various health problems due to the build-up of fat under their skin.", correct: "FALSE" },
+        { id: 2, text: "The study done by Liu and his colleagues compared different groups of polar bears.", correct: "FALSE" },
+        { id: 3, text: "Liu and colleagues were the first researchers to compare polar bears and brown bears genetically.", correct: "NOT GIVEN" },
+        { id: 4, text: "Polar bears are able to control their levels of 'bad' cholesterol by genetic means.", correct: "TRUE" },
+        { id: 5, text: "Female polar bears are able to survive for about six months without food.", correct: "TRUE" },
+        { id: 6, text: "It was found that the bones of female polar bears were very weak when they came out of their dens in spring.", correct: "FALSE" },
+        { id: 7, text: "The polar bear's mechanism for increasing bone density could also be used by people one day.", correct: "TRUE" }
+      ]
+    },
+    {
+      type: "table",
+      heading: "Questions 8–13",
+      instructions: [
+        "Complete the table below.",
+        "Choose ONE WORD ONLY from the passage for each answer.",
+        "Write your answers in boxes 8–13 on your answer sheet."
+      ],
+      tableTitle: "Reasons why polar bears should be protected",
+      tableContent: "People think of bears as unintelligent and 8____. However, this may not be correct. For example:\n\n• In Tennoji Zoo, a bear has been seen using a branch as a 9____. This allowed him to knock down some 10____.\n\n• A wild polar bear worked out a method of reaching a platform where a 11____ was located.\n\n• Polar bears have displayed behaviour such as conscious manipulation of objects and activity similar to a 12____.\n\nBears may also display emotions. For example:\n\n• They may make movements suggesting 13____ if disappointed when hunting.\n\n• They may form relationships with other species.",
+      items: [
+        { id: 8, correct: "violent" },
+        { id: 9, correct: "tool" },
+        { id: 10, correct: "meat" },
+        { id: 11, correct: "photographer" },
+        { id: 12, correct: "game" },
+        { id: 13, correct: "frustration" }
+      ]
+    }
+  ]
+};
+
+// Render functions
+const qroot = document.getElementById('qroot');
+const navIds = [];
+const answersMap = {};
+
+function sectionHeader(t){ 
+  const h=document.createElement('h2'); 
+  h.className='qsection'; 
+  h.textContent=t; 
+  return h; 
+}
+
+function renderTrueFalse(sec){
+  qroot.appendChild(sectionHeader(sec.heading));
+  (sec.instructions||[]).forEach(tx=>{ 
+    const p=document.createElement('p'); 
+    p.className='muted'; 
+    p.textContent=tx; 
+    qroot.appendChild(p); 
+  });
+  
+  sec.items.forEach(it=>{
+    const b=document.createElement('div'); 
+    b.className='qblock'; 
+    b.id=`anchor-${it.id}`;
+    const opts=['TRUE','FALSE','NOT GIVEN'].map(opt=>`<label><input type="radio" name="q${it.id}" value="${opt}"> ${opt}</label>`).join('');
+    b.innerHTML=`<div class="qhead"><strong>${it.id}.</strong> ${it.text}</div><div class="options">${opts}</div>`;
+    qroot.appendChild(b); 
+    navIds.push(it.id); 
+    answersMap[it.id]=it.correct||'';
+  });
+}
+
+function renderTable(sec){
+  qroot.appendChild(sectionHeader(sec.heading));
+  (sec.instructions||[]).forEach(tx=>{ 
+    const p=document.createElement('p'); 
+    p.className='muted'; 
+    p.textContent=tx; 
+    qroot.appendChild(p); 
+  });
+
+  const tableDiv = document.createElement('div');
+  tableDiv.className = 'table-box';
+  tableDiv.innerHTML = `
+    <div class="qhead"><strong>${sec.tableTitle}</strong></div>
+    <div style="white-space: pre-line; line-height: 1.6; margin-top: 15px;">
+      ${sec.tableContent}
+    </div>
+  `;
+  qroot.appendChild(tableDiv);
+  
+  sec.items.forEach(it=>{
+    navIds.push(it.id); 
+    answersMap[it.id]=it.correct||'';
+  });
+}
+
+// Build UI
+CONFIG.sections.forEach(sec=>{
+  if (sec.type==='truefalse') renderTrueFalse(sec);
+  if (sec.type==='table') renderTable(sec);
+});
+
+// Footer navigation
+const footerNav=document.getElementById('footerNav');
+if(CONFIG.showFooterNavigator){
+  footerNav.innerHTML='<strong class="muted">Questions:</strong>';
+  [...new Set(navIds)].sort((a,b)=>a-b).forEach(id=>{
+    const chip=document.createElement('button'); 
+    chip.className='chip'; 
+    chip.id=`chip-${id}`; 
+    chip.textContent=id;
+    chip.addEventListener('click',()=>{ 
+      const anchor = document.getElementById(`anchor-${id}`);
+      if(anchor) {
+        anchor.scrollIntoView({behavior:'smooth',block:'center'}); 
+      }
+    });
+    footerNav.appendChild(chip);
+  });
+}
+
+function markChipAnswered(id, answered){
+  const chip=document.getElementById(`chip-${id}`); 
+  if(chip) chip.classList.toggle('answered', !!answered);
+}
+
+document.addEventListener('change',(e)=>{
+  const m=String(e.target.name||e.target.id||'').match(/q(\d+)/);
+  const id=m?+m[1]:null; 
+  if(!id) return;
+  const answered=(e.target.type==='radio') ? (!!document.querySelector(`input[name='q${id}']:checked`))
+                 : (e.target.value.trim().length>0);
+  markChipAnswered(id, answered);
+});
+
+// Timer functionality
+let timeLeft=CONFIG.durationMinutes*60;
+const timer=document.getElementById('timer');
+const pauseBtn=document.getElementById('pauseBtn');
+const resumeBtn=document.getElementById('resumeBtn');
+let paused=false, iv;
+
+const fmt=s=>`${String(Math.floor(s/60)).padStart(2,'0')}:${String(s%60).padStart(2,'0')}`;
+
+function startTick(){ 
+  if(iv) clearInterval(iv);
+  iv=setInterval(()=>{ 
+    if(paused) return; 
+    timer.textContent=fmt(timeLeft); 
+    if(timeLeft<=0){ 
+      clearInterval(iv); 
+      alert("Time's up! Submitting."); 
+      submit(); 
+    } 
+    timeLeft--; 
+  },1000);
+}
+
+timer.textContent=fmt(timeLeft); 
+startTick();
+
+pauseBtn.addEventListener('click',()=>{ 
+  paused=true; 
+  pauseBtn.disabled=true; 
+  resumeBtn.disabled=false; 
+});
+
+resumeBtn.addEventListener('click',()=>{ 
+  paused=false; 
+  pauseBtn.disabled=false; 
+  resumeBtn.disabled=true; 
+});
+
+// Submit functionality
+document.getElementById('submitBtn').addEventListener('click', submit);
+
+function submit(){
+  paused=true; 
+  pauseBtn.disabled=true; 
+  resumeBtn.disabled=false;
+  
+  let total=0, graded=0, correctCount=0;
+  const itemsOut=[];
+  const ids=Object.keys(answersMap);
+
+  ids.forEach(key=>{
+    const ans=answersMap[key];
+    const label=key;
+    let user='';
+    
+    const picked=document.querySelector(`input[name="q${key}"]:checked`);
+    if(picked){ 
+      user=picked.value; 
+    } else if(document.getElementById('q'+key)){ 
+      user=document.getElementById('q'+key).value; 
+    }
+    
+    const shown=user||'No answer';
+
+    if(String(ans).trim()===''){
+      total++; 
+      itemsOut.push({label, status:'— not graded —', user:shown, correct:'(no key)'}); 
+      return; 
+    }
+
+    total++; 
+    graded++;
+    const ok = shown.trim().toLowerCase() === String(ans).trim().toLowerCase();
+    if(ok) correctCount++;
+    itemsOut.push({
+      label, 
+      status: ok? '✓ Correct' : '✗ Incorrect', 
+      user:shown, 
+      correct:String(ans)
+    });
+  });
+
+  document.getElementById('score').innerHTML = `Graded ${graded} of ${total} • Score: ${correctCount}/${graded}`;
+  document.getElementById('answers').innerHTML = itemsOut.map(it=>
+    `<li class="${/Correct/.test(it.status)?'ok':'bad'}">Q${it.label}: ${it.status} — Your: <b>${it.user}</b> | Correct: <b>${it.correct}</b></li>`
+  ).join('');
+  
+  const r=document.getElementById('results'); 
+  r.style.display='block'; 
+  r.scrollIntoView({behavior:'smooth'});
+}
+</script>
+</body>
+</html>

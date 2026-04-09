@@ -1,0 +1,401 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Reading Passage 3 — Plant 'thermometer' triggers springtime growth</title>
+<style>
+  :root{--brand:#2563eb;--ink:#111827;--bg:#f7f7fb;--ok:#16a34a;--bad:#dc2626;--muted:#6b7280}
+  *{box-sizing:border-box}
+  body{margin:0;font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;background:var(--bg);color:#111}
+  .container{display:flex;gap:20px;max-width:1200px;margin:0 auto;padding:20px 20px 96px}
+  .card{background:#fff;border-radius:12px;box-shadow:0 4px 14px rgba(0,0,0,.08);padding:20px;overflow:auto;max-height:90vh}
+  .passage{flex:1}
+  .questions{flex:1}
+  h1{color:var(--ink);border-bottom:2px solid var(--brand);padding-bottom:10px;margin:0 0 14px}
+  h2{color:var(--brand);margin:22px 0 10px}
+  h3{margin:8px 0 0}
+  .muted{color:var(--muted)}
+  .section{margin:20px 0;padding:15px;border-left:4px solid var(--brand);background:#f8f9fa}
+  .section-label{font-weight:bold;color:var(--brand);margin-bottom:10px}
+
+  /* Timer */
+  .timerWrap{position:fixed;top:16px;right:16px;display:flex;align-items:center;gap:8px;z-index:10}
+  .timer{background:var(--brand);color:#fff;padding:10px 14px;border-radius:8px;font-weight:700}
+  .tbtn{border:1px solid #e5e7eb;background:#fff;color:#111;padding:8px 10px;border-radius:8px;cursor:pointer}
+
+  /* Questions */
+  .qsection{margin:14px 0 6px}
+  .qblock{padding:14px;border:1px solid #e5e7eb;border-radius:12px;margin:12px 0}
+  .qhead{font-weight:600;margin-bottom:8px}
+  .options{margin-top:8px}
+  .options label{display:block;margin:6px 0}
+  select,input[type="text"]{padding:8px;border-radius:8px;border:1px solid #e5e7eb;width:100%;max-width:520px}
+  .submit{background:var(--brand);color:#fff;border:0;padding:12px 18px;border-radius:8px;cursor:pointer;font-size:16px;margin-top:16px}
+  .submit:hover{filter:brightness(.95)}
+
+  /* Results */
+  .results{display:none;margin-top:18px;background:#f8f9fa;border-radius:10px;padding:16px}
+  .results ul{list-style:none;padding:0;margin:8px 0 0}
+  .results li{margin:6px 0;padding:8px;border-radius:8px}
+  .results li.ok{background:#ecfdf5;color:#065f46}
+  .results li.bad{background:#fef2f2;color:#991b1b}
+  .results .meta{font-size:13px;color:var(--muted)}
+
+  /* Footer chips */
+  .footerNav{position:fixed;left:0;right:0;bottom:0;background:#fff;border-top:1px solid #e5e7eb;padding:10px 12px;display:flex;flex-wrap:wrap;gap:8px;align-items:center;z-index:9}
+  .chip{border:1px solid #d1d5db;background:#fff;color:#111;padding:6px 10px;border-radius:999px;cursor:pointer;font-size:14px}
+  .chip.answered{border-color:#9ca3af;background:#f3f4f6}
+</style>
+</head>
+<body>
+  <div class="timerWrap">
+    <div class="timer" id="timer">20:00</div>
+    <button class="tbtn" id="pauseBtn">⏸️ Pause</button>
+    <button class="tbtn" id="resumeBtn" disabled>▶️ Resume</button>
+  </div>
+
+  <div class="container">
+    <div class="card passage">
+      <h1>Reading Passage 3</h1>
+      <div class="muted">You should spend about 20 minutes on Questions 27–40, which are based on Reading Passage 3 below.</div>
+
+      <h2>Plant 'thermometer' triggers springtime growth by measuring night-time heat</h2>
+      <p><em>A photoreceptor molecule in plant cells has been found to have a second job as a thermometer after dark — allowing plants to read seasonal temperature changes. Scientists say the discovery could help breed crops that are more resilient to the temperatures expected to result from climate change</em></p>
+
+      <div class="section">
+        <div class="section-label">A</div>
+        <p>An international team of scientists led by the University of Cambridge has discovered that the 'thermometer' molecule in plants enables them to develop according to seasonal temperature changes. Researchers have revealed that molecules called phytochromes — used by plants to detect light during the day — actually change their function in darkness to become cellular temperature gauges that measure the heat of the night.</p>
+
+        <p>The new findings, published in the journal <em>Science</em>, show that phytochromes control genetic switches in response to temperature as well as light to dictate plant development.</p>
+      </div>
+
+      <div class="section">
+        <div class="section-label">B</div>
+        <p>At night, these molecules change states, and the pace at which they change is 'directly proportional to temperature', say scientists, who compare phytochromes to mercury in a thermometer. The warmer it is, the faster the molecular change — stimulating plant growth.</p>
+      </div>
+
+      <div class="section">
+        <div class="section-label">C</div>
+        <p>Farmers and gardeners have known for hundreds of years how responsive plants are to temperature: warm winters cause many trees and flowers to bud early, something humans have long used to predict weather and harvest times for the coming year. The latest research pinpoints for the first time a molecular mechanism in plants that reacts to temperature — often triggering the buds of spring we long to see at the end of winter.</p>
+      </div>
+
+      <div class="section">
+        <div class="section-label">D</div>
+        <p>With weather and temperatures set to become ever more unpredictable due to climate change, researchers say the discovery that this light-sensing molecule also functions as the internal thermometer in plant cells could help us breed tougher crops. 'It is estimated that agricultural yields will need to double by 2050, but climate change is a major threat to achieving this. Key crops such as wheat and rice are sensitive to high temperatures. Thermal stress reduces crop yields by around 10% for every one degree increase in temperature,' says lead researcher Dr Philip Wigge from Cambridge's Sainsbury Laboratory. 'Discovering the molecules that allow plants to sense temperature has the potential to accelerate the breeding of crops resilient to thermal stress and climate change.'</p>
+      </div>
+
+      <div class="section">
+        <div class="section-label">E</div>
+        <p>In their active state, phytochrome molecules bind themselves to DNA to restrict plant growth. During the day, sunlight activates the molecules, slowing down growth. If a plant finds itself in shade, phytochromes are quickly inactivated — enabling it to grow faster to find sunlight again. This is how plants compete to escape each other's shade. 'Light-driven changes to phytochrome activity occur very fast, in less than a second,' says Wigge.</p>
+
+        <p>At night, however, it's a different story. Instead of a rapid deactivation following sundown, the molecules gradually change from their active to inactive state. This is called 'dark reversion'. 'Just as mercury rises in a thermometer, the rate at which phytochromes revert to their inactive state during the night is a direct measure of temperature,' says Wigge.</p>
+      </div>
+
+      <div class="section">
+        <div class="section-label">F</div>
+        <p>'The lower the temperature, the slower the rate at which phytochromes revert to inactivity, so the molecules spend more time in their active, growth-suppressing state. This is why plants are slower to grow in winter. Warm temperatures accelerate dark reversion, so that phytochromes rapidly reach an inactive state and detach themselves from the plant's DNA — allowing genes to be expressed and plant growth to resume.' Wigge believes phytochrome thermo-sensing evolved at a later stage, and co-opted the biological network already used for light-based growth during the downtime of night.</p>
+      </div>
+
+      <div class="section">
+        <div class="section-label">G</div>
+        <p>Some plants mainly use day length as an indicator of the season. Other species, such as daffodils, have considerable temperature sensitivity, and can flower months in advance during a warm winter. In fact, the discovery of the dual role of phytochromes provides the science behind a well-known rhyme long used to predict the coming season: oak before ash we'll have a splash, ash before oak we're in for a soak.</p>
+
+        <p>Wigge explains: 'Oak trees rely much more on temperature, likely using phytochromes as thermometers to dictate development, whereas ash trees rely on measuring day length to determine their seasonal timing. A warmer spring, and consequently a higher likeliness of a hot summer, will result in oak leafing before ash. A cold spring will see the opposite. As the British know only too well, a colder summer is likely to be a rain-soaked one.'</p>
+      </div>
+
+      <div class="section">
+        <div class="section-label">H</div>
+        <p>The new findings are the culmination of twelve years of research involving scientists from Germany, Argentina and the US, as well as the Cambridge team. The work was done in a model system, using a mustard plant called Arabidopsis, but Wigge says the phytochrome genes necessary for temperature sensing are found in crop plants as well. 'Recent advances in plant genetics now mean that scientists are able to rapidly identify the genes controlling these processes in crop plants, and even alter their activity using precise molecular "scalpels",' adds Wigge. 'Cambridge is uniquely well-positioned to do this kind of research as we have outstanding collaborators nearby who work on more applied aspects of plant biology, and can help us transfer this new knowledge into the field.'</p>
+      </div>
+    </div>
+
+    <div class="card questions">
+      <h1>Questions</h1>
+      <div id="qroot"></div>
+      <button class="submit" id="submitBtn">Submit Answers</button>
+      <div class="results" id="results">
+        <h2>Your Results</h2>
+        <div id="score" class="meta"></div>
+        <ul id="answers"></ul>
+      </div>
+    </div>
+  </div>
+
+  <div class="footerNav" id="footerNav"></div>
+
+<script>
+const CONFIG = {
+  title: "READING PASSAGE 3 — Plant 'thermometer' triggers springtime growth by measuring night-time heat",
+  subtitle: "You should spend about 20 minutes on Questions 27–40.",
+  durationMinutes: 20,
+  showFooterNavigator: true,
+
+  sections: [
+    {
+      type: "truefalse",
+      heading: "Questions 27–32",
+      instructions: [
+        "Do the following statements agree with the information given in Reading Passage 3?",
+        "In boxes 27–32 on your answer sheet, write",
+        "TRUE if the statement agrees with the information",
+        "FALSE if the statement contradicts the information",
+        "NOT GIVEN if there is no information on this"
+      ],
+      items: [
+        { id: 27, text: "The Cambridge scientists' discovery of the 'thermometer molecule' caused surprise among other scientists.", correct: "NOT GIVEN" },
+        { id: 28, text: "The target for agricultural production by 2050 could be missed.", correct: "TRUE" },
+        { id: 29, text: "Wheat and rice suffer from a rise in temperatures.", correct: "TRUE" },
+        { id: 30, text: "It may be possible to develop crops that require less water.", correct: "NOT GIVEN" },
+        { id: 31, text: "Plants grow faster in sunlight than in shade.", correct: "FALSE" },
+        { id: 32, text: "Phytochromes change their state at the same speed day and night.", correct: "FALSE" }
+      ]
+    },
+    {
+      type: "matching",
+      heading: "Questions 33–37",
+      instructions: [
+        "Reading Passage 3 has eight sections, A–H.",
+        "Which section contains the following information?",
+        "Write the correct letter, A–H, in boxes 33–37 on your answer sheet."
+      ],
+      items: [
+        { id: 33, text: "mention of specialists who can make use of the research findings", correct: "H" },
+        { id: 34, text: "a reference to a potential benefit of the research findings", correct: "D" },
+        { id: 35, text: "scientific support for a traditional saying", correct: "G" },
+        { id: 36, text: "a reference to people traditionally making plans based on plant behaviour", correct: "C" },
+        { id: 37, text: "a reference to where the research has been reported", correct: "A" }
+      ]
+    },
+    {
+      type: "shortanswer",
+      heading: "Questions 38–40",
+      instructions: [
+        "Complete the sentences below.",
+        "Choose NO MORE THAN TWO WORDS from the passage for each answer.",
+        "Write your answers in boxes 38–40 on your answer sheet."
+      ],
+      items: [
+        { id: 38, text: "Daffodils are likely to flower early in response to ______ weather.", correct: "warm winter" },
+        { id: 39, text: "If ash trees come into leaf before oak trees, the weather in ______ will probably be wet.", correct: "summer" },
+        { id: 40, text: "The research was carried out using a particular species of ______.", correct: "Arabidopsis" }
+      ]
+    }
+  ]
+};
+
+// Render functions
+const qroot = document.getElementById('qroot');
+const navIds = [];
+const answersMap = {};
+
+function sectionHeader(t){ 
+  const h=document.createElement('h2'); 
+  h.className='qsection'; 
+  h.textContent=t; 
+  return h; 
+}
+
+function renderTrueFalse(sec){
+  qroot.appendChild(sectionHeader(sec.heading));
+  (sec.instructions||[]).forEach(tx=>{ 
+    const p=document.createElement('p'); 
+    p.className='muted'; 
+    p.textContent=tx; 
+    qroot.appendChild(p); 
+  });
+  
+  sec.items.forEach(it=>{
+    const b=document.createElement('div'); 
+    b.className='qblock'; 
+    b.id=`anchor-${it.id}`;
+    const opts=['TRUE','FALSE','NOT GIVEN'].map(opt=>`<label><input type="radio" name="q${it.id}" value="${opt}"> ${opt}</label>`).join('');
+    b.innerHTML=`<div class="qhead"><strong>${it.id}.</strong> ${it.text}</div><div class="options">${opts}</div>`;
+    qroot.appendChild(b); 
+    navIds.push(it.id); 
+    answersMap[it.id]=it.correct||'';
+  });
+}
+
+function renderMatching(sec){
+  qroot.appendChild(sectionHeader(sec.heading));
+  (sec.instructions||[]).forEach(tx=>{ 
+    const p=document.createElement('p'); 
+    p.className='muted'; 
+    p.textContent=tx; 
+    qroot.appendChild(p); 
+  });
+  
+  sec.items.forEach(it=>{
+    const b=document.createElement('div'); 
+    b.className='qblock'; 
+    b.id=`anchor-${it.id}`;
+    const opts=['A','B','C','D','E','F','G','H'].map(opt=>`<option value="${opt}">${opt}</option>`).join('');
+    b.innerHTML=`<div class="qhead"><strong>${it.id}.</strong> ${it.text}</div>
+      <div class="options">
+        <select id="q${it.id}" name="q${it.id}">
+          <option value="">Choose section...</option>
+          ${opts}
+        </select>
+      </div>`;
+    qroot.appendChild(b); 
+    navIds.push(it.id); 
+    answersMap[it.id]=it.correct||'';
+  });
+}
+
+function renderShortAnswer(sec){
+  qroot.appendChild(sectionHeader(sec.heading));
+  (sec.instructions||[]).forEach(tx=>{ 
+    const p=document.createElement('p'); 
+    p.className='muted'; 
+    p.textContent=tx; 
+    qroot.appendChild(p); 
+  });
+  
+  sec.items.forEach(it=>{
+    const b=document.createElement('div'); 
+    b.className='qblock'; 
+    b.id=`anchor-${it.id}`;
+    b.innerHTML=`<div class="qhead"><strong>${it.id}.</strong> ${it.text}</div>
+      <div class="options"><input type="text" id="q${it.id}" name="q${it.id}" placeholder="Enter your answer (max 2 words)"></div>`;
+    qroot.appendChild(b); 
+    navIds.push(it.id); 
+    answersMap[it.id]=it.correct||'';
+  });
+}
+
+// Build UI
+CONFIG.sections.forEach(sec=>{
+  if (sec.type==='truefalse') renderTrueFalse(sec);
+  if (sec.type==='matching') renderMatching(sec);
+  if (sec.type==='shortanswer') renderShortAnswer(sec);
+});
+
+// Footer navigation
+const footerNav=document.getElementById('footerNav');
+if(CONFIG.showFooterNavigator){
+  footerNav.innerHTML='<strong class="muted">Questions:</strong>';
+  [...new Set(navIds)].sort((a,b)=>a-b).forEach(id=>{
+    const chip=document.createElement('button'); 
+    chip.className='chip'; 
+    chip.id=`chip-${id}`; 
+    chip.textContent=id;
+    chip.addEventListener('click',()=>{ 
+      const anchor = document.getElementById(`anchor-${id}`);
+      if(anchor) {
+        anchor.scrollIntoView({behavior:'smooth',block:'center'}); 
+      }
+    });
+    footerNav.appendChild(chip);
+  });
+}
+
+function markChipAnswered(id, answered){
+  const chip=document.getElementById(`chip-${id}`); 
+  if(chip) chip.classList.toggle('answered', !!answered);
+}
+
+document.addEventListener('change',(e)=>{
+  const m=String(e.target.name||e.target.id||'').match(/q(\d+)/);
+  const id=m?+m[1]:null; 
+  if(!id) return;
+  const answered=(e.target.type==='radio') ? (!!document.querySelector(`input[name='q${id}']:checked`))
+                 : (e.target.value.trim().length>0);
+  markChipAnswered(id, answered);
+});
+
+// Timer functionality
+let timeLeft=CONFIG.durationMinutes*60;
+const timer=document.getElementById('timer');
+const pauseBtn=document.getElementById('pauseBtn');
+const resumeBtn=document.getElementById('resumeBtn');
+let paused=false, iv;
+
+const fmt=s=>`${String(Math.floor(s/60)).padStart(2,'0')}:${String(s%60).padStart(2,'0')}`;
+
+function startTick(){ 
+  if(iv) clearInterval(iv);
+  iv=setInterval(()=>{ 
+    if(paused) return; 
+    timer.textContent=fmt(timeLeft); 
+    if(timeLeft<=0){ 
+      clearInterval(iv); 
+      alert("Time's up! Submitting."); 
+      submit(); 
+    } 
+    timeLeft--; 
+  },1000);
+}
+
+timer.textContent=fmt(timeLeft); 
+startTick();
+
+pauseBtn.addEventListener('click',()=>{ 
+  paused=true; 
+  pauseBtn.disabled=true; 
+  resumeBtn.disabled=false; 
+});
+
+resumeBtn.addEventListener('click',()=>{ 
+  paused=false; 
+  pauseBtn.disabled=false; 
+  resumeBtn.disabled=true; 
+});
+
+// Submit functionality
+document.getElementById('submitBtn').addEventListener('click', submit);
+
+function submit(){
+  paused=true; 
+  pauseBtn.disabled=true; 
+  resumeBtn.disabled=false;
+  
+  let total=0, graded=0, correctCount=0;
+  const itemsOut=[];
+  const ids=Object.keys(answersMap);
+
+  ids.forEach(key=>{
+    const ans=answersMap[key];
+    const label=key;
+    let user='';
+    
+    const picked=document.querySelector(`input[name="q${key}"]:checked`);
+    if(picked){ 
+      user=picked.value; 
+    } else if(document.getElementById('q'+key)){ 
+      user=document.getElementById('q'+key).value; 
+    }
+    
+    const shown=user||'No answer';
+
+    if(String(ans).trim()===''){
+      total++; 
+      itemsOut.push({label, status:'— not graded —', user:shown, correct:'(no key)'}); 
+      return; 
+    }
+
+    total++; 
+    graded++;
+    const ok = shown.trim().toLowerCase() === String(ans).trim().toLowerCase();
+    if(ok) correctCount++;
+    itemsOut.push({
+      label, 
+      status: ok? '✓ Correct' : '✗ Incorrect', 
+      user:shown, 
+      correct:String(ans)
+    });
+  });
+
+  document.getElementById('score').innerHTML = `Graded ${graded} of ${total} • Score: ${correctCount}/${graded}`;
+  document.getElementById('answers').innerHTML = itemsOut.map(it=>
+    `<li class="${/Correct/.test(it.status)?'ok':'bad'}">Q${it.label}: ${it.status} — Your: <b>${it.user}</b> | Correct: <b>${it.correct}</b></li>`
+  ).join('');
+  
+  const r=document.getElementById('results'); 
+  r.style.display='block'; 
+  r.scrollIntoView({behavior:'smooth'});
+}
+</script>
+</body>
+</html>

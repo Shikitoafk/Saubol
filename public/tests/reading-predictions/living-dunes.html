@@ -1,0 +1,1935 @@
+<!DOCTYPE html>
+
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>IELTS Reading Test - Living Dunes</title>
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+
+    <style>
+        /* Main styles */
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: Arial, sans-serif;
+            overflow: hidden;
+            background-color: #e6f3fa; /* Pale blue background */
+        }
+
+        .test-wrapper {
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+        }
+
+        .test-container {
+            display: flex;
+            flex: 1;
+            overflow: hidden;
+        }
+
+        /* Header styles */
+        .header {
+            background-color: #fff;
+            border-bottom: 1px solid #ccc;
+            padding: 10px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .header__logo img {
+            height: 40px;
+        }
+
+        .header__timer {
+            font-size: 1.2rem;
+            font-weight: bold;
+            color: #333;
+            background-color: #d0e7f5; /* Slightly darker pale blue for timer */
+            padding: 5px 15px;
+            border-radius: 20px;
+            border: 1px solid #ccc;
+            transition: all 0.3s ease;
+        }
+
+        .header__icons {
+            display: flex;
+            gap: 15px;
+        }
+
+        .header__icon {
+            font-size: 1.2rem;
+            color: #555;
+            cursor: pointer;
+            transition: color 0.2s ease;
+        }
+
+        .header__icon:hover {
+            color: #0066cc;
+        }
+
+        /* Settings Modal */
+        .settings-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: rgba(0,0,0,0.7);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .settings-content {
+            background-color: white;
+            width: 90%;
+            max-width: 500px;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+        }
+
+        .settings-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 20px;
+            border-bottom: 1px solid #ccc;
+            background-color: #e6f3fa;
+        }
+
+        .settings-header h2 {
+            margin: 0;
+            font-size: 1.2rem;
+        }
+
+        .settings-close {
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: #555;
+        }
+
+        .settings-close:hover {
+            color: #0066cc;
+        }
+
+        .settings-body {
+            padding: 20px;
+        }
+
+        .settings-option {
+            display: flex;
+            align-items: center;
+            padding: 10px 0;
+            border-bottom: 1px solid #eee;
+            cursor: pointer;
+            transition: background-color 0.2s ease;
+        }
+
+        .settings-option:hover {
+            background-color: #f5f5f5;
+        }
+
+        .settings-option:last-child {
+            border-bottom: none;
+        }
+
+        .settings-option i {
+            margin-right: 15px;
+            width: 20px;
+            text-align: center;
+            color: #0066cc;
+        }
+
+        .settings-option span {
+            flex: 1;
+        }
+
+        .sectionRubric {
+            margin: 1em;
+            width: calc(100% - 4em - 3px);
+            border-radius: 4px;
+            padding: 0.75em 1em;
+            background: white;
+            border: 1px solid #ccc;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .sectionRubric h2, .sectionRubric p {
+            margin: 0;
+        }
+
+        .sectionRubric h2 {
+            font-size: 1rem;
+            margin-bottom: 0.25em;
+        }
+
+        /* Passage container */
+        .passage-container {
+            width: 45%;
+            height: 100%;
+            overflow-y: auto;
+            padding: 20px;
+            box-sizing: border-box;
+            background-color: #e6f3fa; /* Pale blue */
+            position: relative;
+            -webkit-user-select: text;
+            user-select: text;
+        }
+
+        /* Questions container */
+        .questions-container {
+            flex: 1;
+            overflow-y: auto;
+            padding: 20px;
+            box-sizing: border-box;
+            background-color: #e6f3fa; /* Pale blue */
+            -webkit-user-select: text;
+            user-select: text;
+        }
+
+        /* Highlight styles */
+        .highlight {
+            position: relative;
+            border-radius: 2px;
+            padding: 0 2px;
+            margin: 0 -2px;
+        }
+
+        .highlight.yellow {
+            background-color: rgba(255, 255, 0, 0.3);
+        }
+
+        .highlight.green {
+            background-color: rgba(0, 255, 0, 0.3);
+        }
+
+        .highlight.pink {
+            background-color: rgba(255, 105, 180, 0.3);
+        }
+
+        .highlight.blue {
+            background-color: rgba(0, 191, 255, 0.3);
+        }
+
+        .highlight-toolbar {
+            position: fixed;
+            background: white;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+            display: none;
+            z-index: 1000;
+            padding: 5px;
+            transform: translate(-50%, -100%);
+            margin-top: -5px;
+        }
+
+        .highlight-toolbar button {
+            background: none;
+            border: none;
+            width: 24px;
+            height: 24px;
+            cursor: pointer;
+            margin: 0 2px;
+            border-radius: 3px;
+            transition: background-color 0.2s ease;
+        }
+
+        .highlight-toolbar button:hover {
+            background: #f0f0f0;
+        }
+
+        .highlight-toolbar button.remove {
+            color: #ff0000;
+        }
+
+        /* Divider styling */
+        .divider {
+            width: 10px;
+            background: #ccc;
+            cursor: col-resize;
+            position: relative;
+        }
+
+        .divider-handle {
+            width: 4px;
+            height: 40px;
+            background: #888;
+            border-radius: 2px;
+            position: absolute;
+            top: 50%;
+            left: 3px;
+            transform: translateY(-50%);
+        }
+
+        /* Question styling */
+        .question {
+            margin-bottom: 30px;
+            background: white;
+            padding: 15px;
+            border-radius: 4px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .question-rubric {
+            margin-bottom: 15px;
+            font-weight: bold;
+        }
+
+        .question-options {
+            list-style-type: none;
+            padding: 0;
+        }
+
+        .question-options li {
+            margin: 10px 0;
+            display: flex;
+            align-items: center;
+        }
+
+        /* Matching questions */
+        .matching-option {
+            display: flex;
+            align-items: center;
+            margin: 5px 0;
+        }
+
+        .matching-option select {
+            min-width: 60px;
+            padding: 6px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            margin-left: 10px;
+            font-size: 14px;
+        }
+
+        /* Summary completion styles */
+        .summary-completion-container {
+            margin-top: 20px;
+        }
+
+        .summary-text p {
+            line-height: 2.5;
+            font-size: 16px;
+        }
+
+        .summary-input {
+            width: 150px;
+            padding: 6px;
+            border: 2px dashed #888;
+            border-radius: 4px;
+            margin: 0 5px;
+            font-size: 15px;
+            font-weight: bold;
+            background-color: #d0e7f5;
+        }
+
+        .summary-input.correct {
+            border-color: #28a745;
+            background-color: #e9f7ef;
+            border-style: solid;
+        }
+
+        .summary-input.incorrect {
+            border-color: #dc3545;
+            background-color: #f8d7da;
+            border-style: solid;
+        }
+
+        .summary-feedback {
+            display: inline-block;
+            margin-left: 10px;
+            font-size: 14px;
+        }
+
+        .summary-feedback.correct {
+            color: #28a745;
+        }
+
+        .summary-feedback.incorrect {
+            color: #dc3545;
+        }
+
+        /* Footer styles */
+        .footer {
+            background: #f5f5f5;
+            border-top: 1px solid #ccc;
+            padding: 10px;
+        }
+
+        .nav-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .footer__questionWrapper {
+            display: flex;
+            align-items: center;
+        }
+
+        .footer__questionNo {
+            background: none;
+            border: none;
+            padding: 5px 10px;
+            cursor: pointer;
+            font-weight: bold;
+            font-size: 14px;
+        }
+
+        .footer__subquestionWrapper {
+            display: flex;
+            flex-wrap: wrap;
+            margin-left: 10px;
+        }
+
+        .subQuestion {
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            border: 1px solid #ccc;
+            background: #f0f0f0;
+            margin: 2px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #555;
+            font-size: 14px;
+            transition: all 0.2s ease;
+        }
+
+        .subQuestion:hover {
+            background: #d0e7f5;
+        }
+
+        .subQuestion.active {
+            background: #0066cc;
+            color: white;
+            border-color: #0066cc;
+        }
+
+        .subQuestion.attempted {
+            background: #0066cc;
+            color: white;
+        }
+
+        .footer__deliverButton {
+            background: #0066cc;
+            color: white;
+            border: none;
+            padding: 8px 15px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: bold;
+            font-size: 14px;
+            transition: background-color 0.2s ease;
+        }
+
+        .footer__deliverButton:hover {
+            background: #0055aa;
+        }
+
+        .footer__deliverButton:disabled {
+            background: #cccccc;
+            cursor: not-allowed;
+        }
+
+        .sr-only {
+            position: absolute;
+            width: 1px;
+            height: 1px;
+            padding: 0;
+            margin: -1px;
+            overflow: hidden;
+            clip: rect(0, 0, 0, 0);
+            white-space: nowrap;
+            border-width: 0;
+        }
+
+        /* Highlight color buttons */
+        .highlight-color {
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            display: inline-block;
+            margin: 0 2px;
+            cursor: pointer;
+            border: 1px solid #ccc;
+        }
+
+        .highlight-color.yellow { background-color: #ffff00; }
+        .highlight-color.green { background-color: #00ff00; }
+        .highlight-color.pink { background-color: #ff69b4; }
+        .highlight-color.blue { background-color: #00bfff; }
+
+        /* Submission modal styles */
+        .submission-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: rgba(0,0,0,0.8);
+            z-index: 2000;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .submission-content {
+            background-color: white;
+            width: 80%;
+            max-width: 800px;
+            border-radius: 10px;
+            padding: 30px;
+            box-shadow: 0 5px 30px rgba(0,0,0,0.5);
+            max-height: 80vh;
+            overflow-y: auto;
+        }
+
+        .submission-content h2 {
+            margin-top: 0;
+            color: #0066cc;
+            border-bottom: 2px solid #0066cc;
+            padding-bottom: 10px;
+        }
+
+        .submission-content p {
+            margin-bottom: 20px;
+            color: #333;
+        }
+
+        .answers-section {
+            margin-top: 20px;
+        }
+
+        .answers-section h3 {
+            color: #0066cc;
+            margin-bottom: 15px;
+        }
+
+        .answer-item {
+            padding: 10px;
+            margin-bottom: 8px;
+            border-radius: 4px;
+            border-left: 4px solid #ccc;
+            background-color: #f9f9f9;
+        }
+
+        .answer-item.correct {
+            border-left-color: #4CAF50;
+            background-color: #f0fff0;
+        }
+
+        .answer-item.incorrect {
+            border-left-color: #f44336;
+            background-color: #fff0f0;
+        }
+
+        .answer-text {
+            font-weight: bold;
+        }
+
+        .correct-answer {
+            color: #4CAF50;
+            margin-left: 10px;
+        }
+
+        .incorrect-answer {
+            color: #f44336;
+            margin-left: 10px;
+        }
+
+        .answer-status {
+            float: right;
+            margin-left: 15px;
+        }
+
+        .correct-status {
+            color: #4CAF50;
+        }
+
+        .incorrect-status {
+            color: #f44336;
+        }
+
+        .submission-buttons {
+            margin-top: 25px;
+            text-align: right;
+            clear: both;
+        }
+
+        .submission-buttons button {
+            padding: 8px 15px;
+            margin-left: 10px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+
+        .submission-buttons .confirm {
+            background: #0066cc;
+            color: white;
+            border: none;
+        }
+
+        .submission-buttons .confirm:hover {
+            background: #0055aa;
+        }
+
+        /* Disabled state */
+        input:disabled, select:disabled {
+            background-color: #f5f5f5;
+            cursor: not-allowed;
+        }
+
+        /* Score display styles */
+        .score-display {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .score-number {
+            font-size: 3rem;
+            font-weight: bold;
+            color: #0066cc;
+            margin: 10px 0;
+        }
+
+        .score-total {
+            font-size: 1.5rem;
+            color: #555;
+        }
+
+        .performance-rating {
+            font-size: 1.5rem;
+            font-weight: bold;
+            margin: 15px 0;
+            padding: 10px;
+            border-radius: 5px;
+        }
+
+        .excellent {
+            color: #2E7D32;
+            background-color: #E8F5E9;
+        }
+
+        .very-good {
+            color: #388E3C;
+            background-color: #E8F5E9;
+        }
+
+        .good {
+            color: #689F38;
+            background-color: #F1F8E9;
+        }
+
+        .fair {
+            color: #F57C00;
+            background-color: #FFF3E0;
+        }
+
+        .poor {
+            color: #D32F2F;
+            background-color: #FFEBEE;
+        }
+
+        /* IELTS Band Score */
+        .band-score {
+            font-size: 2rem;
+            font-weight: bold;
+            color: #0066cc;
+            margin: 10px 0;
+        }
+
+        /* Correct answer highlight */
+        .correct-highlight {
+            background-color: rgba(76, 175, 80, 0.3);
+            padding: 2px;
+            border-radius: 2px;
+        }
+
+        /* Incorrect answer highlight */
+        .incorrect-highlight {
+            background-color: rgba(244, 67, 54, 0.3);
+            padding: 2px;
+            border-radius: 2px;
+        }
+
+        /* Answer comparison section */
+        .answer-comparison {
+            margin-top: 20px;
+            padding: 15px;
+            background-color: #f5f5f5;
+            border-radius: 5px;
+            display: none;
+        }
+
+        .answer-comparison h3 {
+            margin-top: 0;
+            color: #0066cc;
+        }
+
+        /* Time spent indicator */
+        .time-spent {
+            font-size: 1rem;
+            color: #555;
+            margin-bottom: 15px;
+            text-align: center;
+        }
+
+        /* Dropdown answer display */
+        .dropdown-answer {
+            display: inline-block;
+            margin-left: 10px;
+            font-weight: normal;
+        }
+
+        .dropdown-answer.correct {
+            color: #4CAF50;
+        }
+
+        .dropdown-answer.incorrect {
+            color: #f44336;
+        }
+
+    </style>
+
+</head>
+
+<body>
+
+    <div class="test-wrapper">
+
+        <!-- Header with Timer -->
+
+        <header class="header">
+
+            <div class="header__logo">
+                <!-- Brand removed as requested -->
+            </div>
+
+            <div class="header__timer" id="testTimer">00:00</div>
+
+            <div class="header__icons">
+
+                <i class="fas fa-wifi header__icon"></i>
+
+                <i class="fas fa-bell header__icon"></i>
+
+                <i class="fas fa-cog header__icon" id="settingsButton"></i>
+
+            </div>
+
+        </header>
+
+        <!-- Settings Modal -->
+
+        <div class="settings-modal" id="settingsModal">
+
+            <div class="settings-content">
+
+                <div class="settings-header">
+
+                    <h2>Options</h2>
+
+                    <button class="settings-close" id="settingsClose">&times;</button>
+
+                </div>
+
+                <div class="settings-body">
+
+                    <div class="settings-option">
+
+                        <i class="fas fa-paper-plane"></i>
+
+                        <span>Go to submission page</span>
+
+                    </div>
+
+                    <div class="settings-option" id="contrastOption">
+
+                        <i class="fas fa-adjust"></i>
+
+                        <span>Contrast</span>
+
+                    </div>
+
+                    <div class="settings-option" id="textSizeOption">
+
+                        <i class="fas fa-search-plus"></i>
+
+                        <span>Text size</span>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+        <!-- Section Rubric -->
+
+        <div class="sectionRubric" id="sectionRubric">
+
+            <h2>Part 3</h2>
+
+            <p>Read the text and answer questions 27-40.</p>
+
+        </div>
+
+        <div class="test-container">
+
+            <!-- Passage Section -->
+
+            <div class="passage-container" id="passage-container">
+
+                <div class="highlight-toolbar" id="highlightToolbar">
+
+                    <button class="highlight-color yellow" data-color="yellow" title="Yellow highlight"></button>
+
+                    <button class="highlight-color green" data-color="green" title="Green highlight"></button>
+
+                    <button class="highlight-color pink" data-color="pink" title="Pink highlight"></button>
+
+                    <button class="highlight-color blue" data-color="blue" title="Blue highlight"></button>
+
+                    <button class="remove" title="Remove highlight"><i class="fas fa-times"></i></button>
+
+                </div>
+
+                <div id="passageContent">
+
+                    <h2 style="text-align: center;">Living Dunes</h2>
+
+                    <p>Things don't come much stranger than heaps of sand that can move and sing of their own accord. Sally Palmer investigates.</p>
+
+                    <p><strong>A</strong> Armies of giant sand dunes are advancing across the world's deserts, engulfing anything that crosses their path. They are tens of metres tall and hundreds of metres long. Fortunately, they aren't going very fast. Even the smallest, speediest dunes only travel about 100 metres over the course of a year, while the bigger ones, which weigh something in the order of 10,000 tonnes, barely move one metre in that time. However, their insidious creep can have serious consequences if there is an oil installation or a railway line in their path.</p>
+
+                    <p><strong>B</strong> About 47% of the world's land mass, including Antarctica, most of Australia and large areas of Africa, is classified as arid or semi-arid desert. Only around 20% of that is sand-covered, however, and over half of that is classified as 'linear' sand dunes. These form in a long curving wave, as a result of wind blowing strongly from several quarters, flipping them from side to side. Although linear dunes are static, sand blowing off them can cause problems for desert villages, burying crops and buildings.</p>
+
+                    <p><strong>C</strong> Moving dunes make up just a small percentage of the rest, but they are of the most interest to scientists. They are known as 'barchans': heavy, crescent-shaped sand piles with a ridged crest and two elongated arms, one curving away to either side. Barchan dunes only tend to form where you have one-directional winds on the edge of sandy deserts near coastal areas,' says Giles Wiggs, a geomorphologist at Oxford University, who has been studying the formation and movement of sand dunes for more than a decade.</p>
+
+                    <p><strong>D</strong> But even with strong winds, how can entire barchans move while retaining their form? That question was first answered in the mid-20th century by British explorer Ralph Alger Bagnold, and his answer hinges on the fact that dunes aren't solid but granular. Bagnold figured out how barchan dunes are able to move forward by grain. Imagine a single grain of sand being blown up the back of a dune by the wind and deposited on the top. More grains follow the same pattern, until the accumulated weight of piled-up sand finally pushes the top down the dune face. The grain tumbles, then stops on the face until subsequent mini-avalanches bury it. Eventually, it reappears at the back of the dune, ready to repeat the process. As this happens to every grain of sand in the dune, the whole thing creeps in the direction of the prevailing wind.</p>
+
+                    <p><strong>E</strong> The relationship between the wind and barchan dunes is complex. As a dune grows, it modifies the speed and course of the wind, which in turn alters how that dune and its neighbours evolve. 'Interestingly the dune can regulate its own shape, and maintain it as it moves,' says Dr Stéphane Douady, a physicist at Ecole Normale Supérieure (ENS) in France. 'Even when two dunes collide, they quickly take on their distinctive shapes again. It's like a living organism.'</p>
+
+                    <p><strong>F</strong> Douady and his colleagues have also been studying an even older phenomenon: dunes; some barchans actually sing. Local legends attributed the sounds to dangerous spirits which were trying to trap unwary travellers. Douady is more pragmatic. 'It's a strong booming noise with a low frequency,' he explains, making a noise like a foghorn to demonstrate. 'It can last for a long time - up to several minutes. It's a very loud sound and you don't understand where it's coming from when you first hear it.' There are about 50 dunes distributed across 35 deserts round the world that are known to sing. Douady says the sound is caused by the way sand avalanches down the faces of particular dunes. Rather than tumbling randomly, the sand grains flow in synchrony and set each other vibrating like the membrane on a gigantic loudspeaker. The synchronisation causes the air to move in and out between the grains, creating a powerful sound wave.</p>
+
+                    <p><strong>G</strong> What really surprised the scientists, however, was that they were able to take samples of the singing sand back to France and replicate the sound at ENS, proving that it's the sand, not the dune shape, that causes the sound. Their studies show the grains are a uniform shape, well-rounded from years of striking each other, and that the variations in size affect the tone. Crucially, the grains are coated with a special veneer, which Douady calls 'desert glaze', made from a precise combination of minerals from surrounding rocks including iron, aluminium, manganese, silicon and calcium. The team found that after a month or so, the veneer wore off and the grains lost their 'voice'. 'We managed to reproduce the desert glaze and then the grains started to sing again,' says Douady. 'We tried putting the coating onto different grains, but they weren't round enough and it didn't work. But some American colleagues made some artificial grains and managed to make them sing, after covering them in desert glaze.' Douady has now made recordings of dunesong from all over the world which is to be made into a CD.</p>
+
+                </div>
+
+            </div>
+
+            <!-- Draggable Divider -->
+
+            <div class="divider" id="divider">
+
+                <div class="divider-handle"></div>
+
+            </div>
+
+            <!-- Questions Section -->
+
+            <div class="questions-container" id="questions-container">
+
+                <!-- Questions 27-33 - Matching Headings -->
+
+                <div class="question">
+
+                    <div class="question-rubric">
+
+                        <h3>Questions 27-33</h3>
+
+                        <p>Reading Passage 3 has seven paragraphs, <strong>A-G</strong>.</p>
+
+                        <p>Choose the correct heading for each paragraph from the list of headings below.</p>
+
+                        <p>Write the correct number, <strong>i-ix</strong>, in boxes <strong>27-33</strong> on your answer sheet.</p>
+
+                    </div>
+
+                    <div class="question-content">
+
+                        <h3>List of Headings</h3>
+
+                        <p><strong>i</strong> Moving rapidly across the desert</p>
+
+                        <p><strong>ii</strong> Recreating the process in a laboratory</p>
+
+                        <p><strong>iii</strong> Strange music created by human movement</p>
+
+                        <p><strong>iv</strong> A potential threat to industry and communications</p>
+
+                        <p><strong>v</strong> Dunes coming together and re-forming</p>
+
+                        <p><strong>vi</strong> A continuous cycle</p>
+
+                        <p><strong>vii</strong> The commonest type of dune</p>
+
+                        <p><strong>viii</strong> Old superstitions demystified</p>
+
+                        <p><strong>ix</strong> The shape of the dunes</p>
+
+                        <div class="question-item">
+
+                            <p><span class="question-number">27</span> Paragraph A</p>
+
+                            <div class="matching-option">
+
+                                <select name="q27" id="q27">
+
+                                    <option value="">--</option>
+
+                                    <option value="i">i</option>
+
+                                    <option value="ii">ii</option>
+
+                                    <option value="iii">iii</option>
+
+                                    <option value="iv">iv</option>
+
+                                    <option value="v">v</option>
+
+                                    <option value="vi">vi</option>
+
+                                    <option value="vii">vii</option>
+
+                                    <option value="viii">viii</option>
+
+                                    <option value="ix">ix</option>
+
+                                </select>
+
+                            </div>
+
+                        </div>
+
+                        <div class="question-item">
+
+                            <p><span class="question-number">28</span> Paragraph B</p>
+
+                            <div class="matching-option">
+
+                                <select name="q28" id="q28">
+
+                                    <option value="">--</option>
+
+                                    <option value="i">i</option>
+
+                                    <option value="ii">ii</option>
+
+                                    <option value="iii">iii</option>
+
+                                    <option value="iv">iv</option>
+
+                                    <option value="v">v</option>
+
+                                    <option value="vi">vi</option>
+
+                                    <option value="vii">vii</option>
+
+                                    <option value="viii">viii</option>
+
+                                    <option value="ix">ix</option>
+
+                                </select>
+
+                            </div>
+
+                        </div>
+
+                        <div class="question-item">
+
+                            <p><span class="question-number">29</span> Paragraph C</p>
+
+                            <div class="matching-option">
+
+                                <select name="q29" id="q29">
+
+                                    <option value="">--</option>
+
+                                    <option value="i">i</option>
+
+                                    <option value="ii">ii</option>
+
+                                    <option value="iii">iii</option>
+
+                                    <option value="iv">iv</option>
+
+                                    <option value="v">v</option>
+
+                                    <option value="vi">vi</option>
+
+                                    <option value="vii">vii</option>
+
+                                    <option value="viii">viii</option>
+
+                                    <option value="ix">ix</option>
+
+                                </select>
+
+                            </div>
+
+                        </div>
+
+                        <div class="question-item">
+
+                            <p><span class="question-number">30</span> Paragraph D</p>
+
+                            <div class="matching-option">
+
+                                <select name="q30" id="q30">
+
+                                    <option value="">--</option>
+
+                                    <option value="i">i</option>
+
+                                    <option value="ii">ii</option>
+
+                                    <option value="iii">iii</option>
+
+                                    <option value="iv">iv</option>
+
+                                    <option value="v">v</option>
+
+                                    <option value="vi">vi</option>
+
+                                    <option value="vii">vii</option>
+
+                                    <option value="viii">viii</option>
+
+                                    <option value="ix">ix</option>
+
+                                </select>
+
+                            </div>
+
+                        </div>
+
+                        <div class="question-item">
+
+                            <p><span class="question-number">31</span> Paragraph E</p>
+
+                            <div class="matching-option">
+
+                                <select name="q31" id="q31">
+
+                                    <option value="">--</option>
+
+                                    <option value="i">i</option>
+
+                                    <option value="ii">ii</option>
+
+                                    <option value="iii">iii</option>
+
+                                    <option value="iv">iv</option>
+
+                                    <option value="v">v</option>
+
+                                    <option value="vi">vi</option>
+
+                                    <option value="vii">vii</option>
+
+                                    <option value="viii">viii</option>
+
+                                    <option value="ix">ix</option>
+
+                                </select>
+
+                            </div>
+
+                        </div>
+
+                        <div class="question-item">
+
+                            <p><span class="question-number">32</span> Paragraph F</p>
+
+                            <div class="matching-option">
+
+                                <select name="q32" id="q32">
+
+                                    <option value="">--</option>
+
+                                    <option value="i">i</option>
+
+                                    <option value="ii">ii</option>
+
+                                    <option value="iii">iii</option>
+
+                                    <option value="iv">iv</option>
+
+                                    <option value="v">v</option>
+
+                                    <option value="vi">vi</option>
+
+                                    <option value="vii">vii</option>
+
+                                    <option value="viii">viii</option>
+
+                                    <option value="ix">ix</option>
+
+                                </select>
+
+                            </div>
+
+                        </div>
+
+                        <div class="question-item">
+
+                            <p><span class="question-number">33</span> Paragraph G</p>
+
+                            <div class="matching-option">
+
+                                <select name="q33" id="q33">
+
+                                    <option value="">--</option>
+
+                                    <option value="i">i</option>
+
+                                    <option value="ii">ii</option>
+
+                                    <option value="iii">iii</option>
+
+                                    <option value="iv">iv</option>
+
+                                    <option value="v">v</option>
+
+                                    <option value="vi">vi</option>
+
+                                    <option value="vii">vii</option>
+
+                                    <option value="viii">viii</option>
+
+                                    <option value="ix">ix</option>
+
+                                </select>
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+                <!-- Questions 34-36 - Multiple Choice -->
+
+                <div class="question">
+
+                    <div class="question-rubric">
+
+                        <h3>Questions 34-36</h3>
+
+                        <p>Choose the correct letter, <strong>A, B, C</strong> or <strong>D</strong>.</p>
+
+                        <p>Write the correct letter in boxes <strong>34-36</strong> on your answer sheet.</p>
+
+                    </div>
+
+                    <div class="question-content">
+
+                        <div class="question-item">
+
+                            <p><span class="question-number">34</span> What are we told about linear dunes?</p>
+
+                            <div class="matching-option">
+
+                                <select name="q34" id="q34">
+
+                                    <option value="">--</option>
+
+                                    <option value="A">A</option>
+
+                                    <option value="B">B</option>
+
+                                    <option value="C">C</option>
+
+                                    <option value="D">D</option>
+
+                                </select>
+
+                            </div>
+
+                            <p>A They are formed by strong winds blowing from one direction.</p>
+
+                            <p>B They can move up to 100 metres in a twelve-month period.</p>
+
+                            <p>C They develop in a recognisable shape.</p>
+
+                            <p>D They make up about 20% of the world's deserts.</p>
+
+                        </div>
+
+                        <div class="question-item">
+
+                            <p><span class="question-number">35</span> Bagnold discovered that movement in barchans was caused by</p>
+
+                            <div class="matching-option">
+
+                                <select name="q35" id="q35">
+
+                                    <option value="">--</option>
+
+                                    <option value="A">A</option>
+
+                                    <option value="B">B</option>
+
+                                    <option value="C">C</option>
+
+                                    <option value="D">D</option>
+
+                                </select>
+
+                            </div>
+
+                            <p>A the long straight shape of the dunes.</p>
+
+                            <p>B the particular composition of the dunes.</p>
+
+                            <p>C the exceptionally heavy nature of the sand grains.</p>
+
+                            <p>D the unusual strength of the wind in certain seasons.</p>
+
+                        </div>
+
+                        <div class="question-item">
+
+                            <p><span class="question-number">36</span> Why does Dr Douady compare a barchan dune to a living organism?</p>
+
+                            <div class="matching-option">
+
+                                <select name="q36" id="q36">
+
+                                    <option value="">--</option>
+
+                                    <option value="A">A</option>
+
+                                    <option value="B">B</option>
+
+                                    <option value="C">C</option>
+
+                                    <option value="D">D</option>
+
+                                </select>
+
+                            </div>
+
+                            <p>A It starts small and then increases in size.</p>
+
+                            <p>B It has an effect on its immediate surroundings.</p>
+
+                            <p>C Its relations with desert organisms are quite developed.</p>
+
+                            <p>D Its outline stays the same even after a period of movement.</p>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+                <!-- Questions 37-40 - Summary Completion -->
+
+                <div class="question">
+
+                    <div class="question-rubric">
+
+                        <h3>Questions 37-40</h3>
+
+                        <p>Complete the summary below.</p>
+
+                        <p>Choose <strong>NO MORE THAN TWO WORDS</strong> from the passage for each answer.</p>
+
+                        <p>Write your answers in boxes <strong>37-40</strong> on your answer sheet.</p>
+
+                    </div>
+
+                    <div class="question-content">
+
+                        <div class="summary-completion-container">
+
+                            <div class="summary-text">
+
+                                <p style="text-align: center;"><strong>Singing Dunes</strong></p>
+
+                                <p>Singing dunes, which belong to the type of dunes known as <input type="text" class="summary-input" id="q37" name="q37"> , produce a very loud sound which is transmitted at a low frequency. Researchers have worked out that sand grains fall down the dune and start vibrating against other grains, forming a sound wave.</p>
+
+                                <p>Research proves that the individual grains have a similar <input type="text" class="summary-input" id="q38" name="q38"> but the differences in dimensions alter the <input type="text" class="summary-input" id="q39" name="q39"> of the 'song'. Each grain is covered with a mixture of different <input type="text" class="summary-input" id="q40" name="q40"> and this is vital to the sound production.</p>
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+        <!-- Footer -->
+
+        <footer class="footer">
+
+            <nav class="nav-row perScorableItem" aria-label="Questions">
+
+                <div class="footer__questionWrapper selected multiple" role="tablist">
+
+                    <button role="tab" class="footer__questionNo" data-sectionid="128121930" tabindex="-1">
+
+                        <span>
+
+                            <span aria-hidden="true" class="section-prefix">Part </span>
+
+                            <span class="sectionNr" aria-hidden="true">3</span>
+
+                        </span>
+
+                    </button>
+
+                    <div class="footer__subquestionWrapper">
+
+                        <button class="subQuestion" data-contentrevisionid="128121896" data-ordernumber="27" data-sectionid="128121930" tabindex="0">
+
+                            <span class="sr-only">Question 27</span>
+
+                            <span aria-hidden="true">27</span>
+
+                            <span class="sr-only">Not attempted</span>
+
+                        </button>
+
+                        <button class="subQuestion" data-contentrevisionid="128121896" data-ordernumber="28" data-sectionid="128121930" tabindex="0">
+
+                            <span class="sr-only">Question 28</span>
+
+                            <span aria-hidden="true">28</span>
+
+                            <span class="sr-only">Not attempted</span>
+
+                        </button>
+
+                        <button class="subQuestion" data-contentrevisionid="128121896" data-ordernumber="29" data-sectionid="128121930" tabindex="0">
+
+                            <span class="sr-only">Question 29</span>
+
+                            <span aria-hidden="true">29</span>
+
+                            <span class="sr-only">Not attempted</span>
+
+                        </button>
+
+                        <button class="subQuestion" data-contentrevisionid="128121896" data-ordernumber="30" data-sectionid="128121930" tabindex="0">
+
+                            <span class="sr-only">Question 30</span>
+
+                            <span aria-hidden="true">30</span>
+
+                            <span class="sr-only">Not attempted</span>
+
+                        </button>
+
+                        <button class="subQuestion" data-contentrevisionid="128121896" data-ordernumber="31" data-sectionid="128121930" tabindex="0">
+
+                            <span class="sr-only">Question 31</span>
+
+                            <span aria-hidden="true">31</span>
+
+                            <span class="sr-only">Not attempted</span>
+
+                        </button>
+
+                        <button class="subQuestion" data-contentrevisionid="128121896" data-ordernumber="32" data-sectionid="128121930" tabindex="0">
+
+                            <span class="sr-only">Question 32</span>
+
+                            <span aria-hidden="true">32</span>
+
+                            <span class="sr-only">Not attempted</span>
+
+                        </button>
+
+                        <button class="subQuestion" data-contentrevisionid="128121896" data-ordernumber="33" data-sectionid="128121930" tabindex="0">
+
+                            <span class="sr-only">Question 33</span>
+
+                            <span aria-hidden="true">33</span>
+
+                            <span class="sr-only">Not attempted</span>
+
+                        </button>
+
+                        <button class="subQuestion" data-contentrevisionid="128121896" data-ordernumber="34" data-sectionid="128121930" tabindex="0">
+
+                            <span class="sr-only">Question 34</span>
+
+                            <span aria-hidden="true">34</span>
+
+                            <span class="sr-only">Not attempted</span>
+
+                        </button>
+
+                        <button class="subQuestion" data-contentrevisionid="128121896" data-ordernumber="35" data-sectionid="128121930" tabindex="0">
+
+                            <span class="sr-only">Question 35</span>
+
+                            <span aria-hidden="true">35</span>
+
+                            <span class="sr-only">Not attempted</span>
+
+                        </button>
+
+                        <button class="subQuestion" data-contentrevisionid="128121896" data-ordernumber="36" data-sectionid="128121930" tabindex="0">
+
+                            <span class="sr-only">Question 36</span>
+
+                            <span aria-hidden="true">36</span>
+
+                            <span class="sr-only">Not attempted</span>
+
+                        </button>
+
+                        <button class="subQuestion" data-contentrevisionid="128121896" data-ordernumber="37" data-sectionid="128121930" tabindex="0">
+
+                            <span class="sr-only">Question 37</span>
+
+                            <span aria-hidden="true">37</span>
+
+                            <span class="sr-only">Not attempted</span>
+
+                        </button>
+
+                        <button class="subQuestion" data-contentrevisionid="128121896" data-ordernumber="38" data-sectionid="128121930" tabindex="0">
+
+                            <span class="sr-only">Question 38</span>
+
+                            <span aria-hidden="true">38</span>
+
+                            <span class="sr-only">Not attempted</span>
+
+                        </button>
+
+                        <button class="subQuestion" data-contentrevisionid="128121896" data-ordernumber="39" data-sectionid="128121930" tabindex="0">
+
+                            <span class="sr-only">Question 39</span>
+
+                            <span aria-hidden="true">39</span>
+
+                            <span class="sr-only">Not attempted</span>
+
+                        </button>
+
+                        <button class="subQuestion" data-contentrevisionid="128121896" data-ordernumber="40" data-sectionid="128121930" tabindex="0">
+
+                            <span class="sr-only">Question 40</span>
+
+                            <span aria-hidden="true">40</span>
+
+                            <span class="sr-only">Not attempted</span>
+
+                        </button>
+
+                    </div>
+
+                </div>
+
+                <button id="deliver-button" aria-label="Review your answers" class="footer__deliverButton">
+
+                    <i class="fas fa-check"></i> Submit
+
+                </button>
+
+            </nav>
+
+        </footer>
+
+    </div>
+
+    <!-- Submission Modal -->
+
+    <div class="submission-modal" id="submissionModal">
+
+        <div class="submission-content">
+
+            <h2 id="submissionTitle">Test Results</h2>
+
+            <div class="score-display">
+
+                <div>Your Score:</div>
+
+                <div class="score-number" id="userScore">0</div>
+
+                <div class="score-total">out of <span id="totalQuestions">14</span></div>
+
+                <div class="band-score" id="bandScore">Band: 0.0</div>
+
+                <div class="performance-rating" id="performanceRating">Poor - Needs Improvement</div>
+
+            </div>
+
+            <div class="time-spent" id="timeSpent"></div>
+
+            <p id="submissionMessage">Here are your answers with the correct solutions:</p>
+
+            <div class="answers-section">
+
+                <h3>Your Answers:</h3>
+
+                <div id="answersList"></div>
+
+            </div>
+
+            <div class="submission-buttons">
+
+                <button class="confirm" id="closeSubmission">Close</button>
+
+            </div>
+
+        </div>
+
+    </div>
+
+    <!-- Answer Comparison Section -->
+
+    <div class="answer-comparison" id="answerComparison">
+
+        <h3>Answer Comparison</h3>
+
+        <p>Your answers are highlighted below. Correct answers are marked in <span class="correct-highlight">green</span>, incorrect answers in <span class="incorrect-highlight">red</span>.</p>
+
+    </div>
+
+    <script>
+        // Correct answers
+        const correctAnswers = {
+            27: "iv",
+            28: "vii",
+            29: "ix",
+            30: "vi",
+            31: "v",
+            32: "viii",
+            33: "ii",
+            34: "C",
+            35: "B",
+            36: "D",
+            37: "barchans",
+            38: "shape",
+            39: "tone",
+            40: "minerals"
+        };
+        // Timer functionality - stopwatch (count up from zero)
+        let totalSeconds = 0;
+        const timerElement = document.getElementById('testTimer');
+        let testSubmitted = false;
+        let userAnswers = {};
+        let startTime = new Date();
+        let resultsShown = false;
+        function updateTimer() {
+            if (testSubmitted) return;
+            const minutes = Math.floor(totalSeconds / 60);
+            const seconds = totalSeconds % 60;
+            const formattedTime = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+            timerElement.textContent = formattedTime;
+            totalSeconds++;
+        }
+        function disableAllInputs() {
+            document.querySelectorAll('input[type="text"], select').forEach(input => {
+                input.disabled = true;
+            });
+            document.getElementById('deliver-button').disabled = true;
+            document.removeEventListener('mouseup', handleTextSelection);
+        }
+        function showSubmissionModal(title, message) {
+            const modal = document.getElementById('submissionModal');
+            document.getElementById('submissionTitle').textContent = title;
+            document.getElementById('submissionMessage').textContent = message;
+            // Calculate time spent
+            const endTime = new Date();
+            const timeDiff = endTime - startTime;
+            const minutes = Math.floor(timeDiff / 60000);
+            const seconds = Math.floor((timeDiff % 60000) / 1000);
+            document.getElementById('timeSpent').textContent = `Time spent: ${minutes}m ${seconds}s`;
+            const answersList = document.getElementById('answersList');
+            answersList.innerHTML = '';
+            let score = 0;
+            userAnswers = {};
+            // Process Matching Headings questions (27-33)
+            for (let i = 27; i <= 33; i++) {
+                const select = document.querySelector(`select[name="q${i}"]`);
+                const userAnswer = select.value || 'Not answered';
+                userAnswers[i] = userAnswer;
+                const correctAnswer = correctAnswers[i];
+                const isCorrect = userAnswer === correctAnswer;
+                if (isCorrect) score++;
+                const answerItem = document.createElement('div');
+                answerItem.className = `answer-item ${isCorrect ? 'correct' : 'incorrect'}`;
+                answerItem.innerHTML = `
+                    <div class="answer-text">Question ${i}: ${userAnswer}</div>
+                    <span class="${isCorrect ? 'correct-answer' : 'incorrect-answer'}">(Correct answer: ${correctAnswer})</span>
+                    <span class="answer-status ${isCorrect ? 'correct-status' : 'incorrect-status'}">
+                        ${isCorrect ? '✓' : '✗'}
+                    </span>
+                `;
+                answersList.appendChild(answerItem);
+            }
+            // Process Multiple Choice questions (34-36)
+            for (let i = 34; i <= 36; i++) {
+                const select = document.querySelector(`select[name="q${i}"]`);
+                const userAnswer = select.value || 'Not answered';
+                userAnswers[i] = userAnswer;
+                const correctAnswer = correctAnswers[i];
+                const isCorrect = userAnswer === correctAnswer;
+                if (isCorrect) score++;
+                const answerItem = document.createElement('div');
+                answerItem.className = `answer-item ${isCorrect ? 'correct' : 'incorrect'}`;
+                answerItem.innerHTML = `
+                    <div class="answer-text">Question ${i}: ${userAnswer}</div>
+                    <span class="${isCorrect ? 'correct-answer' : 'incorrect-answer'}">(Correct answer: ${correctAnswer})</span>
+                    <span class="answer-status ${isCorrect ? 'correct-status' : 'incorrect-status'}">
+                        ${isCorrect ? '✓' : '✗'}
+                    </span>
+                `;
+                answersList.appendChild(answerItem);
+            }
+            // Process Summary Completion questions (37-40)
+            for (let i = 37; i <= 40; i++) {
+                const input = document.querySelector(`input[name="q${i}"]`);
+                const userAnswer = input.value.trim().toLowerCase() || 'Not answered';
+                userAnswers[i] = userAnswer;
+                const correctAnswer = correctAnswers[i];
+                const isCorrect = userAnswer === correctAnswer.toLowerCase();
+                if (isCorrect) score++;
+                const answerItem = document.createElement('div');
+                answerItem.className = `answer-item ${isCorrect ? 'correct' : 'incorrect'}`;
+                answerItem.innerHTML = `
+                    <div class="answer-text">Question ${i}: ${userAnswer}</div>
+                    <span class="${isCorrect ? 'correct-answer' : 'incorrect-answer'}">(Correct answer: ${correctAnswer})</span>
+                    <span class="answer-status ${isCorrect ? 'correct-status' : 'incorrect-status'}">
+                        ${isCorrect ? '✓' : '✗'}
+                    </span>
+                `;
+                answersList.appendChild(answerItem);
+            }
+            // Update score display
+            document.getElementById('userScore').textContent = score;
+            document.getElementById('totalQuestions').textContent = "14";
+            // Calculate IELTS band score
+            const bandScore = calculateBandScore(score);
+            document.getElementById('bandScore').textContent = `Band: ${bandScore.toFixed(1)}`;
+            // Calculate performance rating
+            const percentage = (score / 14) * 100;
+            let rating, ratingClass;
+            if (score >= 13) {
+                rating = "Excellent!";
+                ratingClass = "excellent";
+            } else if (score >= 11) {
+                rating = "Very Good";
+                ratingClass = "very-good";
+            } else if (score >= 9) {
+                rating = "Good";
+                ratingClass = "good";
+            } else if (score >= 7) {
+                rating = "Fair";
+                ratingClass = "fair";
+            } else {
+                rating = "Poor - Needs Improvement";
+                ratingClass = "poor";
+            }
+            const ratingElement = document.getElementById('performanceRating');
+            ratingElement.textContent = rating;
+            ratingElement.className = `performance-rating ${ratingClass}`;
+            // Highlight answers
+            if (testSubmitted) {
+                highlightAnswers(correctAnswers);
+            }
+            modal.style.display = 'flex';
+            resultsShown = true;
+            const submitButton = document.getElementById('deliver-button');
+            submitButton.innerHTML = '<i class="fas fa-eye"></i> Show My Results';
+            submitButton.disabled = false;
+        }
+        function calculateBandScore(score) {
+            if (score >= 13) return 9.0;
+            if (score >= 12) return 8.5;
+            if (score >= 11) return 8.0;
+            if (score >= 10) return 7.5;
+            if (score >= 9) return 7.0;
+            if (score >= 8) return 6.5;
+            if (score >= 7) return 6.0;
+            if (score >= 6) return 5.5;
+            if (score >= 5) return 5.0;
+            return 0.0;
+        }
+        function highlightAnswers(correctAnswers) {
+            // Highlight Matching Headings questions (27-33)
+            for (let i = 27; i <= 33; i++) {
+                const select = document.querySelector(`select[name="q${i}"]`);
+                const userAnswer = userAnswers[i];
+                const correctAnswer = correctAnswers[i];
+                select.classList.remove('correct', 'incorrect');
+                if (userAnswer && userAnswer !== 'Not answered') {
+                    select.classList.add(userAnswer === correctAnswer ? 'correct' : 'incorrect');
+                    const feedback = document.createElement('span');
+                    feedback.className = `dropdown-answer ${userAnswer === correctAnswer ? 'correct' : 'incorrect'}`;
+                    feedback.textContent = userAnswer === correctAnswer ? '✓ Correct' : `✗ Correct: ${correctAnswer}`;
+                    if (!select.nextElementSibling || !select.nextElementSibling.classList.contains('dropdown-answer')) {
+                        select.parentNode.appendChild(feedback);
+                    }
+                }
+            }
+            // Highlight Multiple Choice questions (34-36)
+            for (let i = 34; i <= 36; i++) {
+                const select = document.querySelector(`select[name="q${i}"]`);
+                const userAnswer = userAnswers[i];
+                const correctAnswer = correctAnswers[i];
+                select.classList.remove('correct', 'incorrect');
+                if (userAnswer && userAnswer !== 'Not answered') {
+                    select.classList.add(userAnswer === correctAnswer ? 'correct' : 'incorrect');
+                    const feedback = document.createElement('span');
+                    feedback.className = `dropdown-answer ${userAnswer === correctAnswer ? 'correct' : 'incorrect'}`;
+                    feedback.textContent = userAnswer === correctAnswer ? '✓ Correct' : `✗ Correct: ${correctAnswer}`;
+                    if (!select.nextElementSibling || !select.nextElementSibling.classList.contains('dropdown-answer')) {
+                        select.parentNode.appendChild(feedback);
+                    }
+                }
+            }
+            // Highlight Summary Completion questions (37-40)
+            for (let i = 37; i <= 40; i++) {
+                const input = document.querySelector(`input[name="q${i}"]`);
+                const userAnswer = userAnswers[i];
+                const correctAnswer = correctAnswers[i];
+                input.classList.remove('correct', 'incorrect');
+                if (userAnswer && userAnswer !== 'Not answered') {
+                    input.classList.add(userAnswer === correctAnswer.toLowerCase() ? 'correct' : 'incorrect');
+                    const feedback = document.createElement('span');
+                    feedback.className = `summary-feedback ${userAnswer === correctAnswer.toLowerCase() ? 'correct' : 'incorrect'}`;
+                    feedback.textContent = userAnswer === correctAnswer.toLowerCase() ? '✓ Correct' : `✗ Correct: ${correctAnswer}`;
+                    if (!input.nextElementSibling || !input.nextElementSibling.classList.contains('summary-feedback')) {
+                        input.parentNode.insertBefore(feedback, input.nextSibling);
+                    }
+                }
+            }
+            document.getElementById('answerComparison').style.display = 'block';
+        }
+        // Handle manual submission
+        document.getElementById('deliver-button').addEventListener('click', function() {
+            if (resultsShown) {
+                document.getElementById('submissionModal').style.display = 'flex';
+                return;
+            }
+            if (testSubmitted) return;
+            if (confirm('Are you sure you want to submit your test? You won\'t be able to make changes after submission.')) {
+                clearInterval(timerInterval);
+                testSubmitted = true;
+                disableAllInputs();
+                showSubmissionModal('Test Submitted', 'Thank you for completing the test.');
+            }
+        });
+        // Close submission modal and show answer comparison
+        document.getElementById('closeSubmission').addEventListener('click', function() {
+            document.getElementById('submissionModal').style.display = 'none';
+            highlightAnswers(correctAnswers);
+        });
+        // Start the timer
+        const timerInterval = setInterval(updateTimer, 1000);
+        // Settings Modal functionality
+        const settingsButton = document.getElementById('settingsButton');
+        const settingsModal = document.getElementById('settingsModal');
+        const settingsClose = document.getElementById('settingsClose');
+        settingsButton.addEventListener('click', function() {
+            settingsModal.style.display = 'flex';
+        });
+        settingsClose.addEventListener('click', function() {
+            settingsModal.style.display = 'none';
+        });
+        window.addEventListener('click', function(event) {
+            if (event.target === settingsModal) {
+                settingsModal.style.display = 'none';
+            }
+            if (event.target === document.getElementById('submissionModal')) {
+                document.getElementById('submissionModal').style.display = 'none';
+            }
+        });
+        // Draggable Divider Functionality
+        const divider = document.getElementById('divider');
+        const passageContainer = document.getElementById('passage-container');
+        const questionsContainer = document.getElementById('questions-container');
+        let isDragging = false;
+        let startX, startPassageWidth;
+        divider.addEventListener('mousedown', (e) => {
+            isDragging = true;
+            startX = e.clientX;
+            startPassageWidth = parseInt(document.defaultView.getComputedStyle(passageContainer).width, 10);
+            document.body.style.cursor = 'col-resize';
+            document.addEventListener('mousemove', onMouseMove);
+            document.addEventListener('mouseup', onMouseUp);
+            e.preventDefault();
+        });
+        function onMouseMove(e) {
+            if (!isDragging) return;
+            const containerWidth = document.querySelector('.test-container').offsetWidth;
+            const newPassageWidth = startPassageWidth + e.clientX - startX;
+            const minWidth = containerWidth * 0.3;
+            const maxWidth = containerWidth * 0.7;
+            if (newPassageWidth >= minWidth && newPassageWidth <= maxWidth) {
+                passageContainer.style.width = `${newPassageWidth}px`;
+            }
+        }
+        function onMouseUp() {
+            isDragging = false;
+            document.body.style.cursor = '';
+            document.removeEventListener('mousemove', onMouseMove);
+            document.removeEventListener('mouseup', onMouseUp);
+        }
+        divider.addEventListener('selectstart', (e) => {
+            if (isDragging) e.preventDefault();
+        });
+        // Question navigation functionality
+        document.querySelectorAll('.subQuestion').forEach(button => {
+            button.addEventListener('click', function() {
+                document.querySelectorAll('.subQuestion').forEach(btn => {
+                    btn.classList.remove('active');
+                });
+                this.classList.add('active');
+                const questionNumber = parseInt(this.textContent.trim());
+                if (questionNumber >= 27 && questionNumber <= 33) {
+                    document.querySelector('.question:nth-of-type(1)').scrollIntoView({ behavior: 'smooth' });
+                } else if (questionNumber >= 34 && questionNumber <= 36) {
+                    document.querySelector('.question:nth-of-type(2)').scrollIntoView({ behavior: 'smooth' });
+                } else if (questionNumber >= 37 && questionNumber <= 40) {
+                    document.querySelector('.question:nth-of-type(3)').scrollIntoView({ behavior: 'smooth' });
+                }
+            });
+        });
+        // Enhanced Highlighting functionality
+        const highlightToolbar = document.getElementById('highlightToolbar');
+        let selectedText = '';
+        let selectedRange = null;
+        let currentHighlightColor = null;
+        document.querySelectorAll('#passageContent, .questions-container').forEach(element => {
+            element.style.userSelect = 'text';
+            element.style.webkitUserSelect = 'text';
+        });
+        function handleTextSelection() {
+            const selection = window.getSelection();
+            selectedText = selection.toString().trim();
+            if (selectedText.length > 0 && isTextInContent(selection)) {
+                selectedRange = selection.getRangeAt(0);
+                const rangeRect = selectedRange.getBoundingClientRect();
+                highlightToolbar.style.display = 'block';
+                highlightToolbar.style.top = `${rangeRect.top + window.scrollY - 35}px`;
+                highlightToolbar.style.left = `${rangeRect.left + window.scrollX + (rangeRect.width / 2)}px`;
+            } else {
+                highlightToolbar.style.display = 'none';
+            }
+        }
+        function isTextInContent(selection) {
+            if (!selection.rangeCount) return false;
+            const range = selection.getRangeAt(0);
+            const contentAreas = document.querySelectorAll('#passageContent, .question-content');
+            return Array.from(contentAreas).some(area => area.contains(range.commonAncestorContainer));
+        }
+        document.addEventListener('mouseup', handleTextSelection);
+        document.addEventListener('mousedown', function(e) {
+            if (!highlightToolbar.contains(e.target)) {
+                highlightToolbar.style.display = 'none';
+            }
+        });
+        document.querySelectorAll('.highlight-color').forEach(button => {
+            button.addEventListener('click', function() {
+                currentHighlightColor = this.dataset.color;
+                applyHighlight();
+            });
+        });
+        function applyHighlight() {
+            if (selectedText.length > 0 && selectedRange) {
+                const hasHighlights = checkForHighlightsInRange(selectedRange);
+                if (hasHighlights) {
+                    removeHighlightsInRange(selectedRange);
+                } else if (currentHighlightColor) {
+                    const span = document.createElement('span');
+                    span.className = `highlight ${currentHighlightColor}`;
+                    selectedRange.surroundContents(span);
+                }
+                window.getSelection().removeAllRanges();
+                highlightToolbar.style.display = 'none';
+            }
+        }
+        function checkForHighlightsInRange(range) {
+            const documentFragment = range.cloneContents();
+            const tempDiv = document.createElement('div');
+            tempDiv.appendChild(documentFragment);
+            return tempDiv.querySelector('.highlight') !== null;
+        }
+        function removeHighlightsInRange(range) {
+            const documentFragment = range.cloneContents();
+            const tempDiv = document.createElement('div');
+            tempDiv.appendChild(documentFragment);
+            const highlights = tempDiv.querySelectorAll('.highlight');
+            if (highlights.length > 0) {
+                const newRange = range.cloneRange();
+                const fragment = newRange.extractContents();
+                const textFragment = document.createDocumentFragment();
+                extractTextNodes(fragment, textFragment);
+                newRange.insertNode(textFragment);
+            }
+        }
+        function extractTextNodes(source, destination) {
+            const walker = document.createTreeWalker(
+                source,
+                NodeFilter.SHOW_TEXT | NodeFilter.SHOW_ELEMENT,
+                null,
+                false
+            );
+            let node;
+            while (node = walker.nextNode()) {
+                if (node.nodeType === Node.TEXT_NODE) {
+                    destination.appendChild(document.createTextNode(node.nodeValue));
+                } else if (!node.classList.contains('highlight')) {
+                    const container = node.cloneNode(false);
+                    extractTextNodes(node, container);
+                    destination.appendChild(container);
+                }
+            }
+        }
+        document.querySelector('.highlight-toolbar .remove').addEventListener('click', function() {
+            if (selectedText.length > 0 && selectedRange) {
+                removeHighlightsInRange(selectedRange);
+                window.getSelection().removeAllRanges();
+                highlightToolbar.style.display = 'none';
+            }
+        });
+        // Mark questions as attempted when answered
+        document.querySelectorAll('select, input[type="text"]').forEach(input => {
+            input.addEventListener('change', function() {
+                const questionNumber = parseInt(this.name.replace('q', ''));
+                const questionButton = document.querySelector(`.subQuestion[data-ordernumber="${questionNumber}"]`);
+                if (questionButton && (this.value || this.value.trim())) {
+                    questionButton.classList.add('attempted');
+                }
+            });
+        });
+
+    </script>
+
+</body>
+
+</html>

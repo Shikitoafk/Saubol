@@ -1,0 +1,1691 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>IELTS Reading Practice - Passage 3</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --bg-color: #ffffff;
+            --text-color: #333333;
+            --border-color: #e0e0e0;
+            --panel-bg: #ffffff;
+            --header-bg: #ffffff;
+            --nav-bg: #ffffff;
+            --timer-bg: #f0f0f0;
+            --question-bg: #ffffff;
+            --highlight-bg: #ffff00;
+            --transition: all 0.3s ease;
+        }
+
+        .theme-night {
+            --bg-color: #1a1a1a;
+            --text-color: #e0e0e0;
+            --border-color: #444444;
+            --panel-bg: #2d2d2d;
+            --header-bg: #2d2d2d;
+            --nav-bg: #2d2d2d;
+            --timer-bg: #444444;
+            --question-bg: #2d2d2d;
+            --highlight-bg: #ffeb3b;
+        }
+
+        .theme-sepia {
+            --bg-color: #f8f0e0;
+            --text-color: #5c4b37;
+            --border-color: #d9c7a7;
+            --panel-bg: #f0e6d2;
+            --header-bg: #f0e6d2;
+            --nav-bg: #f0e6d2;
+            --timer-bg: #e6d9c2;
+            --question-bg: #f0e6d2;
+            --highlight-bg: #ffd700;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            line-height: 1.4;
+            font-size: 16px;
+            transition: var(--transition);
+        }
+
+        .header {
+            background-color: var(--header-bg);
+            padding: 12px 20px;
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 100;
+            height: 60px;
+            transition: var(--transition);
+        }
+
+        .test-info {
+            display: flex;
+            align-items: center;
+            gap: 30px;
+            font-size: 14px;
+        }
+
+        .header-icons {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+
+        .telegram-button {
+            background-color: #0088cc;
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 4px;
+            font-weight: 600;
+            font-size: 14px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: background-color 0.2s;
+            text-decoration: none;
+        }
+
+        .telegram-button:hover {
+            background-color: #0077b5;
+            text-decoration: none;
+        }
+
+        .theme-switcher {
+            display: flex;
+            gap: 5px;
+            background: var(--timer-bg);
+            padding: 4px;
+            border-radius: 8px;
+            transition: var(--transition);
+        }
+
+        .theme-btn {
+            background: transparent;
+            border: none;
+            padding: 6px 12px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 12px;
+            transition: var(--transition);
+        }
+
+        .theme-btn.active {
+            background: var(--bg-color);
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .main-container {
+            margin-top: 60px;
+            display: flex;
+            flex-direction: column;
+            background: var(--bg-color);
+            height: calc(100vh - 60px);
+            transition: var(--transition);
+        }
+
+        .panels-container {
+            display: flex;
+            flex: 1;
+            overflow: hidden;
+        }
+
+        .passage-panel {
+            flex: 1;
+            padding: 20px 20px 100px;
+            overflow-y: auto;
+            min-width: 200px;
+            background-color: var(--panel-bg);
+            transition: var(--transition);
+        }
+
+        .text-center {
+            text-align: center;
+        }
+
+        .reading-passage h4.text-center {
+            font-size: 24px;
+            font-weight: bold;
+            margin-bottom: 15px;
+        }
+       
+        .reading-passage p {
+            margin-bottom: 1.2em;
+            transition: var(--transition);
+        }
+
+        .questions-panel {
+            flex: 1;
+            padding: 20px 20px 100px;
+            overflow-y: auto;
+            min-width: 200px;
+            border-left: 1px solid var(--border-color);
+            background-color: var(--panel-bg);
+            transition: var(--transition);
+        }
+
+        .resizer {
+            width: 10px;
+            cursor: col-resize;
+            background-color: var(--timer-bg);
+            background-image: url('data:image/svg+xml;charset=UTF-8,<svg xmlns="http://www.w3.org/2000/svg" width="10" height="30" viewBox="0 0 10 30"><path d="M4 11h2v2H4zM4 15h2v2H4zM4 19h2v2H4z" fill="%23888"/></svg>');
+            background-repeat: no-repeat;
+            background-position: center;
+            flex-shrink: 0;
+            flex-grow: 0;
+            transition: var(--transition);
+        }
+
+        .question {
+            margin-bottom: 40px;
+            background-color: var(--question-bg);
+            padding: 15px;
+            border-radius: 8px;
+            transition: var(--transition);
+        }
+
+        .question p {
+            margin-bottom: 10px;
+        }
+
+        .question-prompt {
+            margin-bottom: 20px;
+        }
+
+        .question ul {
+            list-style: none;
+            padding-left: 0;
+        }
+
+        .question ul li {
+            margin-bottom: 5px;
+        }
+
+        /* Bottom Navigation */
+        .nav-row {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: var(--nav-bg);
+            padding: 0;
+            display: flex;
+            align-items: center;
+            height: 80px;
+            z-index: 100;
+            border-top: 1px solid var(--border-color);
+            transition: var(--transition);
+        }
+
+        .footer__questionWrapper___1tZ46 {
+            display: flex;
+            align-items: center;
+            margin-right: 20px;
+        }
+
+        .footer__questionNo___3WNct {
+            background: none;
+            border: none;
+            padding: 10px 15px;
+            font-size: 16px;
+            font-weight: 600;
+            color: var(--text-color);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            transition: background-color 0.2s;
+        }
+
+        .footer__questionNo___3WNct:hover {
+            background-color: rgba(0,0,0,0.1);
+        }
+
+        .section-prefix {
+            font-size: 16px;
+        }
+
+        .sectionNr {
+            font-size: 16px;
+            font-weight: bold;
+        }
+
+        .attemptedCount {
+            font-size: 14px;
+            color: var(--text-color);
+            margin-left: 5px;
+            font-weight: 400;
+            opacity: 0.7;
+        }
+
+        .footer__questionWrapper___1tZ46.selected .attemptedCount {
+            display: none;
+        }
+
+        .footer__subquestionWrapper___9GgoP {
+            display: none;
+            gap: 2px;
+            margin-left: 10px;
+        }
+
+        .footer__questionWrapper___1tZ46.selected .footer__subquestionWrapper___9GgoP {
+            display: flex;
+        }
+
+        .subQuestion {
+            width: 32px;
+            height: 32px;
+            border: 1px solid var(--border-color);
+            background: var(--bg-color);
+            color: var(--text-color);
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s;
+            border-radius: 2px;
+        }
+
+        .subQuestion.answered {
+            background-color: rgba(0,0,0,0.1);
+            border-color: var(--border-color);
+        }
+
+        .subQuestion.correct {
+            background-color: #28a745;
+            color: white;
+            border-color: #28a745;
+        }
+
+        .subQuestion.incorrect {
+            background-color: #dc3545;
+            color: white;
+            border-color: #dc3545;
+        }
+
+        .subQuestion:hover {
+            background-color: rgba(0,0,0,0.15);
+            border-color: var(--text-color);
+        }
+
+        .subQuestion.active {
+            background-color: #4a90e2;
+            color: white;
+            border-color: #4a90e2;
+        }
+
+        .footer__deliverButton___3FM07 {
+            margin-left: auto;
+            margin-right: 20px;
+            background-color: var(--timer-bg);
+            color: var(--text-color);
+            border: 1px solid var(--border-color);
+            padding: 12px 20px;
+            border-radius: 4px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: background-color 0.2s, border-color 0.2s;
+            min-width: 170px;
+            justify-content: center;
+        }
+
+        .footer__deliverButton___3FM07:hover {
+            background-color: rgba(0,0,0,0.1);
+            border-color: var(--text-color);
+        }
+
+        .fa-check::before {
+            content: "✓";
+        }
+
+        .hidden {
+            display: none !important;
+        }
+
+        /* YES/NO/NOT GIVEN Questions */
+        .tf-question {
+            margin-bottom: 25px;
+            padding: 10px 0px;
+            border-radius: 4px;
+            transition: border-color 0.3s, background-color 0.3s;
+        }
+
+        .tf-question-line {
+            display: flex;
+            align-items: flex-start;
+            margin-bottom: 15px;
+            padding: 5px 0px;
+            border-radius: 4px;
+        }
+
+        .tf-question-number {
+            border: 2px solid var(--border-color);
+            padding: 2px 8px;
+            margin-right: 10px;
+            border-radius: 3px;
+            font-weight: bold;
+            transition: border-color 0.3s;
+            display: inline-block;
+        }
+
+        .tf-question-text {
+            padding-top: 3px;
+        }
+
+        .tf-options {
+            padding-left: 5px;
+        }
+
+        .tf-option {
+            display: block;
+            margin-bottom: 12px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+        }
+
+        .tf-option input[type="radio"] {
+            margin-right: 10px;
+            transform: scale(1.2);
+        }
+
+        .tf-question.correct .tf-question-line {
+            background-color: rgba(40, 167, 69, 0.2);
+        }
+
+        .tf-question.incorrect .tf-question-line {
+            background-color: rgba(220, 53, 69, 0.2);
+        }
+
+        /* Matching Questions */
+        .matching-question-container {
+            display: flex;
+            gap: 20px;
+            margin-top: 15px;
+        }
+
+        .matching-options-bank {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .matching-questions {
+            flex: 1.5;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .matching-question-item {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            border: 2px solid transparent;
+            border-radius: 4px;
+            transition: border-color 0.3s;
+        }
+
+        .matching-question-item > span {
+            flex: 1;
+        }
+
+        .matching-question-item.correct {
+            background-color: rgba(40, 167, 69, 0.2);
+            border-color: #28a745 !important;
+        }
+
+        .matching-question-item.incorrect {
+            background-color: rgba(220, 53, 69, 0.2);
+            border-color: #dc3545 !important;
+        }
+
+        .matching-question-item .drop-zone {
+            width: 200px;
+            height: 40px;
+            flex-shrink: 0;
+            margin: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            color: var(--text-color);
+            opacity: 0.7;
+            border: 2px dashed var(--border-color);
+            border-radius: 4px;
+            transition: background-color 0.2s, border-color 0.2s;
+        }
+
+        .matching-question-item .drop-zone.filled {
+            border-color: #4a90e2;
+        }
+
+        .drop-zone.drag-over {
+            background-color: rgba(74, 144, 226, 0.1);
+            border-color: #4a90e2;
+        }
+
+        .matching-options-bank .drag-item {
+            font-size: 15px;
+            text-align: center;
+            border: 1px solid var(--border-color);
+            background: var(--timer-bg);
+            padding: 8px 12px;
+            border-radius: 4px;
+            cursor: move;
+            transition: all 0.2s;
+            user-select: none;
+        }
+
+        .drag-item:hover {
+            background: rgba(0,0,0,0.1);
+        }
+
+        .drag-item.dragging {
+            opacity: 0.5;
+        }
+
+        .drop-zone .drag-item {
+            font-size: 15px;
+            font-weight: bold;
+            background-color: transparent;
+            border: none;
+            padding: 0;
+            text-align: center;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        /* Multiple Choice Questions */
+        .multi-choice-question {
+            margin-bottom: 20px;
+            padding: 10px;
+            border-radius: 4px;
+            border: 3px solid transparent;
+            transition: border-color 0.3s, background-color 0.3s;
+        }
+
+        .multi-choice-option {
+            margin-bottom: 10px;
+            padding: 8px;
+            border-radius: 4px;
+            transition: background-color 0.3s;
+        }
+
+        .multi-choice-option label {
+            display: flex;
+            align-items: center;
+            cursor: pointer;
+            font-size: 16px;
+        }
+
+        .multi-choice-option input[type="radio"] {
+            margin-right: 12px;
+            transform: scale(1.3);
+            accent-color: #4a90e2;
+        }
+
+        .multi-choice-option.correct {
+            background-color: rgba(40, 167, 69, 0.2);
+        }
+
+        .multi-choice-option.incorrect {
+            background-color: rgba(220, 53, 69, 0.2);
+        }
+
+        /* Timer */
+        .timer-container {
+            display: flex;
+            position: relative;
+            cursor: default;
+            color: var(--text-color);
+            font-size: 16px;
+            font-weight: 500;
+            align-items: center;
+            transition: var(--transition);
+        }
+
+        .timer-controls {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-left: 15px;
+        }
+
+        .timer-controls button {
+            background: var(--timer-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 50%;
+            padding: 0;
+            cursor: pointer;
+            width: 32px;
+            height: 32px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: background-color 0.2s;
+        }
+
+        .timer-controls button:hover {
+            background: rgba(0,0,0,0.1);
+        }
+
+        .timer-controls button svg {
+            width: 20px;
+            height: 20px;
+            fill: var(--text-color);
+        }
+
+        #goto-widget {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        #goto-input {
+            width: 80px;
+            padding: 4px 8px;
+            border: 1px solid var(--border-color);
+            border-radius: 4px;
+            background: var(--bg-color);
+            color: var(--text-color);
+        }
+
+        #goto-btn {
+            padding: 4px 10px;
+            border: 1px solid var(--border-color);
+            background-color: var(--timer-bg);
+            border-radius: 4px;
+            cursor: pointer;
+            color: var(--text-color);
+        }
+
+        /* Results Modal */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.7);
+            z-index: 2000;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .modal-overlay.hidden {
+            display: none;
+        }
+
+        .modal-content {
+            background: var(--bg-color);
+            color: var(--text-color);
+            padding: 25px;
+            border-radius: 8px;
+            width: 90%;
+            max-width: 600px;
+            max-height: 80vh;
+            overflow-y: auto;
+            transition: var(--transition);
+        }
+
+        .modal-content h2 {
+            margin-bottom: 20px;
+        }
+
+        .results-summary {
+            margin-bottom: 20px;
+            padding: 15px;
+            background-color: var(--timer-bg);
+            border-radius: 5px;
+            transition: var(--transition);
+        }
+
+        .results-summary p {
+            margin-bottom: 10px;
+            font-size: 16px;
+            font-weight: 600;
+        }
+
+        .results-details-container {
+            margin-bottom: 20px;
+        }
+
+        .result-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 8px 12px;
+            margin-bottom: 5px;
+            border-radius: 4px;
+            background-color: rgba(40, 167, 69, 0.2);
+        }
+
+        .result-row.incorrect {
+            background-color: rgba(220, 53, 69, 0.2);
+        }
+
+        .result-row .q-num {
+            font-weight: bold;
+            min-width: 40px;
+        }
+
+        .result-row .user-ans {
+            flex: 1;
+            margin: 0 10px;
+        }
+
+        .result-row .correct-ans {
+            font-weight: bold;
+        }
+
+        .modal-close-btn {
+            background-color: #4a90e2;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+
+        .modal-close-btn:hover {
+            background-color: #357abd;
+        }
+
+        /* Highlight functionality */
+        .highlight {
+            cursor: pointer;
+            border-radius: 2px;
+            position: relative;
+            transition: background-color 0.2s;
+        }
+
+        .highlight.yellow {
+            background-color: var(--highlight-bg);
+        }
+
+        .highlight.blue {
+            background-color: #87CEEB;
+        }
+
+        .highlight:hover {
+            opacity: 0.8;
+        }
+
+        .highlight-menu {
+            position: fixed;
+            background: var(--bg-color);
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            z-index: 1001;
+            padding: 8px;
+            display: flex;
+            gap: 5px;
+            opacity: 0;
+            transform: translateY(-10px);
+            transition: all 0.2s ease;
+        }
+
+        .highlight-menu.show {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .highlight-menu button {
+            background: var(--timer-bg);
+            color: var(--text-color);
+            border: none;
+            padding: 6px 12px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 12px;
+            transition: background-color 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .highlight-menu button:hover {
+            background: rgba(0,0,0,0.1);
+        }
+
+        .highlight-menu button.yellow {
+            background: #ffeb3b;
+            color: #333;
+        }
+
+        .highlight-menu button.blue {
+            background: #87CEEB;
+            color: #333;
+        }
+
+        .highlight-menu button.clear {
+            background: #dc3545;
+            color: white;
+        }
+
+        /* Timer warning styles */
+        .timer-warning {
+            animation: pulse 1s infinite;
+        }
+
+         pulse {
+            0% { color: var(--text-color); }
+            50% { color: #dc3545; }
+            100% { color: var(--text-color); }
+        }
+    </style>
+</head>
+<body class="theme-day">
+    <div class="header">
+        <div class="test-info">
+            <span class="timer-container">
+                <span id="timer">20:00</span>
+                <div class="timer-controls">
+                    <button id="pause-btn" type="button" aria-label="Pause timer">
+                        <svg viewBox="0 0 24 24">
+                            <rect x="6" y="4" width="4" height="16"></rect>
+                            <rect x="14" y="4" width="4" height="16"></rect>
+                        </svg>
+                    </button>
+                    <button id="reset-btn" type="button" aria-label="Reset timer">
+                        <svg viewBox="0 0 24 24">
+                            <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm5 11h-6V8h2v3h4v2z"></path>
+                        </svg>
+                    </button>
+                </div>
+            </span>
+            <div class="theme-switcher">
+                <button class="theme-btn active" data-theme="day">Day</button>
+                <button class="theme-btn" data-theme="night">Night</button>
+                <button class="theme-btn" data-theme="sepia">Sepia</button>
+            </div>
+            <div id="goto-widget">
+                <span>Go to Q:</span>
+                <input type="number" id="goto-input" min="1" max="16" placeholder="1">
+                <button id="goto-btn">Go</button>
+            </div>
+        </div>
+
+        <div class="header-icons">
+            
+        </div>
+    </div>
+
+    <div class="main-container">
+        <div class="panels-container">
+            <div class="passage-panel">
+                <div class="reading-passage">
+                    <h4 class="text-center">READING PASSAGE 1</h4>
+                    <h4 class="text-center">Historical impact of the California Gold Rush</h4>
+                    
+                    <p>The California Gold Rush of 1849-1855 radically transformed California and the USA. It prompted one of the largest migrations in US history, with hundreds of thousands of migrants across the USA and the globe travelling to California to find gold in the foothills of the Sierra Nevada mountains. This led to the establishment of boomtowns, rapid economic growth and prosperity, as well as the improvement of transport links. The significant increase in population and infrastructure allowed California to qualify for statehood in 1850, only a few years after the USA bought the territory from Mexico as part of the Treaty of Guadalupe Hidalgo.</p>
+
+                    <p>For all its significance, the onset of the Gold Rush originated from a seemingly insignificant event. In January 1848, James Marshall, a carpenter, was building a sawmill for John Sutter at Sutter's Fort, a trade and agricultural colony, when he spotted something shiny in the American River. Not sure of what he had found, he collected the apparent gold flecks and ran some rudimentary tests on them - including biting them and hitting them with a hammer. When their appearance did not change, Marshall realised they were genuine gold and quickly notified John Sutter. Sensing that the discovery would negatively impact his business and bring a large number of people to his land, Sutter told his employees to keep the gold a secret. However, news of the discovery quickly got out and spread across the region. Soon, gold seekers arrived at Sutter's Fort, and just as Sutter had feared, his employees all left to look for gold.</p>
+
+                    <p>Within a few months, news of the gold discovery expanded beyond the region, with the Baltimore Sun becoming the first US newspaper to report on it in late summer. In the autumn, the New York Herald ran a subsequent story on the gold discovery and by December, President Polk announced to Congress that significant amounts of gold were being discovered in California. The year 1849 prompted a massive migration to California from many parts of the USA as well as places as far away as China, Chile and France. The migrants, dubbed the 'forty-niners' for the year of their trip, flocked to cities such as San Francisco and present-day Sacramento, which were experiencing rapid development. The population of San Francisco, for example, exploded from 500 in 1847 to more than 150,000 in 1852.</p>
+
+                    <p>With the massive influx of migrants, California underwent a radical transformation in a very short amount of time. It changed from a sparsely populated region to a territory with enough people to constitute a state. At the time, the population of California was still predominantly Mexican; however, the arrival of many US migrants quickly reshaped the local demographics. The newcomers often wanted to keep in touch with family around the USA and pushed for the development of new communication and transportation links. So the famed Pony Express was created to send mail and parcels from California to the Midwest within a two-week period using ponies, while a mail delivery service, the California Star Express, connected California with Missouri.</p>
+
+                    <p>Although the Gold Rush allowed some of the early miners to become rich, it was the ensuing economic development that sprang up around gold mining that would result in the greatest profits; the merchants who aimed to satisfy the needs of gold prospectors would ultimately become very wealthy. Not only did the Gold Rush lead to an explosion in the manufacturing of mining machinery and equipment for hydraulic operations, it also saw more of the leather goods and clothes that miners required being produced.</p>
+
+                    <p>The rapid development of agriculture – thanks to heightened demand and the availability of more sophisticated tools – was another major outcome of the Gold Rush. In fact, many who did not succeed in mining turned to California's 'green gold', taking full advantage of the territory's favourable climate to produce massive amounts of fruits, vegetables and grains to feed the expanding mining communities.</p>
+
+                    <p>The fervour surrounding the Gold Rush led to a revolution in transportation. At the time, California was relatively isolated, but improvements were made to the road network and the number of steamships being constructed increased. San Francisco, which experienced the largest economic boom at the time, saw its rapid modernisation and economic development rewarded when it was chosen as the site for the western terminus for the first transcontinental railway, linking the east coast of the USA with California.</p>
+
+                    <p>The Gold Rush was not beneficial to all, however. It led to increased violence against Native Americans, while immigrants, who had come to California in the hope of making their fortunes, often experienced intense discrimination. Some Americans were convinced that immigrants were taking revenue and employment opportunities away from Americans and argued for restrictions on immigration and a tax on all foreign miners working in California. The Gold Rush also had a severe environmental impact. Rivers became clogged with sediment; forests were cut down; biodiversity was compromised and soil was polluted with chemicals from the mining process. Despite these drawbacks, the Gold Rush had a lasting positive impact. It propelled significant industrial and agricultural development and helped shape California's future by turning it into an economic powerhouse.</p>
+                </div>
+            </div>
+
+            <div class="resizer"></div>
+
+            <div class="questions-panel">
+                <div class="questions-container">
+                    
+                    <!-- Questions 1-8: TRUE/FALSE/NOT GIVEN -->
+                    <div class="question" id="question-1">
+                        <div class="question-prompt">
+                            <p><strong>Questions 1-8</strong></p>
+                            <p>Do the following statements agree with the information given in Reading Passage 1?</p>
+                            <p>In boxes 1-8 on your answer sheet, write</p>
+                            <p><strong>TRUE</strong> if the statement agrees with the information<br>
+                            <strong>FALSE</strong> if the statement contradicts the information<br>
+                            <strong>NOT GIVEN</strong> if there is no information on this</p>
+                        </div>
+
+                        <div class="tf-question" id="tf-question-1">
+                            <div class="tf-question-line">
+                                <span class="tf-question-number">1</span>
+                                <span class="tf-question-text">Few other migrations in the USA have been equal in size to that of the California Gold Rush.</span>
+                            </div>
+                            <div class="tf-options">
+                                <label class="tf-option">
+                                    <input type="radio" name="q1" value="TRUE">
+                                    <span>TRUE</span>
+                                </label>
+                                <label class="tf-option">
+                                    <input type="radio" name="q1" value="FALSE">
+                                    <span>FALSE</span>
+                                </label>
+                                <label class="tf-option">
+                                    <input type="radio" name="q1" value="NOT GIVEN">
+                                    <span>NOT GIVEN</span>
+                                </label>
+                            </div>
+                        </div>
+
+                        <div class="tf-question" id="tf-question-2">
+                            <div class="tf-question-line">
+                                <span class="tf-question-number">2</span>
+                                <span class="tf-question-text">The population growth caused by the Gold Rush was a key factor in California becoming a state.</span>
+                            </div>
+                            <div class="tf-options">
+                                <label class="tf-option">
+                                    <input type="radio" name="q2" value="TRUE">
+                                    <span>TRUE</span>
+                                </label>
+                                <label class="tf-option">
+                                    <input type="radio" name="q2" value="FALSE">
+                                    <span>FALSE</span>
+                                </label>
+                                <label class="tf-option">
+                                    <input type="radio" name="q2" value="NOT GIVEN">
+                                    <span>NOT GIVEN</span>
+                                </label>
+                            </div>
+                        </div>
+
+                        <div class="tf-question" id="tf-question-3">
+                            <div class="tf-question-line">
+                                <span class="tf-question-number">3</span>
+                                <span class="tf-question-text">It took a long time for the USA and Mexico to agree on a figure for the purchase of California.</span>
+                            </div>
+                            <div class="tf-options">
+                                <label class="tf-option">
+                                    <input type="radio" name="q3" value="TRUE">
+                                    <span>TRUE</span>
+                                </label>
+                                <label class="tf-option">
+                                    <input type="radio" name="q3" value="FALSE">
+                                    <span>FALSE</span>
+                                </label>
+                                <label class="tf-option">
+                                    <input type="radio" name="q3" value="NOT GIVEN">
+                                    <span>NOT GIVEN</span>
+                                </label>
+                            </div>
+                        </div>
+
+                        <div class="tf-question" id="tf-question-4">
+                            <div class="tf-question-line">
+                                <span class="tf-question-number">4</span>
+                                <span class="tf-question-text">When gold was discovered, John Sutter was confident his staff would continue working for him.</span>
+                            </div>
+                            <div class="tf-options">
+                                <label class="tf-option">
+                                    <input type="radio" name="q4" value="TRUE">
+                                    <span>TRUE</span>
+                                </label>
+                                <label class="tf-option">
+                                    <input type="radio" name="q4" value="FALSE">
+                                    <span>FALSE</span>
+                                </label>
+                                <label class="tf-option">
+                                    <input type="radio" name="q4" value="NOT GIVEN">
+                                    <span>NOT GIVEN</span>
+                                </label>
+                            </div>
+                        </div>
+
+                        <div class="tf-question" id="tf-question-5">
+                            <div class="tf-question-line">
+                                <span class="tf-question-number">5</span>
+                                <span class="tf-question-text">The New York Herald article gave details about the areas of California where gold had been found.</span>
+                            </div>
+                            <div class="tf-options">
+                                <label class="tf-option">
+                                    <input type="radio" name="q5" value="TRUE">
+                                    <span>TRUE</span>
+                                </label>
+                                <label class="tf-option">
+                                    <input type="radio" name="q5" value="FALSE">
+                                    <span>FALSE</span>
+                                </label>
+                                <label class="tf-option">
+                                    <input type="radio" name="q5" value="NOT GIVEN">
+                                    <span>NOT GIVEN</span>
+                                </label>
+                            </div>
+                        </div>
+
+                        <div class="tf-question" id="tf-question-6">
+                            <div class="tf-question-line">
+                                <span class="tf-question-number">6</span>
+                                <span class="tf-question-text">The Pony Express was in operation in California before the Gold Rush.</span>
+                            </div>
+                            <div class="tf-options">
+                                <label class="tf-option">
+                                    <input type="radio" name="q6" value="TRUE">
+                                    <span>TRUE</span>
+                                </label>
+                                <label class="tf-option">
+                                    <input type="radio" name="q6" value="FALSE">
+                                    <span>FALSE</span>
+                                </label>
+                                <label class="tf-option">
+                                    <input type="radio" name="q6" value="NOT GIVEN">
+                                    <span>NOT GIVEN</span>
+                                </label>
+                            </div>
+                        </div>
+
+                        <div class="tf-question" id="tf-question-7">
+                            <div class="tf-question-line">
+                                <span class="tf-question-number">7</span>
+                                <span class="tf-question-text">A large number of the people who failed to find gold became farmers.</span>
+                            </div>
+                            <div class="tf-options">
+                                <label class="tf-option">
+                                    <input type="radio" name="q7" value="TRUE">
+                                    <span>TRUE</span>
+                                </label>
+                                <label class="tf-option">
+                                    <input type="radio" name="q7" value="FALSE">
+                                    <span>FALSE</span>
+                                </label>
+                                <label class="tf-option">
+                                    <input type="radio" name="q7" value="NOT GIVEN">
+                                    <span>NOT GIVEN</span>
+                                </label>
+                            </div>
+                        </div>
+
+                        <div class="tf-question" id="tf-question-8">
+                            <div class="tf-question-line">
+                                <span class="tf-question-number">8</span>
+                                <span class="tf-question-text">Mining resulted in chemicals contaminating the soil.</span>
+                            </div>
+                            <div class="tf-options">
+                                <label class="tf-option">
+                                    <input type="radio" name="q8" value="TRUE">
+                                    <span>TRUE</span>
+                                </label>
+                                <label class="tf-option">
+                                    <input type="radio" name="q8" value="FALSE">
+                                    <span>FALSE</span>
+                                </label>
+                                <label class="tf-option">
+                                    <input type="radio" name="q8" value="NOT GIVEN">
+                                    <span>NOT GIVEN</span>
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Questions 9-16: Gap Fill -->
+                    <div class="question" id="question-9">
+                        <div class="question-prompt">
+                            <p><strong>Questions 9-16</strong></p>
+                            <p>Complete the notes below.</p>
+                            <p>Choose ONE WORD ONLY from the passage for each answer.</p>
+                            <p>Write your answers in boxes 9-16 on your answer sheet.</p>
+                        </div>
+
+                        <div class="matching-question-container">
+                            <div class="matching-options-bank">
+                                <div class="drag-item" draggable="true" data-value="gold">gold</div>
+                                <div class="drag-item" draggable="true" data-value="tools">tools</div>
+                                <div class="drag-item" draggable="true" data-value="clothes">clothes</div>
+                                <div class="drag-item" draggable="true" data-value="steamships">steamships</div>
+                                <div class="drag-item" draggable="true" data-value="railway">railway</div>
+                                <div class="drag-item" draggable="true" data-value="tax">tax</div>
+                                <div class="drag-item" draggable="true" data-value="sediment">sediment</div>
+                                <div class="drag-item" draggable="true" data-value="forests">forests</div>
+                            </div>
+
+                            <div class="matching-questions">
+                                <div class="matching-question-item" data-question="9">
+                                    <span>9. The Gold Rush led to the production of leather goods and ________ for miners.</span>
+                                    <div class="drop-zone" data-answer="clothes"></div>
+                                </div>
+                                <div class="matching-question-item" data-question="10">
+                                    <span>10. The Gold Rush led to the development of more sophisticated farming ________.</span>
+                                    <div class="drop-zone" data-answer="tools"></div>
+                                </div>
+                                <div class="matching-question-item" data-question="11">
+                                    <span>11. The Gold Rush led to the construction of more ________.</span>
+                                    <div class="drop-zone" data-answer="steamships"></div>
+                                </div>
+                                <div class="matching-question-item" data-question="12">
+                                    <span>12. San Francisco was chosen as the terminus for the first transcontinental ________.</span>
+                                    <div class="drop-zone" data-answer="railway"></div>
+                                </div>
+                                <div class="matching-question-item" data-question="13">
+                                    <span>13. Some Americans wanted to impose a ________ on foreign miners.</span>
+                                    <div class="drop-zone" data-answer="tax"></div>
+                                </div>
+                                <div class="matching-question-item" data-question="14">
+                                    <span>14. Rivers were blocked by ________ as a result of mining.</span>
+                                    <div class="drop-zone" data-answer="sediment"></div>
+                                </div>
+                                <div class="matching-question-item" data-question="15">
+                                    <span>15. ________ were destroyed as a result of the Gold Rush.</span>
+                                    <div class="drop-zone" data-answer="forests"></div>
+                                </div>
+                                <div class="matching-question-item" data-question="16">
+                                    <span>16. The Gold Rush had a positive effect on industry and agriculture, helping to turn California into an economic ________.</span>
+                                    <div class="drop-zone" data-answer="powerhouse"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bottom Navigation -->
+    <div class="nav-row">
+        <div class="footer__questionWrapper___1tZ46 selected" data-question="1">
+            <button class="footer__questionNo___3WNct">
+                <span class="section-prefix">Q</span>
+                <span class="sectionNr">1</span>
+                <span class="attemptedCount">(0/8)</span>
+            </button>
+            <div class="footer__subquestionWrapper___9GgoP">
+                <button class="subQuestion active" data-subquestion="1">1</button>
+                <button class="subQuestion" data-subquestion="2">2</button>
+                <button class="subQuestion" data-subquestion="3">3</button>
+                <button class="subQuestion" data-subquestion="4">4</button>
+                <button class="subQuestion" data-subquestion="5">5</button>
+                <button class="subQuestion" data-subquestion="6">6</button>
+                <button class="subQuestion" data-subquestion="7">7</button>
+                <button class="subQuestion" data-subquestion="8">8</button>
+            </div>
+        </div>
+
+        <div class="footer__questionWrapper___1tZ46" data-question="9">
+            <button class="footer__questionNo___3WNct">
+                <span class="section-prefix">Q</span>
+                <span class="sectionNr">9</span>
+                <span class="attemptedCount">(0/8)</span>
+            </button>
+            <div class="footer__subquestionWrapper___9GgoP">
+                <button class="subQuestion" data-subquestion="9">9</button>
+                <button class="subQuestion" data-subquestion="10">10</button>
+                <button class="subQuestion" data-subquestion="11">11</button>
+                <button class="subQuestion" data-subquestion="12">12</button>
+                <button class="subQuestion" data-subquestion="13">13</button>
+                <button class="subQuestion" data-subquestion="14">14</button>
+                <button class="subQuestion" data-subquestion="15">15</button>
+                <button class="subQuestion" data-subquestion="16">16</button>
+            </div>
+        </div>
+
+        <button class="footer__deliverButton___3FM07">
+            <i class="fa-check"></i>
+            <span>Finish</span>
+        </button>
+    </div>
+
+    <!-- Highlight Menu -->
+    <div id="highlight-menu" class="highlight-menu">
+        <button class="yellow" onclick="applyHighlight('yellow')">Yellow</button>
+        <button class="blue" onclick="applyHighlight('blue')">Blue</button>
+        <button class="clear" onclick="removeHighlight()">Clear</button>
+    </div>
+
+    <!-- Results Modal -->
+    <div class="modal-overlay hidden" id="results-modal">
+        <div class="modal-content">
+            <h2>Test Results</h2>
+            <div class="results-summary">
+                <p>Your Score: <span id="score">0</span>/16</p>
+                <p>Percentage: <span id="percentage">0</span>%</p>
+            </div>
+            <div class="results-details-container">
+                <div id="results-details"></div>
+            </div>
+            <button class="modal-close-btn" id="close-modal">Close</button>
+        </div>
+    </div>
+
+    <script>
+        // Theme switching functionality
+        const themeButtons = document.querySelectorAll('.theme-btn');
+        const body = document.body;
+
+        themeButtons.forEach(btn => {
+            btn.addEventListener('click', () => {
+                const theme = btn.dataset.theme;
+                
+                // Remove all theme classes
+                body.classList.remove('theme-day', 'theme-night', 'theme-sepia');
+                // Add selected theme
+                body.classList.add(`theme-${theme}`);
+                
+                // Update active button
+                themeButtons.forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+                
+                // Save theme preference
+                localStorage.setItem('theme', theme);
+            });
+        });
+
+        // Load saved theme
+        const savedTheme = localStorage.getItem('theme') || 'day';
+        body.classList.add(`theme-${savedTheme}`);
+        themeButtons.forEach(btn => {
+            if (btn.dataset.theme === savedTheme) {
+                btn.classList.add('active');
+            }
+        });
+
+        // Timer functionality - 20 minutes
+        let totalSeconds = 20 * 60; // 20 minutes
+        let timerInterval;
+        let isPaused = false;
+        let warningShown = false;
+
+        function updateTimer() {
+            if (isPaused) return;
+            
+            totalSeconds--;
+            if (totalSeconds < 0) {
+                clearInterval(timerInterval);
+                alert('Time is up!');
+                showResults();
+                return;
+            }
+            
+            // Show warning when 5 minutes left
+            if (totalSeconds <= 300 && !warningShown) {
+                showTimeWarning();
+                warningShown = true;
+            }
+            
+            const minutes = Math.floor(totalSeconds / 60);
+            const seconds = totalSeconds % 60;
+            const timerElement = document.getElementById('timer');
+            timerElement.textContent = 
+                `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+            
+            // Add warning class for pulsing effect
+            if (totalSeconds <= 300) {
+                timerElement.classList.add('timer-warning');
+            }
+        }
+
+        function showTimeWarning() {
+            const timerElement = document.getElementById('timer');
+            // Create a more noticeable warning
+            timerElement.style.fontWeight = 'bold';
+            timerElement.style.color = '#dc3545';
+            
+            // Show alert
+            if (!isPaused) {
+                alert('Warning: Only 5 minutes remaining!');
+            }
+        }
+
+        function startTimer() {
+            timerInterval = setInterval(updateTimer, 1000);
+        }
+
+        function pauseTimer() {
+            isPaused = !isPaused;
+            const pauseBtn = document.getElementById('pause-btn');
+            if (isPaused) {
+                pauseBtn.innerHTML = `<svg viewBox="0 0 24 24"><polygon points="8,5 8,19 19,12"></polygon></svg>`;
+            } else {
+                pauseBtn.innerHTML = `<svg viewBox="0 0 24 24"><rect x="6" y="4" width="4" height="16"></rect><rect x="14" y="4" width="4" height="16"></rect></svg>`;
+            }
+        }
+
+        function resetTimer() {
+            if (confirm('Are you sure you want to reset the timer?')) {
+                totalSeconds = 20 * 60;
+                warningShown = false;
+                const timerElement = document.getElementById('timer');
+                timerElement.classList.remove('timer-warning');
+                timerElement.style.fontWeight = '';
+                timerElement.style.color = '';
+                document.getElementById('timer').textContent = '20:00';
+                if (!isPaused) {
+                    clearInterval(timerInterval);
+                    startTimer();
+                }
+            }
+        }
+
+        document.getElementById('pause-btn').addEventListener('click', pauseTimer);
+        document.getElementById('reset-btn').addEventListener('click', resetTimer);
+
+        // Start the timer when page loads
+        startTimer();
+
+        // Highlight functionality
+        let currentSelection = null;
+        const highlightMenu = document.getElementById('highlight-menu');
+
+        // Show highlight menu when text is selected
+        document.addEventListener('mouseup', function(e) {
+            const selection = window.getSelection();
+            const selectedText = selection.toString().trim();
+            
+            if (selectedText.length > 0) {
+                currentSelection = selection;
+                showHighlightMenu(e);
+            } else {
+                hideHighlightMenu();
+            }
+        });
+
+        // Hide menu when clicking elsewhere
+        document.addEventListener('mousedown', function(e) {
+            if (!highlightMenu.contains(e.target)) {
+                hideHighlightMenu();
+            }
+        });
+
+        function showHighlightMenu(e) {
+            const range = currentSelection.getRangeAt(0);
+            const rect = range.getBoundingClientRect();
+            
+            highlightMenu.style.left = (rect.left + window.scrollX) + 'px';
+            highlightMenu.style.top = (rect.top + window.scrollY - 40) + 'px';
+            highlightMenu.classList.add('show');
+        }
+
+        function hideHighlightMenu() {
+            highlightMenu.classList.remove('show');
+            currentSelection = null;
+        }
+
+        function applyHighlight(color) {
+            if (!currentSelection) return;
+            
+            try {
+                const range = currentSelection.getRangeAt(0);
+                
+                // Check if selection is within a single node
+                if (range.collapsed) {
+                    return;
+                }
+                
+                // Remove any existing highlights in the selection
+                removeHighlightsInRange(range);
+                
+                // Create highlight span
+                const highlightSpan = document.createElement('span');
+                highlightSpan.className = `highlight ${color}`;
+                highlightSpan.setAttribute('data-highlight-color', color);
+                
+                // Surround the content with highlight span
+                range.surroundContents(highlightSpan);
+                
+                // Clear selection and hide menu
+                currentSelection.removeAllRanges();
+                hideHighlightMenu();
+                
+            } catch (error) {
+                // If surrounding fails (complex selection), use extractContents approach
+                try {
+                    const range = currentSelection.getRangeAt(0);
+                    const content = range.extractContents();
+                    const highlightSpan = document.createElement('span');
+                    highlightSpan.className = `highlight ${color}`;
+                    highlightSpan.setAttribute('data-highlight-color', color);
+                    highlightSpan.appendChild(content);
+                    range.insertNode(highlightSpan);
+                    
+                    currentSelection.removeAllRanges();
+                    hideHighlightMenu();
+                } catch (e) {
+                    console.error('Highlight failed:', e);
+                    alert('Unable to highlight this selection. Please try selecting a different part of the text.');
+                }
+            }
+        }
+
+        function removeHighlight() {
+            if (!currentSelection) return;
+            
+            const range = currentSelection.getRangeAt(0);
+            removeHighlightsInRange(range);
+            
+            currentSelection.removeAllRanges();
+            hideHighlightMenu();
+        }
+
+        function removeHighlightsInRange(range) {
+            // Create a temporary span to get the common ancestor
+            const tempSpan = document.createElement('span');
+            range.surroundContents(tempSpan);
+            
+            // Remove highlight spans within the temp span
+            const highlights = tempSpan.querySelectorAll('.highlight');
+            highlights.forEach(highlight => {
+                const parent = highlight.parentNode;
+                while (highlight.firstChild) {
+                    parent.insertBefore(highlight.firstChild, highlight);
+                }
+                parent.removeChild(highlight);
+            });
+            
+            // Remove the temp span and restore content
+            const parent = tempSpan.parentNode;
+            while (tempSpan.firstChild) {
+                parent.insertBefore(tempSpan.firstChild, tempSpan);
+            }
+            parent.removeChild(tempSpan);
+        }
+
+        // Panel resizing
+        const resizer = document.querySelector('.resizer');
+        const passagePanel = document.querySelector('.passage-panel');
+        const questionsPanel = document.querySelector('.questions-panel');
+
+        let isResizing = false;
+
+        resizer.addEventListener('mousedown', function(e) {
+            isResizing = true;
+            document.body.style.cursor = 'col-resize';
+            document.addEventListener('mousemove', handleMouseMove);
+            document.addEventListener('mouseup', () => {
+                isResizing = false;
+                document.body.style.cursor = '';
+                document.removeEventListener('mousemove', handleMouseMove);
+            });
+        });
+
+        function handleMouseMove(e) {
+            if (!isResizing) return;
+            
+            const containerRect = document.querySelector('.panels-container').getBoundingClientRect();
+            const newLeftWidth = ((e.clientX - containerRect.left) / containerRect.width) * 100;
+            
+            if (newLeftWidth > 20 && newLeftWidth < 80) {
+                passagePanel.style.flex = `0 0 ${newLeftWidth}%`;
+                questionsPanel.style.flex = `0 0 ${100 - newLeftWidth}%`;
+            }
+        }
+
+        // Question navigation
+        const questionWrappers = document.querySelectorAll('.footer__questionWrapper___1tZ46');
+        const subQuestions = document.querySelectorAll('.subQuestion');
+        const questions = document.querySelectorAll('.question');
+
+        questionWrappers.forEach(wrapper => {
+            wrapper.addEventListener('click', function(e) {
+                if (e.target.classList.contains('footer__questionNo___3WNct')) {
+                    // Switch between main questions
+                    questionWrappers.forEach(w => w.classList.remove('selected'));
+                    this.classList.add('selected');
+                    
+                    const questionNum = this.getAttribute('data-question');
+                    questions.forEach(q => {
+                        if (q.id === `question-${questionNum}`) {
+                            q.scrollIntoView({ behavior: 'smooth' });
+                        }
+                    });
+                }
+            });
+        });
+
+        subQuestions.forEach(sub => {
+            sub.addEventListener('click', function() {
+                const subQuestionNum = this.getAttribute('data-subquestion');
+                const questionContainer = this.closest('.footer__questionWrapper___1tZ46');
+                const mainQuestionNum = questionContainer.getAttribute('data-question');
+                
+                // Update active subquestion
+                questionContainer.querySelectorAll('.subQuestion').forEach(s => {
+                    s.classList.remove('active');
+                });
+                this.classList.add('active');
+                
+                // Scroll to the specific question
+                if (mainQuestionNum === '1') {
+                    document.getElementById(`tf-question-${subQuestionNum}`).scrollIntoView({ behavior: 'smooth' });
+                } else if (mainQuestionNum === '9') {
+                    const matchingItem = document.querySelector(`.matching-question-item[data-question="${subQuestionNum}"]`);
+                    if (matchingItem) {
+                        matchingItem.scrollIntoView({ behavior: 'smooth' });
+                    }
+                }
+            });
+        });
+
+        // Go to question functionality
+        document.getElementById('goto-btn').addEventListener('click', function() {
+            const questionNum = parseInt(document.getElementById('goto-input').value);
+            if (questionNum >= 1 && questionNum <= 16) {
+                if (questionNum <= 8) {
+                    // Questions 1-8
+                    document.querySelector('.footer__questionWrapper___1tZ46[data-question="1"]').click();
+                    document.querySelector(`.subQuestion[data-subquestion="${questionNum}"]`).click();
+                } else {
+                    // Questions 9-16
+                    document.querySelector('.footer__questionWrapper___1tZ46[data-question="9"]').click();
+                    document.querySelector(`.subQuestion[data-subquestion="${questionNum}"]`).click();
+                }
+            }
+        });
+
+        // Drag and drop functionality for matching questions
+        const dragItems = document.querySelectorAll('.drag-item');
+        const dropZones = document.querySelectorAll('.drop-zone');
+
+        let draggedItem = null;
+
+        dragItems.forEach(item => {
+            item.addEventListener('dragstart', function() {
+                draggedItem = this;
+                this.classList.add('dragging');
+            });
+
+            item.addEventListener('dragend', function() {
+                this.classList.remove('dragging');
+                draggedItem = null;
+            });
+        });
+
+        dropZones.forEach(zone => {
+            zone.addEventListener('dragover', function(e) {
+                e.preventDefault();
+                this.classList.add('drag-over');
+            });
+
+            zone.addEventListener('dragleave', function() {
+                this.classList.remove('drag-over');
+            });
+
+            zone.addEventListener('drop', function(e) {
+                e.preventDefault();
+                this.classList.remove('drag-over');
+                
+                if (draggedItem && this.children.length === 0) {
+                    const clonedItem = draggedItem.cloneNode(true);
+                    clonedItem.setAttribute('draggable', 'false');
+                    clonedItem.classList.remove('dragging');
+                    this.appendChild(clonedItem);
+                    this.classList.add('filled');
+                    
+                    // Update attempted count
+                    updateAttemptedCount();
+                }
+            });
+        });
+
+        // Update attempted questions count
+        function updateAttemptedCount() {
+            // For questions 1-8 (True/False/Not Given)
+            let tfAnswered = 0;
+            for (let i = 1; i <= 8; i++) {
+                const selectedOption = document.querySelector(`input[name="q${i}"]:checked`);
+                if (selectedOption) {
+                    tfAnswered++;
+                }
+            }
+            
+            const tfWrapper = document.querySelector('.footer__questionWrapper___1tZ46[data-question="1"]');
+            tfWrapper.querySelector('.attemptedCount').textContent = `(${tfAnswered}/8)`;
+            
+            // For questions 9-16 (Matching)
+            let matchingAnswered = 0;
+            for (let i = 9; i <= 16; i++) {
+                const dropZone = document.querySelector(`.matching-question-item[data-question="${i}"] .drop-zone`);
+                if (dropZone && dropZone.children.length > 0) {
+                    matchingAnswered++;
+                }
+            }
+            
+            const matchingWrapper = document.querySelector('.footer__questionWrapper___1tZ46[data-question="9"]');
+            matchingWrapper.querySelector('.attemptedCount').textContent = `(${matchingAnswered}/8)`;
+        }
+
+        // Add event listeners to True/False/Not Given questions
+        const tfOptions = document.querySelectorAll('.tf-option input[type="radio"]');
+        tfOptions.forEach(option => {
+            option.addEventListener('change', updateAttemptedCount);
+        });
+
+        // Finish button functionality
+        document.querySelector('.footer__deliverButton___3FM07').addEventListener('click', function() {
+            showResults();
+        });
+
+        // Results modal functionality
+        function showResults() {
+            // Calculate score
+            let score = 0;
+            const results = [];
+            
+            // Check True/False/Not Given questions (1-8)
+            const correctAnswersTF = {
+                1: 'TRUE',
+                2: 'TRUE', 
+                3: 'NOT GIVEN',
+                4: 'FALSE',
+                5: 'NOT GIVEN',
+                6: 'FALSE',
+                7: 'TRUE',
+                8: 'TRUE'
+            };
+            
+            for (let i = 1; i <= 8; i++) {
+                const selectedOption = document.querySelector(`input[name="q${i}"]:checked`);
+                const userAnswer = selectedOption ? selectedOption.value : 'Not answered';
+                const isCorrect = userAnswer === correctAnswersTF[i];
+                
+                if (isCorrect) score++;
+                
+                results.push({
+                    question: i,
+                    userAnswer: userAnswer,
+                    correctAnswer: correctAnswersTF[i],
+                    isCorrect: isCorrect
+                });
+                
+                // Update question styling
+                const questionElement = document.getElementById(`tf-question-${i}`);
+                if (selectedOption) {
+                    questionElement.classList.remove('correct', 'incorrect');
+                    questionElement.classList.add(isCorrect ? 'correct' : 'incorrect');
+                }
+            }
+            
+            // Check Matching questions (9-16)
+            const correctAnswersMatching = {
+                9: 'clothes',
+                10: 'tools',
+                11: 'steamships',
+                12: 'railway',
+                13: 'tax',
+                14: 'sediment',
+                15: 'forests',
+                16: 'powerhouse'
+            };
+            
+            for (let i = 9; i <= 16; i++) {
+                const dropZone = document.querySelector(`.matching-question-item[data-question="${i}"] .drop-zone`);
+                const userAnswer = dropZone && dropZone.children.length > 0 ? dropZone.children[0].getAttribute('data-value') : 'Not answered';
+                const isCorrect = userAnswer === correctAnswersMatching[i];
+                
+                if (isCorrect) score++;
+                
+                results.push({
+                    question: i,
+                    userAnswer: userAnswer,
+                    correctAnswer: correctAnswersMatching[i],
+                    isCorrect: isCorrect
+                });
+                
+                // Update question styling
+                const questionElement = document.querySelector(`.matching-question-item[data-question="${i}"]`);
+                if (dropZone && dropZone.children.length > 0) {
+                    questionElement.classList.remove('correct', 'incorrect');
+                    questionElement.classList.add(isCorrect ? 'correct' : 'incorrect');
+                }
+            }
+            
+            // Display results
+            document.getElementById('score').textContent = score;
+            document.getElementById('percentage').textContent = Math.round((score / 16) * 100);
+            
+            const resultsDetails = document.getElementById('results-details');
+            resultsDetails.innerHTML = '';
+            
+            results.forEach(result => {
+                const resultRow = document.createElement('div');
+                resultRow.className = `result-row ${result.isCorrect ? '' : 'incorrect'}`;
+                resultRow.innerHTML = `
+                    <span class="q-num">${result.question}</span>
+                    <span class="user-ans">Your answer: ${result.userAnswer}</span>
+                    <span class="correct-ans">Correct: ${result.correctAnswer}</span>
+                `;
+                resultsDetails.appendChild(resultRow);
+            });
+            
+            document.getElementById('results-modal').classList.remove('hidden');
+        }
+
+        document.getElementById('close-modal').addEventListener('click', function() {
+            document.getElementById('results-modal').classList.add('hidden');
+        });
+
+        // Initialize attempted counts
+        updateAttemptedCount();
+    </script>
+</body>
+</html>

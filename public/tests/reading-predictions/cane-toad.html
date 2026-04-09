@@ -1,0 +1,567 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Interactive Reading Practice Test</title>
+    <style>
+        /* General Body Styles */
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        /* Header Styles */
+        header {
+            background-color: #41B6E6;
+            color: #FFD700;
+            padding: 15px;
+            font-size: 1.5em;
+            text-align: center;
+            font-weight: bold;
+            position: fixed;
+            top: 0;
+            width: 100%;
+            z-index: 1000;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        
+        
+
+        
+
+        /* Stopwatch Styles */
+        #stopwatch {
+            position: fixed;
+            top: 60px; /* Positioned below the header */
+            right: 10px;
+            background: #e9e9e9;
+            padding: 10px 20px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            z-index: 1000;
+            font-family: 'Courier New', Courier, monospace;
+            font-size: 1.2em;
+        }
+        
+        /* Main container for the two panels */
+        #main-container {
+            display: flex;
+            flex: 1;
+            margin-top: 100px; /* Adjusted for header and stopwatch */
+            margin-bottom: 50px; /* Space for the footer */
+            overflow: hidden;
+        }
+
+        /* Panel Styles */
+        #passage-container, #questions-container-wrapper {
+            height: 100%;
+            overflow-y: auto;
+            padding: 20px;
+        }
+        
+        #passage-container {
+            background: #f9f9f9;
+            flex-basis: 50%; /* Initial width */
+        }
+        
+        #questions-container-wrapper {
+            background: #f1f1f1;
+            flex-basis: 50%; /* Initial width */
+        }
+        
+        /* Resize Bar Styles */
+        #resize-bar {
+            width: 5px;
+            background: #ccc;
+            cursor: ew-resize;
+            flex-shrink: 0;
+        }
+        
+        /* Footer and Progress Bar Styles */
+        footer {
+            position: fixed;
+            bottom: 0;
+            width: 100%;
+            background: #ffffff;
+            border-top: 1px solid #ccc;
+            padding: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            box-sizing: border-box;
+        }
+
+        #progress-bar {
+            display: flex;
+            gap: 5px;
+        }
+
+        .progress-square {
+            width: 25px;
+            height: 25px;
+            border-radius: 3px;
+            background-color: #BDBDBD; /* Default: Unanswered (grey) */
+        }
+
+        .progress-square.answered {
+            background-color: #FFD700; /* Answered (golden yellow) */
+        }
+
+        .progress-square.correct {
+            background-color: #8BC34A; /* Correct (green) */
+        }
+
+        .progress-square.incorrect {
+            background-color: #F44336; /* Incorrect (red) */
+        }
+
+        /* Button and Results Area Styles */
+        #submit-btn {
+            background-color: #007BFF;
+            color: white;
+            padding: 12px 25px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 1em;
+            transition: background-color 0.3s ease;
+            margin-top: 20px;
+            display: block;
+        }
+        
+        #submit-btn:hover {
+            background-color: #0056b3;
+        }
+
+        #results-area {
+            margin-top: 20px;
+            padding: 15px;
+            background-color: #e3f2fd;
+            border: 1px solid #90caf9;
+            border-radius: 5px;
+            display: none; /* Hidden by default */
+        }
+
+        /* Question Formatting */
+        .question {
+            margin-bottom: 20px;
+        }
+        
+        .question input[type="text"] {
+            width: 200px;
+            padding: 5px;
+            border: 1px solid #ccc;
+            border-radius: 3px;
+        }
+
+        /* T/F/NG Button Styles */
+        .tf-ng-options {
+            display: flex;
+            gap: 10px;
+        }
+
+        .tf-ng-options label {
+            padding: 5px 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            cursor: pointer;
+            background-color: #f0f0f0;
+        }
+        
+        .tf-ng-options input[type="radio"] {
+            display: none;
+        }
+
+        .tf-ng-options input[type="radio"]:checked + label {
+            background-color: #FFD700;
+            border-color: #FFD700;
+        }
+
+        /* Highlighter Pop-up Styles */
+        #highlighter-popup {
+            position: absolute;
+            background-color: #333;
+            color: white;
+            padding: 5px 10px;
+            border-radius: 5px;
+            display: none;
+            z-index: 2000;
+        }
+        #highlighter-popup button {
+            background: none;
+            border: none;
+            color: white;
+            cursor: pointer;
+            padding: 5px;
+        }
+        mark {
+            background-color: yellow;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <span>Reading Comprehension Practice</span>
+        
+    </header>
+
+    <div id="stopwatch">Time Elapsed: 00:00</div>
+    
+    <div id="highlighter-popup">
+        <button id="highlight-btn">Highlight</button>
+        <button id="remove-highlight-btn">Remove Highlight</button>
+    </div>
+
+    <div id="main-container">
+        <div id="passage-container">
+            <div id="passage-content">
+                <h1>READING PASSAGE 1</h1>
+<p>You should spend about 20 minutes on Questions 1–13, which are based on Reading Passage 1 on pages 2 and 3.</p>
+<h2>Australia's Cane Toad Problem</h2>
+<p><b>How a toad introduced into Australia to control pests has itself become a pest</b></p>
+<p>In the north of Australia, there are many sugar cane plantations, which early in the 20th century were being damaged by a particular pest. This was a species of beetle whose larvae, the infant form of the beetle, live underground in the soil in the sugar cane fields. The sugar cane plants were weakened or died because their roots were eaten by the larvae. This had serious economic consequences for sugar cane farmers.</p>
+<p>Modern pesticides were not developed until the 1940s, so farmers had to use what was available at the time. Chemicals like arsenic and copper were used, but these were not only expensive but also stayed in the environment and were poisonous to people, plants, and animals. It was generally acknowledged by government, farmers, and scientists that cheaper and safer methods of pest control had to be found.</p>
+<p>A promising replacement for copper and arsenic was the use of biological control. Farmers already used some forms of biological pest control in the form of predatory and parasitic wasps and flies, insect-eating birds, and plants from different regions or countries to control pests. Common practice was to release these introduced agents into new environments, the expectation being that they would destroy resident pests.</p>
+<p>Some species of toad already had successful records as agents of biological control in gardens. For example, in 19th-century France, toads were sold to gardeners at markets in Paris to eat insect pests in their gardens. In the early 20th century, French sugar cane farmers first took giant toads from South America to control pests in their Caribbean sugar cane plantations. Although there is no evidence that these toads did help to control pests, sugar cane scientists then carried some of these toads from Jamaica and Barbados to Puerto Rico and from there to Hawaii.</p>
+<p>The idea of biological control of pests was not new to Australia. For example, in 1926 there had been a highly successful prevention of the increase of the exotic prickly-pear cactus by the introduction of a moth from Argentina. This success added strength to the argument that biological control was the answer to the sugar cane industry's pest problems. Accordingly, in the early 1930s a decision was taken to introduce the giant South American toads, which in Australia are now commonly called cane toads, into Australian sugar cane plantations.</p>
+<p>In 1935, an Australian entomologist brought 101 cane toads from Hawaii and released them in sugar cane plantations in the north of Australia. However, over the following years it became clear that the cane toads were a failure. There was a fatal flaw in the plan to use them as a form of biological control. This was that earthbound cane toads were expected to eat the mostly flying adult beetles in order to eliminate the soil-dwelling beetle larvae that ate the roots of the cane sugar plants. This, of course, cane toads could not do.</p>
+<p>Prior to their introduction in Australia, there had been very few opponents and only one made his views public. He was a retired former Chief Entomologist from the state government of New South Wales named Walter Froggatt. He forecast that cane toads might become as great a pest in Australia as rabbits. However, Froggatt's peers rebuked him and eminent scientists branded his views 'decidedly pessimistic'.</p>
+<p>It is estimated that today as many as a hundred million cane toads form a toxic infestation which is slowly spreading throughout the land.Cane toads are large, heavily built amphibians. Average-sized adults are 10–15 cm long and weigh more than a kilo. They have large swellings on each shoulder from which they squirt poison when they are threatened. This venom contains 14 different chemicals, but they do not appear to be harmful to humans as no-one has died in Australia from cane toad poison. Until recently there was no understanding of the toxicity of cane toad poison, but it is now clear that freshwater crocodiles, goannas (large lizards), and dingoes (wild dogs) have died after eating cane toads.</p>
+<p>Cane toads compete with native Australian fauna for food, and eat the eggs and young of ground-nesting birds. As their numbers increase, they are taking over more and more of the land where native Australian fauna live.</p>
+<p>The lesson that can be learned from the introduction of cane toads is important. It is wrong to think that such an awful biological event could not be repeated. In this instance, the catalyst was the overwhelming consensus of support for introducing cane toads to Australia. The error was that there was little or no testing of these biological agents before they were introduced to see what unplanned effects they might have on the environment.</p>
+            </div>
+        </div>
+
+        <div id="resize-bar"></div>
+
+        <div id="questions-container-wrapper">
+            <div id="questions-container">
+                <h3>Questions 1–7</h3>
+                <p>Complete the notes below. Choose <strong>ONE WORD ONLY</strong> from the passage for each answer.</p>
+                
+                <div class="question" id="q1">
+                    <label for="q1_input">1. The larvae of a type of ................ were a serious pest in sugar cane fields.</label>
+                    <input type="text" name="q1" id="q1_input">
+                </div>
+                <div class="question" id="q2">
+                    <label for="q2_input">2. Its larvae ate the ................ of the plant.</label>
+                    <input type="text" name="q2" id="q2_input">
+                </div>
+                <p>Chemical pesticides were unsatisfactory because they were:</p>
+                <ul>
+                    <li>poisonous</li>
+                    <li><div class="question" id="q3">
+                        <label for="q3_input">3. ................</label>
+                        <input type="text" name="q3" id="q3_input">
+                    </div></li>
+                    <li>difficult to remove from the ground</li>
+                </ul>
+                <div class="question" id="q4">
+                    <label for="q4_input">4. In the 19th century French ................ used toads.</label>
+                    <input type="text" name="q4" id="q4_input">
+                </div>
+                <div class="question" id="q5">
+                    <label for="q5_input">5. In Australia a ................ stopped the spread of prickly-pear cactus.</label>
+                    <input type="text" name="q5" id="q5_input">
+                </div>
+                <div class="question" id="q6">
+                    <label for="q6_input">6. Cane toads were brought to Australia from ................</label>
+                    <input type="text" name="q6" id="q6_input">
+                </div>
+                <div class="question" id="q7">
+                    <label for="q7_input">7. Cane toads proved to be a ................ as pest control.</label>
+                    <input type="text" name="q7" id="q7_input">
+                </div>
+
+                <hr>
+                
+                <h3>Questions 8–13</h3>
+                <p>Do the following statements agree with the information given in Reading Passage 1?</p>
+                
+                <div class="question" id="q8">
+                    <p>8. The outcome of the introduction of cane toads was immediately obvious.</p>
+                    <div class="tf-ng-options">
+                        <input type="radio" id="q8_true" name="q8" value="TRUE"><label for="q8_true">TRUE</label>
+                        <input type="radio" id="q8_false" name="q8" value="FALSE"><label for="q8_false">FALSE</label>
+                        <input type="radio" id="q8_ng" name="q8" value="NOT GIVEN"><label for="q8_ng">NOT GIVEN</label>
+                    </div>
+                </div>
+                <div class="question" id="q9">
+                    <p>9. Rabbits were introduced to Australia to control weeds.</p>
+                    <div class="tf-ng-options">
+                        <input type="radio" id="q9_true" name="q9" value="TRUE"><label for="q9_true">TRUE</label>
+                        <input type="radio" id="q9_false" name="q9" value="FALSE"><label for="q9_false">FALSE</label>
+                        <input type="radio" id="q9_ng" name="q9" value="NOT GIVEN"><label for="q9_ng">NOT GIVEN</label>
+                    </div>
+                </div>
+                <div class="question" id="q10">
+                    <p>10. Walter Froggatt was criticised for his efforts to stop the introduction of the cane toad to Australia.</p>
+                    <div class="tf-ng-options">
+                        <input type="radio" id="q10_true" name="q10" value="TRUE"><label for="q10_true">TRUE</label>
+                        <input type="radio" id="q10_false" name="q10" value="FALSE"><label for="q10_false">FALSE</label>
+                        <input type="radio" id="q10_ng" name="q10" value="NOT GIVEN"><label for="q10_ng">NOT GIVEN</label>
+                    </div>
+                </div>
+                <div class="question" id="q11">
+                    <p>11. The average size of cane toads has increased since their introduction.</p>
+                    <div class="tf-ng-options">
+                        <input type="radio" id="q11_true" name="q11" value="TRUE"><label for="q11_true">TRUE</label>
+                        <input type="radio" id="q11_false" name="q11" value="FALSE"><label for="q11_false">FALSE</label>
+                        <input type="radio" id="q11_ng" name="q11" value="NOT GIVEN"><label for="q11_ng">NOT GIVEN</label>
+                    </div>
+                </div>
+                <div class="question" id="q12">
+                    <p>12. Australian animals can eat cane toads safely.</p>
+                    <div class="tf-ng-options">
+                        <input type="radio" id="q12_true" name="q12" value="TRUE"><label for="q12_true">TRUE</label>
+                        <input type="radio" id="q12_false" name="q12" value="FALSE"><label for="q12_false">FALSE</label>
+                        <input type="radio" id="q12_ng" name="q12" value="NOT GIVEN"><label for="q12_ng">NOT GIVEN</label>
+                    </div>
+                </div>
+                <div class="question" id="q13">
+                    <p>13. In many places cane toads are gaining control of the habitats of Australian fauna.</p>
+                    <div class="tf-ng-options">
+                        <input type="radio" id="q13_true" name="q13" value="TRUE"><label for="q13_true">TRUE</label>
+                        <input type="radio" id="q13_false" name="q13" value="FALSE"><label for="q13_false">FALSE</label>
+                        <input type="radio" id="q13_ng" name="q13" value="NOT GIVEN"><label for="q13_ng">NOT GIVEN</label>
+                    </div>
+                </div>
+
+                <button id="submit-btn">Submit Answers</button>
+                <div id="results-area"></div>
+            </div>
+        </div>
+    </div>
+    
+    <footer>
+        <div id="progress-bar"></div>
+    </footer>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            // --- USER: EDIT THIS SECTION WITH YOUR ANSWERS ---
+            const answerKey = {
+                q1: "beetle",
+                q2: "roots",
+                q3: "expensive",
+                q4: "gardeners",
+                q5: "moth",
+                q6: "Hawaii",
+                q7: "failure",
+                q8: "FALSE",
+                q9: "NOT GIVEN",
+                q10: "TRUE",
+                q11: "NOT GIVEN",
+                q12: "FALSE",
+                q13: "TRUE"
+            };
+            // ----------------------------------------------------
+
+            const stopwatchElement = document.getElementById('stopwatch');
+            const questionsContainer = document.getElementById('questions-container');
+            const submitBtn = document.getElementById('submit-btn');
+            const resultsArea = document.getElementById('results-area');
+            const progressBar = document.getElementById('progress-bar');
+            
+            let stopwatchInterval;
+            let secondsElapsed = 0;
+            let submitted = false;
+
+            // --- Stopwatch Functionality ---
+            function startStopwatch() {
+                stopwatchInterval = setInterval(() => {
+                    secondsElapsed++;
+                    const minutes = Math.floor(secondsElapsed / 60).toString().padStart(2, '0');
+                    const seconds = (secondsElapsed % 60).toString().padStart(2, '0');
+                    stopwatchElement.textContent = `Time Elapsed: ${minutes}:${seconds}`;
+                }, 1000);
+            }
+
+            function stopStopwatch() {
+                clearInterval(stopwatchInterval);
+            }
+
+            // --- Progress Tracker ---
+            const questions = Array.from(questionsContainer.querySelectorAll('.question'));
+            questions.forEach((question, index) => {
+                const square = document.createElement('div');
+                square.className = 'progress-square';
+                square.id = `progress-${question.id}`;
+                progressBar.appendChild(square);
+
+                const inputs = question.querySelectorAll('input');
+                inputs.forEach(input => {
+                    input.addEventListener('input', () => {
+                        if (submitted) return;
+                        square.classList.add('answered');
+                    });
+                });
+            });
+
+            // --- Submission and Evaluation ---
+            submitBtn.addEventListener('click', () => {
+                if (submitted) return;
+                submitted = true;
+                stopStopwatch();
+
+                let score = 0;
+                let incorrectAnswers = [];
+
+                questions.forEach(question => {
+                    const questionId = question.id;
+                    const correctAnswer = answerKey[questionId].trim().toLowerCase();
+                    const progressSquare = document.getElementById(`progress-${questionId}`);
+                    let userAnswer = '';
+                    
+                    const textInput = question.querySelector('input[type="text"]');
+                    const radioInput = question.querySelector('input[type="radio"]:checked');
+                    
+                    if (textInput) {
+                        userAnswer = textInput.value.trim().toLowerCase();
+                        textInput.disabled = true;
+                    } else if (radioInput) {
+                        userAnswer = radioInput.value.trim().toLowerCase();
+                        question.querySelectorAll('input[type="radio"]').forEach(radio => radio.disabled = true);
+                    }
+
+                    if (userAnswer === correctAnswer) {
+                        score++;
+                        progressSquare.classList.add('correct');
+                    } else {
+                        progressSquare.classList.add('incorrect');
+                        incorrectAnswers.push({
+                            questionNumber: questionId.replace('q', ''),
+                            userAnswer: textInput ? textInput.value : (radioInput ? radioInput.value : "No answer"),
+                            correctAnswer: answerKey[questionId]
+                        });
+                    }
+                });
+
+                // Display Results
+                const finalTime = stopwatchElement.textContent.replace('Time Elapsed: ', '');
+                let resultsHTML = `<h3>Results</h3>`;
+                resultsHTML += `<p><strong>Time Taken:</strong> ${finalTime}</p>`;
+                resultsHTML += `<p><strong>Your Score:</strong> ${score}/${questions.length}</p>`;
+
+                if (incorrectAnswers.length > 0) {
+                    resultsHTML += '<h4>Incorrect Answers Review:</h4><ul>';
+                    incorrectAnswers.forEach(item => {
+                        resultsHTML += `<li><strong>Question ${item.questionNumber}:</strong> You answered "<em>${item.userAnswer}</em>". The correct answer is "<strong>${item.correctAnswer}</strong>".</li>`;
+                    });
+                    resultsHTML += '</ul>';
+                } else {
+                    resultsHTML += '<p><strong>Congratulations! All answers are correct!</strong></p>';
+                }
+
+                resultsArea.innerHTML = resultsHTML;
+                resultsArea.style.display = 'block';
+                submitBtn.style.display = 'none';
+            });
+            
+            // --- Resizable Panels Functionality ---
+            const resizeBar = document.getElementById('resize-bar');
+            const leftPanel = document.getElementById('passage-container');
+            const rightPanel = document.getElementById('questions-container-wrapper');
+
+            let isResizing = false;
+
+            resizeBar.addEventListener('mousedown', (e) => {
+                isResizing = true;
+                document.addEventListener('mousemove', handleMouseMove);
+                document.addEventListener('mouseup', () => {
+                    isResizing = false;
+                    document.removeEventListener('mousemove', handleMouseMove);
+                });
+            });
+
+            function handleMouseMove(e) {
+                if (!isResizing) return;
+                const containerRect = document.getElementById('main-container').getBoundingClientRect();
+                const leftPanelWidth = e.clientX - containerRect.left;
+                const rightPanelWidth = containerRect.width - leftPanelWidth - resizeBar.offsetWidth;
+
+                leftPanel.style.flexBasis = `${leftPanelWidth}px`;
+                rightPanel.style.flexBasis = `${rightPanelWidth}px`;
+            }
+
+            // --- Highlighter Functionality ---
+            const highlighterPopup = document.getElementById('highlighter-popup');
+            const highlightBtn = document.getElementById('highlight-btn');
+            const removeHighlightBtn = document.getElementById('remove-highlight-btn');
+            const contentAreas = [document.getElementById('passage-content'), document.getElementById('questions-container')];
+            let currentSelection = null;
+            let currentMark = null;
+
+            function showPopup(x, y, isMarked) {
+                highlighterPopup.style.left = `${x}px`;
+                highlighterPopup.style.top = `${y}px`;
+                highlighterPopup.style.display = 'block';
+                highlightBtn.style.display = isMarked ? 'none' : 'inline-block';
+                removeHighlightBtn.style.display = isMarked ? 'inline-block' : 'none';
+            }
+
+            contentAreas.forEach(area => {
+                area.addEventListener('mouseup', (e) => {
+                    const selection = window.getSelection();
+                    if (selection.toString().trim().length > 0) {
+                        currentSelection = selection.getRangeAt(0);
+                        showPopup(e.pageX + 5, e.pageY + 5, false);
+                    } else {
+                        highlighterPopup.style.display = 'none';
+                    }
+                });
+
+                area.addEventListener('click', (e) => {
+                    if (e.target.tagName === 'MARK') {
+                        currentMark = e.target;
+                        showPopup(e.pageX + 5, e.pageY + 5, true);
+                    }
+                });
+            });
+
+            highlightBtn.addEventListener('click', () => {
+                if (currentSelection) {
+                    const mark = document.createElement('mark');
+                    mark.appendChild(currentSelection.extractContents());
+                    currentSelection.insertNode(mark);
+                    currentSelection = null;
+                    highlighterPopup.style.display = 'none';
+                }
+            });
+            
+            removeHighlightBtn.addEventListener('click', () => {
+                if (currentMark) {
+                    const parent = currentMark.parentNode;
+                    while (currentMark.firstChild) {
+                        parent.insertBefore(currentMark.firstChild, currentMark);
+                    }
+                    parent.removeChild(currentMark);
+                    currentMark = null;
+                    highlighterPopup.style.display = 'none';
+                }
+            });
+
+            document.addEventListener('mousedown', (e) => {
+                if (!highlighterPopup.contains(e.target)) {
+                    highlighterPopup.style.display = 'none';
+                }
+            });
+
+
+            // Start the stopwatch when the page loads
+            startStopwatch();
+        });
+    </script>
+</body>
+</html>

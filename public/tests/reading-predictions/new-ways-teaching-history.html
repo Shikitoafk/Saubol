@@ -1,0 +1,583 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>New ways of teaching history - Reading Practice</title>
+    <style>
+        :root {
+            --brand: #2563eb;
+            --ink: #111827;
+            --bg: #f7f7fb;
+            --ok: #16a34a;
+            --bad: #dc2626;
+            --muted: #6b7280;
+        }
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+        body {
+            font-family: Inter, system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+            background: var(--bg);
+            color: var(--ink);
+            line-height: 1.6;
+        }
+        .container {
+            display: flex;
+            gap: 20px;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px 20px 96px;
+        }
+        .card {
+            background: #fff;
+            border-radius: 12px;
+            box-shadow: 0 4px 14px rgba(0,0,0,.08);
+            padding: 20px;
+            overflow: auto;
+            max-height: 90vh;
+        }
+        .passage {
+            flex: 1;
+        }
+        .questions {
+            flex: 1;
+        }
+        h1 {
+            color: var(--ink);
+            border-bottom: 2px solid var(--brand);
+            padding-bottom: 10px;
+            margin: 0 0 14px;
+        }
+        h2 {
+            color: var(--brand);
+            margin: 22px 0 10px;
+        }
+        h3 {
+            margin: 8px 0 0;
+        }
+        .muted {
+            color: var(--muted);
+        }
+        /* Timer */
+        .timerWrap {
+            position: fixed;
+            top: 16px;
+            right: 16px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            z-index: 10;
+        }
+        .timer {
+            background: var(--brand);
+            color: #fff;
+            padding: 10px 14px;
+            border-radius: 8px;
+            font-weight: 700;
+        }
+        .tbtn {
+            border: 1px solid #e5e7eb;
+            background: #fff;
+            color: #111;
+            padding: 8px 10px;
+            border-radius: 8px;
+            cursor: pointer;
+        }
+        /* Telegram button */
+        .telegramBtn {
+            position: fixed;
+            top: 16px;
+            left: 16px;
+            background: #0088cc;
+            color: #fff;
+            padding: 10px 14px;
+            border-radius: 8px;
+            font-weight: 700;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            z-index: 10;
+        }
+        .telegramBtn:hover {
+            filter: brightness(.95);
+        }
+        /* Questions */
+        .qsection {
+            margin: 14px 0 6px;
+        }
+        .qblock {
+            padding: 14px;
+            border: 1px solid #e5e7eb;
+            border-radius: 12px;
+            margin: 12px 0;
+        }
+        .qhead {
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+        .options {
+            margin-top: 8px;
+        }
+        .options label {
+            display: block;
+            margin: 6px 0;
+        }
+        select, input[type="text"] {
+            padding: 8px;
+            border-radius: 8px;
+            border: 1px solid #e5e7eb;
+            width: 100%;
+            max-width: 520px;
+        }
+        .submit {
+            background: var(--brand);
+            color: #fff;
+            border: 0;
+            padding: 12px 18px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 16px;
+            margin-top: 16px;
+        }
+        .submit:hover {
+            filter: brightness(.95);
+        }
+        /* Results */
+        .results {
+            display: none;
+            margin-top: 18px;
+            background: #f8f9fa;
+            border-radius: 10px;
+            padding: 16px;
+        }
+        .results ul {
+            list-style: none;
+            padding: 0;
+            margin: 8px 0 0;
+        }
+        .results li {
+            margin: 6px 0;
+            padding: 8px;
+            border-radius: 8px;
+        }
+        .results li.ok {
+            background: #ecfdf5;
+            color: #065f46;
+        }
+        .results li.bad {
+            background: #fef2f2;
+            color: #991b1b;
+        }
+        .results .meta {
+            font-size: 13px;
+            color: var(--muted);
+        }
+        /* Footer chips */
+        .footerNav {
+            position: fixed;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: #fff;
+            border-top: 1px solid #e5e7eb;
+            padding: 10px 12px;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            align-items: center;
+            z-index: 9;
+        }
+        .chip {
+            border: 1px solid #d1d5db;
+            background: #fff;
+            color: #111;
+            padding: 6px 10px;
+            border-radius: 999px;
+            cursor: pointer;
+            font-size: 14px;
+        }
+        .chip.answered {
+            border-color: #9ca3af;
+            background: #f3f4f6;
+        }
+        /* Highlights */
+        .palette {
+            position: fixed;
+            background: #fff;
+            padding: 8px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,.12);
+            display: none;
+            z-index: 9;
+        }
+        .hbtn {
+            background: var(--brand);
+            color: #fff;
+            border: 0;
+            padding: 6px 10px;
+            border-radius: 6px;
+            margin: 4px 4px 0 0;
+            cursor: pointer;
+        }
+        .highlight {
+            background: yellow;
+        }
+        .passage p {
+            margin-bottom: 16px;
+        }
+    </style>
+</head>
+<body>
+    <!-- Telegram Button -->
+    
+
+    <div class="timerWrap">
+        <div class="timer" id="timer">20:00</div>
+        <button class="tbtn" id="pauseBtn">⏸️ Pause</button>
+        <button class="tbtn" id="resumeBtn" disabled>▶️ Resume</button>
+    </div>
+
+    <!-- Highlight palettes -->
+    <div class="palette" id="pPalette">
+        <button class="hbtn" data-color="yellow">Yellow</button>
+        <button class="hbtn" data-color="lightgreen">Green</button>
+        <button class="hbtn" data-color="lightblue">Blue</button>
+        <button class="hbtn" data-color="pink">Pink</button>
+        <button class="hbtn" data-color="orange">Orange</button>
+        <button class="hbtn" id="clearPMarks">Clear</button>
+    </div>
+    <div class="palette" id="qPalette">
+        <button class="hbtn" data-color="yellow">Yellow</button>
+        <button class="hbtn" data-color="lightgreen">Green</button>
+        <button class="hbtn" data-color="lightblue">Blue</button>
+        <button class="hbtn" data-color="pink">Pink</button>
+        <button class="hbtn" data-color="orange">Orange</button>
+        <button class="hbtn" id="clearQMarks">Clear</button>
+    </div>
+
+    <div class="container">
+        <div class="card passage" id="passageCard">
+            <h1>New ways of teaching history</h1>
+            <div class="muted">You should spend about 20 minutes on Questions 1–13.</div>
+
+            <div id="passage">
+                <p><strong>A.</strong> In technology and the media-driven world, it's becoming increasingly difficult to get our students' attention and keep them absorbed in classroom discussions. This generation, in particular, has brought a unique set of challenges to the educational table. Whereas youth are easily enraptured by high-definition television, computers, Pods, video games, and cell phones, they are less than enthralled by what to them are obsolete textbooks and boring classroom lectures. The question of how to teach history in a digital age is often contentious. On the one side, the old guard thinks the professional standards history is in mortal danger from flash-in-the-pan challenges by the digital that is all show and no substance. On the other side, the self-styled "disruptors" offer overblown rhetoric about how digital technology has changed everything while the moribund profession obstructs all progress in the name of outdated ideals. At least, that's a parody (maybe not much of one) of how the debate proceeds. Both supporters and opponents of the digital share more disciplinary common ground than either admits.</p>
+
+                <p><strong>B.</strong> When provided with merely a textbook as a supplemental learning tool, test results have revealed that most students fail to pinpoint the significance of historical events and individuals. Fewer still are able to cite and substantiate primary historical sources. What does this say about the way our educators are presenting information? The quotation comes from a report of a 1917 test of 668 Texas students. Less than 10 per cent of school-age children attended high school in 1917; today, enrollments are nearly universal. The whole world has turned on its head during the last century but one thing has stayed the same: Young people remain woefully ignorant about history reflected from their history tests. Guess what? Historians are ignorant too, especially when we equate historical knowledge with the "Jeopardy" Daily Double. In a test, those specializing in American history did just fine. But those with specialities in medieval, European and African history failed miserably when confronted by items about Fort Ticonderoga, the Olive Branch Petition, or the Quebec Act–all taken from a typical textbook. According to the testers, the results from the recent National Assessment in History, like scores from earlier tests, show that young people are "abysmally ignorant" of their own history. Invoking the tragedy of last September, historian Diane Ravitch hitched her worries about our future to the idea that our nation's strength is endangered by youth who do poorly on such tests. But if she were correct, we would have gone down the tubes in 1917!</p>
+
+                <p><strong>C.</strong> There is a huge difference between saying "Kids don't know the history we want them to know" and saying "Kids don't know history at all." Historical knowledge burrows itself into our cultural pores even if young people can't marshal it when faced with a multiple-choice test. If we weren't such hypocrites (or maybe if we were better historians) we'd have to admit that today's students follow in our own footsteps. For too long we've fantasized that by rewriting textbooks we could change how history is learned. The problem, however, is not the content of textbooks but the very idea of them. No human mind could retain the information crammed into these books in 1917, and it can do no better now. If we have learned anything from history that can be applied to every time period, it is that the only constant changes. The teaching of history, or any subject for that matter, is no exception. The question is no longer whether to bring new technologies into everyday education; now, the question is which technologies are most suitable for the range of topics covered in junior high and high school history classrooms. Fortunately, technology has provided us with opportunities to present our Civil War lesson plans or our American Revolution lesson plans in a variety of new ways.</p>
+
+                <p><strong>D.</strong> Teachers can easily target and engage the learners of this generation by effectively combining the study of history with innovative multimedia. PowerPoint and presentations, in particular, can expand the scope of traditional classroom discussion by helping teachers to explain abstract concepts while accommodating students' unique learning styles. PowerPoint study units that have been pre-made for history classrooms include all manner of photos, prints, maps, audio clips, video clips and primary sources which help to make learning interactive and stimulating. Presenting lessons in these enticing formats helps technology-driven students retain the historical information they'll need to know for standard exams.</p>
+
+                <p><strong>E.</strong> Whether you're covering Revolutionary War lesson plans or World War II lesson plans, PowerPoint study units are available in formats to suit the needs of your classroom. Multimedia teaching instruments like PowerPoint software are getting positive results the world over, framing conventional lectures with captivating written, auditory and visual content that helps students recall names, dates and causal relationships within a historical context.</p>
+
+                <p><strong>F.</strong> History continues to show us that new times bring new realities. Education is no exception to the rule. The question is not whether to bring technology into the educational environment. Rather, the question is which technologies are suitable for U.S. and world history subjects, from Civil War lesson plans to World War II lesson plans. Whether you're covering your American Revolution lesson plans or your Cold War lesson plans, PowerPoint presentations are available in pre-packaged formats to suit your classroom's needs.</p>
+
+                <p><strong>G.</strong> Meanwhile, some academic historians hold a different view on the use of technology in teaching history. One reason they hold is that not all facts can be recorded by film or videos and literature is relatively feasible in this case. Another challenge they have to be faced with is the painful process of learning a new technology like the making of PowerPoint and the editing of audio and video clips which is also reasonable especially to some elderly historians.</p>
+            </div>
+        </div>
+
+        <div class="card questions">
+            <h1>Questions</h1>
+            <div id="qroot"></div>
+            <button class="submit" id="submitBtn">Submit Answers</button>
+            <div class="results" id="results">
+                <h2>Your Results</h2>
+                <div id="score" class="meta"></div>
+                <ul id="answers"></ul>
+            </div>
+        </div>
+    </div>
+
+    <div class="footerNav" id="footerNav"></div>
+
+    <script>
+        /* =======================
+           CONFIG (answers included)
+           ======================= */
+        const CONFIG = {
+            durationMinutes: 20,
+            showFooterNavigator: true,
+            sections: [
+                /* 1-7 Headings */
+                {
+                    type: "headings",
+                    heading: "Questions 1-7",
+                    instructions: [
+                        "Reading Passage has seven paragraphs, A-G.",
+                        "Choose the correct heading for paragraphs A-G from the list of headings below.",
+                        "Write the appropriate number, i-x, in boxes 1-7 on your answer sheet."
+                    ],
+                    legend: {
+                        i: "unavoidable changing facts to be considered when picking up technology means",
+                        ii: "A debatable place where the new technologies stand in for history teaching",
+                        iii: "Hard to attract students in traditional ways of teaching history",
+                        iv: "Display of the use of emerging multimedia as teaching tools",
+                        v: "Both students and professionals as candidates did not produce decent results",
+                        vi: "A good concrete example illustrated to show how multimedia animates the history class",
+                        vii: "The comparisons of the new technologies applied in history class",
+                        viii: "Enormous breakthroughs in new technologies",
+                        ix: "Resistance of using new technologies from certain historian",
+                        x: "Decisions needed on which technique to be used for history teaching instead of improvement textbooks"
+                    },
+                    items: [
+                        { id: 1, prompt: "Paragraph A", correct: "ii" },
+                        { id: 2, prompt: "Paragraph B", correct: "v" },
+                        { id: 3, prompt: "Paragraph C", correct: "x" },
+                        { id: 4, prompt: "Paragraph D", correct: "iv" },
+                        { id: 5, prompt: "Paragraph E", correct: "vi" },
+                        { id: 6, prompt: "Paragraph F", correct: "i" },
+                        { id: 7, prompt: "Paragraph G", correct: "ix" }
+                    ]
+                },
+
+                /* 8-10 Yes/No/Not Given */
+                {
+                    type: "ynng",
+                    heading: "Questions 8-10",
+                    instructions: [
+                        "Do the following statements agree with the information given in Reading Passage?",
+                        "Write YES if the statement agrees with the writer",
+                        "Write NO if the statement does not agree with the writer", 
+                        "Write NOT GIVEN if there is no information about this in the passage"
+                    ],
+                    items: [
+                        { 
+                            id: 8, 
+                            prompt: "Modern people are better at memorizing historical information compared with their ancestors.", 
+                            correct: "NO" 
+                        },
+                        { 
+                            id: 9, 
+                            prompt: "New technologies applied in history teaching are more vivid for students to memorize the details of historical events.", 
+                            correct: "YES" 
+                        },
+                        { 
+                            id: 10, 
+                            prompt: "Conventional ways like literature are gradually out of fashion as time goes by.", 
+                            correct: "NOT GIVEN" 
+                        }
+                    ]
+                },
+
+                /* 11-13 Summary completion */
+                {
+                    type: "summary",
+                    heading: "Questions 11-13",
+                    instructions: [
+                        "Complete the following summary of the paragraphs of Reading Passage,",
+                        "using no more than three words from the Reading Passage for each answer."
+                    ],
+                    items: [
+                        { 
+                            id: 11, 
+                            prompt: "Contemporary students can be aimed at without many difficulties by integrating studying history with __________.", 
+                            correct: ["innovative multimedia", "multimedia"] 
+                        },
+                        { 
+                            id: 12, 
+                            prompt: "Conventional classroom discussion is specially extended by two ways to assist teachers interpret __________ and at the same time retain students' distinct learning modes.", 
+                            correct: ["abstract concepts"] 
+                        },
+                        { 
+                            id: 13, 
+                            prompt: "PowerPoint prepared beforehand comprising a wide variety of elements make __________ learning feasible classes like this can also be helpful in taking required tests.", 
+                            correct: ["interactive and stimulating"] 
+                        }
+                    ]
+                }
+            ]
+        };
+
+        /* =======================
+           RENDER ENGINE
+           ======================= */
+        const qroot = document.getElementById('qroot');
+        const navIds = [];
+        const answersMap = {};
+        const typesMap = {};
+
+        function sectionHeader(t){ const h=document.createElement('h2'); h.className='qsection'; h.textContent=t; return h; }
+
+        /* Headings i-x */
+        function renderHeadings(sec){
+            qroot.appendChild(sectionHeader(sec.heading));
+            (sec.instructions||[]).forEach(tx=>{ const p=document.createElement('p'); p.className='muted'; p.textContent=tx; qroot.appendChild(p); });
+
+            const legend=document.createElement('div'); legend.className='qblock';
+            legend.innerHTML = `<div class="qhead"><strong>List of Headings</strong></div>
+            <div class="options">
+                ${Object.entries(sec.legend).map(([k,v])=>`<div><b>${k}.</b> ${v}</div>`).join('')}
+            </div>`;
+            qroot.appendChild(legend);
+
+            sec.items.forEach(it=>{
+                const b=document.createElement('div'); b.className='qblock'; b.id=`anchor-${it.id}`;
+                const sel=`<select id="q${it.id}" name="q${it.id}">
+                    <option value="">—</option>${Object.keys(sec.legend).map(k=>`<option value="${k}">${k}</option>`).join('')}
+                </select>`;
+                b.innerHTML=`<div class="qhead"><strong>${it.id}.</strong> ${it.prompt}</div><div class="options">${sel}</div>`;
+                qroot.appendChild(b); navIds.push(it.id); answersMap[it.id]=it.correct; typesMap[it.id]='head';
+            });
+        }
+
+        /* Yes/No/Not Given */
+        function renderYNNG(sec){
+            qroot.appendChild(sectionHeader(sec.heading));
+            (sec.instructions||[]).forEach(tx=>{ const p=document.createElement('p'); p.className='muted'; p.textContent=tx; qroot.appendChild(p); });
+
+            sec.items.forEach(it=>{
+                const b=document.createElement('div'); b.className='qblock'; b.id=`anchor-${it.id}`;
+                const sel=`<select id="q${it.id}" name="q${it.id}">
+                    <option value="">—</option>
+                    <option value="YES">YES</option>
+                    <option value="NO">NO</option>
+                    <option value="NOT GIVEN">NOT GIVEN</option>
+                </select>`;
+                b.innerHTML=`<div class="qhead"><strong>${it.id}.</strong> ${it.prompt}</div><div class="options">${sel}</div>`;
+                qroot.appendChild(b); navIds.push(it.id); answersMap[it.id]=it.correct; typesMap[it.id]='ynng';
+            });
+        }
+
+        /* Summary completion */
+        function renderSummary(sec){
+            qroot.appendChild(sectionHeader(sec.heading));
+            (sec.instructions||[]).forEach(tx=>{ const p=document.createElement('p'); p.className='muted'; p.textContent=tx; qroot.appendChild(p); });
+
+            sec.items.forEach(it=>{
+                const b=document.createElement('div'); b.className='qblock'; b.id=`anchor-${it.id}`;
+                b.innerHTML = `<div class="qhead"><strong>${it.id}.</strong> ${it.prompt}</div>
+                            <div class="options"><input type="text" id="q${it.id}" placeholder="NO MORE THAN THREE WORDS"></div>`;
+                qroot.appendChild(b); navIds.push(it.id); answersMap[it.id]=it.correct; typesMap[it.id]='summary';
+            });
+        }
+
+        /* Build UI */
+        CONFIG.sections.forEach(sec=>{
+            if (sec.type==='headings') renderHeadings(sec);
+            if (sec.type==='ynng') renderYNNG(sec);
+            if (sec.type==='summary') renderSummary(sec);
+        });
+
+        /* Footer chips */
+        const footerNav=document.getElementById('footerNav');
+        footerNav.innerHTML='<strong class="muted">Questions:</strong>';
+        [...new Set(navIds)].sort((a,b)=>a-b).forEach(id=>{
+            const chip=document.createElement('button'); chip.className='chip'; chip.id=`chip-${id}`; chip.textContent=id;
+            chip.addEventListener('click',()=>{ document.getElementById(`anchor-${id}`).scrollIntoView({behavior:'smooth',block:'center'}); });
+            footerNav.appendChild(chip);
+        });
+        function markChipAnswered(id, answered){
+            const chip=document.getElementById(`chip-${id}`); if(chip) chip.classList.toggle('answered', !!answered);
+        }
+        document.addEventListener('change',(e)=>{
+            const m=String(e.target.name||e.target.id||'').match(/q(\d+)/);
+            const id=m?+m[1]:null; if(!id) return;
+            const answered=(e.target.type==='radio') ? (!!document.querySelector(`input[name='q${id}']:checked`))
+                        : (e.target.value.trim().length>0);
+            markChipAnswered(id, answered);
+        });
+
+        /* Timer */
+        let timeLeft=Math.max(1,20)*60;
+        const timer=document.getElementById('timer');
+        const pauseBtn=document.getElementById('pauseBtn');
+        const resumeBtn=document.getElementById('resumeBtn');
+        let paused=false, iv;
+        const fmt=s=>`${String(Math.floor(s/60)).padStart(2,'0')}:${String(s%60).padStart(2,'0')}`;
+        function startTick(){ if(iv) clearInterval(iv);
+            iv=setInterval(()=>{ if(paused) return; timer.textContent=fmt(timeLeft); if(timeLeft<=0){ clearInterval(iv); alert("Time's up! Submitting."); submit(); } timeLeft--; },1000);
+        }
+        timer.textContent=fmt(timeLeft); startTick();
+        pauseBtn.addEventListener('click',()=>{ paused=true; pauseBtn.disabled=true; resumeBtn.disabled=false; });
+        resumeBtn.addEventListener('click',()=>{ paused=false; pauseBtn.disabled=false; resumeBtn.disabled=true; });
+
+        /* Submit & grading */
+        document.getElementById('submitBtn').addEventListener('click', submit);
+        function normLower(s){ return (s||'').trim().replace(/\s+/g,' ').toLowerCase(); }
+        function submit(){
+            paused=true; pauseBtn.disabled=true; resumeBtn.disabled=false;
+            let total=0, graded=0, correctCount=0;
+            const out=[];
+            const ids=[1,2,3,4,5,6,7,8,9,10,11,12,13];
+
+            ids.forEach(key=>{
+                total++;
+                const type=typesMap[key];
+                let user='', ok=false;
+
+                if(type==='head' || type==='ynng'){
+                    const el=document.getElementById('q'+key);
+                    user = el? el.value : '';
+                    ok = normLower(user)===normLower(answersMap[key]);
+                } else if(type==='summary'){
+                    const el=document.getElementById('q'+key);
+                    user = el? el.value : '';
+                    const acc = Array.isArray(answersMap[key])?answersMap[key]:[answersMap[key]];
+                    ok = acc.map(normLower).includes(normLower(user));
+                }
+
+                if(user) graded++;
+                if(ok) correctCount++;
+                const corrDisp = Array.isArray(answersMap[key])?answersMap[key].join(' / '):String(answersMap[key]);
+                out.push({label:key, status: ok? '✓ Correct':'✗ Incorrect', user: user||'No answer', correct: corrDisp});
+            });
+
+            document.getElementById('score').innerHTML = `Graded ${graded} of ${total} • Score: ${correctCount}/${graded||total}`;
+            document.getElementById('answers').innerHTML = out.map(it=>`<li class="${/Correct/.test(it.status)?'ok':'bad'}">Q${it.label}: ${it.status} — Your: <b>${it.user}</b> | Correct: <b>${it.correct}</b></li>`).join('');
+            const r=document.getElementById('results'); r.style.display='block'; r.scrollIntoView({behavior:'smooth'});
+        }
+
+        /* Highlights */
+        const passageCard=document.getElementById('passageCard');
+        const pPalette=document.getElementById('pPalette');
+        passageCard.addEventListener('mouseup',(e)=>{
+            const sel=window.getSelection(); if(!sel||sel.toString().trim().length===0) return;
+            if(!passageCard.contains(sel.getRangeAt(0).commonAncestorContainer)) return;
+            const r=passageCard.getBoundingClientRect(), x=Math.min(e.clientX-r.left,r.width-10), y=Math.max(0,e.clientY-r.top-40);
+            pPalette.style.left=(r.left+x)+'px'; pPalette.style.top=(r.top+y)+'px'; pPalette.style.display='block';
+        });
+        document.addEventListener('mousedown',(e)=>{ if(!pPalette.contains(e.target)) pPalette.style.display='none'; });
+        pPalette.querySelectorAll('.hbtn[data-color]').forEach(btn=>{
+            btn.addEventListener('click',()=>{ markSelection(btn.dataset.color, passageCard); pPalette.style.display='none'; });
+        });
+        document.getElementById('clearPMarks').addEventListener('click',()=>{
+            passageCard.querySelectorAll('span.highlight').forEach(n=>{ const p=n.parentNode; while(n.firstChild) p.insertBefore(n.firstChild,n); p.removeChild(n); p.normalize(); });
+            pPalette.style.display='none';
+        });
+
+        /* Questions highlight */
+        const qCard=document.querySelector('.card.questions');
+        const qPalette=document.getElementById('qPalette');
+        qCard.addEventListener('mouseup',(e)=>{
+            const sel=window.getSelection(); if(!sel||sel.toString().trim().length===0) return;
+            if(!qCard.contains(sel.getRangeAt(0).commonAncestorContainer)) return;
+            const node = sel.getRangeAt(0).commonAncestorContainer.nodeType===1 ? sel.getRangeAt(0).commonAncestorContainer : sel.getRangeAt(0).commonAncestorContainer.parentNode;
+            if (node.closest && node.closest('input,textarea,select')) return;
+            const r=qCard.getBoundingClientRect(), x=Math.min(e.clientX-r.left,r.width-10), y=Math.max(0,e.clientY-r.top-40);
+            qPalette.style.left=(r.left+x)+'px'; qPalette.style.top=(r.top+y)+'px'; qPalette.style.display='block';
+        });
+        document.addEventListener('mousedown',(e)=>{ if(!qPalette.contains(e.target)) qPalette.style.display='none'; });
+        qPalette.querySelectorAll('.hbtn[data-color]').forEach(btn=>{
+            btn.addEventListener('click',()=>{ markSelection(btn.dataset.color, qCard); qPalette.style.display='none'; });
+        });
+        document.getElementById('clearQMarks').addEventListener('click',()=>{
+            qCard.querySelectorAll('span.highlight').forEach(n=>{ const p=n.parentNode; while(n.firstChild) p.insertBefore(n.firstChild,n); p.removeChild(n); p.normalize(); });
+            qPalette.style.display='none';
+        });
+
+        function markSelection(color, scope){
+            const sel=window.getSelection(); if(!sel||!sel.rangeCount) return;
+            const range=sel.getRangeAt(0);
+            if(!scope.contains(range.commonAncestorContainer)) return;
+            const frag=range.extractContents();
+            const span=document.createElement('span'); span.className='highlight'; span.style.backgroundColor=color; span.appendChild(frag);
+            range.insertNode(span); sel.removeAllRanges();
+        }
+    </script>
+</body>
+</html>

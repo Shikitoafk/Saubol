@@ -1,0 +1,446 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Reading Passage 2 – Paternity Leave</title>
+<style>
+  :root{--brand:#2563eb;--ink:#111827;--bg:#f7f7fb;--ok:#16a34a;--bad:#dc2626;--muted:#6b7280}
+  *{box-sizing:border-box}
+  body{margin:0;font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;background:var(--bg);color:#111}
+  .container{display:flex;gap:20px;max-width:1200px;margin:0 auto;padding:20px 20px 96px}
+  .card{background:#fff;border-radius:12px;box-shadow:0 4px 14px rgba(0,0,0,.08);padding:20px;overflow:auto;max-height:90vh}
+  .passage{flex:1}
+  .questions{flex:1}
+  h1{color:var(--ink);border-bottom:2px solid var(--brand);padding-bottom:10px;margin:0 0 14px}
+  h2{color:var(--brand);margin:22px 0 10px}
+  h3{margin:8px 0 0}
+  .muted{color:var(--muted)}
+
+  /* Timer */
+  .timerWrap{position:fixed;top:16px;right:16px;display:flex;align-items:center;gap:8px;z-index:10}
+  .timer{background:var(--brand);color:#fff;padding:10px 14px;border-radius:8px;font-weight:700}
+  .tbtn{border:1px solid #e5e7eb;background:#fff;color:#111;padding:8px 10px;border-radius:8px;cursor:pointer}
+
+  /* Questions */
+  .qsection{margin:14px 0 6px}
+  .qblock{padding:14px;border:1px solid #e5e7eb;border-radius:12px;margin:12px 0}
+  .qhead{font-weight:600;margin-bottom:8px}
+  .options{margin-top:8px}
+  .options label{display:block;margin:6px 0}
+  select,input[type="text"],input[type="checkbox"]{padding:8px;border-radius:8px;border:1px solid #e5e7eb;max-width:520px}
+  input[type="text"]{width:100%}
+  input[type="checkbox"]{width:auto;margin-right:8px}
+  .submit{background:var(--brand);color:#fff;border:0;padding:12px 18px;border-radius:8px;cursor:pointer;font-size:16px;margin-top:16px}
+  .submit:hover{filter:brightness(.95)}
+
+  /* Results */
+  .results{display:none;margin-top:18px;background:#f8f9fa;border-radius:10px;padding:16px}
+  .results ul{list-style:none;padding:0;margin:8px 0 0}
+  .results li{margin:6px 0;padding:8px;border-radius:8px}
+  .results li.ok{background:#ecfdf5;color:#065f46}
+  .results li.bad{background:#fef2f2;color:#991b1b}
+  .results .meta{font-size:13px;color:var(--muted)}
+
+  /* Footer chips */
+  .footerNav{position:fixed;left:0;right:0;bottom:0;background:#fff;border-top:1px solid #e5e7eb;padding:10px 12px;display:flex;flex-wrap:wrap;gap:8px;align-items:center;z-index:9}
+  .chip{border:1px solid #d1d5db;background:#fff;color:#111;padding:6px 10px;border-radius:999px;cursor:pointer;font-size:14px}
+  .chip.answered{border-color:#9ca3af;background:#f3f4f6}
+
+  /* Highlights */
+  .palette{position:fixed;background:#fff;padding:8px;border-radius:8px;box-shadow:0 2px 10px rgba(0,0,0,.12);display:none;z-index:9}
+  .hbtn{background:var(--brand);color:#fff;border:0;padding:6px 10px;border-radius:6px;margin:4px 4px 0 0;cursor:pointer}
+  .highlight{background:yellow}
+
+  
+</style>
+</head>
+<body>
+  <div class="timerWrap">
+    <div class="timer" id="timer">20:00</div>
+    <button class="tbtn" id="pauseBtn">⏸️ Pause</button>
+    <button class="tbtn" id="resumeBtn" disabled>▶️ Resume</button>
+  </div>
+
+  <!-- Highlight palettes -->
+  <div class="palette" id="pPalette">
+    <button class="hbtn" data-color="yellow">Yellow</button>
+    <button class="hbtn" data-color="lightgreen">Green</button>
+    <button class="hbtn" data-color="lightblue">Blue</button>
+    <button class="hbtn" data-color="pink">Pink</button>
+    <button class="hbtn" data-color="orange">Orange</button>
+    <button class="hbtn" id="clearPMarks">Clear</button>
+  </div>
+  <div class="palette" id="qPalette">
+    <button class="hbtn" data-color="yellow">Yellow</button>
+    <button class="hbtn" data-color="lightgreen">Green</button>
+    <button class="hbtn" data-color="lightblue">Blue</button>
+    <button class="hbtn" data-color="pink">Pink</button>
+    <button class="hbtn" data-color="orange">Orange</button>
+    <button class="hbtn" id="clearQMarks">Clear</button>
+  </div>
+
+  <div class="container">
+    <div class="card passage" id="passageCard">
+      <h1 id="title"></h1>
+      <div id="subtitle" class="muted"></div>
+
+      <div id="passage">
+        <h2>Reading Passage 2</h2>
+        <h3>Paternity Leave</h3>
+        <p><em>Men have long been discouraged from playing an equal role at home. That is at last starting to change</em></p>
+
+        <p>A At a course for fathers-to-be in New York, participants are introduced to baby maintenance for beginners: how to keep their babies fed, warm and clean. The City Dads Group was founded when Matt Schneider and Lances Somerfeld became fathers and discovered that people saw their place as firmly outside the home. New York was full of parents' support groups, but nearly all were aimed at mothers. Frustrated, the friends set up their own group, which has spread to 17 cities in the USA, helping fathers who want to get involved from day one.</p>
+
+        <p>B In general, legal and financial support for new parents is better than it has ever been. According to the International Labor Organization (ILO), 85% of countries now provide at least 12 weeks' maternity leave. In all but two of the 185 countries it surveys, mothers are entitled to some leave paid for by the state, companies or some combination of the two. Although only a third of countries meet the ILO's recommended minimum of at least 14 weeks off for new mothers, paid at two-thirds their salary and funded publicly, the picture is improving.</p>
+
+        <p>But how many countries meet the ILO's guidelines on paternity leave? None because no such guidelines exist. Though it published detailed advice regarding female employees, the organization has drawn up no formal recommendations on fathers' rights and duties. Until recently, national governments have been similarly uninterested; less than half of countries offer paternity leave of any sort. Only around half a dozen offer new fathers more than a fortnight, and companies, not the state, usually foot the bill for the costs of paternity leave. In the eyes of most people, responsibility for bringing up baby still falls squarely on the mother.</p>
+
+        <p>C Now a different view is slowly emerging, as growing evidence suggests that children benefit from seeing more of their fathers. But much of the demand for a shift in approaches to childcare has come from women, who have started to conclude that they are victims as well as beneficiaries of generous maternity-leave policies.</p>
+
+        <p>D This may appear paradoxical, as most countries have found that when they offer decent maternity leave, they increase female employment. If women have no right to take time off, or are entitled only to short or poorly paid spells of absence, many have little choice but to leave the workforce when their baby is born. If they can take a few months of paid leave before returning to their old job, they are more likely to continue working. But it turns out that long maternity breaks have unintended consequences. Time away from the labour market reduce women's earning power, as their skills degrade and they miss chances to gain experience and win promotion. Moving into senior management becomes particularly hard, partly because of discrimination by bosses and hiring committees, who reject candidates they think may be away a lot, and partly because many high-level jobs are hard to combine with serial leave-taking. And the effect is magnified when lengthy maternity leave is combined with policies to encourage part-time work, which tempt more women back into the labour force but keep them in junior position.</p>
+
+        <p>E Rather than simply cutting maternity leave in response to such findings, a growing number of governments are trying to spread the child-rearing burden (or joy, depending on how one looks at it). Britain recently became the latest country to combine maternity and paternity leave into a single chunk of parental leave, to be split between mother and father however they see fit. Several European countries, as well as Australia and New Zealand, already have such a system.</p>
+
+        <p>The problem is that dads tend not to take up the offer. In Austria, the Czech Republic and Poland, where all parental leave is transferable, only about 3% of dads make use of it. In Britain, the government estimates that 2-8% of dads will take more than their existing fortnight.</p>
+
+        <p>The main reason for low take-up by fathers is financial: even pre-childbirth, women are paid less than men, meaning that their salaries are easier to forgo during a period of unpaid or low-paid leave. But pressure related to culture also weigh heavily. Mothers still tend to be seen as the main carers, with dads portrayed in domestic terms as blundering sidekicks or well-meaning buffoons.</p>
+
+        <p>F To overcome these obstacles, some countries are giving fathers a firm nudge. In a few, including Chile, Italy and Portugal, paternity leave is compulsory. Others offer incentives that are hard to turn down. Sweden grants a bonus to parents who share leave more equally.</p>
+
+        <p>Swedish fathers now account for more than a fifth of all parental leave taken, compared with almost none when shared leave was introduced. Germany introduced the same system and saw the proportion of fathers taking time off rise from 3% in 2006 to 32% in 2013, and Poland has switched to gender-specific quotas, replacing the previous system of shared leave.</p>
+
+        <p>Where leave is well-paid and not seen as 'belonging' to the mother, fathers seem willing to request it. State meddling in what has historically been regarded as a natural division of labour may annoy some people. But traditional maternity leave, which channels men into breadwinning and women into child-rearing, is hardly neutral. And shared involvement by parents stands to improve women's careers, children's development and perhaps even dads' life satisfaction.</p>
+      </div>
+    </div>
+
+    <div class="card questions">
+      <h1>Questions</h1>
+      <div id="qroot"></div>
+      <button class="submit" id="submitBtn">Submit Answers</button>
+      <div class="results" id="results">
+        <h2>Your Results</h2>
+        <div id="score" class="meta"></div>
+        <ul id="answers"></ul>
+      </div>
+    </div>
+  </div>
+
+  <div class="footerNav" id="footerNav"></div>
+  
+
+<script>
+/* =======================
+   CONFIG
+   ======================= */
+const CONFIG = {
+  title: "READING PASSAGE 2 – Paternity Leave",
+  subtitle: "You should spend about 20 minutes on Questions 14–26.",
+  durationMinutes: 20,
+  
+  showFooterNavigator: true,
+
+  sections: [
+    /* 14–19 Paragraph Headings */
+    {
+      type: "paragraph_headings",
+      heading: "Questions 14–19",
+      instructions: [
+        "Reading Passage 2 has six paragraphs, A–F.",
+        "Choose the correct heading for each paragraph from the list of headings below.",
+        "Write the correct number, i–viii, in boxes 14–19 on your answer sheet."
+      ],
+      headings: {
+        i: "Opposition by employers to parental leave",
+        ii: "An illustration of a trend in one country",
+        iii: "An explanation for the limited success of government initiatives",
+        iv: "Pressure for change from an unlikely source",
+        v: "The need for cooperation at a global level",
+        vi: "The contrast in attitudes towards leave for mothers and fathers",
+        vii: "A range of measures to encourage more equal responsibility",
+        viii: "The implications of maternity leave"
+      },
+      items: [
+        { id: 14, paragraph: "A", correct: "ii" },
+        { id: 15, paragraph: "B", correct: "vi" },
+        { id: 16, paragraph: "C", correct: "iv" },
+        { id: 17, paragraph: "D", correct: "viii" },
+        { id: 18, paragraph: "E", correct: "iii" },
+        { id: 19, paragraph: "F", correct: "vii" }
+      ]
+    },
+
+    /* 20–21 Multiple Choice (Two Answers) */
+    {
+      type: "multiple_choice_two",
+      heading: "Questions 20–21",
+      instructions: [
+        "Choose TWO letters, A–E",
+        "Write the correct letters in boxes 20 and 21 on your answer sheet.",
+        "According to the writer, which TWO problems may be caused by maternity leave?"
+      ],
+      options: {
+        A: "women may be less effective at work after maternity leave.",
+        B: "women may find it difficult to find suitable part-time work",
+        C: "women may find they are paid less for doing the same work",
+        D: "women's chances of professional advancement may be affected",
+        E: "women's pay may be insufficient to support them during maternity leave."
+      },
+      correct: ["A", "D"]
+    },
+
+    /* 22–26 Summary Completion */
+    {
+      type: "summary_completion",
+      heading: "Questions 22–26",
+      instructions: [
+        "Complete the summary below.",
+        "Choose ONE WORD ONLY from the passage for each answer.",
+        "Write your answers in boxes 22–26 on your answer sheet."
+      ],
+      title: "Encouraging more fathers to take paternity leave",
+      summary: "Even in countries where paternity leave is easy to get, few fathers make use of it, chiefly for 22 ................ reasons. However, issues connected with 23 ................ , including traditional views of male and female roles in the family, may also play a part. Some countries, such as Chile, have made it 24 ................ for men to take paternity leave. Sweden and Germany both offer a bonus to families where parents share leave, and in Poland, mothers and fathers each have 25 ................ of leave which are specified for them. Sharing children in this way may be good for both mothers and fathers, and may also support the 26 ................ of the child.",
+      items: [
+        { id: 22, correct: "financial" },
+        { id: 23, correct: "culture" },
+        { id: 24, correct: "compulsory" },
+        { id: 25, correct: "quotas" },
+        { id: 26, correct: "development" }
+      ]
+    }
+  ]
+};
+
+/* =======================
+   RENDER
+   ======================= */
+document.getElementById('title').textContent = CONFIG.title;
+document.getElementById('subtitle').textContent = CONFIG.subtitle || '';
+
+const qroot = document.getElementById('qroot');
+const navIds = [];
+const answersMap = {};
+
+function sectionHeader(t){ const h=document.createElement('h2'); h.className='qsection'; h.textContent=t; return h; }
+
+/* Paragraph Headings renderer */
+function renderParagraphHeadings(sec){
+  qroot.appendChild(sectionHeader(sec.heading));
+  (sec.instructions||[]).forEach(tx=>{ const p=document.createElement('p'); p.className='muted'; p.textContent=tx; qroot.appendChild(p); });
+
+  // List of headings
+  const headingsDiv = document.createElement('div');
+  headingsDiv.className = 'qblock';
+  const headingsList = Object.entries(sec.headings).map(([k,v]) => `<div><b>${k}</b> ${v}</div>`).join('');
+  headingsDiv.innerHTML = `<div class="qhead"><strong>List of Headings</strong></div><div class="options">${headingsList}</div>`;
+  qroot.appendChild(headingsDiv);
+
+  sec.items.forEach(it=>{
+    const b=document.createElement('div'); b.className='qblock'; b.id=`anchor-${it.id}`;
+    const sel=`<select id="q${it.id}" name="q${it.id}">
+      <option value="">—</option>${Object.keys(sec.headings).map(k=>`<option value="${k}">${k}</option>`).join('')}
+    </select>`;
+    b.innerHTML=`<div class="qhead"><strong>${it.id}.</strong> Paragraph ${it.paragraph}</div><div class="options">${sel}</div>`;
+    qroot.appendChild(b); navIds.push(it.id); answersMap[it.id]=it.correct||'';
+  });
+}
+
+/* Multiple Choice Two Answers renderer */
+function renderMultipleChoiceTwo(sec){
+  qroot.appendChild(sectionHeader(sec.heading));
+  (sec.instructions||[]).forEach(tx=>{ const p=document.createElement('p'); p.className='muted'; p.textContent=tx; qroot.appendChild(p); });
+
+  const optionsDiv = document.createElement('div');
+  optionsDiv.className = 'qblock';
+  const optionsList = Object.entries(sec.options).map(([k,v]) => 
+    `<label><input type="checkbox" name="q20_21" value="${k}"> <strong>${k}</strong> ${v}</label>`
+  ).join('');
+  optionsDiv.innerHTML = `<div class="qhead">Select TWO answers:</div><div class="options">${optionsList}</div>`;
+  qroot.appendChild(optionsDiv);
+
+  // Add answer tracking for questions 20 and 21
+  navIds.push(20, 21);
+  answersMap[20] = sec.correct[0];
+  answersMap[21] = sec.correct[1];
+}
+
+/* Summary Completion renderer */
+function renderSummaryCompletion(sec){
+  qroot.appendChild(sectionHeader(sec.heading));
+  (sec.instructions||[]).forEach(tx=>{ const p=document.createElement('p'); p.className='muted'; p.textContent=tx; qroot.appendChild(p); });
+  
+  if(sec.title) {
+    const titleDiv = document.createElement('div');
+    titleDiv.innerHTML = `<h3>${sec.title}</h3>`;
+    qroot.appendChild(titleDiv);
+  }
+
+  if(sec.summary) {
+    const summaryDiv = document.createElement('div');
+    summaryDiv.className = 'qblock';
+    summaryDiv.innerHTML = `<div class="qhead">${sec.summary}</div>`;
+    qroot.appendChild(summaryDiv);
+  }
+
+  sec.items.forEach(it=>{
+    const b=document.createElement('div'); b.className='qblock'; b.id=`anchor-${it.id}`;
+    const input = `<input type="text" id="q${it.id}" name="q${it.id}" placeholder="Enter your answer">`;
+    b.innerHTML=`<div class="qhead"><strong>${it.id}.</strong> ................</div><div class="options">${input}</div>`;
+    qroot.appendChild(b); navIds.push(it.id); answersMap[it.id]=it.correct||'';
+  });
+}
+
+/* Build UI */
+CONFIG.sections.forEach(sec=>{
+  if (sec.type==='paragraph_headings') renderParagraphHeadings(sec);
+  if (sec.type==='multiple_choice_two') renderMultipleChoiceTwo(sec);
+  if (sec.type==='summary_completion') renderSummaryCompletion(sec);
+});
+
+/* Footer chips */
+const footerNav=document.getElementById('footerNav');
+(function(){
+  if(!CONFIG.showFooterNavigator){ footerNav.style.display='none'; return; }
+  footerNav.innerHTML='<strong class="muted">Questions:</strong>';
+  [...new Set(navIds)].sort((a,b)=>a-b).forEach(id=>{
+    const chip=document.createElement('button'); chip.className='chip'; chip.id=`chip-${id}`; chip.textContent=id;
+    chip.addEventListener('click',()=>{ 
+      const anchor = document.getElementById(`anchor-${id}`);
+      if(anchor) anchor.scrollIntoView({behavior:'smooth',block:'center'}); 
+    });
+    footerNav.appendChild(chip);
+  });
+})();
+
+function markChipAnswered(id, answered){
+  const chip=document.getElementById(`chip-${id}`); if(chip) chip.classList.toggle('answered', !!answered);
+}
+
+document.addEventListener('change',(e)=>{
+  const m=String(e.target.name||e.target.id||'').match(/q(\d+)/);
+  const id=m?+m[1]:null; 
+  
+  // Handle multiple choice checkboxes
+  if(e.target.name === 'q20_21') {
+    const checked = document.querySelectorAll('input[name="q20_21"]:checked');
+    markChipAnswered(20, checked.length >= 1);
+    markChipAnswered(21, checked.length >= 2);
+    return;
+  }
+  
+  if(!id) return;
+  const answered=(e.target.type==='radio') ? (!!document.querySelector(`input[name='q${id}']:checked`))
+                 : (e.target.value.trim().length>0);
+  markChipAnswered(id, answered);
+});
+
+/* Timer */
+let timeLeft=Math.max(1,+CONFIG.durationMinutes||20)*60;
+const timer=document.getElementById('timer');
+const pauseBtn=document.getElementById('pauseBtn');
+const resumeBtn=document.getElementById('resumeBtn');
+let paused=false, iv;
+const fmt=s=>`${String(Math.floor(s/60)).padStart(2,'0')}:${String(s%60).padStart(2,'0')}`;
+function startTick(){ if(iv) clearInterval(iv);
+  iv=setInterval(()=>{ if(paused) return; timer.textContent=fmt(timeLeft); if(timeLeft<=0){ clearInterval(iv); alert("Time's up! Submitting."); submit(); } timeLeft--; },1000);
+}
+timer.textContent=fmt(timeLeft); startTick();
+pauseBtn.addEventListener('click',()=>{ paused=true; pauseBtn.disabled=true; resumeBtn.disabled=false; });
+resumeBtn.addEventListener('click',()=>{ paused=false; pauseBtn.disabled=false; resumeBtn.disabled=true; });
+
+/* Submit & grading */
+document.getElementById('submitBtn').addEventListener('click', submit);
+function submit(){
+  paused=true; pauseBtn.disabled=true; resumeBtn.disabled=false;
+  let total=0, graded=0, correctCount=0;
+  const itemsOut=[];
+  const ids=Object.keys(answersMap);
+
+  // Handle multiple choice questions (20-21)
+  const checkedBoxes = Array.from(document.querySelectorAll('input[name="q20_21"]:checked')).map(cb => cb.value);
+  
+  ids.forEach(key=>{
+    const ans=answersMap[key];
+    const label=key;
+    let user='';
+    
+    if(key == '20' || key == '21') {
+      // Multiple choice handling
+      const correctAnswers = CONFIG.sections.find(s => s.type === 'multiple_choice_two').correct;
+      user = checkedBoxes[key == '20' ? 0 : 1] || '';
+    } else {
+      const picked=document.querySelector(`input[name="q${key}"]:checked`);
+      if(picked){ user=picked.value; }
+      else if(document.getElementById('q'+key)){ user=document.getElementById('q'+key).value; }
+    }
+    
+    const shown=user||'No answer';
+
+    if(String(ans).trim()===''){ total++; itemsOut.push({label, status:'— not graded —', user:shown, correct:'(no key)'}); return; }
+
+    total++; graded++;
+    const ok = shown.trim().toUpperCase() === String(ans).trim().toUpperCase();
+    if(ok) correctCount++;
+    itemsOut.push({label, status: ok? '✓ Correct' : '✗ Incorrect', user:shown, correct:String(ans)});
+  });
+
+  document.getElementById('score').innerHTML = `Graded ${graded} of ${total} • Score: ${correctCount}/${graded}`;
+  document.getElementById('answers').innerHTML = itemsOut.map(it=>`<li class="${/Correct/.test(it.status)?'ok':'bad'}">Q${it.label}: ${it.status} — Your: <b>${it.user}</b> | Correct: <b>${it.correct}</b></li>`).join('');
+  const r=document.getElementById('results'); r.style.display='block'; r.scrollIntoView({behavior:'smooth'});
+}
+
+/* Highlights */
+const passageCard=document.getElementById('passageCard');
+const pPalette=document.getElementById('pPalette');
+passageCard.addEventListener('mouseup',(e)=>{
+  const sel=window.getSelection(); if(!sel||sel.toString().trim().length===0) return;
+  if(!passageCard.contains(sel.getRangeAt(0).commonAncestorContainer)) return;
+  const r=passageCard.getBoundingClientRect(), x=Math.min(e.clientX-r.left,r.width-10), y=Math.max(0,e.clientY-r.top-40);
+  pPalette.style.left=(r.left+x)+'px'; pPalette.style.top=(r.top+y)+'px'; pPalette.style.display='block';
+});
+document.addEventListener('mousedown',(e)=>{ if(!pPalette.contains(e.target)) pPalette.style.display='none'; });
+pPalette.querySelectorAll('.hbtn[data-color]').forEach(btn=>{
+  btn.addEventListener('click',()=>{ markSelection(btn.dataset.color, passageCard); pPalette.style.display='none'; });
+});
+document.getElementById('clearPMarks').addEventListener('click',()=>{
+  passageCard.querySelectorAll('span.highlight').forEach(n=>{ const p=n.parentNode; while(n.firstChild) p.insertBefore(n.firstChild,n); p.removeChild(n); p.normalize(); });
+  pPalette.style.display='none';
+});
+
+/* Questions highlight */
+const qCard=document.querySelector('.card.questions');
+const qPalette=document.getElementById('qPalette');
+qCard.addEventListener('mouseup',(e)=>{
+  const sel=window.getSelection(); if(!sel||sel.toString().trim().length===0) return;
+  if(!qCard.contains(sel.getRangeAt(0).commonAncestorContainer)) return;
+  const node = sel.getRangeAt(0).commonAncestorContainer.nodeType===1 ? sel.getRangeAt(0).commonAncestorContainer : sel.getRangeAt(0).commonAncestorContainer.parentNode;
+  if (node.closest && node.closest('input,textarea,select')) return;
+  const r=qCard.getBoundingClientRect(), x=Math.min(e.clientX-r.left,r.width-10), y=Math.max(0,e.clientY-r.top-40);
+  qPalette.style.left=(r.left+x)+'px'; qPalette.style.top=(r.top+y)+'px'; qPalette.style.display='block';
+});
+document.addEventListener('mousedown',(e)=>{ if(!qPalette.contains(e.target)) qPalette.style.display='none'; });
+qPalette.querySelectorAll('.hbtn[data-color]').forEach(btn=>{
+  btn.addEventListener('click',()=>{ markSelection(btn.dataset.color, qCard); qPalette.style.display='none'; });
+});
+document.getElementById('clearQMarks').addEventListener('click',()=>{
+  qCard.querySelectorAll('span.highlight').forEach(n=>{ const p=n.parentNode; while(n.firstChild) p.insertBefore(n.firstChild,n); p.removeChild(n); p.normalize(); });
+  qPalette.style.display='none';
+});
+
+/* Helper */
+function markSelection(color, scope){
+  const sel=window.getSelection(); if(!sel||!sel.rangeCount) return;
+  const range=sel.getRangeAt(0);
+  if(!scope.contains(range.commonAncestorContainer)) return;
+  const container=range.commonAncestorContainer.nodeType===1? range.commonAncestorContainer : range.commonAncestorContainer.parentNode;
+  if (container.closest && container.closest('input, textarea, select')) return;
+  const frag=range.extractContents();
+  const span=document.createElement('span'); span.className='highlight'; span.style.backgroundColor=color; span.appendChild(frag);
+  range.insertNode(span); sel.removeAllRanges();
+}
+
+/* TG button */
+
+</script>
+</body>
+</html>

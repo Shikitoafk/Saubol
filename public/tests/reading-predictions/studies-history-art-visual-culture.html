@@ -1,0 +1,1015 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>IELTS Reading - Studies in the History of Art and Visual Culture</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary-color: #2c3e50;
+            --accent-color: #e74c3c;
+            --bg-color: #ecf0f1;
+            --text-color: #2c3e50;
+            --highlight-color: #f1c40f;
+            --card-bg: #ffffff;
+            --shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            --transition: all 0.3s ease;
+        }
+
+        .dark-mode {
+            --primary-color: #ecf0f1;
+            --accent-color: #e74c3c;
+            --bg-color: #1a252f;
+            --text-color: #ecf0f1;
+            --highlight-color: #f39c12;
+            --card-bg: #2c3e50;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Arial', sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            transition: var(--transition);
+        }
+
+        header {
+            background-color: var(--primary-color);
+            color: white;
+            padding: 15px 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: var(--shadow);
+        }
+
+        .header-left {
+            font-size: 1.5rem;
+            font-weight: bold;
+        }
+
+        .header-right {
+            display: flex;
+            gap: 20px;
+            align-items: center;
+        }
+
+        .telegram-btn {
+            background: #0088cc;
+            color: white;
+            border: none;
+            border-radius: 20px;
+            padding: 8px 15px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            text-decoration: none;
+        }
+
+        .telegram-btn:hover {
+            background: #0077b5;
+            transform: translateY(-2px);
+        }
+
+        .timer {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 8px 15px;
+            border-radius: 20px;
+            font-weight: 600;
+        }
+
+        .timer-controls {
+            display: flex;
+            gap: 10px;
+        }
+
+        .timer-btn {
+            background: none;
+            border: none;
+            color: white;
+            cursor: pointer;
+            padding: 5px;
+            border-radius: 50%;
+            transition: var(--transition);
+        }
+
+        .timer-btn:hover {
+            background: rgba(255, 255, 255, 0.2);
+        }
+
+        .mode-toggle {
+            background: none;
+            border: none;
+            color: white;
+            font-size: 1.2rem;
+            cursor: pointer;
+            padding: 5px;
+            border-radius: 50%;
+            transition: var(--transition);
+        }
+
+        .mode-toggle:hover {
+            background: rgba(255, 255, 255, 0.2);
+        }
+
+        main {
+            flex: 1;
+            display: flex;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .resize-handle {
+            width: 10px;
+            background: var(--primary-color);
+            cursor: col-resize;
+            position: absolute;
+            top: 0;
+            bottom: 0;
+            left: 50%;
+            z-index: 10;
+            transition: var(--transition);
+        }
+
+        .passage-panel, .questions-panel {
+            padding: 20px;
+            overflow-y: auto;
+            transition: var(--transition);
+        }
+
+        .passage-panel {
+            width: 50%;
+            background: var(--card-bg);
+            border-right: 1px solid var(--primary-color);
+        }
+
+        .questions-panel {
+            width: 50%;
+            background: var(--card-bg);
+            box-shadow: -2px 0 5px rgba(0, 0, 0, 0.05);
+        }
+
+        .passage-title {
+            font-size: 1.8rem;
+            margin-bottom: 10px;
+            color: var(--primary-color);
+            border-bottom: 2px solid var(--accent-color);
+            padding-bottom: 10px;
+        }
+
+        .passage-text p, .questions-panel p, .instructions, .options label {
+            font-size: 1rem;
+            margin-bottom: 15px;
+            line-height: 1.6;
+        }
+
+        .highlighted {
+            background-color: var(--highlight-color);
+            cursor: pointer;
+            position: relative;
+            display: inline;
+            padding: 0;
+            line-height: inherit;
+            vertical-align: baseline;
+            white-space: pre-wrap;
+        }
+
+        #highlight-btn {
+            position: absolute;
+            display: none;
+            background-color: var(--accent-color);
+            color: white;
+            border: none;
+            border-radius: 5px;
+            padding: 8px 12px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            box-shadow: var(--shadow);
+            z-index: 10000;
+            opacity: 0;
+            transform: translateY(10px);
+            transition: opacity 0.2s ease, transform 0.2s ease;
+            pointer-events: none;
+        }
+
+        #highlight-btn.visible {
+            display: block;
+            opacity: 1;
+            transform: translateY(0);
+            pointer-events: auto;
+        }
+
+        .remove-highlight-btn {
+            position: absolute;
+            display: none;
+            background-color: #c0392b;
+            color: white;
+            border: none;
+            border-radius: 3px;
+            padding: 2px 6px;
+            cursor: pointer;
+            font-size: 0.7rem;
+            box-shadow: var(--shadow);
+            z-index: 10001;
+            top: -20px;
+            left: calc(100% + 2px);
+            white-space: nowrap;
+        }
+
+        .question-section {
+            margin-bottom: 25px;
+        }
+
+        .question {
+            background: var(--card-bg);
+            padding: 15px;
+            margin-bottom: 15px;
+            border-left: 4px solid var(--primary-color);
+            border-radius: 5px;
+            transition: var(--transition);
+        }
+
+        .question.answered {
+            border-left-color: var(--accent-color);
+        }
+
+        .question#q7-13 {
+            border-left: none;
+            border-radius: 0;
+        }
+
+        .question-title {
+            font-weight: 600;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+        }
+
+        .question-number {
+            width: 24px;
+            height: 24px;
+            background: var(--primary-color);
+            color: white;
+            border-radius: 50%;
+            text-align: center;
+            line-height: 24px;
+            margin-right: 10px;
+        }
+
+        .question.answered .question-number {
+            background: var(--accent-color);
+        }
+
+        .question#q7-13 .question-number {
+            display: none;
+        }
+
+        .question#q7-13 strong {
+            font-size: 1.2rem;
+            font-weight: bold;
+            display: block;
+            margin-bottom: 15px;
+            padding-bottom: 5px;
+            color: var(--primary-color);
+            border-bottom: 1px solid var(--accent-color);
+        }
+
+        .options {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .option {
+            display: flex;
+            align-items: center;
+        }
+
+        .option input {
+            margin-right: 8px;
+        }
+
+        .fill-in-the-blank {
+            border: none;
+            border-bottom: 2px solid var(--primary-color);
+            width: 120px;
+            font-size: 1rem;
+            padding: 2px 4px;
+            text-align: center;
+            transition: border-color 0.3s;
+            display: inline-block;
+            vertical-align: middle;
+        }
+
+        .fill-in-the-blank:focus {
+            border-bottom-color: var(--accent-color);
+            outline: none;
+        }
+
+        .instructions {
+            font-size: 0.9rem;
+            color: #7f8c8d;
+            margin-top: 5px;
+        }
+
+        footer {
+            background: var(--primary-color);
+            padding: 15px 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: var(--shadow);
+        }
+
+        .progress-bar {
+            width: 60%;
+            height: 10px;
+            background: #bdc3c7;
+            border-radius: 5px;
+            overflow: hidden;
+        }
+
+        .progress {
+            height: 100%;
+            background: var(--accent-color);
+            width: 0;
+            transition: width 0.3s ease;
+        }
+
+        .action-buttons button {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: var(--transition);
+        }
+
+        .btn-reset {
+            background: transparent;
+            color: white;
+            border: 2px solid white;
+        }
+
+        .btn-reset:hover {
+            background: rgba(255, 255, 255, 0.2);
+        }
+
+        .btn-submit {
+            background: var(--accent-color);
+            color: white;
+        }
+
+        .btn-submit:hover {
+            background: #c0392b;
+        }
+
+        .feedback-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.7);
+            z-index: 1000;
+            display: none;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .feedback-container {
+            background: var(--card-bg);
+            width: 85%;
+            max-width: 800px;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: var(--shadow);
+            text-align: center;
+        }
+
+        .feedback-header {
+            margin-bottom: 20px;
+        }
+
+        .feedback-title {
+            font-size: 1.5rem;
+            color: var(--primary-color);
+        }
+
+        .score-display {
+            font-size: 1.2rem;
+            color: var(--accent-color);
+            margin-top: 10px;
+        }
+
+        .feedback-body {
+            max-height: 60vh;
+            overflow-y: auto;
+            text-align: left;
+        }
+
+        .feedback-item {
+            margin-bottom: 15px;
+            padding: 10px;
+            background: rgba(0, 0, 0, 0.05);
+            border-radius: 5px;
+        }
+
+        .feedback-question {
+            font-weight: 600;
+            margin-bottom: 5px;
+        }
+
+        .correct {
+            color: #27ae60;
+        }
+
+        .incorrect {
+            color: #e74c3c;
+        }
+
+        .close-btn {
+            background: #c0392b;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            padding: 10px 20px;
+            cursor: pointer;
+            font-weight: 600;
+            margin-top: 20px;
+        }
+
+        .close-btn:hover {
+            background: #a93226;
+        }
+
+        @media (max-width: 900px) {
+            .passage-panel, .questions-panel {
+                width: 100%;
+                height: 50%;
+            }
+            .passage-panel {
+                border-right: none;
+                border-bottom: 1px solid var(--primary-color);
+            }
+            .resize-handle {
+                display: none;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="header-left">IELTS Reading</div>
+        <div class="header-right">
+            
+            <div class="timer" id="timer">20:00</div>
+            <div class="timer-controls">
+                <button class="timer-btn" id="start-timer" title="Start"><i class="fas fa-play"></i></button>
+                <button class="timer-btn" id="pause-timer" title="Pause"><i class="fas fa-pause"></i></button>
+                <button class="timer-btn" id="reset-timer" title="Reset"><i class="fas fa-redo"></i></button>
+            </div>
+            <button class="mode-toggle" id="night-mode-toggle" title="Toggle Theme">
+                <i class="fas fa-moon"></i>
+            </button>
+        </div>
+    </header>
+
+    <main id="main">
+        <div class="resize-handle" id="resize-handle"></div>
+        <div class="passage-panel" id="passage-panel">
+            <div class="passage-title">Studies in the History of Art and Visual Culture</div>
+            <div class="passage-text" id="passage-text">
+                <p>The Department of the History of Art, which operates within the Faculty of History, offers a one-year postgraduate course in the History of Art and Visual Culture. We welcome applicants from a broad range of backgrounds and do not require students to have a first degree in art history. In addition to a compulsory course on Theory and Methods, students take two one-term optional courses, and write a 15,000-word dissertation on a topic of their choice. The course aims to redefine art history and includes a broader range of objects and visual media than other art history courses. Images and objects produced in many contexts- ranging from the scientific to the popular- have been brought together to show how visual styles at different periods and in different places can be understood in relation to the aesthetic, intellectual and social facets of various cultures.</p>
+                <p><strong>Theory and Methods</strong></p>
+                <p>This core course provides an advanced introduction to the major methodological issues and traditions of art history. The course is organised around a series of issues that relate to the production of art and people's responses to it. Students will discuss these issues and assigned readings in small weekly classes. In lectures, the tutors will consider works of art from a variety of cultures in order to demonstrate that context and artistic method are important aspects of art history.</p>
+                <p><strong>Choosing Courses</strong></p>
+                <p>The optional courses listed below are not available every year and prospective students are advised to check on the availability of specific courses. Students should also note there may be some restrictions on combining particular courses within their degree programme. Students wishing to take a course that does not appear in the list but is offered by the Faculty of History will need to get permission from the relevant Course Tutor. An application should then be made by the candidate's supervisor.</p>
+                <p><strong>A  Authenticity and Replication</strong></p>
+                <p>The course is designed to give students exposure to a central issue of the visual arts in an explicitly inter-disciplinary and cross-cultural framework. It will use a series of case studies to explore the idea of 'the real' or 'the authentic' in both images and objects. The historical and geographical contexts to be addressed will range widely, from ancient Greece and Rome, to early modern China and to contemporary art, including works seen as genuine as well as works regarded as fraudulent. The course will make particularly extensive use of trips to museums to view actual objects and Images.</p>
+                <p><strong>B French Painting 1880-1912</strong></p>
+                <p>The course examines the development of Post-impressionist painting between 1880 and 1912, at which point Cubism began to have a major impact on the thinking of French artists. Rather than tracing a history of styles or individuals, we consider how artistic practices were closely linked to contemporary developments. The rise of new forms of image distribution, including cinema, will be addressed, as well as the changing role of painting in the public sphere. The writings of artists and their contemporaries will be examined alongside recent art-historical work.</p>
+                <p><strong>C Medieval European Art</strong></p>
+                <p>This course addresses two problems central to the history of art: the roots of artistic invention, and suitable methods for instructing on technique. During this period, young, would-be artists acted as assistants to a master painter in his workshop. With this type of training, what was the scope for originality, and how was stylistic change encouraged? These issues are brought into sharp focus by the changing visual culture of late-medieval Europe, between the twelfth and the fifteenth centuries. The available literature on these themes is rich, yet inconsistent: the course therefore addresses questions that are very much open.</p>
+                <p><strong>D Reception of Classical European Art</strong></p>
+                <p>From the fourteenth century the discovery of classical antiquities inspired contemporary artists, some copied closely, some restored the ancient in a contemporary style, while others reinterpreted freely. The course focuses on sculpture, painting and architecture in Britain, with a selection of other European works. Sculpture is examined in life-size marble statues, and in miniature with porcelain figurines. Painting is studied through the designs painted on vases, particularly Athenian and South Italian Architecture is examined through the ancient Greek temples that were excavated in the nineteenth century and also replicated in miniature for sale to travelers.</p>
+                <p><strong>E Women, Art and Culture in Early Modern Europe</strong></p>
+                <p>This course will explore the various roles played by women in the production and reception of art and architecture in fifteenth-to seventeenth-century Europe. After many decades of relative neglect, the significance of the way women contributed to the art and culture of Early Modern Europe has come to light. By drawing on this wealth of new research, the course will examine the careers of professional women artists working in Northern and Southern Europe. We also consider how famous women patrons, such as Isabella d'Este and Catherine de Medici, influenced the careers of artists and wider perceptions about art. Another topic that will be addressed is the representation of women in the visual arts, for example as sitters for state portraits and marriage paintings.</p>
+            </div>
+        </div>
+        <div class="questions-panel" id="questions-panel">
+            <div class="question-section">
+                <div class="instructions">Questions 1-6</div>
+                <div class="instructions">Do the following statements agree with the information given in Reading Passage 1?</div>
+                <div class="instructions">Write TRUE, FALSE, or NOT GIVEN in boxes 1-6 on your answer sheet.</div>
+                <div class="question-group">
+                    <div class="question" id="q1">
+                        <div class="question-title">
+                            <div class="question-number">1</div>
+                            <div class="question-text">Applicants to the department must have previously studied art history.</div>
+                        </div>
+                        <div class="options">
+                            <label class="option"><input type="radio" name="q1" value="TRUE">TRUE</label>
+                            <label class="option"><input type="radio" name="q1" value="FALSE">FALSE</label>
+                            <label class="option"><input type="radio" name="q1" value="NOT GIVEN">NOT GIVEN</label>
+                        </div>
+                    </div>
+                    <div class="question" id="q2">
+                        <div class="question-title">
+                            <div class="question-number">2</div>
+                            <div class="question-text">Students can choose two optional courses instead of the Theory and Methods course.</div>
+                        </div>
+                        <div class="options">
+                            <label class="option"><input type="radio" name="q2" value="TRUE">TRUE</label>
+                            <label class="option"><input type="radio" name="q2" value="FALSE">FALSE</label>
+                            <label class="option"><input type="radio" name="q2" value="NOT GIVEN">NOT GIVEN</label>
+                        </div>
+                    </div>
+                    <div class="question" id="q3">
+                        <div class="question-title">
+                            <div class="question-number">3</div>
+                            <div class="question-text">The course organisers had more problems collecting art objects from some historical periods than others.</div>
+                        </div>
+                        <div class="options">
+                            <label class="option"><input type="radio" name="q3" value="TRUE">TRUE</label>
+                            <label class="option"><input type="radio" name="q3" value="FALSE">FALSE</label>
+                            <label class="option"><input type="radio" name="q3" value="NOT GIVEN">NOT GIVEN</label>
+                        </div>
+                    </div>
+                    <div class="question" id="q4">
+                        <div class="question-title">
+                            <div class="question-number">4</div>
+                            <div class="question-text">The Theory and Methods course focuses on the way art is made and perceived.</div>
+                        </div>
+                        <div class="options">
+                            <label class="option"><input type="radio" name="q4" value="TRUE">TRUE</label>
+                            <label class="option"><input type="radio" name="q4" value="FALSE">FALSE</label>
+                            <label class="option"><input type="radio" name="q4" value="NOT GIVEN">NOT GIVEN</label>
+                        </div>
+                    </div>
+                    <div class="question" id="q5">
+                        <div class="question-title">
+                            <div class="question-number">5</div>
+                            <div class="question-text">Students will be able to do any of the optional courses that are listed.</div>
+                        </div>
+                        <div class="options">
+                            <label class="option"><input type="radio" name="q5" value="TRUE">TRUE</label>
+                            <label class="option"><input type="radio" name="q5" value="FALSE">FALSE</label>
+                            <label class="option"><input type="radio" name="q5" value="NOT GIVEN">NOT GIVEN</label>
+                        </div>
+                    </div>
+                    <div class="question" id="q6">
+                        <div class="question-title">
+                            <div class="question-number">6</div>
+                            <div class="question-text">Students may be able to take an unlisted course if they get the appropriate approval.</div>
+                        </div>
+                        <div class="options">
+                            <label class="option"><input type="radio" name="q6" value="TRUE">TRUE</label>
+                            <label class="option"><input type="radio" name="q6" value="FALSE">FALSE</label>
+                            <label class="option"><input type="radio" name="q6" value="NOT GIVEN">NOT GIVEN</label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="question-section">
+                <div class="instructions">Questions 7-13</div>
+                <div class="instructions">Complete the notes below.</div>
+                <div class="instructions">Choose ONE WORD ONLY from the passage for each answer.</div>
+                <div class="question-group">
+                    <div class="question" id="q7-13">
+                        <div class="question-title">
+                            <div class="question-text">
+                                <strong>Optional courses</strong>
+                                <div>
+                                    <p><strong>Authenticity and Replication</strong></p>
+                                    <p>· genuine art is studied in addition to that considered <span class="question-number-inline">7.</span> <input type="text" name="q7" class="fill-in-the-blank" id="q7-input">.</p>
+                                    <p>· art objects are studied in <span class="question-number-inline">8.</span> <input type="text" name="q8" class="fill-in-the-blank" id="q8-input">.</p>
+                                    <p><strong>French Painting 1880-1912</strong></p>
+                                    <p>· the course covers the period up to when <span class="question-number-inline">9.</span> <input type="text" name="q9" class="fill-in-the-blank" id="q9-input"> started to be prominent.</p>
+                                    <p>· the course looks at the connections between art and new developments such as <span class="question-number-inline">10.</span> <input type="text" name="q10" class="fill-in-the-blank" id="q10-input">.</p>
+                                    <p><strong>Medieval European Art</strong></p>
+                                    <p>· the course looks at two issues: artistic creativity and processes for teaching technique.</p>
+                                    <p>· the course considers how artists could be original when taught by an expert in a <span class="question-number-inline">11.</span> <input type="text" name="q11" class="fill-in-the-blank" id="q11-input">.</p>
+                                    <p><strong>Reception of Classical European Art</strong></p>
+                                    <p>· life-sized and miniature sculpture is examined.</p>
+                                    <p>· painting is examined by looking at the decoration of <span class="question-number-inline">12.</span> <input type="text" name="q12" class="fill-in-the-blank" id="q12-input">.</p>
+                                    <p>· architecture is assessed by studying 19th century models bought by <span class="question-number-inline">13.</span> <input type="text" name="q13" class="fill-in-the-blank" id="q13-input">.</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <footer>
+        <div class="progress-bar"><div class="progress" id="progress"></div></div>
+        <div class="action-buttons">
+            <button class="btn-reset" id="reset-btn">Reset</button>
+            <button class="btn-submit" id="submit-btn">Submit</button>
+        </div>
+    </footer>
+
+    <div class="feedback-overlay" id="feedback-overlay">
+        <div class="feedback-container">
+            <div class="feedback-header">
+                <div class="feedback-title">Your Results</div>
+                <div class="score-display" id="score-display">0/13</div>
+            </div>
+            <div class="feedback-body" id="feedback-body"></div>
+            <button class="close-btn" id="close-feedback">Close</button>
+        </div>
+    </div>
+
+    <button id="highlight-btn">Highlight</button>
+
+    <script>
+        // Utility function to escape HTML special characters
+        function escapeHTML(str) {
+            return str.replace(/'/g, "\\'").replace(/"/g, "\\\"").replace(/</g, "<").replace(/>/g, ">");
+        }
+
+        // Timer
+        let timerInterval, seconds = 1200, timerRunning = false;
+        const timerDisplay = document.getElementById('timer');
+        const startTimerBtn = document.getElementById('start-timer');
+        const pauseTimerBtn = document.getElementById('pause-timer');
+        const resetTimerBtn = document.getElementById('reset-timer');
+
+        function updateTimer() {
+            if (seconds >= 0) {
+                timerDisplay.textContent = `${Math.floor(seconds / 60).toString().padStart(2, '0')}:${(seconds % 60).toString().padStart(2, '0')}`;
+                seconds--;
+            } else {
+                clearInterval(timerInterval);
+                timerRunning = false;
+                document.getElementById('submit-btn').click();
+            }
+        }
+
+        startTimerBtn.addEventListener('click', () => {
+            if (!timerRunning) {
+                timerRunning = true;
+                timerInterval = setInterval(updateTimer, 1000);
+            }
+        });
+
+        pauseTimerBtn.addEventListener('click', () => {
+            if (timerRunning) {
+                clearInterval(timerInterval);
+                timerRunning = false;
+            }
+        });
+
+        resetTimerBtn.addEventListener('click', () => {
+            clearInterval(timerInterval);
+            timerRunning = false;
+            seconds = 1200;
+            updateTimer();
+        });
+
+        // Theme Toggle
+        const nightModeToggle = document.getElementById('night-mode-toggle');
+        nightModeToggle.addEventListener('click', () => {
+            document.body.classList.toggle('dark-mode');
+            const icon = nightModeToggle.querySelector('i');
+            icon.classList.toggle('fa-moon');
+            icon.classList.toggle('fa-sun');
+        });
+
+        // Highlight Functionality
+        const highlightBtn = document.getElementById('highlight-btn');
+
+        function showHighlightButton() {
+            const selection = window.getSelection();
+            if (selection.toString().trim().length > 0 && selection.rangeCount > 0) {
+                const range = selection.getRangeAt(0);
+                const parent = range.commonAncestorContainer.parentElement.closest('#passage-text, .questions-panel');
+                if (parent && range.startContainer === range.endContainer && range.startContainer.nodeType === Node.TEXT_NODE) {
+                    const rect = range.getBoundingClientRect();
+                    highlightBtn.style.top = `${rect.top + window.scrollY - 40}px`;
+                    highlightBtn.style.left = `${rect.left + (rect.width / 2) - (highlightBtn.offsetWidth / 2)}px`;
+                    highlightBtn.classList.add('visible');
+                } else {
+                    highlightBtn.classList.remove('visible');
+                }
+            } else {
+                highlightBtn.classList.remove('visible');
+            }
+        }
+
+        document.addEventListener('mouseup', () => setTimeout(showHighlightButton, 0));
+        document.addEventListener('keyup', (e) => {
+            if (['Shift', 'ArrowLeft', 'ArrowRight'].includes(e.key)) setTimeout(showHighlightButton, 0);
+        });
+        document.addEventListener('click', (e) => {
+            if (!highlightBtn.contains(e.target) && !e.target.closest('.highlighted')) {
+                highlightBtn.classList.remove('visible');
+                document.querySelectorAll('.remove-highlight-btn').forEach(btn => btn.style.display = 'none');
+            }
+        });
+        document.addEventListener('scroll', () => {
+            highlightBtn.classList.remove('visible');
+            document.querySelectorAll('.remove-highlight-btn').forEach(btn => btn.style.display = 'none');
+            if (window.getSelection) window.getSelection().removeAllRanges();
+        });
+
+        highlightBtn.addEventListener('click', () => {
+            const selection = window.getSelection();
+            if (selection.rangeCount) {
+                const range = selection.getRangeAt(0);
+                const span = document.createElement('span');
+                span.className = 'highlighted';
+                const removeBtn = document.createElement('button');
+                removeBtn.className = 'remove-highlight-btn';
+                removeBtn.textContent = 'Remove';
+                removeBtn.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    const parent = span.parentNode;
+                    while (span.firstChild) parent.insertBefore(span.firstChild, span);
+                    parent.removeChild(span);
+                    parent.removeChild(removeBtn);
+                    parent.normalize();
+                });
+                if (range.startContainer === range.endContainer && range.startContainer.nodeType === Node.TEXT_NODE) {
+                    try {
+                        range.surroundContents(span);
+                        span.appendChild(removeBtn);
+                        selection.removeAllRanges();
+                        highlightBtn.classList.remove('visible');
+                        span.parentNode.normalize();
+                    } catch (e) {
+                        alert('Cannot highlight across multiple elements. Please select text within a single line.');
+                        selection.removeAllRanges();
+                        highlightBtn.classList.remove('visible');
+                    }
+                } else {
+                    alert('Please select text within a single line to highlight.');
+                    selection.removeAllRanges();
+                    highlightBtn.classList.remove('visible');
+                }
+            }
+        });
+
+        document.addEventListener('click', (e) => {
+            const highlighted = e.target.closest('.highlighted');
+            if (highlighted) {
+                document.querySelectorAll('.remove-highlight-btn').forEach(btn => btn.style.display = 'none');
+                const removeBtn = highlighted.querySelector('.remove-highlight-btn');
+                if (removeBtn) removeBtn.style.display = 'block';
+            }
+        });
+
+        // Progress and Answers
+        function updateProgress() {
+            let answered = 0;
+            // Check radio button questions (1-6)
+            for (let i = 1; i <= 6; i++) {
+                const q = document.getElementById(`q${i}`);
+                if (!q) {
+                    console.error(`Question element q${i} not found`);
+                    continue;
+                }
+                const selectedRadio = q.querySelector(`input[name="q${i}"]:checked`);
+                const isAnswered = !!selectedRadio;
+                q.classList.toggle('answered', isAnswered);
+                if (isAnswered) {
+                    answered++;
+                    console.log(`Question ${i} selected: ${selectedRadio.value}`);
+                } else {
+                    console.log(`Question ${i} not answered`);
+                }
+            }
+            // Check fill-in-the-blank questions (7-13)
+            const q7_13 = document.getElementById('q7-13');
+            if (!q7_13) {
+                console.error('Question element q7-13 not found');
+            } else {
+                for (let i = 7; i <= 13; i++) {
+                    const input = q7_13.querySelector(`#q${i}-input`);
+                    if (!input) {
+                        console.error(`Input for question ${i} not found`);
+                        continue;
+                    }
+                    const isAnswered = input.value.trim() !== '';
+                    if (isAnswered) {
+                        answered++;
+                        console.log(`Question ${i} input: ${input.value}`);
+                    }
+                }
+                q7_13.classList.toggle('answered', answered > 6);
+            }
+            const progress = document.getElementById('progress');
+            if (progress) {
+                progress.style.width = `${(answered / 13) * 100}%`;
+            } else {
+                console.error('Progress bar element not found');
+            }
+            console.log(`Total answered: ${answered}/13`);
+            return answered;
+        }
+
+        // Attach event listeners to radio buttons and text inputs
+        document.querySelectorAll('input[type="radio"]').forEach(radio => {
+            radio.addEventListener('change', () => {
+                console.log(`Radio changed: ${radio.name} = ${radio.value}`);
+                // Force DOM update
+                radio.checked = true;
+                updateProgress();
+            });
+        });
+        document.querySelectorAll('input[type="text"]').forEach(input => {
+            input.addEventListener('input', () => {
+                console.log(`Text input changed: ${input.id} = ${input.value}`);
+                updateProgress();
+            });
+            input.addEventListener('change', updateProgress);
+        });
+
+        // Reset
+        document.getElementById('reset-btn').addEventListener('click', () => {
+            console.log('Reset button clicked');
+            document.querySelectorAll('input[type="radio"]').forEach(r => {
+                r.checked = false;
+                r.removeAttribute('checked'); // Ensure checked attribute is removed
+            });
+            document.querySelectorAll('input[type="text"]').forEach(i => i.value = '');
+            document.querySelectorAll('.highlighted').forEach(h => {
+                const p = h.parentNode;
+                while (h.firstChild) p.insertBefore(h.firstChild, h);
+                p.removeChild(h);
+                if (p.querySelector('.remove-highlight-btn')) {
+                    p.removeChild(p.querySelector('.remove-highlight-btn'));
+                }
+                p.normalize();
+            });
+            document.querySelectorAll('.question').forEach(q => q.classList.remove('answered'));
+            updateProgress();
+            const feedbackOverlay = document.getElementById('feedback-overlay');
+            if (feedbackOverlay) {
+                feedbackOverlay.style.display = 'none';
+            } else {
+                console.error('Feedback overlay element not found');
+            }
+        });
+
+        // Submit
+        document.getElementById('submit-btn').addEventListener('click', () => {
+            console.log('Submit button clicked');
+            try {
+                clearInterval(timerInterval);
+                timerRunning = false;
+                const answers = {
+                    1: 'FALSE',
+                    2: 'FALSE',
+                    3: 'NOT GIVEN',
+                    4: 'TRUE',
+                    5: 'FALSE',
+                    6: 'TRUE',
+                    7: 'fraudulent',
+                    8: 'museums',
+                    9: 'cubism',
+                    10: 'cinema',
+                    11: 'workshop',
+                    12: 'vases',
+                    13: 'travelers'
+                };
+                const explanations = {
+                    1: "The passage states that applicants do not require a first degree in art history, contradicting the statement.",
+                    2: "The passage indicates that the Theory and Methods course is compulsory, and students take two optional courses in addition, not instead.",
+                    3: "There is no information in the passage about difficulties in collecting art objects from different historical periods.",
+                    4: "The passage confirms that the Theory and Methods course is organized around issues related to the production of art and people's responses to it.",
+                    5: "The passage notes that optional courses are not available every year and there may be restrictions, contradicting the statement that students can do any listed course.",
+                    6: "The passage states that students may take an unlisted course with permission from the Course Tutor and an application by their supervisor.",
+                    7: "The Authenticity and Replication course includes works regarded as fraudulent.",
+                    8: "The course makes extensive use of trips to museums to view objects and images.",
+                    9: "The French Painting course covers the period up to when Cubism became prominent.",
+                    10: "The course addresses new forms of image distribution, including cinema.",
+                    11: "The Medieval European Art course discusses artists trained in a workshop.",
+                    12: "Painting in the Reception of Classical European Art course is studied through designs on vases.",
+                    13: "Architecture is assessed through models bought by travelers in the 19th century."
+                };
+                let correct = 0;
+                const feedbackBody = document.getElementById('feedback-body');
+                if (!feedbackBody) {
+                    console.error('Feedback body element not found');
+                    alert('Error: Feedback display area not found. Please check the page structure.');
+                    return;
+                }
+                feedbackBody.innerHTML = '';
+                for (let i = 1; i <= 13; i++) {
+                    const q = document.getElementById(i <= 6 ? `q${i}` : 'q7-13');
+                    if (!q) {
+                        console.error(`Question element q${i} not found`);
+                        continue;
+                    }
+                    let userAns;
+                    if (i <= 6) {
+                        // Query all radio buttons for this question to ensure we get the checked one
+                        const radios = q.querySelectorAll(`input[name="q${i}"]`);
+                        let selectedValue = 'Not answered';
+                        radios.forEach(radio => {
+                            if (radio.checked) {
+                                selectedValue = radio.value;
+                            }
+                        });
+                        userAns = selectedValue;
+                        console.log(`Submit Q${i}: Selected = ${userAns}`);
+                    } else {
+                        const input = q.querySelector(`#q${i}-input`);
+                        userAns = input ? input.value.trim().toLowerCase() : 'Not answered';
+                        console.log(`Submit Q${i}: Input = ${userAns}`);
+                    }
+                    const correctAns = answers[i].toLowerCase();
+                    const isCorrect = userAns.toLowerCase() === correctAns;
+                    if (isCorrect && userAns !== 'Not answered') correct++;
+                    feedbackBody.innerHTML += `
+                        <div class="feedback-item">
+                            <div class="feedback-question">${isCorrect && userAns !== 'Not answered' ? '<span class="correct">Correct</span>' : '<span class="incorrect">Incorrect</span>'} Q${i}</div>
+                            <div>Your: ${escapeHTML(userAns)}</div>
+                            <div>Correct: ${escapeHTML(answers[i])}</div>
+                            <div>${escapeHTML(explanations[i])}</div>
+                        </div>`;
+                }
+                const scoreDisplay = document.getElementById('score-display');
+                if (scoreDisplay) {
+                    scoreDisplay.textContent = `${correct}/13`;
+                } else {
+                    console.error('Score display element not found');
+                }
+                const feedbackOverlay = document.getElementById('feedback-overlay');
+                if (feedbackOverlay) {
+                    feedbackOverlay.style.display = 'flex';
+                } else {
+                    console.error('Feedback overlay element not found');
+                    alert('Error: Cannot display feedback. Please check the page structure.');
+                }
+            } catch (error) {
+                console.error('Error during submission:', error);
+                alert('An error occurred while submitting. Please check the console for details and try again.');
+            }
+        });
+
+        // Close Feedback
+        document.getElementById('close-feedback').addEventListener('click', () => {
+            console.log('Close feedback button clicked');
+            const feedbackOverlay = document.getElementById('feedback-overlay');
+            if (feedbackOverlay) {
+                feedbackOverlay.style.display = 'none';
+            } else {
+                console.error('Feedback overlay element not found');
+            }
+        });
+
+        // Resize Functionality
+        const resizeHandle = document.getElementById('resize-handle');
+        const passagePanel = document.getElementById('passage-panel');
+        const questionsPanel = document.getElementById('questions-panel');
+        const main = document.getElementById('main');
+        let isResizing = false;
+
+        resizeHandle.addEventListener('mousedown', (e) => {
+            isResizing = true;
+            e.preventDefault();
+            document.addEventListener('mousemove', resize);
+            document.addEventListener('mouseup', stopResize);
+        });
+
+        function resize(e) {
+            if (isResizing) {
+                const containerWidth = main.offsetWidth;
+                let newPassageWidth = (e.clientX / containerWidth) * 100;
+                if (newPassageWidth < 20) newPassageWidth = 20;
+                if (newPassageWidth > 80) newPassageWidth = 80;
+                passagePanel.style.width = `${newPassageWidth}%`;
+                questionsPanel.style.width = `${100 - newPassageWidth}%`;
+                resizeHandle.style.left = `${newPassageWidth}%`;
+            }
+        }
+
+        function stopResize() {
+            isResizing = false;
+            document.removeEventListener('mousemove', resize);
+            document.removeEventListener('mouseup', stopResize);
+        }
+
+        // Initialize
+        updateTimer();
+        updateProgress();
+    </script>
+</body>
+</html>

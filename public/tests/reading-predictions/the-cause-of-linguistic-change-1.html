@@ -1,0 +1,1414 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>IELTS Reading Test - The Cause of Linguistic Change</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        /* Main styles */
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: Arial, sans-serif;
+            overflow: hidden;
+            background-color: #f0f8ff;
+        }
+        .test-wrapper {
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+        }
+        .test-container {
+            display: flex;
+            flex: 1;
+            overflow: hidden;
+        }
+        .header {
+            background-color: #fff;
+            border-bottom: 1px solid #ddd;
+            padding: 10px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .header__logo img {
+            height: 40px;
+        }
+        .header__timer {
+            font-size: 1.2rem;
+            font-weight: bold;
+            color: #333;
+            background-color: #e6f2ff;
+            padding: 5px 15px;
+            border-radius: 20px;
+            border: 1px solid #ddd;
+            transition: all 0.3s ease;
+        }
+        .header__icons {
+            display: flex;
+            gap: 15px;
+            align-items: center;
+        }
+        .header__icon {
+            font-size: 1.2rem;
+            color: #666;
+            cursor: pointer;
+        }
+        .telegram-button {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            background-color: #0088cc;
+            color: white;
+            padding: 8px 15px;
+            border-radius: 20px;
+            text-decoration: none;
+            font-weight: bold;
+            font-size: 0.9rem;
+            transition: background-color 0.3s ease;
+        }
+        .telegram-button:hover {
+            background-color: #0077b3;
+        }
+        .settings-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: rgba(0,0,0,0.7);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+        }
+        .settings-content {
+            background-color: white;
+            width: 90%;
+            max-width: 500px;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+        }
+        .settings-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 20px;
+            border-bottom: 1px solid #ddd;
+            background-color: #f0f8ff;
+        }
+        .settings-header h2 {
+            margin: 0;
+            font-size: 1.2rem;
+        }
+        .settings-close {
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: #666;
+        }
+        .settings-body {
+            padding: 20px;
+        }
+        .settings-option {
+            display: flex;
+            align-items: center;
+            padding: 10px 0;
+            border-bottom: 1px solid #eee;
+            cursor: pointer;
+        }
+        .settings-option:last-child {
+            border-bottom: none;
+        }
+        .settings-option i {
+            margin-right: 15px;
+            width: 20px;
+            text-align: center;
+            color: #2a6c96;
+        }
+        .settings-option span {
+            flex: 1;
+        }
+        .sectionRubric {
+            margin: 1em;
+            width: calc(100% - 4em - 3px);
+            border-radius: 4px;
+            padding: 0.75em 1em;
+            background: white;
+            border: 1px solid #d5d5d5;
+        }
+        .sectionRubric h2, .sectionRubric p {
+            margin: 0;
+        }
+        .sectionRubric h2 {
+            font-size: 1rem;
+            margin-bottom: 0.25em;
+        }
+        .passage-container {
+            width: 45%;
+            height: 100%;
+            overflow-y: auto;
+            padding: 20px;
+            box-sizing: border-box;
+            background-color: #f0f8ff;
+            position: relative;
+            -webkit-user-select: text;
+            user-select: text;
+        }
+        .questions-container {
+            flex: 1;
+            overflow-y: auto;
+            padding: 20px;
+            box-sizing: border-box;
+            background-color: #f0f8ff;
+            -webkit-user-select: text;
+            user-select: text;
+        }
+        .highlight {
+            position: relative;
+            border-radius: 2px;
+            padding: 0 1px;
+            margin: 0 -1px;
+        }
+        .highlight.yellow {
+            background-color: rgba(255, 255, 0, 0.3);
+        }
+        .highlight.green {
+            background-color: rgba(0, 255, 0, 0.3);
+        }
+        .highlight.pink {
+            background-color: rgba(255, 105, 180, 0.3);
+        }
+        .highlight.blue {
+            background-color: rgba(0, 191, 255, 0.3);
+        }
+        .highlight-toolbar {
+            position: fixed;
+            background: white;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+            display: none;
+            z-index: 1000;
+            padding: 5px;
+            transform: translate(-50%, -100%);
+            margin-top: -5px;
+        }
+        .highlight-toolbar button {
+            background: none;
+            border: none;
+            width: 24px;
+            height: 24px;
+            cursor: pointer;
+            margin: 0 2px;
+            border-radius: 3px;
+        }
+        .highlight-toolbar button:hover {
+            background: #f0f0f0;
+        }
+        .highlight-toolbar button.remove {
+            color: #ff0000;
+        }
+        .divider {
+            width: 10px;
+            background: #ddd;
+            cursor: col-resize;
+            position: relative;
+        }
+        .divider-handle {
+            width: 4px;
+            height: 40px;
+            background: #999;
+            border-radius: 2px;
+            position: absolute;
+            top: 50%;
+            left: 3px;
+            transform: translateY(-50%);
+        }
+        .question {
+            margin-bottom: 30px;
+        }
+        .question-rubric {
+            margin-bottom: 15px;
+            font-weight: bold;
+        }
+        .question-options {
+            list-style-type: none;
+            padding: 0;
+        }
+        .question-options li {
+            margin: 10px 0;
+            display: flex;
+            align-items: center;
+        }
+        .matching-option {
+            display: flex;
+            align-items: center;
+            margin: 5px 0;
+        }
+        .matching-option select {
+            min-width: 50px;
+            padding: 5px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            margin-left: 10px;
+        }
+        .summary-completion-container {
+            margin-top: 20px;
+        }
+        .summary-text p {
+            line-height: 2.5;
+            font-size: 16px;
+        }
+        .summary-input {
+            width: 150px;
+            padding: 5px;
+            border: 2px dashed #999;
+            border-radius: 4px;
+            margin: 0 5px;
+            font-size: 15px;
+            font-weight: bold;
+            background-color: #e3f2fd;
+        }
+        .summary-input.correct {
+            border-color: #28a745;
+            background-color: #e9f7ef;
+            border-style: solid;
+        }
+        .summary-input.incorrect {
+            border-color: #dc3545;
+            background-color: #f8d7da;
+            border-style: solid;
+        }
+        .summary-feedback {
+            display: inline-block;
+            margin-left: 10px;
+            font-size: 14px;
+        }
+        .summary-feedback.correct {
+            color: #28a745;
+        }
+        .summary-feedback.incorrect {
+            color: #dc3545;
+        }
+        .footer {
+            background: #f5f5f5;
+            border-top: 1px solid #ddd;
+            padding: 10px;
+        }
+        .nav-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        .footer__questionWrapper {
+            display: flex;
+            align-items: center;
+        }
+        .footer__questionNo {
+            background: none;
+            border: none;
+            padding: 5px 10px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+        .footer__subquestionWrapper {
+            display: flex;
+            flex-wrap: wrap;
+            margin-left: 10px;
+        }
+        .subQuestion {
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            border: 1px solid #ccc;
+            background: #f0f0f0;
+            margin: 2px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #666;
+        }
+        .subQuestion.active {
+            background: #0066cc;
+            color: white;
+            border-color: #0066cc;
+        }
+        .subQuestion.attempted {
+            background: #0066cc;
+            color: white;
+        }
+        .footer__deliverButton {
+            background: #0066cc;
+            color: white;
+            border: none;
+            padding: 8px 15px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+        .footer__deliverButton:disabled {
+            background: #cccccc;
+            cursor: not-allowed;
+        }
+        .sr-only {
+            position: absolute;
+            width: 1px;
+            height: 1px;
+            padding: 0;
+            margin: -1px;
+            overflow: hidden;
+            clip: rect(0, 0, 0, 0);
+            white-space: nowrap;
+            border-width: 0;
+        }
+        .highlight-color {
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            display: inline-block;
+            margin: 0 2px;
+            cursor: pointer;
+            border: 1px solid #ccc;
+        }
+        .highlight-color.yellow { background-color: #ffff00; }
+        .highlight-color.green { background-color: #00ff00; }
+        .highlight-color.pink { background-color: #ff69b4; }
+        .highlight-color.blue { background-color: #00bfff; }
+        .timer-warning {
+            color: #ff0000;
+            animation: blink 1s infinite;
+        }
+        @keyframes blink {
+            0% { opacity: 1; }
+            50% { opacity: 0.5; }
+            100% { opacity: 1; }
+        }
+        .submission-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: rgba(0,0,0,0.8);
+            z-index: 2000;
+            justify-content: center;
+            align-items: center;
+        }
+        .submission-content {
+            background-color: white;
+            width: 80%;
+            max-width: 800px;
+            border-radius: 10px;
+            padding: 30px;
+            box-shadow: 0 5px 30px rgba(0,0,0,0.5);
+            max-height: 80vh;
+            overflow-y: auto;
+        }
+        .submission-content h2 {
+            margin-top: 0;
+            color: #0066cc;
+            border-bottom: 2px solid #0066cc;
+            padding-bottom: 10px;
+        }
+        .submission-content p {
+            margin-bottom: 20px;
+            color: #333;
+        }
+        .answers-section {
+            margin-top: 20px;
+        }
+        .answers-section h3 {
+            color: #0066cc;
+            margin-bottom: 15px;
+        }
+        .answer-item {
+            padding: 10px;
+            margin-bottom: 8px;
+            border-radius: 4px;
+            border-left: 4px solid #ddd;
+            background-color: #f9f9f9;
+        }
+        .answer-item.correct {
+            border-left-color: #4CAF50;
+            background-color: #f0fff0;
+        }
+        .answer-item.incorrect {
+            border-left-color: #f44336;
+            background-color: #fff0f0;
+        }
+        .answer-text {
+            font-weight: bold;
+        }
+        .correct-answer {
+            color: #4CAF50;
+            margin-left: 10px;
+        }
+        .incorrect-answer {
+            color: #f44336;
+            margin-left: 10px;
+        }
+        .answer-status {
+            float: right;
+            margin-left: 15px;
+        }
+        .correct-status {
+            color: #4CAF50;
+        }
+        .incorrect-status {
+            color: #f44336;
+        }
+        .submission-buttons {
+            margin-top: 25px;
+            text-align: right;
+            clear: both;
+        }
+        .submission-buttons button {
+            padding: 8px 15px;
+            margin-left: 10px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+        .submission-buttons .confirm {
+            background: #0066cc;
+            color: white;
+            border: none;
+        }
+        input:disabled, select:disabled {
+            background-color: #f5f5f5;
+            cursor: not-allowed;
+        }
+        .score-display {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        .score-number {
+            font-size: 3rem;
+            font-weight: bold;
+            color: #0066cc;
+            margin: 10px 0;
+        }
+        .score-total {
+            font-size: 1.5rem;
+            color: #666;
+        }
+        .performance-rating {
+            font-size: 1.5rem;
+            font-weight: bold;
+            margin: 15px 0;
+            padding: 10px;
+            border-radius: 5px;
+        }
+        .excellent {
+            color: #2E7D32;
+            background-color: #E8F5E9;
+        }
+        .very-good {
+            color: #388E3C;
+            background-color: #E8F5E9;
+        }
+        .good {
+            color: #689F38;
+            background-color: #F1F8E9;
+        }
+        .fair {
+            color: #F57C00;
+            background-color: #FFF3E0;
+        }
+        .poor {
+            color: #D32F2F;
+            background-color: #FFEBEE;
+        }
+        .band-score {
+            font-size: 2rem;
+            font-weight: bold;
+            color: #0066cc;
+            margin: 10px 0;
+        }
+        .correct-highlight {
+            background-color: rgba(76, 175, 80, 0.3);
+            padding: 2px;
+            border-radius: 2px;
+        }
+        .incorrect-highlight {
+            background-color: rgba(244, 67, 54, 0.3);
+            padding: 2px;
+            border-radius: 2px;
+        }
+        .answer-comparison {
+            margin-top: 20px;
+            padding: 15px;
+            background-color: #f5f5f5;
+            border-radius: 5px;
+            display: none;
+        }
+        .answer-comparison h3 {
+            margin-top: 0;
+            color: #0066cc;
+        }
+        .time-spent {
+            font-size: 1rem;
+            color: #666;
+            margin-bottom: 15px;
+            text-align: center;
+        }
+        .dropdown-answer {
+            display: inline-block;
+            margin-left: 10px;
+            font-weight: normal;
+        }
+        .dropdown-answer.correct {
+            color: #4CAF50;
+        }
+        .dropdown-answer.incorrect {
+            color: #f44336;
+        }
+        .true-false-container {
+            margin: 10px 0;
+        }
+        .true-false-options {
+            display: flex;
+            gap: 20px;
+            margin-top: 5px;
+        }
+        .true-false-option {
+            display: flex;
+            align-items: center;
+        }
+        .true-false-option input {
+            margin-right: 5px;
+        }
+    </style>
+</head>
+<body>
+    <div class="test-wrapper">
+        <header class="header">
+            <div class="header__logo">
+                <img src="https://d2snzxottmona5.cloudfront.net/releases/3.46.0/images/logo/ielts.svg" alt="IELTS Logo">
+            </div>
+            <div class="header__timer" id="testTimer">00:00</div>
+            <div class="header__icons">
+                
+                <i class="fas fa-wifi header__icon"></i>
+                <i class="fas fa-bell header__icon"></i>
+                <i class="fas fa-cog header__icon" id="settingsButton"></i>
+            </div>
+        </header>
+        <div class="settings-modal" id="settingsModal">
+            <div class="settings-content">
+                <div class="settings-header">
+                    <h2>Options</h2>
+                    <button class="settings-close" id="settingsClose">&times;</button>
+                </div>
+                <div class="settings-body">
+                    <div class="settings-option">
+                        <i class="fas fa-paper-plane"></i>
+                        <span>Go to submission page</span>
+                    </div>
+                    <div class="settings-option" id="contrastOption">
+                        <i class="fas fa-adjust"></i>
+                        <span>Contrast</span>
+                    </div>
+                    <div class="settings-option" id="textSizeOption">
+                        <i class="fas fa-search-plus"></i>
+                        <span>Text size</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="sectionRubric" id="sectionRubric">
+            <h2>Part 3</h2>
+            <p>Read the text and answer questions 27-40.</p>
+        </div>
+        <div class="test-container">
+            <div class="passage-container" id="passage-container">
+                <div class="highlight-toolbar" id="highlightToolbar">
+                    <button class="highlight-color yellow" data-color="yellow" title="Yellow highlight"></button>
+                    <button class="highlight-color green" data-color="green" title="Green highlight"></button>
+                    <button class="highlight-color pink" data-color="pink" title="Pink highlight"></button>
+                    <button class="highlight-color blue" data-color="blue" title="Blue highlight"></button>
+                    <button class="remove" title="Remove highlight"><i class="fas fa-times"></i></button>
+                </div>
+                <div id="passageContent">
+                    <h2 style="text-align: center;">The Cause of Linguistic Change</h2>
+                    <p>All living language undergo changes of various kinds, for which there are various reasons. The changes that have caused most dispute are those in pronunciation. We have various sources of evidence for the pronunciation of earlier times, like the evidence of spellings, the treatment of words borrowed from other languages or borrowed by them, the descriptions of contemporary grammarians, and the modern pronunciations in all the languages and dialects concerned. These, combined with a knowledge of the mechanism of speech production, can often give us a very good idea of the pronunciation of an earlier age, though absolute certainty is never possible. When we study the pronunciation of a language over any period of a few generations or more, we fund that it is subject to change. Moreover, there are always large-scale regularities in the changes: for example, over a period of time, all the long a sounds in a language may change into long o sounds, or all the b sounds in a certain position (for example, at the end of a word) may change into p sounds. Such regular changes are often called sound laws. There are no universal sound laws, but simply particular sound laws for one given language at one given period.</p>
+                    <p>One cause of change is the fluence of one language on another. We learn our mother tongue very thoroughly, and acquire a whole set of speech habits which become second nature to us. When later we learn a foreign language, we inevitably carry over some of these speech habits into it, and so do not speak it exactly like a native. Consequently, in bilingual situations the second language tends to be modified. Such modifications may not persist, of course: an isolated Polish or German immigrant to Britain will usually have grandchildren who speak English like natives because of the influence of the general speech environment (playmates, school, work) is stronger than that of the home. But if a large and closely knit group of people adopt a new language, then the modifications they make in it may persist among their descendants, even if the latter no longer speak the original language that caused the changes. This can be seen Wales, where the influence of Welsh has affected the pronunciations of English, and the very characteristic melody of Welsh English has been carried over from Welsh.</p>
+                    <p>It is also possible that fashion plays a part in the process of change. It certainly plays a part in the spread of change: one person imitates another, and people with the most prestige are most likely to be imitated, so that a change that takes place in one social group may be imitated (more or less accurately) by speakers in another group. When a social group goes up or down in the world, its pronunciation will gain or lose prestige. Some of the changes in accepted English pronunciation in the seventeenth and eighteenth centuries have been shown to consist of the replacement of one style of pronunciation by another style already existing, and it is likely that such substitutions were a result of the great social changes of the period: the increased power and wealth of the middle classes, and their steady infiltration upwards into the ranks of the landed gentry probably carried elements of middle class dialect into upper class speech. However, besides spreading changes that have already taken place, fashion may actually cause changes in pronunciation. In a stratified society, the important thing about a fashion is that it is exclusive: as soon as the fashion has penetrated to a lower social group, it's time to move on.</p>
+                    <p>This can be seen in clothes: fashionable people may find it flattering to be imitated, but as soon as the new fashion has really caught on they must change to something else, to mark themselves off as different. It may be the same with language, for social groups use characteristic styles of language to mark themselves off from other groups. A group that has high prestige may find that its style of speech is being imitated by other groups, and then its members may (perhaps subconsciously) begin to change it, perhaps by exaggerating its distinguishing characteristics.</p>
+                    <p>However, while interaction between different languages, and between the dialects of a single language, can explain some changes in pronunciation, it cannot explain them all. Another cause that has been suggested is the fact that the imitation of children is imperfect: they copy their parents' speech, but never reproduce it exactly. This seems to be true enough and it moreover seems to be true that even adults show a certain amount of random variation in their pronunciation. However, these facts that cannot explain changes in pronunciation, unless it can be shown that there is some systematic trend in the failures in imitation: if they are merely random deviations they will cancel one another out and there will be no net change in the language. For some of these random variations to be selected at the expense of others, there must be further forces at work.</p>
+                    <p>One such force, which is often suggested, is known as the principle of ease. We are all naturally lazy, it is argued, and so we tend to take short cuts in the movements of our speech organs, to replace movements calling for great accuracy or energy by less demanding ones, to omit sounds if they are not essential for understanding, and so on. For example, the word scant was skamt, but the m has been changed to n under the influence of the following t. An economy of effort has thereby been achieved, because n and t are articulated in the same place (with the tip of the tongue against the teethridge), whereas m is articulated elsewhere (with the two lips). The change from skamt to scant would be an example of assimilation, which is a very common kind of change. Assimilation is the changing of a sound under the influence of a neighbouring sound.</p>
+                    <p>Assimilation is not the only way in which we change our pronunciation in order to reduce effort. A sound may come to be pronounced less energetically, wherever it occurs: the English r and h sounds are undoubtedly pronounced much less vigorously now than they were a thousand years ago. In some positions a sound may disappear altogether: at one time the t was pronounced in words like castle and Christmas, and the g in words like gnat and gnaw. Sometimes a whole syllable is dropped out if it occurs twice running: a modern example is temporary, which in Britain is pronounced as if it were temporary.</p>
+                </div>
+            </div>
+            <div class="divider" id="divider">
+                <div class="divider-handle"></div>
+            </div>
+            <div class="questions-container" id="questions-container">
+                <div class="question">
+                    <div class="question-rubric">
+                        <h3>Questions 27-30</h3>
+                        <p>Complete the summary below.</p>
+                        <p>Choose <strong>NO MORE THAN THREE WORDS</strong> from the passage for each answer.</p>
+                        <p>Write your answers in boxes <strong>27-30</strong> on your answer sheet.</p>
+                    </div>
+                    <div class="question-content">
+                        <div class="summary-completion-container">
+                            <div class="summary-text">
+                                <p>It is known that the pronunciation of language changes over time. The changes include large-scale regularities known as <input type="text" class="summary-input" id="q27" name="q27">. There are several possible causes for change. Firstly, there is the effect of one language on another. Secondly, there is the role of <input type="text" class="summary-input" id="q28" name="q28">. The speech of certain groups has prestige, and is imitated by others. It has also been suggested that some changes are introduced by <input type="text" class="summary-input" id="q29" name="q29">, who are unable to imitate speech in an exact way. Finally, there is a factor referred as the <input type="text" class="summary-input" id="q30" name="q30">, by which the effort necessary to produce words is reduced.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="question">
+                    <div class="question-rubric">
+                        <h3>Questions 31-37</h3>
+                        <p>Do the following statements agree with the information given in Reading Passage 3?</p>
+                        <p>In boxes <strong>31-37</strong> on your answer sheet, write</p>
+                        <p><strong>TRUE</strong> if the statement agrees with the information</p>
+                        <p><strong>FALSE</strong> if the statement contradicts the information</p>
+                        <p><strong>NOT GIVEN</strong> if there is no information on this</p>
+                    </div>
+                    <div class="question-content">
+                        <div class="question-item">
+                            <p><span class="question-number">31</span> It is impossible to know how words used to be pronounced.</p>
+                            <div class="true-false-options">
+                                <label class="true-false-option">
+                                    <input type="radio" name="q31" value="TRUE"> TRUE
+                                </label>
+                                <label class="true-false-option">
+                                    <input type="radio" name="q31" value="FALSE"> FALSE
+                                </label>
+                                <label class="true-false-option">
+                                    <input type="radio" name="q31" value="NOT GIVEN"> NOT GIVEN
+                                </label>
+                            </div>
+                        </div>
+                        <div class="question-item">
+                            <p><span class="question-number">32</span> Some languages appear to have changed more than others.</p>
+                            <div class="true-false-options">
+                                <label class="true-false-option">
+                                    <input type="radio" name="q32" value="TRUE"> TRUE
+                                </label>
+                                <label class="true-false-option">
+                                    <input type="radio" name="q32" value="FALSE"> FALSE
+                                </label>
+                                <label class="true-false-option">
+                                    <input type="radio" name="q32" value="NOT GIVEN"> NOT GIVEN
+                                </label>
+                            </div>
+                        </div>
+                        <div class="question-item">
+                            <p><span class="question-number">33</span> Some changes in English were probably led by the middle classes.</p>
+                            <div class="true-false-options">
+                                <label class="true-false-option">
+                                    <input type="radio" name="q33" value="TRUE"> TRUE
+                                </label>
+                                <label class="true-false-option">
+                                    <input type="radio" name="q33" value="FALSE"> FALSE
+                                </label>
+                                <label class="true-false-option">
+                                    <input type="radio" name="q33" value="NOT GIVEN"> NOT GIVEN
+                                </label>
+                            </div>
+                        </div>
+                        <div class="question-item">
+                            <p><span class="question-number">34</span> Certain English sounds are difficult for all children to pronounce.</p>
+                            <div class="true-false-options">
+                                <label class="true-false-option">
+                                    <input type="radio" name="q34" value="TRUE"> TRUE
+                                </label>
+                                <label class="true-false-option">
+                                    <input type="radio" name="q34" value="FALSE"> FALSE
+                                </label>
+                                <label class="true-false-option">
+                                    <input type="radio" name="q34" value="NOT GIVEN"> NOT GIVEN
+                                </label>
+                            </div>
+                        </div>
+                        <div class="question-item">
+                            <p><span class="question-number">35</span> <em>Scant</em> is generally easier to pronounce than <em>skamt</em>.</p>
+                            <div class="true-false-options">
+                                <label class="true-false-option">
+                                    <input type="radio" name="q35" value="TRUE"> TRUE
+                                </label>
+                                <label class="true-false-option">
+                                    <input type="radio" name="q35" value="FALSE"> FALSE
+                                </label>
+                                <label class="true-false-option">
+                                    <input type="radio" name="q35" value="NOT GIVEN"> NOT GIVEN
+                                </label>
+                            </div>
+                        </div>
+                        <div class="question-item">
+                            <p><span class="question-number">36</span> The spelling of <em>gnat</em> is likely to change in the future.</p>
+                            <div class="true-false-options">
+                                <label class="true-false-option">
+                                    <input type="radio" name="q36" value="TRUE"> TRUE
+                                </label>
+                                <label class="true-false-option">
+                                    <input type="radio" name="q36" value="FALSE"> FALSE
+                                </label>
+                                <label class="true-false-option">
+                                    <input type="radio" name="q36" value="NOT GIVEN"> NOT GIVEN
+                                </label>
+                            </div>
+                        </div>
+                        <div class="question-item">
+                            <p><span class="question-number">37</span> The spelling of <em>temporary</em> no longer reflects its pronunciation.</p>
+                            <div class="true-false-options">
+                                <label class="true-false-option">
+                                    <input type="radio" name="q37" value="TRUE"> TRUE
+                                </label>
+                                <label class="true-false-option">
+                                    <input type="radio" name="q37" value="FALSE"> FALSE
+                                </label>
+                                <label class="true-false-option">
+                                    <input type="radio" name="q37" value="NOT GIVEN"> NOT GIVEN
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="question">
+                    <div class="question-rubric">
+                        <h3>Questions 38-40</h3>
+                        <p>Look at the following statements (Questions 38-40) and the list of options below.</p>
+                        <p>Match each statement with the correct option, A, B, C or D.</p>
+                        <p>Write the correct letter, A, B, C or D, in boxes 38-40 on your answer sheet.</p>
+                    </div>
+                    <div class="question-content">
+                        <div class="question-item">
+                            <p><span class="question-number">38</span> the b sound changing to a p sound at the end of words</p>
+                            <div class="matching-option">
+                                <select name="q38" id="q38">
+                                    <option value="">--</option>
+                                    <option value="A">A</option>
+                                    <option value="B">B</option>
+                                    <option value="C">C</option>
+                                    <option value="D">D</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="question-item">
+                            <p><span class="question-number">39</span> the melodic pronunciation of Welsh English</p>
+                            <div class="matching-option">
+                                <select name="q39" id="q39">
+                                    <option value="">--</option>
+                                    <option value="A">A</option>
+                                    <option value="B">B</option>
+                                    <option value="C">C</option>
+                                    <option value="D">D</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="question-item">
+                            <p><span class="question-number">40</span> the disappearance of the t sound in Christmas</p>
+                            <div class="matching-option">
+                                <select name="q40" id="q40">
+                                    <option value="">--</option>
+                                    <option value="A">A</option>
+                                    <option value="B">B</option>
+                                    <option value="C">C</option>
+                                    <option value="D">D</option>
+                                </select>
+                            </div>
+                        </div>
+                        <h3>List of Options</h3>
+                        <p><strong>A</strong> minimisation of effort</p>
+                        <p><strong>B</strong> influence of one language on another</p>
+                        <p><strong>C</strong> large-scale change</p>
+                        <p><strong>D</strong> imitation of prestigious group</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <footer class="footer">
+            <nav class="nav-row perScorableItem" aria-label="Questions">
+                <div class="footer__questionWrapper selected multiple" role="tablist">
+                    <button role="tab" class="footer__questionNo" data-sectionid="128121930" tabindex="-1">
+                        <span>
+                            <span aria-hidden="true" class="section-prefix">Part </span>
+                            <span class="sectionNr" aria-hidden="true">3</span>
+                        </span>
+                    </button>
+                    <div class="footer__subquestionWrapper">
+                        <button class="subQuestion" data-contentrevisionid="128121896" data-ordernumber="27" data-sectionid="128121930" tabindex="0">
+                            <span class="sr-only">Question 27</span>
+                            <span aria-hidden="true">27</span>
+                            <span class="sr-only">Not attempted</span>
+                        </button>
+                        <button class="subQuestion" data-contentrevisionid="128121896" data-ordernumber="28" data-sectionid="128121930" tabindex="0">
+                            <span class="sr-only">Question 28</span>
+                            <span aria-hidden="true">28</span>
+                            <span class="sr-only">Not attempted</span>
+                        </button>
+                        <button class="subQuestion" data-contentrevisionid="128121896" data-ordernumber="29" data-sectionid="128121930" tabindex="0">
+                            <span class="sr-only">Question 29</span>
+                            <span aria-hidden="true">29</span>
+                            <span class="sr-only">Not attempted</span>
+                        </button>
+                        <button class="subQuestion" data-contentrevisionid="128121896" data-ordernumber="30" data-sectionid="128121930" tabindex="0">
+                            <span class="sr-only">Question 30</span>
+                            <span aria-hidden="true">30</span>
+                            <span class="sr-only">Not attempted</span>
+                        </button>
+                        <button class="subQuestion" data-contentrevisionid="128121896" data-ordernumber="31" data-sectionid="128121930" tabindex="0">
+                            <span class="sr-only">Question 31</span>
+                            <span aria-hidden="true">31</span>
+                            <span class="sr-only">Not attempted</span>
+                        </button>
+                        <button class="subQuestion" data-contentrevisionid="128121896" data-ordernumber="32" data-sectionid="128121930" tabindex="0">
+                            <span class="sr-only">Question 32</span>
+                            <span aria-hidden="true">32</span>
+                            <span class="sr-only">Not attempted</span>
+                        </button>
+                        <button class="subQuestion" data-contentrevisionid="128121896" data-ordernumber="33" data-sectionid="128121930" tabindex="0">
+                            <span class="sr-only">Question 33</span>
+                            <span aria-hidden="true">33</span>
+                            <span class="sr-only">Not attempted</span>
+                        </button>
+                        <button class="subQuestion" data-contentrevisionid="128121896" data-ordernumber="34" data-sectionid="128121930" tabindex="0">
+                            <span class="sr-only">Question 34</span>
+                            <span aria-hidden="true">34</span>
+                            <span class="sr-only">Not attempted</span>
+                        </button>
+                        <button class="subQuestion" data-contentrevisionid="128121896" data-ordernumber="35" data-sectionid="128121930" tabindex="0">
+                            <span class="sr-only">Question 35</span>
+                            <span aria-hidden="true">35</span>
+                            <span class="sr-only">Not attempted</span>
+                        </button>
+                        <button class="subQuestion" data-contentrevisionid="128121896" data-ordernumber="36" data-sectionid="128121930" tabindex="0">
+                            <span class="sr-only">Question 36</span>
+                            <span aria-hidden="true">36</span>
+                            <span class="sr-only">Not attempted</span>
+                        </button>
+                        <button class="subQuestion" data-contentrevisionid="128121896" data-ordernumber="37" data-sectionid="128121930" tabindex="0">
+                            <span class="sr-only">Question 37</span>
+                            <span aria-hidden="true">37</span>
+                            <span class="sr-only">Not attempted</span>
+                        </button>
+                        <button class="subQuestion" data-contentrevisionid="128121896" data-ordernumber="38" data-sectionid="128121930" tabindex="0">
+                            <span class="sr-only">Question 38</span>
+                            <span aria-hidden="true">38</span>
+                            <span class="sr-only">Not attempted</span>
+                        </button>
+                        <button class="subQuestion" data-contentrevisionid="128121896" data-ordernumber="39" data-sectionid="128121930" tabindex="0">
+                            <span class="sr-only">Question 39</span>
+                            <span aria-hidden="true">39</span>
+                            <span class="sr-only">Not attempted</span>
+                        </button>
+                        <button class="subQuestion" data-contentrevisionid="128121896" data-ordernumber="40" data-sectionid="128121930" tabindex="0">
+                            <span class="sr-only">Question 40</span>
+                            <span aria-hidden="true">40</span>
+                            <span class="sr-only">Not attempted</span>
+                        </button>
+                    </div>
+                </div>
+                <button id="deliver-button" aria-label="Review your answers" class="footer__deliverButton">
+                    <i class="fas fa-check"></i> Submit
+                </button>
+            </nav>
+        </footer>
+    </div>
+    <div class="submission-modal" id="submissionModal">
+        <div class="submission-content">
+            <h2 id="submissionTitle">Test Results</h2>
+            <div class="score-display">
+                <div>Your Score:</div>
+                <div class="score-number" id="userScore">0</div>
+                <div class="score-total">out of <span id="totalQuestions">14</span></div>
+                <div class="band-score" id="bandScore">Band: 0.0</div>
+                <div class="performance-rating" id="performanceRating">Poor - Needs Improvement</div>
+            </div>
+            <div class="time-spent" id="timeSpent"></div>
+            <div class="answers-section">
+                <h3>Your Answers:</h3>
+                <div id="answersList"></div>
+            </div>
+            <div class="submission-buttons">
+                <button class="confirm" id="closeSubmission">Close</button>
+            </div>
+        </div>
+    </div>
+    <div class="answer-comparison" id="answerComparison">
+        <h3>Answer Comparison</h3>
+        <p>Your answers are highlighted below. Correct answers are marked in <span class="correct-highlight">green</span>, incorrect answers in <span class="incorrect-highlight">red</span>.</p>
+    </div>
+    <script>
+        const correctAnswers = {
+            27: "pronunciation",
+            28: "sound laws",
+            29: "Welsh",
+            30: "prestige",
+            31: "TRUE",
+            32: "TRUE",
+            33: "FALSE",
+            34: "NOT GIVEN",
+            35: "TRUE",
+            36: "FALSE",
+            37: "TRUE",
+            38: "C",
+            39: "B",
+            40: "A"
+        };
+        
+        let totalSeconds = 0;
+        const timerElement = document.getElementById('testTimer');
+        let testSubmitted = false;
+        let warningShown = false;
+        let userAnswers = {};
+        let startTime = new Date();
+        let resultsShown = false;
+        
+        function updateTimer() {
+            if (testSubmitted) return;
+            const minutes = Math.floor(totalSeconds / 60);
+            const seconds = totalSeconds % 60;
+            const formattedTime = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+            timerElement.textContent = formattedTime;
+            totalSeconds++;
+        }
+        
+        function disableAllInputs() {
+            document.querySelectorAll('input[type="text"], select, input[type="radio"]').forEach(input => {
+                input.disabled = true;
+            });
+            document.getElementById('deliver-button').disabled = true;
+            document.removeEventListener('mouseup', handleTextSelection);
+        }
+        
+        function showSubmissionModal(title, message) {
+            const modal = document.getElementById('submissionModal');
+            document.getElementById('submissionTitle').textContent = title;
+            const endTime = new Date();
+            const timeDiff = endTime - startTime;
+            const minutes = Math.floor(timeDiff / 60000);
+            const seconds = Math.floor((timeDiff % 60000) / 1000);
+            document.getElementById('timeSpent').textContent = `Time spent: ${minutes}m ${seconds}s`;
+            
+            const answersList = document.getElementById('answersList');
+            answersList.innerHTML = '';
+            let score = 0;
+            userAnswers = {};
+            
+            // Questions 27-30 (Summary completion)
+            for (let i = 27; i <= 30; i++) {
+                const input = document.querySelector(`input[name="q${i}"]`);
+                const userAnswer = input.value.trim().toLowerCase() || 'Not answered';
+                userAnswers[i] = userAnswer;
+                const correctAnswer = correctAnswers[i].toLowerCase();
+                const isCorrect = userAnswer === correctAnswer;
+                if (isCorrect) score++;
+                
+                const answerItem = document.createElement('div');
+                answerItem.className = `answer-item ${isCorrect ? 'correct' : 'incorrect'}`;
+                answerItem.innerHTML = `
+                    <div class="answer-text">Question ${i}: ${userAnswer}</div>
+                    <span class="${isCorrect ? 'correct-answer' : 'incorrect-answer'}">(Correct answer: ${correctAnswers[i]})</span>
+                    <span class="answer-status ${isCorrect ? 'correct-status' : 'incorrect-status'}">
+                        ${isCorrect ? '✓' : '✗'}
+                    </span>
+                `;
+                answersList.appendChild(answerItem);
+            }
+            
+            // Questions 31-37 (True/False/Not Given)
+            for (let i = 31; i <= 37; i++) {
+                const selectedOption = document.querySelector(`input[name="q${i}"]:checked`);
+                const userAnswer = selectedOption ? selectedOption.value : 'Not answered';
+                userAnswers[i] = userAnswer;
+                const correctAnswer = correctAnswers[i];
+                const isCorrect = userAnswer === correctAnswer;
+                if (isCorrect) score++;
+                
+                const answerItem = document.createElement('div');
+                answerItem.className = `answer-item ${isCorrect ? 'correct' : 'incorrect'}`;
+                answerItem.innerHTML = `
+                    <div class="answer-text">Question ${i}: ${userAnswer}</div>
+                    <span class="${isCorrect ? 'correct-answer' : 'incorrect-answer'}">(Correct answer: ${correctAnswer})</span>
+                    <span class="answer-status ${isCorrect ? 'correct-status' : 'incorrect-status'}">
+                        ${isCorrect ? '✓' : '✗'}
+                    </span>
+                `;
+                answersList.appendChild(answerItem);
+            }
+            
+            // Questions 38-40 (Matching)
+            for (let i = 38; i <= 40; i++) {
+                const select = document.querySelector(`select[name="q${i}"]`);
+                const userAnswer = select.value || 'Not answered';
+                userAnswers[i] = userAnswer;
+                const correctAnswer = correctAnswers[i];
+                const isCorrect = userAnswer === correctAnswer;
+                if (isCorrect) score++;
+                
+                const answerItem = document.createElement('div');
+                answerItem.className = `answer-item ${isCorrect ? 'correct' : 'incorrect'}`;
+                const optionText = {
+                    'A': 'minimisation of effort',
+                    'B': 'influence of one language on another',
+                    'C': 'large-scale change',
+                    'D': 'imitation of prestigious group'
+                }[correctAnswer] || correctAnswer;
+                
+                answerItem.innerHTML = `
+                    <div class="answer-text">Question ${i}: ${userAnswer}</div>
+                    <span class="${isCorrect ? 'correct-answer' : 'incorrect-answer'}">(Correct answer: ${correctAnswer} - ${optionText})</span>
+                    <span class="answer-status ${isCorrect ? 'correct-status' : 'incorrect-status'}">
+                        ${isCorrect ? '✓' : '✗'}
+                    </span>
+                `;
+                answersList.appendChild(answerItem);
+            }
+            
+            document.getElementById('userScore').textContent = score;
+            document.getElementById('totalQuestions').textContent = "14";
+            const bandScore = calculateBandScore(score);
+            document.getElementById('bandScore').textContent = `Band: ${bandScore.toFixed(1)}`;
+            
+            const percentage = (score / 14) * 100;
+            let rating, ratingClass;
+            if (score >= 13) {
+                rating = "Excellent!";
+                ratingClass = "excellent";
+            } else if (score >= 11) {
+                rating = "Very Good";
+                ratingClass = "very-good";
+            } else if (score >= 9) {
+                rating = "Good";
+                ratingClass = "good";
+            } else if (score >= 7) {
+                rating = "Fair";
+                ratingClass = "fair";
+            } else {
+                rating = "Poor - Needs Improvement";
+                ratingClass = "poor";
+            }
+            
+            const ratingElement = document.getElementById('performanceRating');
+            ratingElement.textContent = rating;
+            ratingElement.className = `performance-rating ${ratingClass}`;
+            
+            if (testSubmitted) {
+                highlightAnswers(correctAnswers);
+            }
+            
+            modal.style.display = 'flex';
+            resultsShown = true;
+            const submitButton = document.getElementById('deliver-button');
+            submitButton.innerHTML = '<i class="fas fa-eye"></i> Show My Results';
+            submitButton.disabled = false;
+        }
+        
+        function calculateBandScore(score) {
+            if (score >= 13) return 9.0;
+            if (score >= 12) return 8.5;
+            if (score >= 11) return 8.0;
+            if (score >= 10) return 7.5;
+            if (score >= 9) return 7.0;
+            if (score >= 8) return 6.5;
+            if (score >= 7) return 6.0;
+            if (score >= 6) return 5.5;
+            if (score >= 5) return 5.0;
+            return 0.0;
+        }
+        
+        function highlightAnswers(correctAnswers) {
+            // Questions 27-30
+            for (let i = 27; i <= 30; i++) {
+                const input = document.querySelector(`input[name="q${i}"]`);
+                const userAnswer = userAnswers[i];
+                const correctAnswer = correctAnswers[i].toLowerCase();
+                input.classList.remove('correct', 'incorrect');
+                if (userAnswer && userAnswer !== 'Not answered') {
+                    input.classList.add(userAnswer === correctAnswer ? 'correct' : 'incorrect');
+                    const feedback = document.createElement('span');
+                    feedback.className = `summary-feedback ${userAnswer === correctAnswer ? 'correct' : 'incorrect'}`;
+                    feedback.textContent = userAnswer === correctAnswer ? '✓ Correct' : `✗ Correct: ${correctAnswers[i]}`;
+                    if (!input.nextElementSibling || !input.nextElementSibling.classList.contains('summary-feedback')) {
+                        input.parentNode.insertBefore(feedback, input.nextSibling);
+                    }
+                }
+            }
+            
+            // Questions 31-37
+            for (let i = 31; i <= 37; i++) {
+                const selectedOption = document.querySelector(`input[name="q${i}"]:checked`);
+                if (selectedOption) {
+                    const userAnswer = userAnswers[i];
+                    const correctAnswer = correctAnswers[i];
+                    const isCorrect = userAnswer === correctAnswer;
+                    
+                    const parentDiv = selectedOption.closest('.question-item');
+                    const options = parentDiv.querySelectorAll('.true-false-option');
+                    options.forEach(option => {
+                        const input = option.querySelector('input');
+                        if (input.value === correctAnswer) {
+                            option.style.backgroundColor = 'rgba(76, 175, 80, 0.2)';
+                            option.style.padding = '2px 5px';
+                            option.style.borderRadius = '3px';
+                        }
+                    });
+                    
+                    if (!isCorrect && selectedOption) {
+                        selectedOption.parentNode.style.backgroundColor = 'rgba(244, 67, 54, 0.2)';
+                        selectedOption.parentNode.style.padding = '2px 5px';
+                        selectedOption.parentNode.style.borderRadius = '3px';
+                    }
+                }
+            }
+            
+            // Questions 38-40
+            for (let i = 38; i <= 40; i++) {
+                const select = document.querySelector(`select[name="q${i}"]`);
+                const userAnswer = userAnswers[i];
+                const correctAnswer = correctAnswers[i];
+                select.classList.remove('correct', 'incorrect');
+                if (userAnswer && userAnswer !== 'Not answered') {
+                    select.classList.add(userAnswer === correctAnswer ? 'correct' : 'incorrect');
+                    const feedback = document.createElement('span');
+                    feedback.className = `dropdown-answer ${userAnswer === correctAnswer ? 'correct' : 'incorrect'}`;
+                    const optionText = {
+                        'A': 'minimisation of effort',
+                        'B': 'influence of one language on another',
+                        'C': 'large-scale change',
+                        'D': 'imitation of prestigious group'
+                    }[correctAnswer] || correctAnswer;
+                    feedback.textContent = userAnswer === correctAnswer ? '✓ Correct' : `✗ Correct: ${correctAnswer} - ${optionText}`;
+                    if (!select.nextElementSibling || !select.nextElementSibling.classList.contains('dropdown-answer')) {
+                        select.parentNode.appendChild(feedback);
+                    }
+                }
+            }
+            
+            document.getElementById('answerComparison').style.display = 'block';
+        }
+        
+        document.getElementById('deliver-button').addEventListener('click', function() {
+            if (resultsShown) {
+                document.getElementById('submissionModal').style.display = 'flex';
+                return;
+            }
+            if (testSubmitted) return;
+            if (confirm('Are you sure you want to submit your test? You won\'t be able to make changes after submission.')) {
+                clearInterval(timerInterval);
+                testSubmitted = true;
+                disableAllInputs();
+                showSubmissionModal('Test Submitted', 'Thank you for completing the test.');
+            }
+        });
+        
+        document.getElementById('closeSubmission').addEventListener('click', function() {
+            document.getElementById('submissionModal').style.display = 'none';
+            highlightAnswers(correctAnswers);
+        });
+        
+        const timerInterval = setInterval(updateTimer, 1000);
+        
+        const settingsButton = document.getElementById('settingsButton');
+        const settingsModal = document.getElementById('settingsModal');
+        const settingsClose = document.getElementById('settingsClose');
+        
+        settingsButton.addEventListener('click', function() {
+            settingsModal.style.display = 'flex';
+        });
+        
+        settingsClose.addEventListener('click', function() {
+            settingsModal.style.display = 'none';
+        });
+        
+        window.addEventListener('click', function(event) {
+            if (event.target === settingsModal) {
+                settingsModal.style.display = 'none';
+            }
+            if (event.target === document.getElementById('submissionModal')) {
+                document.getElementById('submissionModal').style.display = 'none';
+            }
+        });
+        
+        const divider = document.getElementById('divider');
+        const passageContainer = document.getElementById('passage-container');
+        const questionsContainer = document.getElementById('questions-container');
+        let isDragging = false;
+        let startX, startPassageWidth;
+        
+        divider.addEventListener('mousedown', (e) => {
+            isDragging = true;
+            startX = e.clientX;
+            startPassageWidth = parseInt(document.defaultView.getComputedStyle(passageContainer).width, 10);
+            document.body.style.cursor = 'col-resize';
+            document.addEventListener('mousemove', onMouseMove);
+            document.addEventListener('mouseup', onMouseUp);
+            e.preventDefault();
+        });
+        
+        function onMouseMove(e) {
+            if (!isDragging) return;
+            const containerWidth = document.querySelector('.test-container').offsetWidth;
+            const newPassageWidth = startPassageWidth + e.clientX - startX;
+            const minWidth = containerWidth * 0.3;
+            const maxWidth = containerWidth * 0.7;
+            if (newPassageWidth >= minWidth && newPassageWidth <= maxWidth) {
+                passageContainer.style.width = `${newPassageWidth}px`;
+            }
+        }
+        
+        function onMouseUp() {
+            isDragging = false;
+            document.body.style.cursor = '';
+            document.removeEventListener('mousemove', onMouseMove);
+            document.removeEventListener('mouseup', onMouseUp);
+        }
+        
+        divider.addEventListener('selectstart', (e) => {
+            if (isDragging) e.preventDefault();
+        });
+        
+        document.querySelectorAll('.subQuestion').forEach(button => {
+            button.addEventListener('click', function() {
+                document.querySelectorAll('.subQuestion').forEach(btn => {
+                    btn.classList.remove('active');
+                });
+                this.classList.add('active');
+                const questionNumber = parseInt(this.textContent.trim());
+                if (questionNumber >= 27 && questionNumber <= 30) {
+                    document.querySelector('.question:nth-of-type(1)').scrollIntoView({ behavior: 'smooth' });
+                } else if (questionNumber >= 31 && questionNumber <= 37) {
+                    document.querySelector('.question:nth-of-type(2)').scrollIntoView({ behavior: 'smooth' });
+                } else if (questionNumber >= 38 && questionNumber <= 40) {
+                    document.querySelector('.question:nth-of-type(3)').scrollIntoView({ behavior: 'smooth' });
+                }
+            });
+        });
+        
+        document.querySelectorAll('#passageContent, .questions-container').forEach(element => {
+            element.style.userSelect = 'text';
+            element.style.webkitUserSelect = 'text';
+        });
+        
+        const highlightToolbar = document.getElementById('highlightToolbar');
+        let selectedText = '';
+        let selectedRange = null;
+        let currentHighlightColor = null;
+        
+        function handleTextSelection() {
+            const selection = window.getSelection();
+            selectedText = selection.toString().trim();
+            if (selectedText.length > 0 && isTextInContent(selection)) {
+                selectedRange = selection.getRangeAt(0);
+                const rangeRect = selectedRange.getBoundingClientRect();
+                highlightToolbar.style.display = 'block';
+                highlightToolbar.style.top = `${rangeRect.top + window.scrollY - 35}px`;
+                highlightToolbar.style.left = `${rangeRect.left + window.scrollX + (rangeRect.width / 2)}px`;
+            } else {
+                highlightToolbar.style.display = 'none';
+            }
+        }
+        
+        function isTextInContent(selection) {
+            if (!selection.rangeCount) return false;
+            const range = selection.getRangeAt(0);
+            const contentAreas = document.querySelectorAll('#passageContent, .question-content');
+            return Array.from(contentAreas).some(area => area.contains(range.commonAncestorContainer));
+        }
+        
+        document.addEventListener('mouseup', handleTextSelection);
+        document.addEventListener('mousedown', function(e) {
+            if (!highlightToolbar.contains(e.target)) {
+                highlightToolbar.style.display = 'none';
+            }
+        });
+        
+        document.querySelectorAll('.highlight-color').forEach(button => {
+            button.addEventListener('click', function() {
+                currentHighlightColor = this.dataset.color;
+                applyHighlight();
+            });
+        });
+        
+        function applyHighlight() {
+            if (selectedText.length > 0 && selectedRange) {
+                const hasHighlights = checkForHighlightsInRange(selectedRange);
+                if (hasHighlights) {
+                    removeHighlightsInRange(selectedRange);
+                } else if (currentHighlightColor) {
+                    const span = document.createElement('span');
+                    span.className = `highlight ${currentHighlightColor}`;
+                    selectedRange.surroundContents(span);
+                }
+                window.getSelection().removeAllRanges();
+                highlightToolbar.style.display = 'none';
+            }
+        }
+        
+        function checkForHighlightsInRange(range) {
+            const documentFragment = range.cloneContents();
+            const tempDiv = document.createElement('div');
+            tempDiv.appendChild(documentFragment);
+            return tempDiv.querySelector('.highlight') !== null;
+        }
+        
+        function removeHighlightsInRange(range) {
+            const documentFragment = range.cloneContents();
+            const tempDiv = document.createElement('div');
+            tempDiv.appendChild(documentFragment);
+            const highlights = tempDiv.querySelectorAll('.highlight');
+            if (highlights.length > 0) {
+                const newRange = range.cloneRange();
+                const fragment = newRange.extractContents();
+                const textFragment = document.createDocumentFragment();
+                extractTextNodes(fragment, textFragment);
+                newRange.insertNode(textFragment);
+            }
+        }
+        
+        function extractTextNodes(source, destination) {
+            const walker = document.createTreeWalker(
+                source,
+                NodeFilter.SHOW_TEXT | NodeFilter.SHOW_ELEMENT,
+                null,
+                false
+            );
+            let node;
+            while (node = walker.nextNode()) {
+                if (node.nodeType === Node.TEXT_NODE) {
+                    destination.appendChild(document.createTextNode(node.nodeValue));
+                } else if (!node.classList.contains('highlight')) {
+                    const container = node.cloneNode(false);
+                    extractTextNodes(node, container);
+                    destination.appendChild(container);
+                }
+            }
+        }
+        
+        document.querySelector('.highlight-toolbar .remove').addEventListener('click', function() {
+            if (selectedText.length > 0 && selectedRange) {
+                removeHighlightsInRange(selectedRange);
+                window.getSelection().removeAllRanges();
+                highlightToolbar.style.display = 'none';
+            }
+        });
+        
+        document.querySelectorAll('select, input[type="text"], input[type="radio"]').forEach(input => {
+            input.addEventListener('change', function() {
+                let questionNumber;
+                if (this.type === 'radio') {
+                    questionNumber = parseInt(this.name.replace('q', ''));
+                } else {
+                    questionNumber = parseInt(this.name.replace('q', ''));
+                }
+                const questionButton = document.querySelector(`.subQuestion[data-ordernumber="${questionNumber}"]`);
+                if (questionButton && (this.value || (this.type === 'text' && this.value.trim()) || (this.type === 'radio' && this.checked))) {
+                    questionButton.classList.add('attempted');
+                }
+            });
+        });
+    </script>
+</body>
+</html>

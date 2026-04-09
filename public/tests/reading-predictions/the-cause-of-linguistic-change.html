@@ -1,0 +1,1308 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>IELTS Reading Comprehension - The Cause of Linguistic Change</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --bg-color: #ffffff;
+            --text-color: #333333;
+            --passage-bg: #f8f9fa;
+            --questions-bg: #ffffff;
+            --border-color: #e0e0e0;
+            --highlight-color: #ffff00;
+            --header-bg: #F8F8F8;
+            --header-text: #333333;
+            --button-bg: #CC0000;
+            --button-hover: #A30000;
+            --correct-color: #28a745;
+            --incorrect-color: #dc3545;
+            --progress-complete: #28a745;
+            --progress-incomplete: #bdbdbd;
+            --timer-bg: #ffebee;
+            --timer-text: #d32f2f;
+            --footer-bg: #f5f5f5;
+            --telegram-color: #0088cc;
+        }
+
+        .night-mode {
+            --bg-color: #121212;
+            --text-color: #e0e0e0;
+            --passage-bg: #1e1e1e;
+            --questions-bg: #1e1e1e;
+            --border-color: #424242;
+            --highlight-color: #cccc00;
+            --header-bg: #1a1a1a;
+            --header-text: #ffffff;
+            --button-bg: #990000;
+            --button-hover: #7a0000;
+            --correct-color: #218838;
+            --incorrect-color: #c82333;
+            --progress-complete: #218838;
+            --progress-incomplete: #616161;
+            --timer-bg: #420000;
+            --timer-text: #ffcdd2;
+            --footer-bg: #121212;
+            --telegram-color: #33a8e0;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            transition: background-color 0.3s, color 0.3s;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            line-height: 1.6;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        header {
+            background-color: var(--header-bg);
+            color: var(--header-text);
+            padding: 12px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            z-index: 100;
+        }
+
+        .header-left {
+            display: flex;
+            align-items: center;
+        }
+
+        .telegram-btn {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            background-color: var(--telegram-color);
+            color: white;
+            text-decoration: none;
+            padding: 8px 15px;
+            border-radius: 50px;
+            font-weight: 600;
+            font-size: 14px;
+            transition: background-color 0.3s, transform 0.2s;
+        }
+
+        .telegram-btn:hover {
+            background-color: #0077b5;
+            transform: translateY(-2px);
+        }
+
+        .header-controls {
+            display: flex;
+            gap: 15px;
+            align-items: center;
+        }
+
+        .timer-container {
+            background-color: var(--timer-bg);
+            color: var(--timer-text);
+            padding: 8px 15px;
+            border-radius: 50px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .timer-controls {
+            display: flex;
+            gap: 8px;
+        }
+
+        .timer-controls button {
+            background: none;
+            border: none;
+            color: var(--timer-text);
+            cursor: pointer;
+            font-size: 16px;
+            padding: 4px;
+            border-radius: 50%;
+            width: 28px;
+            height: 28px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .timer-controls button:hover {
+            background-color: rgba(0,0,0,0.1);
+        }
+        .night-mode .timer-controls button:hover {
+            background-color: rgba(255,255,255,0.2);
+        }
+
+        .mode-toggle {
+            background: none;
+            border: none;
+            color: var(--header-text);
+            cursor: pointer;
+            font-size: 20px;
+            padding: 6px;
+            border-radius: 50%;
+            width: 36px;
+            height: 36px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .mode-toggle:hover {
+            background-color: rgba(0,0,0,0.1);
+        }
+        .night-mode .mode-toggle:hover {
+            background-color: rgba(255,255,255,0.2);
+        }
+
+        main {
+            display: flex;
+            flex: 1;
+            overflow: hidden;
+        }
+
+        .passage-container, .questions-container {
+            height: 100%;
+            overflow-y: auto;
+            padding: 20px;
+        }
+
+        .passage-container {
+            width: 50%;
+            background-color: var(--passage-bg);
+            border-right: 1px solid var(--border-color);
+            position: relative;
+        }
+
+        .questions-container {
+            width: 50%;
+            background-color: var(--questions-bg);
+        }
+
+        .passage-content {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .passage-title {
+            font-size: 24px;
+            font-weight: 700;
+            margin-bottom: 20px;
+            color: var(--text-color);
+            padding-bottom: 10px;
+            border-bottom: 2px solid var(--border-color);
+        }
+
+        .passage-text {
+            font-size: 17px;
+        }
+
+        .question-text {
+            font-size: 17px;
+            line-height: 1.8;
+        }
+
+        .passage-text p {
+            margin-bottom: 20px;
+            text-align: justify;
+        }
+
+        .passage-text .paragraph-label {
+            font-weight: bold;
+            margin-right: 5px;
+        }
+
+        .highlight {
+            background-color: var(--highlight-color);
+            cursor: pointer;
+            position: relative;
+        }
+
+        .highlight-tooltip {
+            position: absolute;
+            background-color: #333;
+            color: white;
+            padding: 5px 10px;
+            border-radius: 4px;
+            font-size: 14px;
+            z-index: 1000;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            top: -30px;
+            left: 50%;
+            transform: translateX(-50%);
+        }
+
+        .section-title {
+            font-size: 18px;
+            font-weight: 600;
+            margin: 25px 0 15px;
+            color: var(--text-color);
+            padding-bottom: 8px;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .question-group {
+            margin-bottom: 30px;
+        }
+
+        .question {
+            margin-bottom: 25px;
+            padding: 15px;
+            border-radius: 8px;
+            background-color: var(--passage-bg);
+            border-left: 4px solid var(--border-color);
+        }
+
+        .question-title {
+            font-weight: 600;
+            margin-bottom: 12px;
+            display: flex;
+            align-items: baseline;
+        }
+
+        .question-number {
+            display: inline-block;
+            width: 28px;
+            height: 28px;
+            background-color: var(--progress-incomplete);
+            color: white;
+            border-radius: 50%;
+            text-align: center;
+            line-height: 28px;
+            margin-right: 10px;
+            font-size: 14px;
+            flex-shrink: 0;
+        }
+
+        .question.answered .question-number {
+            background-color: var(--progress-complete);
+        }
+
+        .options {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            margin-top: 8px;
+        }
+
+        .option {
+            display: flex;
+            align-items: flex-start;
+            cursor: pointer;
+            padding: 5px 0;
+        }
+
+        .option input {
+            margin-right: 10px;
+            margin-top: 3px;
+        }
+
+        .fill-in-the-blank, .question select {
+            background: transparent;
+            border: none;
+            border-bottom: 2px solid var(--text-color);
+            width: 150px;
+            font-family: inherit;
+            font-size: 1em;
+            color: inherit;
+            padding: 0 4px 2px 4px;
+            margin: 0 3px;
+            vertical-align: baseline;
+            text-align: center;
+            outline: none;
+            transition: border-color 0.3s;
+        }
+
+        .fill-in-the-blank:focus, .question select:focus {
+            border-bottom-color: var(--button-bg);
+        }
+
+        .instructions {
+            font-size: 14px;
+            color: #757575;
+            margin-top: 5px;
+            font-style: italic;
+        }
+
+        .true-false-options {
+            display: flex;
+            gap: 15px;
+            margin-top: 10px;
+        }
+
+        .true-false-option {
+            display: flex;
+            align-items: center;
+            cursor: pointer;
+        }
+
+        .true-false-option input {
+            margin-right: 8px;
+        }
+
+        footer {
+            background-color: var(--footer-bg);
+            padding: 15px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-top: 1px solid var(--border-color);
+            box-shadow: 0 -2px 5px rgba(0,0,0,0.05);
+        }
+
+        .progress-container {
+            display: flex;
+            gap: 8px;
+        }
+
+        .progress-item {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            background-color: var(--progress-incomplete);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+
+        .progress-item:hover {
+            transform: scale(1.1);
+        }
+
+        .progress-item.completed {
+            background-color: var(--progress-complete);
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 12px;
+        }
+
+        button {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: background-color 0.3s, border-color 0.3s, color 0.3s;
+        }
+
+        .btn-primary {
+            background-color: var(--button-bg);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background-color: var(--button-hover);
+        }
+
+        .btn-secondary {
+            background-color: transparent;
+            border: 1px solid var(--button-bg);
+            color: var(--button-bg);
+        }
+
+        .btn-secondary:hover {
+            background-color: rgba(204, 0, 0, 0.1);
+        }
+        .night-mode .btn-secondary:hover {
+            background-color: rgba(153, 0, 0, 0.2);
+        }
+
+        .feedback-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.7);
+            z-index: 1000;
+            display: none;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .feedback-container {
+            background-color: var(--passage-bg);
+            width: 90%;
+            max-width: 900px;
+            height: 90%;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+            display: flex;
+            flex-direction: column;
+        }
+
+        .feedback-header {
+            padding: 20px;
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .feedback-title {
+            font-size: 22px;
+            font-weight: 700;
+            color: var(--text-color);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        #close-feedback {
+            font-size: 24px;
+            background: none;
+            border: none;
+            color: var(--text-color);
+            cursor: pointer;
+        }
+
+        .score-display {
+            font-size: 24px;
+            font-weight: 700;
+            margin-left: 10px;
+        }
+
+        .feedback-body {
+            padding: 20px;
+            overflow-y: auto;
+        }
+
+        .feedback-item {
+            margin-bottom: 25px;
+            padding: 15px;
+            border-radius: 8px;
+            background-color: var(--questions-bg);
+        }
+
+        .feedback-question {
+            font-weight: 600;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+        }
+
+        .feedback-answer {
+            margin-bottom: 10px;
+            padding: 8px 12px;
+            border-radius: 4px;
+            background-color: rgba(0,0,0,0.05);
+        }
+
+        .correct {
+            color: var(--correct-color);
+        }
+
+        .incorrect {
+            color: var(--incorrect-color);
+        }
+
+        .feedback-explanation {
+            margin-top: 10px;
+            padding: 10px;
+            border-left: 3px solid var(--button-bg);
+            background-color: rgba(0,0,0,0.03);
+        }
+
+        .feedback-passage {
+            margin-top: 8px;
+            font-style: italic;
+            color: #757575;
+        }
+
+        @media (max-width: 900px) {
+            main {
+                flex-direction: column;
+            }
+            
+            .passage-container, .questions-container {
+                width: 100%;
+                height: 50%;
+            }
+            
+            .passage-container {
+                border-right: none;
+                border-bottom: 1px solid var(--border-color);
+            }
+            
+            .progress-container {
+                flex-wrap: wrap;
+                max-width: 60%;
+            }
+        }
+
+        @media (max-width: 600px) {
+            header {
+                flex-direction: column;
+                gap: 10px;
+                padding: 10px;
+            }
+            .header-left, .header-controls {
+                width: 100%;
+                justify-content: center;
+            }
+            .progress-container {
+                max-width: 50%;
+            }
+            .progress-item {
+                width: 26px;
+                height: 26px;
+                font-size: 12px;
+            }
+            footer {
+                flex-direction: column;
+                gap: 15px;
+            }
+            .action-buttons {
+                width: 100%;
+                justify-content: center;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="header-left">
+            
+        </div>
+        <div class="header-controls">
+            <div class="timer-container">
+                <i class="fas fa-clock"></i>
+                <span id="timer">20:00</span>
+                <div class="timer-controls">
+                    <button id="start-timer" title="Start"><i class="fas fa-play"></i></button>
+                    <button id="pause-timer" title="Pause"><i class="fas fa-pause"></i></button>
+                    <button id="reset-timer" title="Reset"><i class="fas fa-redo"></i></button>
+                </div>
+            </div>
+            <button class="mode-toggle" id="night-mode-toggle" title="Toggle Night Mode">
+                <i class="fas fa-moon"></i>
+            </button>
+        </div>
+    </header>
+
+    <main>
+        <div class="passage-container" id="passage-container">
+            <div class="passage-content">
+                <div class="passage-title">Reading Passage: The Cause of Linguistic Change</div>
+                <div class="passage-text" id="passage-text">
+                    <p><span class="paragraph-label">A</span> All living language undergo changes of various kinds, for which there are various reasons. The changes that have caused most dispute are those in pronunciation. We have various sources of evidence for the pronunciation of earlier times, like the evidence of spellings, the treatment of words borrowed from other languages or borrowed by them, the descriptions of contemporary grammarians, and the modern pronunciations in all the languages and dialects concerned. These, combined with a knowledge of the mechanism of speech production, can often give us a very good idea of the pronunciation of an earlier age, though absolute certainty is never possible. When we study the pronunciation of a language over any period of a few generations or more, we fund that it is subject to change. Moreover, there are always large-scale regularities in the changes: for example, over a period of time, all the long a sounds in a language may change into long o sounds, or all the b sounds in a certain position (for example, at the end of a word) may change into p sounds. Such regular changes are often called sound laws. There are no universal sound laws, but simply particular sound laws for one given language at one given period.</p>
+                    
+                    <p><span class="paragraph-label">B</span> One cause of change is the fluence of one language on another. We learn our mother tongue very thoroughly, and acquire a whole set of speech habits which become second nature to us. When later we learn a foreign language, we inevitably carry over some of these speech habits into it, and so do not speak it exactly like a native. Consequently, in bilingual situations the second language tends to be modified. Such modifications may not persist, of course: an isolated Polish or German immigrant to Britain will usually have grandchildren who speak English like natives because of the influence of the general speech environment (playmates, school, work) is stronger than that of the home. But if a large and closely knit group of people adopt a new language, then the modifications they make in it may persist among their descendants, even if the latter no longer speak the original language that caused the changes. This can be seen Wales, where the influence of Welsh has affected the pronunciations of English, and the very characteristic melody of Welsh English has been carried over from Welsh.</p>
+                    
+                    <p><span class="paragraph-label">C</span> It is also possible that fashion plays a part in the process of change. It certainly plays a part in the spread of change: one person imitates another, and people with the most prestige are most likely to be imitated, so that a change that takes place in one social group may be imitated (more or less accurately) by speakers in another group. When a social group goes up or down in the world, its pronunciation will gain or lose prestige. Some of the changes in accepted English pronunciation in the seventeenth and eighteenth centuries have been shown to consist of the replacement of one style of pronunciation by another style already existing, and it is likely that such substitutions were a result of the great social changes of the period: the increased power and wealth of the middle classes, and their steady infiltration upwards into the ranks of the landed gentry probably carried elements of middle class dialect into upper class speech. However, besides spreading changes that have already taken place, fashion may actually cause changes in pronunciation. In a stratified society, the important thing about a fashion is that it is exclusive: as soon as the fashion has penetrated to a lower social group, it's time to move on.</p>
+                    
+                    <p><span class="paragraph-label">D</span> This can be seen in clothes: fashionable people may find it flattering to be imitated, but as soon as the new fashion has really caught on they must change to something else, to mark themselves off as different. It may be the same with language, for social groups use characteristic styles of language to mark themselves off from other groups. A group that has high prestige may find that its style of speech is being imitated by other groups, and then its members may (perhaps subconsciously) begin to change it, perhaps by exaggerating its distinguishing characteristics.</p>
+                    
+                    <p><span class="paragraph-label">E</span> However, while interaction between different languages, and between the dialects of a single language, can explain some changes in pronunciation, it cannot explain them all. Another cause that has been suggested is the fact that the imitation of children is imperfect: they copy their parents' speech, but never reproduce it exactly. This seems to be true enough and it moreover seems to be true that even adults show a certain amount of random variation in their pronunciation. However, these facts that cannot explain changes in pronunciation, unless it can be shown that there is some systematic trend in the failures in imitation: if they are merely random deviations they will cancel one another out and there will be no net change in the language. For some of these random variations to be selected at the expense of others, there must be further forces at work.</p>
+                    
+                    <p><span class="paragraph-label">F</span> One such force, which is often suggested, is known as the principle of ease. We are all naturally lazy, it is argued, and so we tend to take short cuts in the movements of our speech organs, to replace movements calling for great accuracy or energy by less demanding ones, to omit sounds if they are not essential for understanding, and so on. For example, the word scant was skamt, but the m has been changed to n under the influence of the following t. An economy of effort has thereby been achieved, because n and t are articulated in the same place (with the tip of the tongue against the teeth-ridge), whereas m is articulated elsewhere (with the two lips). The change from skamt to scant would be an example of assimilation, which is a very common kind of change. Assimilation is the changing of a sound under the influence of a neighbouring sound.</p>
+                    
+                    <p><span class="paragraph-label">G</span> Assimilation is not the only way in which we change our pronunciation in order to reduce effort. A sound may come to be pronounced less energetically, wherever it occurs: the English r and h sounds are undoubtedly pronounced much less vigorously now than they were a thousand years ago. In some positions a sound may disappear altogether: at one time the t was pronounced in words like castle and Christmas, and the g in words like gnat and gnaw. Sometimes a whole syllable is dropped out if it occurs twice running: a modern example is temporary, which in Britain is pronounced as if it were temporary.</p>
+                </div>
+            </div>
+        </div>
+        
+        <div class="questions-container" id="questions-container">
+            <div class="section-title">Questions 27-30</div>
+            <div class="instructions">Complete the summary below. Choose <strong>NO MORE THAN THREE WORDS</strong> from the passage for each answer. Write your answers in boxes 27-30 on your answer sheet.</div>
+            <div class="question-group">
+                <div class="question" id="q27">
+                    <div class="question-title">
+                        <div class="question-number">27</div>
+                        <div class="question-text">It is known that the pronunciation of language changes over time. The changes include large-scale regularities known as <input type="text" name="q27" class="fill-in-the-blank"></div>
+                    </div>
+                </div>
+                <div class="question" id="q28">
+                    <div class="question-title">
+                        <div class="question-number">28</div>
+                        <div class="question-text">There are several possible causes for change. Firstly, there is the effect of one language on another. Secondly, there is the role of <input type="text" name="q28" class="fill-in-the-blank"></div>
+                    </div>
+                </div>
+                <div class="question" id="q29">
+                    <div class="question-title">
+                        <div class="question-number">29</div>
+                        <div class="question-text">The speech of certain groups has prestige, and is imitated by others. It has also been suggested that some changes are introduced by <input type="text" name="q29" class="fill-in-the-blank">, who are unable to imitate speech in an exact way.</div>
+                    </div>
+                </div>
+                <div class="question" id="q30">
+                    <div class="question-title">
+                        <div class="question-number">30</div>
+                        <div class="question-text">Finally, there is a factor refereed as the <input type="text" name="q30" class="fill-in-the-blank">, by which the effort necessary to produce words is reduced.</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="section-title">Questions 31-37</div>
+            <div class="instructions">Do the following statements agree with the information given in Reading Passage 3?<br>In boxes 31-37 on your answer sheet, write:<br><strong>TRUE</strong> if the statement agrees with the information<br><strong>FALSE</strong> if the statement contradicts the information<br><strong>NOT GIVEN</strong> if there is no information on this</div>
+            <div class="question-group">
+                <div class="question" id="q31">
+                    <div class="question-title">
+                        <div class="question-number">31</div>
+                        <div class="question-text">It is impossible to know how words used to be pronounced.</div>
+                    </div>
+                    <div class="true-false-options">
+                        <label class="true-false-option"><input type="radio" name="q31" value="TRUE"> TRUE</label>
+                        <label class="true-false-option"><input type="radio" name="q31" value="FALSE"> FALSE</label>
+                        <label class="true-false-option"><input type="radio" name="q31" value="NOT GIVEN"> NOT GIVEN</label>
+                    </div>
+                </div>
+                <div class="question" id="q32">
+                    <div class="question-title">
+                        <div class="question-number">32</div>
+                        <div class="question-text">Some languages appear to have changed more than others.</div>
+                    </div>
+                    <div class="true-false-options">
+                        <label class="true-false-option"><input type="radio" name="q32" value="TRUE"> TRUE</label>
+                        <label class="true-false-option"><input type="radio" name="q32" value="FALSE"> FALSE</label>
+                        <label class="true-false-option"><input type="radio" name="q32" value="NOT GIVEN"> NOT GIVEN</label>
+                    </div>
+                </div>
+                <div class="question" id="q33">
+                    <div class="question-title">
+                        <div class="question-number">33</div>
+                        <div class="question-text">Some changes in English were probably led by the middle classes.</div>
+                    </div>
+                    <div class="true-false-options">
+                        <label class="true-false-option"><input type="radio" name="q33" value="TRUE"> TRUE</label>
+                        <label class="true-false-option"><input type="radio" name="q33" value="FALSE"> FALSE</label>
+                        <label class="true-false-option"><input type="radio" name="q33" value="NOT GIVEN"> NOT GIVEN</label>
+                    </div>
+                </div>
+                <div class="question" id="q34">
+                    <div class="question-title">
+                        <div class="question-number">34</div>
+                        <div class="question-text">Certain English sounds are difficult for all children to pronounce.</div>
+                    </div>
+                    <div class="true-false-options">
+                        <label class="true-false-option"><input type="radio" name="q34" value="TRUE"> TRUE</label>
+                        <label class="true-false-option"><input type="radio" name="q34" value="FALSE"> FALSE</label>
+                        <label class="true-false-option"><input type="radio" name="q34" value="NOT GIVEN"> NOT GIVEN</label>
+                    </div>
+                </div>
+                <div class="question" id="q35">
+                    <div class="question-title">
+                        <div class="question-number">35</div>
+                        <div class="question-text">Scant is generally easier to pronounce than skamt.</div>
+                    </div>
+                    <div class="true-false-options">
+                        <label class="true-false-option"><input type="radio" name="q35" value="TRUE"> TRUE</label>
+                        <label class="true-false-option"><input type="radio" name="q35" value="FALSE"> FALSE</label>
+                        <label class="true-false-option"><input type="radio" name="q35" value="NOT GIVEN"> NOT GIVEN</label>
+                    </div>
+                </div>
+                <div class="question" id="q36">
+                    <div class="question-title">
+                        <div class="question-number">36</div>
+                        <div class="question-text">The spelling of gnat is likely to change in the future.</div>
+                    </div>
+                    <div class="true-false-options">
+                        <label class="true-false-option"><input type="radio" name="q36" value="TRUE"> TRUE</label>
+                        <label class="true-false-option"><input type="radio" name="q36" value="FALSE"> FALSE</label>
+                        <label class="true-false-option"><input type="radio" name="q36" value="NOT GIVEN"> NOT GIVEN</label>
+                    </div>
+                </div>
+                <div class="question" id="q37">
+                    <div class="question-title">
+                        <div class="question-number">37</div>
+                        <div class="question-text">The spelling of temporary no longer reflects its pronunciation.</div>
+                    </div>
+                    <div class="true-false-options">
+                        <label class="true-false-option"><input type="radio" name="q37" value="TRUE"> TRUE</label>
+                        <label class="true-false-option"><input type="radio" name="q37" value="FALSE"> FALSE</label>
+                        <label class="true-false-option"><input type="radio" name="q37" value="NOT GIVEN"> NOT GIVEN</label>
+                    </div>
+                </div>
+            </div>
+
+            <div class="section-title">Questions 38-40</div>
+            <div class="instructions">Look at the following statements (Questions 38-40) and the list of options below. Match each statement with the correct option, A, B, C or D. Write the correct letter, A, B, C or D, in boxes 38-40 on your answer sheet.</div>
+            <div class="question-group">
+                <div class="question" id="q38">
+                    <div class="question-title">
+                        <div class="question-number">38</div>
+                        <div class="question-text">the b sound changing to a p sound at the end of words</div>
+                    </div>
+                    <select name="q38">
+                        <option value="">Select Option...</option>
+                        <option value="A">A large-scale change</option>
+                        <option value="B">B influence of one language on another</option>
+                        <option value="C">C minimisation of effort</option>
+                        <option value="D">D imitation of prestigious group</option>
+                    </select>
+                </div>
+                <div class="question" id="q39">
+                    <div class="question-title">
+                        <div class="question-number">39</div>
+                        <div class="question-text">the melodic pronunciation of Welsh English</div>
+                    </div>
+                    <select name="q39">
+                        <option value="">Select Option...</option>
+                        <option value="A">A large-scale change</option>
+                        <option value="B">B influence of one language on another</option>
+                        <option value="C">C minimisation of effort</option>
+                        <option value="D">D imitation of prestigious group</option>
+                    </select>
+                </div>
+                <div class="question" id="q40">
+                    <div class="question-title">
+                        <div class="question-number">40</div>
+                        <div class="question-text">the disappearance of the t sound in Christmas</div>
+                    </div>
+                    <select name="q40">
+                        <option value="">Select Option...</option>
+                        <option value="A">A large-scale change</option>
+                        <option value="B">B influence of one language on another</option>
+                        <option value="C">C minimisation of effort</option>
+                        <option value="D">D imitation of prestigious group</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <footer>
+        <div class="progress-container" id="progress-container"></div>
+        <div class="action-buttons">
+            <button class="btn-secondary" id="reset-btn">Reset Answers</button>
+            <button class="btn-primary" id="submit-btn">Submit Answers</button>
+        </div>
+    </footer>
+
+    <div class="feedback-overlay" id="feedback-overlay">
+        <div class="feedback-container" id="feedback-container">
+            <div class="feedback-header">
+                <div class="feedback-title">
+                    <i class="fas fa-chart-bar"></i> Your Results
+                    <span class="score-display" id="score-display">0/14</span>
+                </div>
+                <button id="close-feedback" title="Close"><i class="fas fa-times"></i></button>
+            </div>
+            <div class="feedback-body" id="feedback-body"></div>
+        </div>
+    </div>
+
+    <script>
+        // Timer functionality
+        let timerInterval;
+        let seconds = 1200; // 20 minutes
+        let timerRunning = false;
+
+        const timerDisplay = document.getElementById('timer');
+        const startTimer = document.getElementById('start-timer');
+        const pauseTimer = document.getElementById('pause-timer');
+        const resetTimer = document.getElementById('reset-timer');
+
+        function formatTime(seconds) {
+            const mins = Math.floor(seconds / 60).toString().padStart(2, '0');
+            const secs = (seconds % 60).toString().padStart(2, '0');
+            return `${mins}:${secs}`;
+        }
+
+        function updateTimer() {
+            timerDisplay.textContent = formatTime(seconds);
+            if (seconds <= 0) {
+                clearInterval(timerInterval);
+                timerRunning = false;
+                document.getElementById('submit-btn').click();
+            }
+        }
+
+        startTimer.addEventListener('click', () => {
+            if (!timerRunning) {
+                timerRunning = true;
+                timerInterval = setInterval(() => {
+                    seconds--;
+                    updateTimer();
+                }, 1000);
+            }
+        });
+
+        pauseTimer.addEventListener('click', () => {
+            if (timerRunning) {
+                clearInterval(timerInterval);
+                timerRunning = false;
+            }
+        });
+
+        resetTimer.addEventListener('click', () => {
+            clearInterval(timerInterval);
+            timerRunning = false;
+            seconds = 1200;
+            updateTimer();
+        });
+
+        // Night mode toggle
+        const nightModeToggle = document.getElementById('night-mode-toggle');
+        nightModeToggle.addEventListener('click', () => {
+            document.body.classList.toggle('night-mode');
+            const icon = nightModeToggle.querySelector('i');
+            if (document.body.classList.contains('night-mode')) {
+                icon.classList.remove('fa-moon');
+                icon.classList.add('fa-sun');
+            } else {
+                icon.classList.remove('fa-sun');
+                icon.classList.add('fa-moon');
+            }
+        });
+
+        // Create progress indicators
+        const progressContainer = document.getElementById('progress-container');
+        for (let i = 27; i <= 40; i++) {
+            const progressItem = document.createElement('div');
+            progressItem.className = 'progress-item';
+            progressItem.textContent = i;
+            progressItem.dataset.question = i;
+            progressContainer.appendChild(progressItem);
+            
+            progressItem.addEventListener('click', () => {
+                const questionElement = document.getElementById(`q${i}`);
+                if (questionElement) {
+                    questionElement.scrollIntoView({ behavior: 'smooth' });
+                }
+            });
+        }
+
+        // Text highlighting functionality
+        let highlightTooltip = null;
+        let selectedHighlight = null;
+
+        function handleMouseUp(e) {
+            const container = e.currentTarget;
+            const selection = window.getSelection();
+            if (selection.toString().trim() !== '' && container.contains(selection.anchorNode)) {
+                const range = selection.getRangeAt(0);
+                const rect = range.getBoundingClientRect();
+
+                const startContainer = range.startContainer.nodeType === 3 ? range.startContainer.parentElement : range.startContainer;
+                const endContainer = range.endContainer.nodeType === 3 ? range.endContainer.parentElement : range.endContainer;
+                
+                let parentElement, isPassage;
+                const passageText = document.getElementById('passage-text');
+                const questionsContainer = document.getElementById('questions-container');
+                
+                if (passageText.contains(startContainer) && passageText.contains(endContainer)) {
+                    parentElement = startContainer.closest('p');
+                    isPassage = true;
+                } else if (questionsContainer.contains(startContainer) && questionsContainer.contains(endContainer)) {
+                    parentElement = startContainer.closest('.question-text');
+                    isPassage = false;
+                } else {
+                    alert('Please select text within a single paragraph or question.');
+                    selection.removeAllRanges();
+                    if (highlightTooltip) {
+                        highlightTooltip.remove();
+                        highlightTooltip = null;
+                    }
+                    return;
+                }
+
+                if (!parentElement || startContainer.closest(parentElement.tagName) !== endContainer.closest(parentElement.tagName)) {
+                    alert('Please select text within a single ' + (isPassage ? 'paragraph' : 'question') + '.');
+                    selection.removeAllRanges();
+                    if (highlightTooltip) {
+                        highlightTooltip.remove();
+                        highlightTooltip = null;
+                    }
+                    return;
+                }
+
+                const existingHighlights = parentElement.querySelectorAll('.highlight');
+                let hasOverlap = false;
+
+                existingHighlights.forEach(highlight => {
+                    const highlightRange = document.createRange();
+                    highlightRange.selectNodeContents(highlight);
+                    
+                    const startCompare = range.compareBoundaryPoints(Range.START_TO_START, highlightRange);
+                    const endCompare = range.compareBoundaryPoints(Range.END_TO_END, highlightRange);
+                    const startToEnd = range.compareBoundaryPoints(Range.START_TO_END, highlightRange);
+                    const endToStart = range.compareBoundaryPoints(Range.END_TO_START, highlightRange);
+                    
+                    if (
+                        (startCompare >= 0 && startCompare <= 0 && endCompare >= 0) ||
+                        (endCompare <= 0 && startCompare <= 0 && startToEnd >= 0) ||
+                        (startCompare <= 0 && endCompare >= 0) ||
+                        (startCompare >= 0 && endCompare <= 0)
+                    ) {
+                        hasOverlap = true;
+                    }
+                });
+
+                if (hasOverlap) {
+                    alert('Cannot highlight overlapping elements. Please try a different selection.');
+                    selection.removeAllRanges();
+                    if (highlightTooltip) {
+                        highlightTooltip.remove();
+                        highlightTooltip = null;
+                    }
+                    return;
+                }
+
+                const originalContent = range.cloneContents();
+
+                if (highlightTooltip) {
+                    highlightTooltip.remove();
+                    highlightTooltip = null;
+                }
+
+                highlightTooltip = document.createElement('div');
+                highlightTooltip.className = 'highlight-tooltip';
+                highlightTooltip.innerHTML = '<i class="fas fa-highlighter"></i> Highlight';
+                highlightTooltip.style.position = 'fixed';
+                highlightTooltip.style.top = `${rect.top - 40}px`;
+                highlightTooltip.style.left = `${rect.left}px`;
+                document.body.appendChild(highlightTooltip);
+
+                highlightTooltip.addEventListener('click', () => {
+                    try {
+                        const span = document.createElement('span');
+                        span.className = 'highlight';
+                        span.appendChild(range.extractContents());
+                        range.insertNode(span);
+                        span.addEventListener('click', handleHighlightClick);
+                        selection.removeAllRanges();
+                        highlightTooltip.remove();
+                        highlightTooltip = null;
+                        parentElement.normalize();
+                    } catch (error) {
+                        console.error('Error applying highlight:', error);
+                        alert('Failed to apply highlight. Restoring original text.');
+                        range.deleteContents();
+                        range.insertNode(originalContent.cloneNode(true));
+                        parentElement.normalize();
+                        if (highlightTooltip) {
+                            highlightTooltip.remove();
+                            highlightTooltip = null;
+                        }
+                    }
+                });
+            }
+        }
+
+        function handleHighlightClick(e) {
+            if (selectedHighlight && selectedHighlight !== e.target) {
+                selectedHighlight.classList.remove('selected-highlight');
+            }
+            selectedHighlight = e.target;
+            selectedHighlight.classList.toggle('selected-highlight');
+
+            if (highlightTooltip) {
+                highlightTooltip.remove();
+                highlightTooltip = null;
+            }
+
+            highlightTooltip = document.createElement('div');
+            highlightTooltip.className = 'highlight-tooltip';
+            highlightTooltip.innerHTML = '<i class="fas fa-eraser"></i> Unhighlight';
+            highlightTooltip.style.position = 'absolute';
+            highlightTooltip.style.top = '-30px';
+            highlightTooltip.style.left = '50%';
+            highlightTooltip.style.transform = 'translateX(-50%)';
+            e.target.appendChild(highlightTooltip);
+
+            highlightTooltip.addEventListener('click', () => {
+                const parent = e.target.parentNode;
+                try {
+                    while (e.target.firstChild) {
+                        parent.insertBefore(e.target.firstChild, e.target);
+                    }
+                    parent.removeChild(e.target);
+                    parent.normalize();
+                    if (highlightTooltip) {
+                        highlightTooltip.remove();
+                        highlightTooltip = null;
+                    }
+                    selectedHighlight = null;
+                } catch (error) {
+                    console.error('Error removing highlight:', error);
+                    alert('Failed to remove highlight. Please try again.');
+                }
+            });
+        }
+
+        document.getElementById('passage-text').addEventListener('mouseup', handleMouseUp);
+        document.getElementById('questions-container').addEventListener('mouseup', handleMouseUp);
+
+        document.addEventListener('mousedown', (e) => {
+            if (highlightTooltip && !highlightTooltip.contains(e.target) && e.target.className !== 'highlight') {
+                highlightTooltip.remove();
+                highlightTooltip = null;
+                if (selectedHighlight) {
+                    selectedHighlight.classList.remove('selected-highlight');
+                    selectedHighlight = null;
+                }
+                window.getSelection().removeAllRanges();
+            }
+        });
+
+        // Track answered questions
+        const questions = document.querySelectorAll('.question');
+        const progressItems = document.querySelectorAll('.progress-item');
+
+        function updateProgress() {
+            let answeredCount = 0;
+            
+            questions.forEach((question, index) => {
+                const questionNumber = index + 27;
+                let answered = false;
+                
+                if (questionNumber <= 30) {
+                    const input = question.querySelector('input[type="text"]');
+                    answered = input.value.trim() !== '';
+                } else if (questionNumber <= 37) {
+                    const checkedRadio = question.querySelector('input[type="radio"]:checked');
+                    answered = checkedRadio !== null;
+                } else {
+                    const select = question.querySelector('select');
+                    answered = select.value !== '';
+                }
+                
+                if (answered) {
+                    question.classList.add('answered');
+                    if (progressItems[index]) {
+                        progressItems[index].classList.add('completed');
+                    }
+                    answeredCount++;
+                } else {
+                    question.classList.remove('answered');
+                    if (progressItems[index]) {
+                        progressItems[index].classList.remove('completed');
+                    }
+                }
+            });
+            
+            return answeredCount;
+        }
+
+        document.querySelectorAll('select, input[type="text"]').forEach(input => {
+            input.addEventListener('change', updateProgress);
+            input.addEventListener('input', updateProgress);
+        });
+
+        document.querySelectorAll('input[type="radio"]').forEach(radio => {
+            radio.addEventListener('change', updateProgress);
+        });
+
+        // Reset button
+        document.getElementById('reset-btn').addEventListener('click', () => {
+            document.querySelectorAll('select').forEach(select => {
+                select.value = '';
+            });
+            
+            document.querySelectorAll('input[type="radio"]').forEach(radio => {
+                radio.checked = false;
+            });
+            
+            document.querySelectorAll('input[type="text"]').forEach(input => {
+                input.value = '';
+            });
+            
+            document.querySelectorAll('.highlight').forEach(highlight => {
+                const parent = highlight.parentNode;
+                try {
+                    while (highlight.firstChild) {
+                        parent.insertBefore(highlight.firstChild, highlight);
+                    }
+                    parent.removeChild(highlight);
+                    parent.normalize();
+                } catch (error) {
+                    console.error('Error resetting highlights:', error);
+                    alert('Failed to reset highlights. Please try again.');
+                }
+            });
+            
+            updateProgress();
+            document.getElementById('feedback-overlay').style.display = 'none';
+        });
+
+        // Submit and Feedback functionality
+        const feedbackOverlay = document.getElementById('feedback-overlay');
+        const closeFeedbackBtn = document.getElementById('close-feedback');
+
+        document.getElementById('submit-btn').addEventListener('click', () => {
+            pauseTimer.click();
+            
+            const answers = {
+                27: 'sound laws',
+                28: 'fashion',
+                29: 'children',
+                30: 'principle of ease',
+                31: 'FALSE',
+                32: 'NOT GIVEN',
+                33: 'TRUE',
+                34: 'NOT GIVEN',
+                35: 'TRUE',
+                36: 'NOT GIVEN',
+                37: 'TRUE',
+                38: 'A',
+                39: 'B',
+                40: 'C'
+            };
+            
+            const explanations = {
+                27: "Paragraph A states: 'Such regular changes are often called sound laws.'",
+                28: "Paragraph C begins: 'It is also possible that fashion plays a part in the process of change.'",
+                29: "Paragraph E mentions: 'Another cause that has been suggested is the fact that the imitation of children is imperfect.'",
+                30: "Paragraph F explains: 'One such force, which is often suggested, is known as the principle of ease.'",
+                31: "Paragraph A states that 'absolute certainty is never possible' but we can get 'a very good idea' of earlier pronunciation, so it's not impossible.",
+                32: "The passage discusses language change in general but doesn't compare the extent of change between different languages.",
+                33: "Paragraph C mentions that middle class dialect was probably carried into upper class speech during social changes.",
+                34: "The passage mentions children's imperfect imitation but doesn't specify that certain sounds are difficult for all children.",
+                35: "Paragraph F explains that 'scant' is easier to pronounce than 'skamt' due to assimilation.",
+                36: "The passage mentions the historical change in pronunciation of 'gnat' but doesn't predict future spelling changes.",
+                37: "Paragraph G states that 'temporary' is pronounced differently from its spelling in Britain.",
+                38: "This is an example of large-scale regular change mentioned in Paragraph A.",
+                39: "This is an example of influence of one language on another mentioned in Paragraph B.",
+                40: "This is an example of minimisation of effort mentioned in Paragraph G."
+            };
+            
+            const passageReferences = {
+                27: "Such regular changes are often called sound laws.",
+                28: "It is also possible that fashion plays a part in the process of change.",
+                29: "Another cause that has been suggested is the fact that the imitation of children is imperfect",
+                30: "One such force, which is often suggested, is known as the principle of ease.",
+                31: "These, combined with a knowledge of the mechanism of speech production, can often give us a very good idea of the pronunciation of an earlier age, though absolute certainty is never possible.",
+                32: "No specific comparison of language change rates is made in the passage.",
+                33: "the increased power and wealth of the middle classes, and their steady infiltration upwards into the ranks of the landed gentry probably carried elements of middle class dialect into upper class speech",
+                34: "The passage mentions imperfect imitation but doesn't specify particular difficult sounds.",
+                35: "An economy of effort has thereby been achieved, because n and t are articulated in the same place... whereas m is articulated elsewhere",
+                36: "The passage mentions historical pronunciation changes but doesn't predict future spelling changes.",
+                37: "a modern example is temporary, which in Britain is pronounced as if it were temporary",
+                38: "all the b sounds in a certain position (for example, at the end of a word) may change into p sounds",
+                39: "the very characteristic melody of Welsh English has been carried over from Welsh",
+                40: "the t was pronounced in words like castle and Christmas"
+            };
+            
+            let correctCount = 0;
+            const feedbackBody = document.getElementById('feedback-body');
+            feedbackBody.innerHTML = '';
+            
+            // Check questions 27-30 (fill in the blanks)
+            for (let i = 27; i <= 30; i++) {
+                const input = document.querySelector(`input[name="q${i}"]`);
+                const userAnswer = input.value.trim().toLowerCase();
+                const correctAnswer = answers[i].toLowerCase();
+                const isCorrect = userAnswer === correctAnswer;
+                
+                if (isCorrect) correctCount++;
+                
+                const feedbackItem = document.createElement('div');
+                feedbackItem.className = 'feedback-item';
+                feedbackItem.innerHTML = `
+                    <div class="feedback-question">
+                        <span class="${isCorrect ? 'correct' : 'incorrect'}">Question ${i}:</span>
+                        ${isCorrect ? `<i class="fas fa-check correct" style="margin-left: 5px;"></i>` : `<i class="fas fa-times incorrect" style="margin-left: 5px;"></i>`}
+                    </div>
+                    <div class="feedback-answer">
+                        <strong>Your answer:</strong> ${userAnswer || 'Not answered'}<br>
+                        ${!isCorrect ? `<strong>Correct answer:</strong> ${answers[i]}` : ''}
+                    </div>
+                    <div class="feedback-explanation">
+                        <strong>Explanation:</strong> ${explanations[i]}
+                    </div>
+                    <div class="feedback-passage">
+                        <strong>Relevant passage:</strong> "${passageReferences[i]}"
+                    </div>
+                `;
+                feedbackBody.appendChild(feedbackItem);
+            }
+            
+            // Check questions 31-37 (True/False/Not Given)
+            for (let i = 31; i <= 37; i++) {
+                const checkedRadio = document.querySelector(`input[name="q${i}"]:checked`);
+                const userAnswer = checkedRadio ? checkedRadio.value : '';
+                const isCorrect = userAnswer === answers[i];
+                
+                if (isCorrect) correctCount++;
+                
+                const feedbackItem = document.createElement('div');
+                feedbackItem.className = 'feedback-item';
+                feedbackItem.innerHTML = `
+                    <div class="feedback-question">
+                        <span class="${isCorrect ? 'correct' : 'incorrect'}">Question ${i}:</span>
+                        ${isCorrect ? `<i class="fas fa-check correct" style="margin-left: 5px;"></i>` : `<i class="fas fa-times incorrect" style="margin-left: 5px;"></i>`}
+                    </div>
+                    <div class="feedback-answer">
+                        <strong>Your answer:</strong> ${userAnswer || 'Not answered'}<br>
+                        ${!isCorrect ? `<strong>Correct answer:</strong> ${answers[i]}` : ''}
+                    </div>
+                    <div class="feedback-explanation">
+                        <strong>Explanation:</strong> ${explanations[i]}
+                    </div>
+                    <div class="feedback-passage">
+                        <strong>Relevant passage:</strong> ${passageReferences[i] !== "No specific comparison of language change rates is made in the passage." && passageReferences[i] !== "The passage mentions imperfect imitation but doesn't specify particular difficult sounds." && passageReferences[i] !== "The passage mentions historical pronunciation changes but doesn't predict future spelling changes." ? `"${passageReferences[i]}"` : passageReferences[i]}
+                    </div>
+                `;
+                feedbackBody.appendChild(feedbackItem);
+            }
+            
+            // Check questions 38-40 (matching)
+            for (let i = 38; i <= 40; i++) {
+                const select = document.querySelector(`select[name="q${i}"]`);
+                const userAnswer = select.value;
+                const isCorrect = userAnswer === answers[i];
+                
+                if (isCorrect) correctCount++;
+                
+                const feedbackItem = document.createElement('div');
+                feedbackItem.className = 'feedback-item';
+                feedbackItem.innerHTML = `
+                    <div class="feedback-question">
+                        <span class="${isCorrect ? 'correct' : 'incorrect'}">Question ${i}:</span>
+                        ${isCorrect ? `<i class="fas fa-check correct" style="margin-left: 5px;"></i>` : `<i class="fas fa-times incorrect" style="margin-left: 5px;"></i>`}
+                    </div>
+                    <div class="feedback-answer">
+                        <strong>Your answer:</strong> ${userAnswer || 'Not answered'}<br>
+                        ${!isCorrect ? `<strong>Correct answer:</strong> ${answers[i]} - ${document.querySelector(`select[name="q${i}"] option[value="${answers[i]}"]`).textContent}` : ''}
+                    </div>
+                    <div class="feedback-explanation">
+                        <strong>Explanation:</strong> ${explanations[i]}
+                    </div>
+                    <div class="feedback-passage">
+                        <strong>Relevant passage:</strong> "${passageReferences[i]}"
+                    </div>
+                `;
+                feedbackBody.appendChild(feedbackItem);
+            }
+            
+            document.getElementById('score-display').textContent = `${correctCount}/14`;
+            feedbackOverlay.style.display = 'flex';
+        });
+
+        closeFeedbackBtn.addEventListener('click', () => {
+            feedbackOverlay.style.display = 'none';
+        });
+
+        feedbackOverlay.addEventListener('click', (e) => {
+            if (e.target === feedbackOverlay) {
+                feedbackOverlay.style.display = 'none';
+            }
+        });
+
+        // Initialize timer display and progress
+        updateProgress();
+        updateTimer();
+    </script>
+</body>
+</html>

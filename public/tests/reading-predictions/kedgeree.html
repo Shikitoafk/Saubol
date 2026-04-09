@@ -1,0 +1,932 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>IELTS Reading Practice - Kedgeree: a dish with a history</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+        }
+
+        header {
+            background-color: #ffffff;
+            padding: 10px;
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+            border-bottom: 1px solid #ddd;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+
+        .logo {
+            font-size: 1.5em;
+            font-weight: bold;
+            color: red;
+            margin-left: 0;
+        }
+
+        .test-id {
+            margin-right: 20px;
+            margin-left: 20px;
+        }
+
+        
+
+        
+
+        .telegram-icon {
+            width: 16px;
+            height: 16px;
+            margin-right: 5px;
+        }
+
+        .instruction-box {
+            background-color: #f0f0f0;
+            padding: 15px;
+            width: 100%;
+            text-align: left;
+            font-size: 1.2em;
+            margin-top: 2mm;
+        }
+
+        .instruction-box b {
+            font-weight: bold;
+        }
+
+        .container {
+            display: flex;
+            flex: 1;
+            background-color: white;
+            min-height: 0;
+        }
+
+        .passage {
+            flex: 1;
+            padding: 20px;
+            overflow-y: auto;
+            min-height: 0;
+            user-select: text;
+            position: relative;
+        }
+
+        .passage p {
+            margin-bottom: 1.2em;
+        }
+
+        .resize-btn {
+            width: 10px;
+            background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="10" height="100" viewBox="0 0 10 100"><line x1="5" y1="0" x2="5" y2="100" style="stroke:blue;stroke-width:2"/><line x1="0" y1="50" x2="10" y2="50" style="stroke:blue;stroke-width:2"/></svg>') center no-repeat;
+            background-size: contain;
+            cursor: col-resize;
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex: 0 0 10px;
+        }
+
+        .resize-btn::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 20px;
+            height: 20px;
+            background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 10 10"><path d="M2 5 L8 5 M5 2 L5 8" stroke="blue" stroke-width="2"/></svg>') center no-repeat;
+            background-size: contain;
+        }
+
+        .questions {
+            flex: 1;
+            padding: 20px;
+            overflow-y: auto;
+            min-height: 0;
+        }
+
+        .question {
+            margin-bottom: 20px;
+        }
+
+        footer {
+            background-color: #ffffff;
+            padding: 10px;
+            border-top: 1px solid #ddd;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .parts {
+            display: flex;
+            width: 100%;
+        }
+
+        .part-tab {
+            background-color: #007bff;
+            color: white;
+            padding: 5px 10px;
+            border-radius: 5px;
+            position: relative;
+            display: flex;
+            align-items: center;
+        }
+
+        .part-tab span {
+            margin-left: 5px;
+            background-color: #ddd;
+            padding: 2px 6px;
+            border-radius: 3px;
+        }
+
+        .question-nav {
+            display: flex;
+            gap: 5px;
+            position: absolute;
+            top: 100%;
+            left: 0;
+            margin-top: 5px;
+        }
+
+        .q-num {
+            background-color: #ffffff;
+            padding: 5px 10px;
+            border-radius: 3px;
+            cursor: pointer;
+            font-size: 1.2em;
+            font-weight: bold;
+            color: #000000;
+            border: 1px solid #ddd;
+            transition: background-color 0.3s;
+        }
+
+        .q-num.answered {
+            background-color: #90ee90;
+        }
+
+        .btn-submit {
+            background-color: #28a745;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            cursor: pointer;
+            border-radius: 5px;
+            font-weight: 600;
+            transition: background-color 0.3s ease;
+        }
+
+        .btn-submit:hover {
+            background-color: #218838;
+        }
+
+        .radio-group {
+            margin-top: 5px;
+        }
+
+        .radio-group label {
+            cursor: pointer;
+        }
+
+        .q-item {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
+
+        .q-item input[type="text"] {
+            width: 100px;
+            padding: 5px;
+            text-align: center;
+            display: inline-block;
+            vertical-align: middle;
+        }
+
+        .question-number-inline {
+            background-color: #ffffff;
+            padding: 5px 10px;
+            border-radius: 3px;
+            font-size: 1em;
+            font-weight: bold;
+            color: #000000;
+            border: 1px solid #ddd;
+            display: inline-block;
+            vertical-align: middle;
+            margin-right: 5px;
+        }
+
+        .highlighted {
+            background-color: #f1c40f;
+            cursor: pointer;
+            position: relative;
+            display: inline;
+            padding: 0;
+            line-height: inherit;
+            vertical-align: baseline;
+            white-space: pre-wrap;
+        }
+
+        #highlight-btn {
+            position: absolute;
+            display: none;
+            background-color: #e74c3c;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            padding: 8px 12px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            z-index: 10000;
+            opacity: 0;
+            transform: translateY(10px);
+            transition: opacity 0.2s ease, transform 0.2s ease;
+            pointer-events: none;
+        }
+
+        #highlight-btn.visible {
+            display: block;
+            opacity: 1;
+            transform: translateY(0);
+            pointer-events: auto;
+        }
+
+        .remove-highlight-btn {
+            position: absolute;
+            display: none;
+            background-color: #c0392b;
+            color: white;
+            border: none;
+            border-radius: 3px;
+            padding: 2px 6px;
+            cursor: pointer;
+            font-size: 0.7rem;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            z-index: 10001;
+            top: -20px;
+            left: calc(100% + 2px);
+            white-space: nowrap;
+        }
+
+        .timer-container {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 100%;
+            margin-bottom: 10px;
+        }
+
+        .timer {
+            font-size: 1.2em;
+            font-weight: bold;
+            margin-right: 10px;
+        }
+
+        .pause-icon {
+            cursor: pointer;
+            width: 20px;
+            height: 20px;
+        }
+
+        .feedback-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.7);
+            z-index: 1000;
+            display: none;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .feedback-container {
+            background: #ffffff;
+            width: 85%;
+            max-width: 800px;
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
+        }
+
+        .feedback-header {
+            margin-bottom: 20px;
+        }
+
+        .feedback-title {
+            font-size: 1.5rem;
+            color: #2c3e50;
+        }
+
+        .score-display {
+            font-size: 1.2rem;
+            color: #28a745;
+            margin-top: 10px;
+        }
+
+        .feedback-body {
+            max-height: 60vh;
+            overflow-y: auto;
+            text-align: left;
+        }
+
+        .feedback-item {
+            margin-bottom: 15px;
+            padding: 10px;
+            background: rgba(0, 0, 0, 0.05);
+            border-radius: 5px;
+        }
+
+        .feedback-question {
+            font-weight: 600;
+            margin-bottom: 5px;
+        }
+
+        .correct {
+            color: #27ae60;
+        }
+
+        .incorrect {
+            color: #e74c3c;
+        }
+
+        .close-btn {
+            background: #c0392b;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            padding: 10px 20px;
+            cursor: pointer;
+            font-weight: 600;
+            margin-top: 20px;
+        }
+
+        .close-btn:hover {
+            background: #a93226;
+        }
+
+        .tf-question {
+            margin-bottom: 25px;
+            padding: 10px 0px;
+            border-radius: 4px;
+            transition: border-color 0.3s, background-color 0.3s;
+        }
+
+        .tf-question-line {
+            display: flex;
+            align-items: flex-start;
+            margin-bottom: 15px;
+            padding: 5px 0px;
+            border-radius: 4px;
+        }
+
+        .tf-question-number {
+            border: 2px solid #ccc;
+            padding: 2px 8px;
+            margin-right: 10px;
+            border-radius: 3px;
+            font-weight: bold;
+            transition: border-color 0.3s;
+            display: inline-block;
+        }
+
+        .tf-question-text {
+            padding-top: 3px;
+        }
+
+        .tf-options {
+            padding-left: 5px;
+        }
+
+        .tf-option {
+            display: block;
+            margin-bottom: 12px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+        }
+
+        .tf-option input[type="radio"] {
+            margin-right: 10px;
+            transform: scale(1.2);
+        }
+
+        .tf-question.correct .tf-question-line {
+            background-color: #e9f7ef;
+        }
+
+        .tf-question.incorrect .tf-question-line {
+            background-color: #f8d7da;
+        }
+
+        .summary-completion-container {
+            margin-top: 20px;
+        }
+
+        .summary-text p {
+            line-height: 2.5;
+            font-size: 16px;
+        }
+
+        .summary-text .bullet {
+            font-size: 1.5em;
+            margin-right: 5px;
+            vertical-align: middle;
+        }
+
+        .answer-input {
+            border: 1px solid #888;
+            border-radius: 4px;
+            background-color: #fff;
+            padding: 2px 5px;
+            font-size: 16px;
+            text-align: center;
+            margin-right: 4px;
+            margin-left: 4px;
+            transition: border-color 0.3s, box-shadow 0.3s;
+            z-index: 10;
+            position: relative;
+            pointer-events: auto;
+        }
+
+        .answer-input.active-input {
+            border-color: #4a90e2;
+            box-shadow: 0 0 3px 1px rgba(74, 144, 226, 0.5);
+        }
+
+        .answer-input::placeholder {
+            color: #999;
+            font-weight: bold;
+            text-align: center;
+        }
+
+        .answer-input.correct {
+            border-color: #28a745;
+            background-color: #e9f7ef;
+        }
+
+        .answer-input.incorrect {
+            border-color: #dc3545;
+            background-color: #f8d7da;
+            color: #721c24;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="timer-container">
+            <span class="timer" id="timer">60:00</span>
+            <svg class="pause-icon" id="pause-icon" viewBox="0 0 24 24" fill="none" stroke="black" stroke-width="2">
+                <path d="M6 4h4v16H6zM14 4h4v16h-4z"/>
+            </svg>
+        </div>
+        <div style="display: flex; align-items: center; width: 100%;">
+            <div class="logo"><b>IELTS</b></div>
+            <div class="test-id">Test taker ID</div>
+            
+        </div>
+        <div class="instruction-box" id="instruction-box"><b>Part 1</b><br>Read the text and answer questions 1-16.</div>
+    </header>
+    <div class="container">
+        <div class="passage" id="passage">
+            <h2 style="text-align: center; font-weight: bold;">Kedgeree: a dish with a history</h2>
+            <p>As a dish is handed down the generations, or passed from one country to another, its recipe is influenced by all those who make and eat it. At first, the differences might seem small, but over the years the dish can change out of all recognition. New ingredients are substituted for old, new methods of preparation are adopted and, every now and then, the dish is even given a new name.</p>
+            <p>This is particularly true of Anglo-Indian cuisine. One example is the dish now known as kedgeree. This is thought to have begun as khichdi, a traditional Indian dish made from rice and lentils or, less commonly, from millet and mung beans. Where and when it first emerged is uncertain, but its extreme antiquity is beyond doubt. Taking its name from the Sanskrit word khiccā, it is known to have existed at least as far back as the 4th century BC. More likely than not, its ingredients altered depending on the season, the availability of crops and the religion of its consumers.</p>
+            <p>Yet it was not until after the reopening of the Silk Road in the 13th century AD that khichdi began to attract attention from outside India. Preoccupied above all with trade, European and North African travellers were also interested in learning about other aspects of Indian life, including its food. Their curiosity was, however, limited. They were content to familiarise themselves with the basic ingredients of dishes like khichdi and identify any similarities with their own cuisine, but nothing more.</p>
+            <p>During the Age of Exploration in the 15th and 16th centuries, the West's attitude towards the Indian subcontinent became narrower and more prejudiced. European travellers ignored any similarities with their own cuisine and instead concentrated on the unfamiliarity of the dishes they consumed. Rarely did these travellers trouble to enquire into the regional variations of dishes such as khichdi. But in fact, by this time there was a range of different recipes for khichdi in different parts of India, so it could no longer be thought of as a single dish. In West Bengal in the east of India, for example, it was often eaten with pickle, while in Gujarat in the west, it was cooked with cumin and curry leaves.</p>
+            <p>The advent of British colonialism in the 18th century brought a fundamental change in attitude. The East India Company, originally formed to trade in the Indian Ocean area, soon began to govern large parts of the subcontinent. The Company soon discovered that, if it was to govern effectively, it could not afford to be dismissive of the country's culture. British employees of the Company began to develop a taste for Indian food - including khichdi. A new recipe emerged out of the relationship between their wives - who wanted to adapt the recipe to their own culinary tastes - and the Indians who cooked for them. While rice remained the basis of the dish, eggs were added and lentils were replaced with locally caught flaked or smoked fish.</p>
+            <p>The new dish found its way back to Britain, complete with a new name: kedgeree. One of the earliest recipes is found in a cookery book written around 1790 by Stephana Malcolm. Although she lived in Scotland, her family travelled widely - including to India - and it was thanks to them that kedgeree featured in her recipe book. It was, however, a different dish. Many of the Indian ingredients simply could not be found in Scotland. Malcolm was able to replace some of these with haddock and other types of fish that could be bought cheaply from local fishermen, as well as cayenne pepper imported from South America.</p>
+            <p>After the dissolution of the East India Company and the British Crown's assumption of direct rule in the subcontinent from 1858, kedgeree began to feature more and more regularly in recipe books in Britain until, by the end of the 19th century, it had become a favourite meal. It was, for the most part, viewed as an economical dish, which could even be made with leftovers.</p>
+            <p>But as the rule of the British in India went from being dominated by middle-class merchant adventurers to being the preserve of the upper classes, people's attitudes towards kedgeree changed and it was frequently made with luxurious ingredients, such as salmon. By the early 20th century, this had led to it becoming associated not only with the tastes of aristocrats, but also with extravagance, even decadence. In Evelyn Waugh's novel Brideshead Revisited (1945), for example, the hero orders kedgeree for breakfast on board an ocean liner.</p>
+            <p>Since the end of the British Empire in the mid-20th century, attitudes to kedgeree have changed again. Its ingredients have been democratised, and turmeric and other typically Indian elements have been reintroduced. But beneath the surface of modern recipes can still be glimpsed the faint traces of earlier versions: some marked by curiosity, others by prejudice, but all eloquent testimony to the West's long relationship with India.</p>
+        </div>
+        <div class="resize-btn" tabindex="0" role="separator" aria-orientation="vertical"></div>
+        <div class="questions" id="questions">
+            <div class="question">
+                <div class="question-prompt">
+                    <p><strong>Questions 1-8</strong><br>Do the following statements agree with the information given in Reading Passage 1?</p>
+                    <p>In boxes 1-8 on your answer sheet, write</p>
+                    <ul style="list-style: none; padding-left: 0;">
+                        <li><strong>TRUE</strong> if the statement agrees with the information</li>
+                        <li><strong>FALSE</strong> if the statement contradicts the information</li>
+                        <li><strong>NOT GIVEN</strong> if there is no information on this</li>
+                    </ul>
+                </div>
+                <div class="tf-question" data-q-start="1" data-q-end="1">
+                    <div class="tf-question-line">
+                        <span class="tf-question-number">1</span>
+                        <span class="tf-question-text">The basic way in which a particular dish is made is unlikely to alter much over time.</span>
+                    </div>
+                    <div class="tf-options">
+                        <label class="tf-option"><input type="radio" name="q1" value="TRUE"> TRUE</label>
+                        <label class="tf-option"><input type="radio" name="q1" value="FALSE"> FALSE</label>
+                        <label class="tf-option"><input type="radio" name="q1" value="NOT GIVEN"> NOT GIVEN</label>
+                    </div>
+                </div>
+                <div class="tf-question" data-q-start="2" data-q-end="2">
+                    <div class="tf-question-line">
+                        <span class="tf-question-number">2</span>
+                        <span class="tf-question-text">New names for existing dishes often cause disagreement.</span>
+                    </div>
+                    <div class="tf-options">
+                        <label class="tf-option"><input type="radio" name="q2" value="TRUE"> TRUE</label>
+                        <label class="tf-option"><input type="radio" name="q2" value="FALSE"> FALSE</label>
+                        <label class="tf-option"><input type="radio" name="q2" value="NOT GIVEN"> NOT GIVEN</label>
+                    </div>
+                </div>
+                <div class="tf-question" data-q-start="3" data-q-end="3">
+                    <div class="tf-question-line">
+                        <span class="tf-question-number">3</span>
+                        <span class="tf-question-text">In the past, khichdi was usually made with millet and mung beans.</span>
+                    </div>
+                    <div class="tf-options">
+                        <label class="tf-option"><input type="radio" name="q3" value="TRUE"> TRUE</label>
+                        <label class="tf-option"><input type="radio" name="q3" value="FALSE"> FALSE</label>
+                        <label class="tf-option"><input type="radio" name="q3" value="NOT GIVEN"> NOT GIVEN</label>
+                    </div>
+                </div>
+                <div class="tf-question" data-q-start="4" data-q-end="4">
+                    <div class="tf-question-line">
+                        <span class="tf-question-number">4</span>
+                        <span class="tf-question-text">The ingredients used in khichdi in the 4th century BC may have varied at different times of the year.</span>
+                    </div>
+                    <div class="tf-options">
+                        <label class="tf-option"><input type="radio" name="q4" value="TRUE"> TRUE</label>
+                        <label class="tf-option"><input type="radio" name="q4" value="FALSE"> FALSE</label>
+                        <label class="tf-option"><input type="radio" name="q4" value="NOT GIVEN"> NOT GIVEN</label>
+                    </div>
+                </div>
+                <div class="tf-question" data-q-start="5" data-q-end="5">
+                    <div class="tf-question-line">
+                        <span class="tf-question-number">5</span>
+                        <span class="tf-question-text">In the 13th century, travellers from other countries brought a range of new foods to India.</span>
+                    </div>
+                    <div class="tf-options">
+                        <label class="tf-option"><input type="radio" name="q5" value="TRUE"> TRUE</label>
+                        <label class="tf-option"><input type="radio" name="q5" value="FALSE"> FALSE</label>
+                        <label class="tf-option"><input type="radio" name="q5" value="NOT GIVEN"> NOT GIVEN</label>
+                    </div>
+                </div>
+                <div class="tf-question" data-q-start="6" data-q-end="6">
+                    <div class="tf-question-line">
+                        <span class="tf-question-number">6</span>
+                        <span class="tf-question-text">In the Age of Exploration, the way Westerners regarded India changed for the worse.</span>
+                    </div>
+                    <div class="tf-options">
+                        <label class="tf-option"><input type="radio" name="q6" value="TRUE"> TRUE</label>
+                        <label class="tf-option"><input type="radio" name="q6" value="FALSE"> FALSE</label>
+                        <label class="tf-option"><input type="radio" name="q6" value="NOT GIVEN"> NOT GIVEN</label>
+                    </div>
+                </div>
+                <div class="tf-question" data-q-start="7" data-q-end="7">
+                    <div class="tf-question-line">
+                        <span class="tf-question-number">7</span>
+                        <span class="tf-question-text">In the Age of Exploration, many travellers had problems finding written recipes for the new dishes they came across.</span>
+                    </div>
+                    <div class="tf-options">
+                        <label class="tf-option"><input type="radio" name="q7" value="TRUE"> TRUE</label>
+                        <label class="tf-option"><input type="radio" name="q7" value="FALSE"> FALSE</label>
+                        <label class="tf-option"><input type="radio" name="q7" value="NOT GIVEN"> NOT GIVEN</label>
+                    </div>
+                </div>
+                <div class="tf-question" data-q-start="8" data-q-end="8">
+                    <div class="tf-question-line">
+                        <span class="tf-question-number">8</span>
+                        <span class="tf-question-text">By the 15th and 16th centuries, the ingredients and preparation of khichdi varied in different places.</span>
+                    </div>
+                    <div class="tf-options">
+                        <label class="tf-option"><input type="radio" name="q8" value="TRUE"> TRUE</label>
+                        <label class="tf-option"><input type="radio" name="q8" value="FALSE"> FALSE</label>
+                        <label class="tf-option"><input type="radio" name="q8" value="NOT GIVEN"> NOT GIVEN</label>
+                    </div>
+                </div>
+            </div>
+            <div class="question">
+                <div class="question-prompt">
+                    <p><strong>Questions 9-16</strong><br>Complete the table below.<br>Choose <b>ONE WORD ONLY</b> from the passage for each answer.<br>Write your answers in boxes 9-16 on your answer sheet.</p>
+                </div>
+                <div class="summary-completion-container">
+                    <div class="summary-text">
+                        <p><strong>How kedgeree became adopted by the British</strong></p>
+                        <p><strong>18th century</strong></p>
+                        <p><span class="bullet">•</span> Employees of the East India Company started to show interest in the <input type="text" class="answer-input" id="q9" placeholder="9" size="10"> of India, including its food</p>
+                        <p><span class="bullet">•</span> The <input type="text" class="answer-input" id="q10" placeholder="10" size="10"> of Company employees made changes to Indian khichdi recipes</p>
+                        <p><span class="bullet">•</span> New ingredients were used including <input type="text" class="answer-input" id="q11" placeholder="11" size="10"> and local fish</p>
+                        <p><span class="bullet">•</span> In Britain, Stephana Malcolm's recipe used fish such as <input type="text" class="answer-input" id="q12" placeholder="12" size="10"> and cayenne pepper</p>
+                        <p><strong>19th century</strong></p>
+                        <p><span class="bullet">•</span> In Britain, kedgeree was regarded as a food that was <input type="text" class="answer-input" id="q13" placeholder="13" size="10"></p>
+                        <p><strong>20th century</strong></p>
+                        <p><span class="bullet">•</span> Kedgeree started to be made with <input type="text" class="answer-input" id="q14" placeholder="14" size="10"> and other expensive ingredients</p>
+                        <p><span class="bullet">•</span> It became regarded as a food for <input type="text" class="answer-input" id="q15" placeholder="15" size="10"></p>
+                        <p><span class="bullet">•</span> Later, traditional Indian ingredients such as <input type="text" class="answer-input" id="q16" placeholder="16" size="10"> came back into use</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <footer>
+        <div class="parts">
+            <div class="part-tab" data-part="1">Part 1<span>[16]</span>
+                <div class="question-nav" id="question-nav"></div>
+            </div>
+        </div>
+        <div class="action-buttons">
+            <button class="btn-submit" id="submit-btn">Submit</button>
+        </div>
+    </footer>
+    <div class="feedback-overlay" id="feedback-overlay">
+        <div class="feedback-container">
+            <div class="feedback-header">
+                <div class="feedback-title">Your Results</div>
+                <div class="score-display" id="score-display">0/16</div>
+            </div>
+            <div class="feedback-body" id="feedback-body"></div>
+            <button class="close-btn" id="close-feedback">Close</button>
+        </div>
+    </div>
+    <button id="highlight-btn">Highlight</button>
+    <script>
+        let timeLeft = 60 * 60;
+        let isPaused = false;
+        let timerInterval = null;
+
+        function startTimer() {
+            timerInterval = setInterval(() => {
+                if (!isPaused && timeLeft > 0) {
+                    timeLeft--;
+                    updateTimerDisplay();
+                }
+                if (timeLeft <= 0) {
+                    clearInterval(timerInterval);
+                    document.getElementById('submit-btn').click();
+                }
+            }, 1000);
+        }
+
+        function updateTimerDisplay() {
+            const minutes = Math.floor(timeLeft / 60);
+            const seconds = timeLeft % 60;
+            document.getElementById('timer').textContent = `${minutes}:${seconds.toString().padStart(2, '0')}`;
+        }
+
+        function togglePause() {
+            isPaused = !isPaused;
+            const pauseIcon = document.getElementById('pause-icon');
+            if (isPaused) {
+                pauseIcon.innerHTML = '<path d="M8 5v14l11-7z"/>';
+            } else {
+                pauseIcon.innerHTML = '<path d="M6 4h4v16H6zM14 4h4v16h-4z"/>';
+            }
+        }
+
+        function escapeHTML(str) {
+            return str.replace(/'/g, "\\'").replace(/"/g, "\\\"").replace(/</g, "<").replace(/>/g, ">");
+        }
+
+        const highlightBtn = document.getElementById('highlight-btn');
+
+        function showHighlightButton() {
+            const selection = window.getSelection();
+            if (selection.toString().trim().length > 0 && selection.rangeCount > 0) {
+                const range = selection.getRangeAt(0);
+                const parent = range.commonAncestorContainer.parentElement.closest('#passage, #questions');
+                if (parent && range.startContainer === range.endContainer && range.startContainer.nodeType === Node.TEXT_NODE) {
+                    const rect = range.getBoundingClientRect();
+                    highlightBtn.style.top = `${rect.top + window.scrollY - 40}px`;
+                    highlightBtn.style.left = `${rect.left + (rect.width / 2) - (highlightBtn.offsetWidth / 2)}px`;
+                    highlightBtn.classList.add('visible');
+                } else {
+                    highlightBtn.classList.remove('visible');
+                }
+            } else {
+                highlightBtn.classList.remove('visible');
+            }
+        }
+
+        document.addEventListener('mouseup', () => setTimeout(showHighlightButton, 0));
+        document.addEventListener('keyup', (e) => {
+            if (['Shift', 'ArrowLeft', 'ArrowRight'].includes(e.key)) setTimeout(showHighlightButton, 0);
+        });
+        document.addEventListener('click', (e) => {
+            if (!highlightBtn.contains(e.target) && !e.target.closest('.highlighted') && !e.target.closest('.remove-highlight-btn')) {
+                highlightBtn.classList.remove('visible');
+                document.querySelectorAll('.remove-highlight-btn').forEach(btn => btn.style.display = 'none');
+            }
+        });
+        document.addEventListener('scroll', () => {
+            highlightBtn.classList.remove('visible');
+            document.querySelectorAll('.remove-highlight-btn').forEach(btn => btn.style.display = 'none');
+            if (window.getSelection) window.getSelection().removeAllRanges();
+        });
+
+        highlightBtn.addEventListener('click', () => {
+            const selection = window.getSelection();
+            if (selection.toString().trim().length > 0) {
+                const range = selection.getRangeAt(0);
+                const parent = range.commonAncestorContainer.parentElement.closest('#passage, #questions');
+                if (parent && range.startContainer === range.endContainer && range.startContainer.nodeType === Node.TEXT_NODE) {
+                    const span = document.createElement('span');
+                    span.className = 'highlighted';
+                    span.textContent = range.toString();
+                    range.deleteContents();
+                    range.insertNode(span);
+
+                    const removeBtn = document.createElement('button');
+                    removeBtn.className = 'remove-highlight-btn';
+                    removeBtn.textContent = 'Remove';
+                    removeBtn.style.display = 'none';
+                    span.appendChild(removeBtn);
+
+                    span.addEventListener('mouseenter', () => {
+                        const rect = span.getBoundingClientRect();
+                        removeBtn.style.top = `${-20}px`;
+                        removeBtn.style.left = `${rect.width + 2}px`;
+                        removeBtn.style.display = 'block';
+                    });
+                    span.addEventListener('mouseleave', () => {
+                        removeBtn.style.display = 'none';
+                    });
+                    removeBtn.addEventListener('click', (e) => {
+                        e.stopPropagation();
+                        const text = document.createTextNode(span.textContent.replace('Remove', ''));
+                        span.parentNode.replaceChild(text, span);
+                    });
+
+                    highlightBtn.classList.remove('visible');
+                    selection.removeAllRanges();
+                }
+            }
+        });
+
+        document.querySelectorAll('.answer-input').forEach(input => {
+            input.addEventListener('focus', function() {
+                this.classList.add('active-input');
+            });
+            input.addEventListener('blur', function() {
+                this.classList.remove('active-input');
+            });
+        });
+
+        const correctAnswers = {
+            q1: 'FALSE',
+            q2: 'NOT GIVEN',
+            q3: 'FALSE',
+            q4: 'TRUE',
+            q5: 'NOT GIVEN',
+            q6: 'TRUE',
+            q7: 'NOT GIVEN',
+            q8: 'TRUE',
+            q9: 'culture',
+            q10: 'wives',
+            q11: 'eggs',
+            q12: 'haddock',
+            q13: 'economical',
+            q14: 'salmon',
+            q15: 'aristocrats',
+            q16: 'turmeric'
+        };
+
+        function checkAnswers() {
+            let score = 0;
+            const feedbackBody = document.getElementById('feedback-body');
+            feedbackBody.innerHTML = '';
+
+            for (let i = 1; i <= 8; i++) {
+                const question = document.querySelector(`.tf-question[data-q-start="${i}"]`);
+                const selectedOption = document.querySelector(`input[name="q${i}"]:checked`);
+                const isCorrect = selectedOption && selectedOption.value === correctAnswers[`q${i}`];
+                question.classList.toggle('correct', isCorrect);
+                question.classList.toggle('incorrect', !isCorrect);
+                if (isCorrect) score++;
+
+                const feedbackItem = document.createElement('div');
+                feedbackItem.className = 'feedback-item';
+                feedbackItem.innerHTML = `
+                    <div class="feedback-question">Question ${i}: ${isCorrect ? '<span class="correct">Correct</span>' : '<span class="incorrect">Incorrect</span>'}</div>
+                    <div>Your answer: ${selectedOption ? selectedOption.value : 'Not answered'}</div>
+                    <div>Correct answer: ${correctAnswers[`q${i}`]}</div>
+                `;
+                feedbackBody.appendChild(feedbackItem);
+            }
+
+            for (let i = 9; i <= 16; i++) {
+                const input = document.getElementById(`q${i}`);
+                const userAnswer = input.value.trim().toLowerCase();
+                const isCorrect = userAnswer === correctAnswers[`q${i}`];
+                input.classList.toggle('correct', isCorrect);
+                input.classList.toggle('incorrect', !isCorrect && userAnswer !== '');
+                if (isCorrect) score++;
+
+                const feedbackItem = document.createElement('div');
+                feedbackItem.className = 'feedback-item';
+                feedbackItem.innerHTML = `
+                    <div class="feedback-question">Question ${i}: ${isCorrect ? '<span class="correct">Correct</span>' : '<span class="incorrect">Incorrect</span>'}</div>
+                    <div>Your answer: ${userAnswer || 'Not answered'}</div>
+                    <div>Correct answer: ${correctAnswers[`q${i}`]}</div>
+                `;
+                feedbackBody.appendChild(feedbackItem);
+            }
+
+            document.getElementById('score-display').textContent = `${score}/16`;
+            document.getElementById('feedback-overlay').style.display = 'flex';
+        }
+
+        function createQuestionNav() {
+            const questionNav = document.getElementById('question-nav');
+            for (let i = 1; i <= 16; i++) {
+                const qNum = document.createElement('div');
+                qNum.className = 'q-num';
+                qNum.textContent = i;
+                qNum.addEventListener('click', () => {
+                    let targetElement;
+                    if (i <= 8) {
+                        targetElement = document.querySelector(`.tf-question[data-q-start="${i}"]`);
+                    } else {
+                        targetElement = document.getElementById(`q${i}`);
+                    }
+                    if (targetElement) {
+                        targetElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                        if (i > 8) {
+                            targetElement.focus();
+                        }
+                    }
+                });
+                questionNav.appendChild(qNum);
+            }
+        }
+
+        function updateAnsweredStatus() {
+            document.querySelectorAll('.q-num').forEach((qNum, index) => {
+                const questionNum = index + 1;
+                let isAnswered = false;
+                if (questionNum <= 8) {
+                    isAnswered = document.querySelector(`input[name="q${questionNum}"]:checked`) !== null;
+                } else {
+                    isAnswered = document.getElementById(`q${questionNum}`).value.trim() !== '';
+                }
+                qNum.classList.toggle('answered', isAnswered);
+            });
+        }
+
+        document.querySelectorAll('input[type="radio"]').forEach(radio => {
+            radio.addEventListener('change', updateAnsweredStatus);
+        });
+        document.querySelectorAll('.answer-input').forEach(input => {
+            input.addEventListener('input', updateAnsweredStatus);
+        });
+
+        document.getElementById('submit-btn').addEventListener('click', checkAnswers);
+        document.getElementById('close-feedback').addEventListener('click', () => {
+            document.getElementById('feedback-overlay').style.display = 'none';
+        });
+        document.getElementById('pause-icon').addEventListener('click', togglePause);
+
+        createQuestionNav();
+        startTimer();
+        updateTimerDisplay();
+
+        const resizeBtn = document.querySelector('.resize-btn');
+        const passage = document.querySelector('.passage');
+        const questions = document.querySelector('.questions');
+        let isResizing = false;
+
+        resizeBtn.addEventListener('mousedown', (e) => {
+            isResizing = true;
+            document.body.style.cursor = 'col-resize';
+            document.body.style.userSelect = 'none';
+        });
+
+        document.addEventListener('mousemove', (e) => {
+            if (!isResizing) return;
+            const containerRect = document.querySelector('.container').getBoundingClientRect();
+            const newPassageWidth = e.clientX - containerRect.left;
+            const containerWidth = containerRect.width;
+            const passagePercent = (newPassageWidth / containerWidth) * 100;
+            const questionsPercent = 100 - passagePercent;
+            passage.style.flex = `0 0 ${passagePercent}%`;
+            questions.style.flex = `0 0 ${questionsPercent}%`;
+        });
+
+        document.addEventListener('mouseup', () => {
+            isResizing = false;
+            document.body.style.cursor = '';
+            document.body.style.userSelect = '';
+        });
+    </script>
+</body>
+</html>

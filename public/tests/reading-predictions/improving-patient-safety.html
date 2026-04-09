@@ -1,0 +1,1511 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CDI IELTS Reading Test - Improving Patient Safety</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        /* Main styles */
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: Arial, sans-serif;
+            overflow: hidden;
+            background-color: #f0f8ff; /* Pale blue background */
+        }
+     
+        .test-wrapper {
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+        }
+     
+        .test-container {
+            display: flex;
+            flex: 1;
+            overflow: hidden;
+        }
+     
+        /* Header styles */
+        .header {
+            background-color: #fff;
+            border-bottom: 1px solid #ddd;
+            padding: 10px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        }
+     
+        .header__logo {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+     
+        .telegram-button {
+            text-decoration: none;
+            color: #0088cc;
+            font-weight: bold;
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            padding: 5px 10px;
+            border: 1px solid #0088cc;
+            border-radius: 4px;
+            transition: all 0.3s ease;
+        }
+     
+        .telegram-button:hover {
+            background-color: #0088cc;
+            color: white;
+        }
+     
+        .header__timer {
+            font-size: 1.2rem;
+            font-weight: bold;
+            color: #333;
+            background-color: #e6f2ff; /* Lighter blue for timer */
+            padding: 5px 15px;
+            border-radius: 20px;
+            border: 1px solid #ddd;
+            transition: all 0.3s ease;
+        }
+     
+        .header__icons {
+            display: flex;
+            gap: 15px;
+        }
+     
+        .header__icon {
+            font-size: 1.2rem;
+            color: #666;
+            cursor: pointer;
+        }
+     
+        /* Settings Modal */
+        .settings-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: rgba(0,0,0,0.7);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+        }
+     
+        .settings-content {
+            background-color: white;
+            width: 90%;
+            max-width: 500px;
+            border-radius: 5px;
+            overflow: hidden;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+        }
+     
+        .settings-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 20px;
+            border-bottom: 1px solid #ddd;
+            background-color: #f0f8ff; /* Pale blue background */
+        }
+     
+        .settings-header h2 {
+            margin: 0;
+            font-size: 1.2rem;
+        }
+     
+        .settings-close {
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: #666;
+        }
+     
+        .settings-body {
+            padding: 20px;
+        }
+     
+        .settings-option {
+            display: flex;
+            align-items: center;
+            padding: 10px 0;
+            border-bottom: 1px solid #eee;
+            cursor: pointer;
+        }
+     
+        .settings-option:last-child {
+            border-bottom: none;
+        }
+     
+        .settings-option i {
+            margin-right: 15px;
+            width: 20px;
+            text-align: center;
+            color: #2a6c96;
+        }
+     
+        .settings-option span {
+            flex: 1;
+        }
+     
+        .sectionRubric {
+            margin: 1em;
+            width: calc(100% - 4em - 3px);
+            border-radius: 4px;
+            padding: 0.75em 1em;
+            background: white;
+            border: 1px solid #d5d5d5;
+        }
+     
+        .sectionRubric h2, .sectionRubric p {
+            margin: 0;
+        }
+     
+        .sectionRubric h2 {
+            font-size: 1rem;
+            margin-bottom: 0.25em;
+        }
+     
+        /* Passage container */
+        .passage-container {
+            width: 45%;
+            height: 100%;
+            overflow-y: auto;
+            padding: 20px;
+            box-sizing: border-box;
+            background-color: #f0f8ff; /* Pale blue */
+            position: relative;
+            -webkit-user-select: text;
+            user-select: text;
+        }
+     
+        /* Questions container */
+        .questions-container {
+            flex: 1;
+            overflow-y: auto;
+            padding: 20px;
+            box-sizing: border-box;
+            background-color: #f0f8ff; /* Pale blue */
+            -webkit-user-select: text;
+            user-select: text;
+        }
+     
+        /* Highlight styles */
+        .highlight {
+            position: relative;
+            border-radius: 2px;
+            padding: 0 1px;
+            margin: 0 -1px;
+        }
+     
+        .highlight.yellow {
+            background-color: rgba(255, 255, 0, 0.3);
+        }
+     
+        .highlight.green {
+            background-color: rgba(0, 255, 0, 0.3);
+        }
+     
+        .highlight.pink {
+            background-color: rgba(255, 105, 180, 0.3);
+        }
+     
+        .highlight.blue {
+            background-color: rgba(0, 191, 255, 0.3);
+        }
+     
+        .highlight-toolbar {
+            position: fixed;
+            background: white;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+            display: none;
+            z-index: 1000;
+            padding: 5px;
+            transform: translate(-50%, -100%);
+            margin-top: -5px;
+        }
+     
+        .highlight-toolbar button {
+            background: none;
+            border: none;
+            width: 24px;
+            height: 24px;
+            cursor: pointer;
+            margin: 0 2px;
+            border-radius: 3px;
+        }
+     
+        .highlight-toolbar button:hover {
+            background: #f0f0f0;
+        }
+     
+        .highlight-toolbar button.remove {
+            color: #ff0000;
+        }
+     
+        /* Divider styling */
+        .divider {
+            width: 10px;
+            background: #ddd;
+            cursor: col-resize;
+            position: relative;
+        }
+     
+        .divider-handle {
+            width: 4px;
+            height: 40px;
+            background: #999;
+            border-radius: 2px;
+            position: absolute;
+            top: 50%;
+            left: 3px;
+            transform: translateY(-50%);
+        }
+     
+        /* Question styling */
+        .question {
+            margin-bottom: 30px;
+            background: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+     
+        .question-rubric {
+            margin-bottom: 15px;
+            font-weight: bold;
+            border-bottom: 1px solid #eee;
+            padding-bottom: 10px;
+        }
+     
+        .question-options {
+            list-style-type: none;
+            padding: 0;
+        }
+     
+        .question-options li {
+            margin: 10px 0;
+            display: flex;
+            align-items: center;
+        }
+     
+        /* Multiple choice questions */
+        .mcq-option {
+            display: flex;
+            align-items: center;
+            margin: 5px 0;
+            padding: 8px;
+            border-radius: 4px;
+        }
+     
+        .mcq-option input[type="radio"] {
+            margin-right: 10px;
+        }
+        .mcq-option label {
+            cursor: pointer;
+        }
+     
+        /* Footer styles */
+        .footer {
+            background: #f5f5f5;
+            border-top: 1px solid #ddd;
+            padding: 10px;
+        }
+     
+        .nav-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+     
+        .footer__questionWrapper {
+            display: flex;
+            align-items: center;
+        }
+     
+        .footer__questionNo {
+            background: none;
+            border: none;
+            padding: 5px 10px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+     
+        .footer__subquestionWrapper {
+            display: flex;
+            flex-wrap: wrap;
+            margin-left: 10px;
+        }
+     
+        .subQuestion {
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            border: 1px solid #ccc;
+            background: #f0f0f0;
+            margin: 2px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #666;
+            transition: all 0.2s ease-in-out;
+        }
+        .subQuestion:hover {
+            transform: scale(1.1);
+            border-color: #0066cc;
+        }
+     
+        .subQuestion.active {
+            background: #0066cc;
+            color: white;
+            border-color: #0066cc;
+            font-weight: bold;
+        }
+     
+        .subQuestion.attempted {
+            background: #0066cc;
+            color: white;
+        }
+     
+        .footer__deliverButton {
+            background: #0066cc;
+            color: white;
+            border: none;
+            padding: 8px 15px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: background-color 0.3s;
+        }
+     
+        .footer__deliverButton:hover {
+            background-color: #0052a3;
+        }
+        .footer__deliverButton:disabled {
+            background: #cccccc;
+            cursor: not-allowed;
+        }
+     
+        .sr-only {
+            position: absolute;
+            width: 1px;
+            height: 1px;
+            padding: 0;
+            margin: -1px;
+            overflow: hidden;
+            clip: rect(0, 0, 0, 0);
+            white-space: nowrap;
+            border-width: 0;
+        }
+     
+        /* Highlight color buttons */
+        .highlight-color {
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            display: inline-block;
+            margin: 0 2px;
+            cursor: pointer;
+            border: 1px solid #ccc;
+        }
+     
+        .highlight-color.yellow { background-color: #ffff00; }
+        .highlight-color.green { background-color: #00ff00; }
+        .highlight-color.pink { background-color: #ff69b4; }
+        .highlight-color.blue { background-color: #00bfff; }
+        /* Time warning styles */
+        .timer-warning {
+            color: #ff0000;
+            animation: blink 1s infinite;
+        }
+         blink {
+            0% { opacity: 1; }
+            50% { opacity: 0.5; }
+            100% { opacity: 1; }
+        }
+        /* Submission modal styles */
+        .submission-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: rgba(0,0,0,0.8);
+            z-index: 2000;
+            justify-content: center;
+            align-items: center;
+        }
+        .submission-content {
+            background-color: white;
+            width: 80%;
+            max-width: 800px;
+            border-radius: 10px;
+            padding: 30px;
+            box-shadow: 0 5px 30px rgba(0,0,0,0.5);
+            max-height: 80vh;
+            overflow-y: auto;
+        }
+        .submission-content h2 {
+            margin-top: 0;
+            color: #0066cc;
+            border-bottom: 2px solid #0066cc;
+            padding-bottom: 10px;
+        }
+        .submission-content p {
+            margin-bottom: 20px;
+            color: #333;
+        }
+        .answers-section {
+            margin-top: 20px;
+        }
+        .answers-section h3 {
+            color: #0066cc;
+            margin-bottom: 15px;
+        }
+        .answer-item {
+            padding: 10px;
+            margin-bottom: 8px;
+            border-radius: 4px;
+            border-left: 4px solid #ddd;
+            background-color: #f9f9f9;
+        }
+        .answer-item.correct {
+            border-left-color: #4CAF50;
+            background-color: #f0fff0;
+        }
+        .answer-item.incorrect {
+            border-left-color: #f44336;
+            background-color: #fff0f0;
+        }
+        .answer-text {
+            font-weight: bold;
+        }
+        .correct-answer {
+            color: #4CAF50;
+            margin-left: 10px;
+        }
+        .incorrect-answer {
+            color: #f44336;
+            margin-left: 10px;
+        }
+        .answer-status {
+            float: right;
+            margin-left: 15px;
+        }
+        .correct-status {
+            color: #4CAF50;
+        }
+        .incorrect-status {
+            color: #f44336;
+        }
+        .submission-buttons {
+            margin-top: 25px;
+            text-align: right;
+            clear: both;
+        }
+        .submission-buttons button {
+            padding: 8px 15px;
+            margin-left: 10px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+        .submission-buttons .confirm {
+            background: #0066cc;
+            color: white;
+            border: none;
+        }
+        /* Disabled state */
+        input:disabled {
+            background-color: #f5f5f5;
+            cursor: not-allowed;
+        }
+        /* Score display styles */
+        .score-display {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        .score-number {
+            font-size: 3rem;
+            font-weight: bold;
+            color: #0066cc;
+            margin: 10px 0;
+        }
+        .score-total {
+            font-size: 1.5rem;
+            color: #666;
+        }
+        .performance-rating {
+            font-size: 1.5rem;
+            font-weight: bold;
+            margin: 15px 0;
+            padding: 10px;
+            border-radius: 5px;
+        }
+        .excellent {
+            color: #2E7D32;
+            background-color: #E8F5E9;
+        }
+        .very-good {
+            color: #388E3C;
+            background-color: #E8F5E9;
+        }
+        .good {
+            color: #689F38;
+            background-color: #F1F8E9;
+        }
+        .fair {
+            color: #F57C00;
+            background-color: #FFF3E0;
+        }
+        .poor {
+            color: #D32F2F;
+            background-color: #FFEBEE;
+        }
+        /* IELTS Band Score */
+        .band-score {
+            font-size: 2rem;
+            font-weight: bold;
+            color: #0066cc;
+            margin: 10px 0;
+        }
+        /* Correct answer highlight */
+        .correct-highlight {
+            background-color: rgba(76, 175, 80, 0.3);
+        }
+        /* Incorrect answer highlight */
+        .incorrect-highlight {
+            background-color: rgba(244, 67, 54, 0.3);
+        }
+        /* Answer comparison section */
+        .answer-comparison {
+            margin-top: 20px;
+            padding: 15px;
+            background-color: #f5f5f5;
+            border-radius: 5px;
+            display: none;
+        }
+        .answer-comparison h3 {
+            margin-top: 0;
+            color: #0066cc;
+        }
+        /* Time spent indicator */
+        .time-spent {
+            font-size: 1rem;
+            color: #666;
+            margin-bottom: 15px;
+            text-align: center;
+        }
+        /* Summary completion styles */
+        .summary-completion-container {
+            margin-top: 20px;
+        }
+        .summary-text p {
+            line-height: 2.5;
+            font-size: 16px;
+        }
+        .summary-drop-zone {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            vertical-align: middle;
+            min-width: 150px;
+            height: 25px;
+            border: 2px dashed #999;
+            border-radius: 4px;
+            margin: 0 5px;
+            padding: 0 5px;
+            transition: all 0.3s ease;
+            color: #aaa;
+            font-weight: bold;
+            position: relative;
+        }
+        .summary-drop-zone.filled {
+            border-color: #4a90e2;
+            background-color: #e3f2fd;
+            color: #333;
+            font-weight: bold;
+            cursor: pointer;
+        }
+     
+        .summary-drop-zone:hover {
+            border-color: #4a90e2;
+            background-color: #f0f8ff;
+        }
+        .summary-drop-zone.active-input {
+            border-color: #4a90e2;
+            box-shadow: none;
+        }
+        .summary-drop-zone .drag-item {
+            font-size: 15px;
+            font-weight: bold;
+            background-color: transparent;
+            border: none;
+            padding: 0;
+            text-align: center;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: move;
+        }
+     
+        .summary-drop-zone.correct {
+            background-color: #e9f7ef;
+            border-color: #28a745;
+            border-style: solid;
+        }
+     
+        .summary-drop-zone.incorrect {
+            background-color: #f8d7da;
+            border-color: #dc3545;
+            border-style: solid;
+        }
+        .summary-feedback {
+            display: inline-block;
+            margin-left: 10px;
+            font-size: 14px;
+        }
+        .summary-feedback.correct {
+            color: #28a745;
+        }
+        .summary-feedback.incorrect {
+            color: #dc3545;
+        }
+        .summary-options-bank {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-top: 20px;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            min-height: 50px;
+        }
+        .summary-options-bank .drag-item {
+            flex-grow: 1;
+            min-width: 100px;
+            text-align: center;
+            padding: 5px 10px;
+            background-color: #f0f0f0;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            cursor: move;
+            user-select: none;
+            transition: all 0.3s ease;
+        }
+     
+        .summary-options-bank .drag-item:hover {
+            background-color: #e0e0e0;
+            transform: translateY(-2px);
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+     
+        .summary-options-bank .drag-item.dragging {
+            opacity: 0.5;
+            transform: scale(0.95);
+        }
+     
+        /* New styles for draggable items */
+        .drag-item {
+            touch-action: none; /* Prevent scrolling while dragging on touch devices */
+        }
+        .drag-ghost {
+            opacity: 0.8;
+            transform: rotate(2deg);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+        }
+        .drop-hover {
+            background-color: #e3f2fd !important;
+            border-color: #4a90e2 !important;
+        }
+    </style>
+</head>
+<body>
+    <div class="test-wrapper">
+        <header class="header">
+            <div class="header__logo">
+                
+            </div>
+            <div class="header__timer" id="testTimer">00:00</div>
+            <div class="header__icons">
+                <i class="fas fa-wifi header__icon"></i>
+                <i class="fas fa-bell header__icon"></i>
+                <i class="fas fa-cog header__icon" id="settingsButton"></i>
+            </div>
+        </header>
+     
+        <div class="settings-modal" id="settingsModal">
+            <div class="settings-content">
+                <div class="settings-header">
+                    <h2>Options</h2>
+                    <button class="settings-close" id="settingsClose">&times;</button>
+                </div>
+                <div class="settings-body">
+                    <div class="settings-option">
+                        <i class="fas fa-paper-plane"></i>
+                        <span>Go to submission page</span>
+                    </div>
+                    <div class="settings-option" id="contrastOption">
+                        <i class="fas fa-adjust"></i>
+                        <span>Contrast</span>
+                    </div>
+                    <div class="settings-option" id="textSizeOption">
+                        <i class="fas fa-search-plus"></i>
+                        <span>Text size</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+     
+        <div class="sectionRubric" id="sectionRubric">
+            <h2>Reading Passage 3</h2>
+            <p>You should spend about 20 minutes on Questions 27-40.</p>
+        </div>
+     
+        <div class="test-container">
+            <div class="passage-container" id="passage-container">
+                <div class="highlight-toolbar" id="highlightToolbar">
+                    <button class="highlight-color yellow" data-color="yellow" title="Yellow highlight"></button>
+                    <button class="highlight-color green" data-color="green" title="Green highlight"></button>
+                    <button class="highlight-color pink" data-color="pink" title="Pink highlight"></button>
+                    <button class="highlight-color blue" data-color="blue" title="Blue highlight"></button>
+                    <button class="remove" title="Remove highlight"><i class="fas fa-times"></i></button>
+                </div>
+             
+                <div id="passageContent">
+                    <h2 style="text-align: center;">Improving Patient Safety</h2>
+                    <p style="text-align: center; font-style: italic;">How improved drug packaging could provide some answers to patient safety issues</p>
+                    <h3>Packaging</h3>
+                    <p>One of the most prominent design issues in pharmacy is that of drug packages and the patient information leaflets (PILs) included in them. Many pharmacists are concerned that current designs are 'accidents waiting to happen'. The UK government shares this concern and, in 2003, the National Patient Safety Agency created a new role, appointing Colum Lowe, who has 14 years' experience as a designer in the private sector, as head of design and human factors.</p>
+                    <p>Packaging design in the pharmaceutical industry is handled by either in-house teams or external design agencies. For packaging design of over-the-counter medicines, which do not have to be dispensed by a pharmacist but can be bought directly from a sales assistant, characteristics such as attractiveness and distinguishability are important and so these are usually commissioned from an external design team. The marketing team prepares the initial brief and the designers come up with six or seven designs. Two or three of these are then tested on a consumer group. In contrast, most designs for prescription-only products are created in-house. In some cases, this may simply involve the company's design team applying the house design and then handing it over to design engineers rather than testing the design on a consumer group. Clearly this process cannot adequately address the needs of the wide variety of patients using medication.</p>
+                    <h3>Design considerations</h3>
+                    <p>In her book <i>Information Design for Patient Safety</i>, Thea Swayne highlighted a multitude of design problems. For example, drugs that look or sound alike can lead to confusion, small type sizes and even the glare on silver foil packaging can lead to names or instructions being misread. One such example is a drug that was accidentally injected into a patient through the spine (intrathecally) rather than through the veins (intravenously). Investigations following this tragedy attributed some blame to the poor choice of typescript used on the drug container.</p>
+                    <p>Furthermore, according to Swayne, real situations in which medicines are used include a parent giving a cough medicine to a child in the middle of the night; packaging should be designed for moments such as these rather than for the ideal world of a hospital.</p>
+                    <h3>Safety and compliance</h3>
+                    <p>Child protection is another area that gives designers opportunities to improve safety. According to the Child Accident Prevention Trust, 70% of children admitted to hospital with suspected poisoning have swallowed medicines, and although child-resistant lids have helped, they are not yet fully effective. There is scope for improving what is currently available, according to Richard Mawle, a freelance product designer who feels it is not just children who are blocked by child-proof closures. 'Many child-resistant packs are based on strength but older people may have the same level of strength as a child,' he explained, and suggested that better designs could rely on cognitive skills (e.g. removing the lid using a three-step process).</p>
+                    <p>Mawle also worked on a project which involved applying his skills to packaging and PILs. Commenting on the information presented, he said: 'There can be an awful lot of junk at the beginning of PILs. For example, why are company details towards the beginning of a leaflet when what might be more vital for the patient is that the medicine should not be taken with alcohol?'</p>
+                    <h3>Design principles and guidelines</h3>
+                    <p>Most designers work according to basic principles; for example, certain print styles are known to be more difficult to read than others. Look-alike boxes present the potential for errors and an obvious solution would be to use colours to highlight a larger dosage of a drug. However, according to Thea Swayne, designating a colour to a particular dosage is not recommended because this could lead to the user not reading the text on a box.</p>
+                    <p>Design features can provide the basis for lengthy debates. One argument is that if all packaging was white with black lettering, people would have no choice but to read every box carefully. The problem is that trials of drug packaging are few - common signage studies concern road traffic signs and visual display units. Although some designers take results from such studies into account, proving that a particular feature is beneficial can be difficult. For example, current UK legislation requires packaging to include the name of the medicine in Braille, but, according to Karel van der Waarde, a design consultant to the pharmaceutical industry, 'it is not known how much visually impaired patients will benefit nor how much the reading of visually able patients will be impaired'. Van der Waarde is sceptical about current legislation and says that many regulatory authorities do not have the resources to handle packaging information properly. 'They do not look at the use of packaging in a practical context - they only see one box at a time and not several together as pharmacists would do,' he said.</p>
+                    <h3>Innovation</h3>
+                    <p>On a positive note, a recent innovation exhibition revealed several new designs. 'The popper' aims to help arthritis sufferers remove tablets from blister packs, and 'Pluspoint' is an adrenaline auto-injector (a device that allows diabetics to inject themselves) aimed at overcoming the fact that many patients do not carry their medication due to its prohibitive size. The aim of good design is to try to make things more user-friendly as well as safer. The guidelines in <i>Information Design for Patient Safety</i> are not intended to be legally binding. Rather, the book's purpose is to create a basic design standard and to stimulate innovation. The challenge for the pharmaceutical industry is to adopt such a standard.</p>
+                </div>
+            </div>
+         
+            <div class="divider" id="divider">
+                <div class="divider-handle"></div>
+            </div>
+         
+            <div class="questions-container" id="questions-container">
+                <div class="question">
+                    <div class="question-rubric">
+                        <h3>Questions 27-32</h3>
+                        <p>Look at the following statements (Questions 27-32) and the list of people or groups below.</p>
+                        <p>Match each statement with the correct person or group, <strong>A, B, C, or D</strong>.</p>
+                        <p>Write the correct letter, <strong>A, B, C, or D</strong>.</p>
+                    </div>
+                 
+                    <div class="question-content">
+                        <div class="question-item">
+                            <p><strong>27</strong> The elderly would benefit from drug containers that do not require force to open them.</p>
+                            <ul class="question-options">
+                                <li class="mcq-option">
+                                    <input type="radio" name="q27" id="q27-a" value="A">
+                                    <label for="q27-a">A. Thea Swayne</label>
+                                </li>
+                                <li class="mcq-option">
+                                    <input type="radio" name="q27" id="q27-b" value="B">
+                                    <label for="q27-b">B. The Child Accident Prevention Trust</label>
+                                </li>
+                                <li class="mcq-option">
+                                    <input type="radio" name="q27" id="q27-c" value="C">
+                                    <label for="q27-c">C. Richard Mawle</label>
+                                </li>
+                                <li class="mcq-option">
+                                    <input type="radio" name="q27" id="q27-d" value="D">
+                                    <label for="q27-d">D. Karel van der Waarde</label>
+                                </li>
+                            </ul>
+                        </div>
+                     
+                        <div class="question-item">
+                            <p><strong>28</strong> Adapting packaging for the blind may disadvantage people who can see.</p>
+                            <ul class="question-options">
+                                <li class="mcq-option">
+                                    <input type="radio" name="q28" id="q28-a" value="A">
+                                    <label for="q28-a">A. Thea Swayne</label>
+                                </li>
+                                <li class="mcq-option">
+                                    <input type="radio" name="q28" id="q28-b" value="B">
+                                    <label for="q28-b">B. The Child Accident Prevention Trust</label>
+                                </li>
+                                <li class="mcq-option">
+                                    <input type="radio" name="q28" id="q28-c" value="C">
+                                    <label for="q28-c">C. Richard Mawle</label>
+                                </li>
+                                <li class="mcq-option">
+                                    <input type="radio" name="q28" id="q28-d" value="D">
+                                    <label for="q28-d">D. Karel van der Waarde</label>
+                                </li>
+                            </ul>
+                        </div>
+                     
+                        <div class="question-item">
+                            <p><strong>29</strong> Specially designed containers have not been able to eliminate drugs being swallowed accidentally.</p>
+                            <ul class="question-options">
+                                <li class="mcq-option">
+                                    <input type="radio" name="q29" id="q29-a" value="A">
+                                    <label for="q29-a">A. Thea Swayne</label>
+                                </li>
+                                <li class="mcq-option">
+                                    <input type="radio" name="q29" id="q29-b" value="B">
+                                    <label for="q29-b">B. The Child Accident Prevention Trust</label>
+                                </li>
+                                <li class="mcq-option">
+                                    <input type="radio" name="q29" id="q29-c" value="C">
+                                    <label for="q29-c">C. Richard Mawle</label>
+                                </li>
+                                <li class="mcq-option">
+                                    <input type="radio" name="q29" id="q29-d" value="D">
+                                    <label for="q29-d">D. Karel van der Waarde</label>
+                                </li>
+                            </ul>
+                        </div>
+                     
+                        <div class="question-item">
+                            <p><strong>30</strong> Designers have to consider how drugs are used in the home.</p>
+                            <ul class="question-options">
+                                <li class="mcq-option">
+                                    <input type="radio" name="q30" id="q30-a" value="A">
+                                    <label for="q30-a">A. Thea Swayne</label>
+                                </li>
+                                <li class="mcq-option">
+                                    <input type="radio" name="q30" id="q30-b" value="B">
+                                    <label for="q30-b">B. The Child Accident Prevention Trust</label>
+                                </li>
+                                <li class="mcq-option">
+                                    <input type="radio" name="q30" id="q30-c" value="C">
+                                    <label for="q30-c">C. Richard Mawle</label>
+                                </li>
+                                <li class="mcq-option">
+                                    <input type="radio" name="q30" id="q30-d" value="D">
+                                    <label for="q30-d">D. Karel van der Waarde</label>
+                                </li>
+                            </ul>
+                        </div>
+                     
+                        <div class="question-item">
+                            <p><strong>31</strong> The design of drug packaging is not properly monitored.</p>
+                            <ul class="question-options">
+                                <li class="mcq-option">
+                                    <input type="radio" name="q31" id="q31-a" value="A">
+                                    <label for="q31-a">A. Thea Swayne</label>
+                                </li>
+                                <li class="mcq-option">
+                                    <input type="radio" name="q31" id="q31-b" value="B">
+                                    <label for="q31-b">B. The Child Accident Prevention Trust</label>
+                                </li>
+                                <li class="mcq-option">
+                                    <input type="radio" name="q31" id="q31-c" value="C">
+                                    <label for="q31-c">C. Richard Mawle</label>
+                                </li>
+                                <li class="mcq-option">
+                                    <input type="radio" name="q31" id="q31-d" value="D">
+                                    <label for="q31-d">D. Karel van der Waarde</label>
+                                </li>
+                            </ul>
+                        </div>
+                     
+                        <div class="question-item">
+                            <p><strong>32</strong> The type of print on some drug packages has contributed to fatal incidents.</p>
+                            <ul class="question-options">
+                                <li class="mcq-option">
+                                    <input type="radio" name="q32" id="q32-a" value="A">
+                                    <label for="q32-a">A. Thea Swayne</label>
+                                </li>
+                                <li class="mcq-option">
+                                    <input type="radio" name="q32" id="q32-b" value="B">
+                                    <label for="q32-b">B. The Child Accident Prevention Trust</label>
+                                </li>
+                                <li class="mcq-option">
+                                    <input type="radio" name="q32" id="q32-c" value="C">
+                                    <label for="q32-c">C. Richard Mawle</label>
+                                </li>
+                                <li class="mcq-option">
+                                    <input type="radio" name="q32" id="q32-d" value="D">
+                                    <label for="q32-d">D. Karel van der Waarde</label>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+             
+                <div class="question">
+                    <div class="question-rubric">
+                        <h3>Questions 33-37</h3>
+                        <p>Complete the summary below.</p>
+                        <p>Choose <strong>ONE WORD ONLY</strong> from the passage for each answer.</p>
+                    </div>
+                 
+                    <div class="question-content">
+                        <div class="summary-completion-container">
+                            <div class="summary-text">
+                                <p>There are two main types of drugs: over-the-counter drugs and those that are <span class="summary-drop-zone" id="q33" data-answer="prescription-only"></span>. The design process for each type is different. For over-the-counter drugs, the <span class="summary-drop-zone" id="q34" data-answer="marketing"></span> team prepares a brief and external designers produce a number of designs. Some of these are tested on a <span class="summary-drop-zone" id="q35" data-answer="consumer"></span> group. For the other type of drug, the design is often created <span class="summary-drop-zone" id="q36" data-answer="in-house"></span> and there is no testing on a consumer group. The design is then passed on to design <span class="summary-drop-zone" id="q37" data-answer="engineers"></span>.</p>
+                            </div>
+                         
+                            <div class="summary-options-bank" id="summaryOptions">
+                                <div class="drag-item" draggable="true" data-value="prescription-only">prescription-only</div>
+                                <div class="drag-item" draggable="true" data-value="marketing">marketing</div>
+                                <div class="drag-item" draggable="true" data-value="consumer">consumer</div>
+                                <div class="drag-item" draggable="true" data-value="in-house">in-house</div>
+                                <div class="drag-item" draggable="true" data-value="engineers">engineers</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+             
+                <div class="question">
+                    <div class="question-rubric">
+                        <h3>Questions 38-40</h3>
+                        <p>Choose the correct letter, <strong>A, B, C, or D</strong>.</p>
+                    </div>
+                 
+                    <div class="question-content">
+                        <div class="question-item">
+                            <p><strong>38</strong> What is the writer doing in the text?</p>
+                            <ul class="question-options">
+                                <li class="mcq-option">
+                                    <input type="radio" name="q38" id="q38-a" value="A">
+                                    <label for="q38-a">A. describing how one research team is trying to improve drug packaging</label>
+                                </li>
+                                <li class="mcq-option">
+                                    <input type="radio" name="q38" id="q38-b" value="B">
+                                    <label for="q38-b">B. warning about the health risks of badly designed drug packaging</label>
+                                </li>
+                                <li class="mcq-option">
+                                    <input type="radio" name="q38" id="q38-c" value="C">
+                                    <label for="q38-c">C. explaining why the design of drug packaging is important</label>
+                                </li>
+                                <li class="mcq-option">
+                                    <input type="radio" name="q38" id="q38-d" value="D">
+                                    <label for="q38-d">D. suggesting that most drug packaging is of a very low standard</label>
+                                </li>
+                            </ul>
+                        </div>
+                     
+                        <div class="question-item">
+                            <p><strong>39</strong> What does the writer say about drug packaging trials?</p>
+                            <ul class="question-options">
+                                <li class="mcq-option">
+                                    <input type="radio" name="q39" id="q39-a" value="A">
+                                    <label for="q39-a">A. They do not produce clear results.</label>
+                                </li>
+                                <li class="mcq-option">
+                                    <input type="radio" name="q39" id="q39-b" value="B">
+                                    <label for="q39-b">B. They are not carried out frequently.</label>
+                                </li>
+                                <li class="mcq-option">
+                                    <input type="radio" name="q39" id="q39-c" value="C">
+                                    <label for="q39-c">C. They are not used as much as they could be.</label>
+                                </li>
+                                <li class="mcq-option">
+                                    <input type="radio" name="q39" id="q39-d" value="D">
+                                    <label for="q39-d">D. They do not always include the right user groups.</label>
+                                </li>
+                            </ul>
+                        </div>
+                     
+                        <div class="question-item">
+                            <p><strong>40</strong> What is the writer's overall conclusion about drug packaging design?</p>
+                            <ul class="question-options">
+                                <li class="mcq-option">
+                                    <input type="radio" name="q40" id="q40-a" value="A">
+                                    <label for="q40-a">A. Designers need more technical training.</label>
+                                </li>
+                                <li class="mcq-option">
+                                    <input type="radio" name="q40" id="q40-b" value="B">
+                                    <label for="q40-b">B. The best designs are already in use.</label>
+                                </li>
+                                <li class="mcq-option">
+                                    <input type="radio" name="q40" id="q40-c" value="C">
+                                    <label for="q40-c">C. It is impossible to satisfy all users.</label>
+                                </li>
+                                <li class="mcq-option">
+                                    <input type="radio" name="q40" id="q40-d" value="D">
+                                    <label for="q40-d">D. The industry should implement existing standards.</label>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+     
+        <footer class="footer">
+            <div class="nav-row">
+                <div class="footer__questionWrapper">
+                    <button class="footer__questionNo" id="prevQuestion">Previous</button>
+                    <div class="footer__subquestionWrapper" id="questionNumbers">
+                        <!-- Question numbers will be generated by JavaScript -->
+                    </div>
+                    <button class="footer__questionNo" id="nextQuestion">Next</button>
+                </div>
+                <button class="footer__deliverButton" id="submitButton">Submit</button>
+            </div>
+        </footer>
+    </div>
+ 
+    <div class="submission-modal" id="submissionModal">
+        <div class="submission-content">
+            <h2>Test Submission</h2>
+            <p>You are about to submit your test. Please review your answers below.</p>
+            <div class="time-spent" id="timeSpent">Time spent: 00:00</div>
+            <div class="score-display" id="scoreDisplay">
+                <div class="score-number">0<span class="score-total">/14</span></div>
+                <div class="band-score">Band: 0.0</div>
+                <div class="performance-rating excellent" id="performanceRating">Excellent</div>
+            </div>
+            <div class="answers-section">
+                <h3>Your Answers</h3>
+                <div id="answersList">
+                    <!-- Answers will be populated by JavaScript -->
+                </div>
+            </div>
+            <div class="answer-comparison" id="answerComparison">
+                <h3>Answer Comparison</h3>
+                <p id="comparisonText"></p>
+            </div>
+            <div class="submission-buttons">
+                <button class="confirm" id="confirmSubmission">Confirm Submission</button>
+            </div>
+        </div>
+    </div>
+ 
+    <script>
+        // Timer functionality
+        let startTime = new Date();
+        let timerInterval;
+        const testTimer = document.getElementById('testTimer');
+     
+        function updateTimer() {
+            const now = new Date();
+            const elapsed = new Date(now - startTime);
+            const minutes = elapsed.getMinutes().toString().padStart(2, '0');
+            const seconds = elapsed.getSeconds().toString().padStart(2, '0');
+            testTimer.textContent = `${minutes}:${seconds}`;
+            
+            // Add warning class when 15 minutes have passed
+            if (elapsed.getMinutes() >= 15) {
+                testTimer.classList.add('timer-warning');
+            }
+        }
+     
+        // Start the timer
+        timerInterval = setInterval(updateTimer, 1000);
+        updateTimer();
+     
+        // Settings modal functionality
+        const settingsButton = document.getElementById('settingsButton');
+        const settingsModal = document.getElementById('settingsModal');
+        const settingsClose = document.getElementById('settingsClose');
+     
+        settingsButton.addEventListener('click', () => {
+            settingsModal.style.display = 'flex';
+        });
+     
+        settingsClose.addEventListener('click', () => {
+            settingsModal.style.display = 'none';
+        });
+     
+        // Close modal when clicking outside
+        window.addEventListener('click', (event) => {
+            if (event.target === settingsModal) {
+                settingsModal.style.display = 'none';
+            }
+        });
+     
+        // Highlight functionality
+        const highlightToolbar = document.getElementById('highlightToolbar');
+        let currentSelection = null;
+        let currentHighlight = null;
+     
+        document.addEventListener('mouseup', (e) => {
+            const selection = window.getSelection();
+            if (!selection.toString().trim()) return;
+     
+            const range = selection.getRangeAt(0);
+            const rect = range.getBoundingClientRect();
+     
+            if (e.target.closest('#passage-container')) {
+                currentSelection = range;
+                highlightToolbar.style.display = 'block';
+                highlightToolbar.style.left = `${rect.left + rect.width / 2}px`;
+                highlightToolbar.style.top = `${rect.top - 10}px`;
+            }
+        });
+     
+        // Highlight color buttons
+        highlightToolbar.querySelectorAll('.highlight-color').forEach(button => {
+            button.addEventListener('click', () => {
+                if (!currentSelection) return;
+     
+                const color = button.getAttribute('data-color');
+                const span = document.createElement('span');
+                span.className = `highlight ${color}`;
+                span.textContent = currentSelection.toString();
+     
+                currentSelection.deleteContents();
+                currentSelection.insertNode(span);
+                currentSelection = null;
+                highlightToolbar.style.display = 'none';
+            });
+        });
+     
+        // Remove highlight button
+        highlightToolbar.querySelector('.remove').addEventListener('click', () => {
+            if (!currentSelection) return;
+     
+            const parent = currentSelection.startContainer.parentNode;
+            if (parent.classList.contains('highlight')) {
+                const text = document.createTextNode(parent.textContent);
+                parent.parentNode.replaceChild(text, parent);
+            }
+     
+            currentSelection = null;
+            highlightToolbar.style.display = 'none';
+        });
+     
+        // Resizable divider
+        const divider = document.getElementById('divider');
+        const passageContainer = document.getElementById('passage-container');
+        const questionsContainer = document.getElementById('questions-container');
+        let isResizing = false;
+     
+        divider.addEventListener('mousedown', (e) => {
+            isResizing = true;
+            document.body.style.cursor = 'col-resize';
+            e.preventDefault();
+        });
+     
+        document.addEventListener('mousemove', (e) => {
+            if (!isResizing) return;
+     
+            const containerRect = document.querySelector('.test-container').getBoundingClientRect();
+            const newWidth = ((e.clientX - containerRect.left) / containerRect.width) * 100;
+     
+            if (newWidth > 30 && newWidth < 70) {
+                passageContainer.style.width = `${newWidth}%`;
+                questionsContainer.style.flex = '1';
+            }
+        });
+     
+        document.addEventListener('mouseup', () => {
+            isResizing = false;
+            document.body.style.cursor = 'default';
+        });
+     
+        // Question navigation
+        const questionNumbers = document.getElementById('questionNumbers');
+        const prevButton = document.getElementById('prevQuestion');
+        const nextButton = document.getElementById('nextQuestion');
+        const submitButton = document.getElementById('submitButton');
+        const questions = document.querySelectorAll('.question');
+        let currentQuestionIndex = 0;
+     
+        // Generate question numbers
+        questions.forEach((_, index) => {
+            const number = document.createElement('div');
+            number.className = 'subQuestion';
+            number.textContent = index + 1;
+            number.addEventListener('click', () => {
+                showQuestion(index);
+            });
+            questionNumbers.appendChild(number);
+        });
+     
+        function showQuestion(index) {
+            questions.forEach(q => q.style.display = 'none');
+            questions[index].style.display = 'block';
+            currentQuestionIndex = index;
+     
+            // Update active question number
+            document.querySelectorAll('.subQuestion').forEach((q, i) => {
+                q.classList.toggle('active', i === index);
+            });
+     
+            // Update button states
+            prevButton.disabled = index === 0;
+            nextButton.disabled = index === questions.length - 1;
+        }
+     
+        prevButton.addEventListener('click', () => {
+            if (currentQuestionIndex > 0) {
+                showQuestion(currentQuestionIndex - 1);
+            }
+        });
+     
+        nextButton.addEventListener('click', () => {
+            if (currentQuestionIndex < questions.length - 1) {
+                showQuestion(currentQuestionIndex + 1);
+            }
+        });
+     
+        // Mark questions as attempted when answered
+        document.querySelectorAll('input[type="radio"]').forEach(input => {
+            input.addEventListener('change', () => {
+                const questionItem = input.closest('.question-item');
+                const questionIndex = Array.from(questions).indexOf(questionItem.closest('.question'));
+                document.querySelectorAll('.subQuestion')[questionIndex].classList.add('attempted');
+            });
+        });
+     
+        // Show first question initially
+        showQuestion(0);
+     
+        // Drag and drop functionality for summary completion
+        const dropZones = document.querySelectorAll('.summary-drop-zone');
+        const dragItems = document.querySelectorAll('.drag-item');
+        let draggedItem = null;
+     
+        // Add event listeners to draggable items
+        dragItems.forEach(item => {
+            item.addEventListener('dragstart', (e) => {
+                draggedItem = item;
+                item.classList.add('dragging');
+                e.dataTransfer.setData('text/plain', item.getAttribute('data-value'));
+            });
+     
+            item.addEventListener('dragend', () => {
+                item.classList.remove('dragging');
+                draggedItem = null;
+            });
+        });
+     
+        // Add event listeners to drop zones
+        dropZones.forEach(zone => {
+            zone.addEventListener('dragover', (e) => {
+                e.preventDefault();
+                zone.classList.add('drop-hover');
+            });
+     
+            zone.addEventListener('dragleave', () => {
+                zone.classList.remove('drop-hover');
+            });
+     
+            zone.addEventListener('drop', (e) => {
+                e.preventDefault();
+                zone.classList.remove('drop-hover');
+     
+                if (draggedItem) {
+                    const value = draggedItem.getAttribute('data-value');
+                    zone.textContent = value;
+                    zone.classList.add('filled');
+                    zone.setAttribute('data-filled', value);
+                }
+            });
+     
+            // Allow clicking to clear
+            zone.addEventListener('click', (e) => {
+                if (zone.classList.contains('filled')) {
+                    zone.textContent = '';
+                    zone.classList.remove('filled');
+                    zone.removeAttribute('data-filled');
+                }
+            });
+        });
+     
+        // Submission functionality
+        const submissionModal = document.getElementById('submissionModal');
+        const confirmSubmission = document.getElementById('confirmSubmission');
+        const timeSpent = document.getElementById('timeSpent');
+        const scoreDisplay = document.getElementById('scoreDisplay');
+        const performanceRating = document.getElementById('performanceRating');
+        const answersList = document.getElementById('answersList');
+        const answerComparison = document.getElementById('answerComparison');
+        const comparisonText = document.getElementById('comparisonText');
+     
+        submitButton.addEventListener('click', () => {
+            // Calculate time spent
+            const now = new Date();
+            const elapsed = new Date(now - startTime);
+            const minutes = elapsed.getMinutes().toString().padStart(2, '0');
+            const seconds = elapsed.getSeconds().toString().padStart(2, '0');
+            timeSpent.textContent = `Time spent: ${minutes}:${seconds}`;
+     
+            // Calculate score
+            const score = calculateScore();
+            const totalQuestions = 14;
+            const percentage = (score / totalQuestions) * 100;
+            const bandScore = calculateBandScore(percentage);
+     
+            // Update score display
+            scoreDisplay.querySelector('.score-number').innerHTML = `${score}<span class="score-total">/${totalQuestions}</span>`;
+            scoreDisplay.querySelector('.band-score').textContent = `Band: ${bandScore}`;
+     
+            // Update performance rating
+            updatePerformanceRating(percentage);
+     
+            // Populate answers list
+            populateAnswersList(score, totalQuestions);
+     
+            // Show modal
+            submissionModal.style.display = 'flex';
+        });
+     
+        confirmSubmission.addEventListener('click', () => {
+            // Stop the timer
+            clearInterval(timerInterval);
+     
+            // Show comparison
+            answerComparison.style.display = 'block';
+            comparisonText.textContent = "Your answers have been submitted successfully. You can now review your performance.";
+     
+            // Change button text
+            confirmSubmission.textContent = "Close";
+            confirmSubmission.onclick = () => {
+                submissionModal.style.display = 'none';
+            };
+        });
+     
+        function calculateScore() {
+            let score = 0;
+            const correctAnswers = {
+                'q27': 'C',
+                'q28': 'D',
+                'q29': 'B',
+                'q30': 'A',
+                'q31': 'D',
+                'q32': 'A',
+                'q33': 'prescription-only',
+                'q34': 'marketing',
+                'q35': 'consumer',
+                'q36': 'in-house',
+                'q37': 'engineers',
+                'q38': 'C',
+                'q39': 'B',
+                'q40': 'D'
+            };
+     
+            // Check multiple choice questions
+            for (let i = 27; i <= 32; i++) {
+                const selected = document.querySelector(`input[name="q${i}"]:checked`);
+                if (selected && selected.value === correctAnswers[`q${i}`]) {
+                    score++;
+                }
+            }
+     
+            // Check summary completion
+            for (let i = 33; i <= 37; i++) {
+                const dropZone = document.getElementById(`q${i}`);
+                if (dropZone.getAttribute('data-filled') === correctAnswers[`q${i}`]) {
+                    score++;
+                }
+            }
+     
+            // Check last multiple choice questions
+            for (let i = 38; i <= 40; i++) {
+                const selected = document.querySelector(`input[name="q${i}"]:checked`);
+                if (selected && selected.value === correctAnswers[`q${i}`]) {
+                    score++;
+                }
+            }
+     
+            return score;
+        }
+     
+        function calculateBandScore(percentage) {
+            if (percentage >= 90) return '9.0';
+            if (percentage >= 80) return '8.0';
+            if (percentage >= 70) return '7.0';
+            if (percentage >= 60) return '6.0';
+            if (percentage >= 50) return '5.0';
+            if (percentage >= 40) return '4.0';
+            if (percentage >= 30) return '3.0';
+            if (percentage >= 20) return '2.0';
+            return '1.0';
+        }
+     
+        function updatePerformanceRating(percentage) {
+            if (percentage >= 90) {
+                performanceRating.textContent = 'Excellent';
+                performanceRating.className = 'performance-rating excellent';
+            } else if (percentage >= 80) {
+                performanceRating.textContent = 'Very Good';
+                performanceRating.className = 'performance-rating very-good';
+            } else if (percentage >= 70) {
+                performanceRating.textContent = 'Good';
+                performanceRating.className = 'performance-rating good';
+            } else if (percentage >= 60) {
+                performanceRating.textContent = 'Fair';
+                performanceRating.className = 'performance-rating fair';
+            } else {
+                performanceRating.textContent = 'Poor';
+                performanceRating.className = 'performance-rating poor';
+            }
+        }
+     
+        function populateAnswersList(score, total) {
+            answersList.innerHTML = '';
+            const correctAnswers = {
+                'q27': 'C',
+                'q28': 'D',
+                'q29': 'B',
+                'q30': 'A',
+                'q31': 'D',
+                'q32': 'A',
+                'q33': 'prescription-only',
+                'q34': 'marketing',
+                'q35': 'consumer',
+                'q36': 'in-house',
+                'q37': 'engineers',
+                'q38': 'C',
+                'q39': 'B',
+                'q40': 'D'
+            };
+     
+            for (let i = 27; i <= 40; i++) {
+                const answerItem = document.createElement('div');
+                let userAnswer = '';
+                let isCorrect = false;
+     
+                if (i <= 32 || i >= 38) {
+                    // Multiple choice questions
+                    const selected = document.querySelector(`input[name="q${i}"]:checked`);
+                    userAnswer = selected ? selected.value : 'Not answered';
+                    isCorrect = userAnswer === correctAnswers[`q${i}`];
+                } else {
+                    // Summary completion questions
+                    const dropZone = document.getElementById(`q${i}`);
+                    userAnswer = dropZone.getAttribute('data-filled') || 'Not answered';
+                    isCorrect = userAnswer === correctAnswers[`q${i}`];
+                }
+     
+                answerItem.className = `answer-item ${isCorrect ? 'correct' : 'incorrect'}`;
+                answerItem.innerHTML = `
+                    <strong>Question ${i}:</strong> 
+                    <span class="answer-text">${userAnswer}</span>
+                    ${!isCorrect ? `<span class="correct-answer">Correct: ${correctAnswers[`q${i}`]}</span>` : ''}
+                    <span class="answer-status ${isCorrect ? 'correct-status' : 'incorrect-status'}">
+                        ${isCorrect ? '✓' : '✗'}
+                    </span>
+                `;
+                answersList.appendChild(answerItem);
+            }
+        }
+    </script>
+</body>
+</html>

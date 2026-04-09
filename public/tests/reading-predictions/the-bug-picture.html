@@ -1,0 +1,1162 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>IELTS Reading Test - The Bug Picture</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --day-bg: #f8f9fa;
+            --day-text: #212529;
+            --day-primary: #007bff;
+            --day-secondary: #6c757d;
+            --day-highlight-yellow: rgba(255, 255, 0, 0.3);
+            --day-highlight-blue: rgba(0, 123, 255, 0.3);
+            --day-panel: #ffffff;
+            --day-border: #dee2e6;
+            
+            --night-bg: #121212;
+            --night-text: #e0e0e0;
+            --night-primary: #bb86fc;
+            --night-secondary: #a0a0a0;
+            --night-highlight-yellow: rgba(255, 255, 0, 0.5);
+            --night-highlight-blue: rgba(30, 144, 255, 0.5);
+            --night-panel: #1e1e1e;
+            --night-border: #2d2d2d;
+            
+            --sepia-bg: #f4ecd8;
+            --sepia-text: #5a4a42;
+            --sepia-primary: #a67c52;
+            --sepia-secondary: #8a7866;
+            --sepia-highlight-yellow: rgba(204, 173, 108, 0.4);
+            --sepia-highlight-blue: rgba(118, 159, 203, 0.4);
+            --sepia-panel: #e6d9bc;
+            --sepia-border: #c4b5a3;
+            
+            --current-bg: var(--day-bg);
+            --current-text: var(--day-text);
+            --current-primary: var(--day-primary);
+            --current-secondary: var(--day-secondary);
+            --current-highlight-yellow: var(--day-highlight-yellow);
+            --current-highlight-blue: var(--day-highlight-blue);
+            --current-panel: var(--day-panel);
+            --current-border: var(--day-border);
+            
+            --transition-speed: 0.3s;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--current-bg);
+            color: var(--current-text);
+            margin: 0;
+            padding: 0;
+            transition: background-color var(--transition-speed), color var(--transition-speed);
+            line-height: 1.6;
+        }
+
+        .container {
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+
+        header {
+            background-color: var(--current-primary);
+            color: white;
+            padding: 1rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            position: relative;
+            z-index: 100;
+        }
+
+        .header-center {
+            position: absolute;
+            left: 50%;
+            transform: translateX(-50%);
+        }
+
+        .telegram-btn {
+            background-color: #0088cc;
+            color: white;
+            padding: 0.5rem 1rem;
+            border-radius: 50px;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-weight: bold;
+            transition: all 0.2s;
+        }
+
+        .telegram-btn:hover {
+            background-color: #006da3;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
+
+        .theme-selector {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .theme-btn {
+            background: var(--current-panel);
+            border: 1px solid var(--current-border);
+            border-radius: 50%;
+            width: 30px;
+            height: 30px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s;
+        }
+
+        .theme-btn:hover {
+            transform: scale(1.1);
+        }
+
+        .theme-day {
+            background: linear-gradient(135deg, #ffcc00 0%, #ffcc00 50%, #66ccff 50%, #66ccff 100%);
+        }
+
+        .theme-night {
+            background: linear-gradient(135deg, #2c3e50 0%, #2c3e50 50%, #34495e 50%, #34495e 100%);
+        }
+
+        .theme-sepia {
+            background: linear-gradient(135deg, #d2b48c 0%, #d2b48c 50%, #bc9a6a 50%, #bc9a6a 100%);
+        }
+
+        .timer {
+            background-color: var(--current-panel);
+            padding: 0.5rem 1rem;
+            border-radius: 50px;
+            font-weight: bold;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .timer.warning {
+            animation: pulse 1s infinite;
+            color: #dc3545;
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+
+        .content {
+            display: flex;
+            flex: 1;
+            overflow: hidden;
+        }
+
+        @media (max-width: 992px) {
+            .content {
+                flex-direction: column;
+            }
+        }
+
+        .passage-container {
+            flex: 1;
+            overflow-y: auto;
+            padding: 1.5rem;
+            border-right: 1px solid var(--current-border);
+        }
+
+        .questions-container {
+            flex: 1;
+            overflow-y: auto;
+            padding: 1.5rem;
+            background-color: var(--current-panel);
+        }
+
+        .passage {
+            max-width: 800px;
+            margin: 0 auto;
+            background-color: var(--current-panel);
+            padding: 2rem;
+            border-radius: 10px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+        }
+
+        .passage h2 {
+            color: var(--current-primary);
+            margin-top: 0;
+            border-bottom: 2px solid var(--current-primary);
+            padding-bottom: 0.5rem;
+        }
+
+        .passage p {
+            margin-bottom: 1rem;
+            position: relative;
+            z-index: 1;
+        }
+
+        .highlight-menu {
+            position: absolute;
+            background: var(--current-panel);
+            border: 1px solid var(--current-border);
+            border-radius: 6px;
+            padding: 0.5rem;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+            display: flex;
+            gap: 0.5rem;
+            z-index: 1000;
+        }
+
+        .highlight-btn {
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            border: none;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s;
+        }
+
+        .highlight-btn:hover {
+            transform: scale(1.1);
+        }
+
+        .yellow-btn {
+            background-color: #ffd700;
+        }
+
+        .blue-btn {
+            background-color: #87ceeb;
+        }
+
+        .clear-btn {
+            background-color: #f8f9fa;
+            border: 1px solid #dee2e6;
+        }
+
+        .highlight-yellow {
+            background-color: var(--current-highlight-yellow);
+            border-radius: 3px;
+            padding: 0 2px;
+        }
+
+        .highlight-blue {
+            background-color: var(--current-highlight-blue);
+            border-radius: 3px;
+            padding: 0 2px;
+        }
+
+        .question {
+            margin-bottom: 1.5rem;
+            padding: 1rem;
+            border-radius: 8px;
+            background-color: var(--current-bg);
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+        }
+
+        .question h3 {
+            margin-top: 0;
+            color: var(--current-primary);
+        }
+
+        .options {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+            margin-top: 0.5rem;
+        }
+
+        .option {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.5rem;
+            border-radius: 5px;
+            transition: background-color 0.2s;
+            cursor: pointer;
+        }
+
+        .option:hover {
+            background-color: rgba(0, 0, 0, 0.05);
+        }
+
+        .option input {
+            cursor: pointer;
+        }
+
+        .text-input {
+            padding: 0.5rem;
+            border: 1px solid var(--current-border);
+            border-radius: 4px;
+            background-color: var(--current-panel);
+            color: var(--current-text);
+            width: 200px;
+        }
+
+        .submit-btn {
+            background-color: var(--current-primary);
+            color: white;
+            border: none;
+            padding: 0.75rem 1.5rem;
+            border-radius: 50px;
+            font-size: 1.1rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: block;
+            margin: 2rem auto;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .submit-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+        }
+
+        .results {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: var(--current-bg);
+            color: var(--current-text);
+            padding: 2rem;
+            overflow-y: auto;
+            z-index: 1000;
+            display: none;
+        }
+
+        .results-content {
+            max-width: 800px;
+            margin: 0 auto;
+            background-color: var(--current-panel);
+            padding: 2rem;
+            border-radius: 10px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+        }
+
+        .results h2 {
+            color: var(--current-primary);
+            text-align: center;
+            margin-top: 0;
+        }
+
+        .score {
+            text-align: center;
+            font-size: 2rem;
+            margin: 1rem 0;
+            font-weight: bold;
+        }
+
+        .answer {
+            padding: 1rem;
+            margin: 1rem 0;
+            border-radius: 8px;
+            border-left: 4px solid var(--current-secondary);
+        }
+
+        .correct {
+            border-left-color: #28a745;
+            background-color: rgba(40, 167, 69, 0.1);
+        }
+
+        .incorrect {
+            border-left-color: #dc3545;
+            background-color: rgba(220, 53, 69, 0.1);
+        }
+
+        .close-results {
+            background-color: var(--current-primary);
+            color: white;
+            border: none;
+            padding: 0.75rem 1.5rem;
+            border-radius: 50px;
+            font-size: 1.1rem;
+            cursor: pointer;
+            display: block;
+            margin: 2rem auto 0;
+        }
+
+        .night-mode {
+            --current-bg: var(--night-bg);
+            --current-text: var(--night-text);
+            --current-primary: var(--night-primary);
+            --current-secondary: var(--night-secondary);
+            --current-highlight-yellow: var(--night-highlight-yellow);
+            --current-highlight-blue: var(--night-highlight-blue);
+            --current-panel: var(--night-panel);
+            --current-border: var(--night-border);
+        }
+
+        .sepia-mode {
+            --current-bg: var(--sepia-bg);
+            --current-text: var(--sepia-text);
+            --current-primary: var(--sepia-primary);
+            --current-secondary: var(--sepia-secondary);
+            --current-highlight-yellow: var(--sepia-highlight-yellow);
+            --current-highlight-blue: var(--sepia-highlight-blue);
+            --current-panel: var(--sepia-panel);
+            --current-border: var(--sepia-border);
+        }
+
+        .section-title {
+            font-weight: bold;
+            margin-top: 1.5rem;
+            margin-bottom: 0.5rem;
+            color: var(--current-primary);
+        }
+
+        .question-palette {
+            position: sticky;
+            top: 1rem;
+            background-color: var(--current-panel);
+            padding: 1rem;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            margin-bottom: 1.5rem;
+        }
+
+        .question-palette h3 {
+            margin-top: 0;
+            color: var(--current-primary);
+            text-align: center;
+            border-bottom: 1px solid var(--current-border);
+            padding-bottom: 0.5rem;
+        }
+
+        .question-buttons {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+            justify-content: center;
+            margin-top: 1rem;
+        }
+
+        .question-btn {
+            width: 35px;
+            height: 35px;
+            border-radius: 50%;
+            border: 1px solid var(--current-border);
+            background-color: var(--current-bg);
+            color: var(--current-text);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .question-btn.answered {
+            background-color: #28a745;
+            color: white;
+            border-color: #28a745;
+        }
+
+        .question-btn.current {
+            border: 2px solid var(--current-primary);
+            transform: scale(1.1);
+        }
+
+        .question-btn:hover {
+            transform: scale(1.1);
+        }
+
+        .yes-no-options {
+            display: flex;
+            gap: 1rem;
+            margin-top: 0.5rem;
+        }
+
+        .yes-no-option {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .matching-options {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+            margin-top: 1rem;
+        }
+
+        .matching-option {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.5rem;
+            border-radius: 5px;
+            transition: background-color 0.2s;
+            cursor: pointer;
+        }
+
+        .matching-option:hover {
+            background-color: rgba(0, 0, 0, 0.05);
+        }
+
+        .matching-option input {
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <div class="theme-selector">
+                <button class="theme-btn theme-day" title="Day Mode" onclick="setTheme('day')"><i class="fas fa-sun"></i></button>
+                <button class="theme-btn theme-night" title="Night Mode" onclick="setTheme('night')"><i class="fas fa-moon"></i></button>
+                <button class="theme-btn theme-sepia" title="Sepia Mode" onclick="setTheme('sepia')"><i class="fas fa-book"></i></button>
+            </div>
+            
+            <div class="header-center">
+                
+            </div>
+            
+            <div class="timer" id="timer">
+                <i class="fas fa-clock"></i> <span id="time">20:00</span>
+            </div>
+        </header>
+        
+        <div class="content">
+            <div class="passage-container">
+                <div class="passage" id="passage">
+                    <h2>The Bug Picture</h2>
+                    <p><i>Lara Zanarini gives her view on insects</i></p>
+                    
+                    <p>How many other species do we share our planet with? The truth is that scientists don't have the slightest idea. Some early guesses of 30 million or even 100 million have been replaced in the last few years with more reliable ones of somewhere between five to ten million species. But despite this massive uncertainty there is one thing which is indisputable: the vast majority of Earth's inhabitants are invertebrate – without a backbone – and most of those are insects.</p>
+                    
+                    <p>It is therefore not very surprising that these creatures have a pre-eminent impact on the functioning of global ecosystems. Creatures like us – and I don't just mean primates (such as apes and monkeys), but all vertebrates (back-boned animals) – make up less than three percent of all species.</p>
+                    
+                    <p>Yet it is these very animals that most people hold dear, especially those with a passing resemblance to ourselves. I use a slide in my lectures which has images of all sorts of insects along with one face-on image of a female slender loris, a wide-eyed furry primate, with a baby on its back. No prizes for guessing the first, and probably the only, thing audiences look at. It seems we can't help ourselves. Appealing they may be, but in the great ecological scheme of things, they are fairly useless. If you really want to understand the world around you – you need to take a serious look at insects.</p>
+                    
+                    <p>Pollination, the process by which flying insects transfer grains of pollen from one plant to another and so aid their reproduction, is perhaps one of the most essential partnerships ever to have evolved. This plant-insect version of 'I'll scratch your back if you scratch mine', has been around for 100 million years and it has given the world a rich diversity, and not just of flowering plants. Twenty thousand species of bee are responsible for the continued survival of the angiosperms, which includes a very long list of fruit and vegetables from pumpkins, plums and peas to cherries, cucumbers and cocoa.</p>
+                    
+                    <p>What about herbivory and carnivory – plant- and meat-eating? Ecology really doesn't get much more basic than this. The light energy from the sun is converted to chemical energy and the plants – the producers – that carry out this astonishing transformation are fed on by primary consumers – the herbivores. They in turn are eaten by secondary consumers – the carnivores. But it may come as a surprise to many that all the herds of grazing ungulates – cows, goats and sheep – are entirely 'out-munched', perhaps by a factor of ten to one, by myriads of tiny insects. What about the meat-eaters? Again, insects consume many times more animal flesh than all vertebrate carnivores put together, and ants alone are the major carnivorous species in any habitat you could mention.</p>
+                    
+                    <p>If this sounds implausible, consider that although insects are individually small, there are an awful lot of them – an estimated ten million, million, million (1019) with an impressively large biomass*. Insects are also the major food source for countless species. Many trillions of creatures a year are eaten by insect-eating species of birds, bats and a multitude of other furry and feathery animals. Space prevents me from extolling the role of insects in global decomposition and nutrient recycling.</p>
+                    
+                    <p>But there is a problem looming – the first effects of which we are already feeling. Almost every study that has been done to date points to a steady decline in insect species' richness and agriculture are taking their toll. The decreases seen in well-studied insect groups such as bees and butterflies are surely taking place in many other groups as well. At what point does the web of life become so frayed that it starts to disintegrate? We may find out sooner rather than later.</p>
+                    
+                    <p>It is thought that the world's tropical forests hold more than half of all extant species. If these complex habitats are being felled and degraded at even the slowest rate that has been suggested, it will still only be a matter of a few hundred years before they are lost. It is therefore an inescapable conclusion that our planet could lose more than half of all its living species in the time it takes for a tiny acorn to become a veteran oak tree.</p>
+                    
+                    <p>There's no doubt about it – we are the most intelligent and capable species yet to evolve on Earth. In a very short time after our appearance we covered the entire globe, establishing colonies wherever it was possible to survive. A few of us have walked on the surface of the Moon and visited the deepest abysses of the oceans. We spend vast sums of money to probe the very make-up of matter and remotely examine other parts of our solar system. We want to understand the science of everything from the infinitesimally small to the astronomically large. This truly is 'big' science and of course it's expensive. But do we have to do it right now? What about understanding the environment a bit better? Perhaps what we actually need is a bit more 'bug' science.</p>
+                    
+                    <p>* biomass: the total quantity or weight of organisms in a certain area</p>
+                </div>
+            </div>
+            
+            <div class="questions-container">
+                <div class="question-palette">
+                    <h3>Question Palette</h3>
+                    <div class="timer">
+                        <i class="fas fa-clock"></i> <span id="palette-time">20:00</span>
+                    </div>
+                    <div class="question-buttons">
+                        <div class="question-btn" data-question="27">27</div>
+                        <div class="question-btn" data-question="28">28</div>
+                        <div class="question-btn" data-question="29">29</div>
+                        <div class="question-btn" data-question="30">30</div>
+                        <div class="question-btn" data-question="31">31</div>
+                        <div class="question-btn" data-question="32">32</div>
+                        <div class="question-btn" data-question="33">33</div>
+                        <div class="question-btn" data-question="34">34</div>
+                        <div class="question-btn" data-question="35">35</div>
+                        <div class="question-btn" data-question="36">36</div>
+                        <div class="question-btn" data-question="37">37</div>
+                        <div class="question-btn" data-question="38">38</div>
+                        <div class="question-btn" data-question="39">39</div>
+                        <div class="question-btn" data-question="40">40</div>
+                    </div>
+                </div>
+                
+                <h2>Questions 27-40</h2>
+                
+                <div class="question" id="q27">
+                    <h3>Questions 27-31</h3>
+                    <p>In boxes 27-31 below, write</p>
+                    <p><strong>YES</strong> if the statement agrees with the views of the writer</p>
+                    <p><strong>NO</strong> if the statement contradicts the views of the writer</p>
+                    <p><strong>NOT GIVEN</strong> if it is impossible to say what the writer thinks about this</p>
+                    
+                    <div class="question">
+                        <p><strong>27</strong> Early guesses probably greatly over-estimated the total number of species on Earth.</p>
+                        <div class="yes-no-options">
+                            <div class="yes-no-option">
+                                <input type="radio" id="q27_yes" name="q27" value="YES">
+                                <label for="q27_yes">YES</label>
+                            </div>
+                            <div class="yes-no-option">
+                                <input type="radio" id="q27_no" name="q27" value="NO">
+                                <label for="q27_no">NO</label>
+                            </div>
+                            <div class="yes-no-option">
+                                <input type="radio" id="q27_ng" name="q27" value="NOT GIVEN">
+                                <label for="q27_ng">NOT GIVEN</label>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="question">
+                        <p><strong>28</strong> Primates play a significant role in the ecology of our planet.</p>
+                        <div class="yes-no-options">
+                            <div class="yes-no-option">
+                                <input type="radio" id="q28_yes" name="q28" value="YES">
+                                <label for="q28_yes">YES</label>
+                            </div>
+                            <div class="yes-no-option">
+                                <input type="radio" id="q28_no" name="q28" value="NO">
+                                <label for="q28_no">NO</label>
+                            </div>
+                            <div class="yes-no-option">
+                                <input type="radio" id="q28_ng" name="q28" value="NOT GIVEN">
+                                <label for="q28_ng">NOT GIVEN</label>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="question">
+                        <p><strong>29</strong> We still have a great deal to learn about the importance of pollination.</p>
+                        <div class="yes-no-options">
+                            <div class="yes-no-option">
+                                <input type="radio" id="q29_yes" name="q29" value="YES">
+                                <label for="q29_yes">YES</label>
+                            </div>
+                            <div class="yes-no-option">
+                                <input type="radio" id="q29_no" name="q29" value="NO">
+                                <label for="q29_no">NO</label>
+                            </div>
+                            <div class="yes-no-option">
+                                <input type="radio" id="q29_ng" name="q29" value="NOT GIVEN">
+                                <label for="q29_ng">NOT GIVEN</label>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="question">
+                        <p><strong>30</strong> Some people may be unaware that the world's insects consume more food overall than mammals.</p>
+                        <div class="yes-no-options">
+                            <div class="yes-no-option">
+                                <input type="radio" id="q30_yes" name="q30" value="YES">
+                                <label for="q30_yes">YES</label>
+                            </div>
+                            <div class="yes-no-option">
+                                <input type="radio" id="q30_no" name="q30" value="NO">
+                                <label for="q30_no">NO</label>
+                            </div>
+                            <div class="yes-no-option">
+                                <input type="radio" id="q30_ng" name="q30" value="NOT GIVEN">
+                                <label for="q30_ng">NOT GIVEN</label>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="question">
+                        <p><strong>31</strong> It will take a long time for us to learn the effects of habitat loss and extensive pesticide use.</p>
+                        <div class="yes-no-options">
+                            <div class="yes-no-option">
+                                <input type="radio" id="q31_yes" name="q31" value="YES">
+                                <label for="q31_yes">YES</label>
+                            </div>
+                            <div class="yes-no-option">
+                                <input type="radio" id="q31_no" name="q31" value="NO">
+                                <label for="q31_no">NO</label>
+                            </div>
+                            <div class="yes-no-option">
+                                <input type="radio" id="q31_ng" name="q31" value="NOT GIVEN">
+                                <label for="q31_ng">NOT GIVEN</label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="question" id="q32">
+                    <h3>Questions 32-36</h3>
+                    <p>Complete each sentence with the correct ending, A-F below.</p>
+                    <p>Write the correct letter, A-F, in boxes 32-36 below.</p>
+                    
+                    <div class="matching-options">
+                        <div class="matching-option">
+                            <input type="radio" id="q32_a" name="q32" value="A">
+                            <label for="q32_a"><strong>32</strong> Scientists have recently revised their views regarding</label>
+                        </div>
+                        <div class="matching-option">
+                            <input type="radio" id="q33_a" name="q33" value="A">
+                            <label for="q33_a"><strong>33</strong> There is absolutely no doubt about</label>
+                        </div>
+                        <div class="matching-option">
+                            <input type="radio" id="q34_a" name="q34" value="A">
+                            <label for="q34_a"><strong>34</strong> Almost every study done so far has indicated</label>
+                        </div>
+                        <div class="matching-option">
+                            <input type="radio" id="q35_a" name="q35" value="A">
+                            <label for="q35_a"><strong>35</strong> A lot of research on insect groups has focused on</label>
+                        </div>
+                        <div class="matching-option">
+                            <input type="radio" id="q36_a" name="q36" value="A">
+                            <label for="q36_a"><strong>36</strong> The rate at which tropical forests are being lost can help us calculate</label>
+                        </div>
+                    </div>
+                    
+                    <div class="options">
+                        <div class="option">
+                            <input type="radio" id="option_a" name="options" value="A">
+                            <label for="option_a">A a fall in the total number and variety of insects in the world.</label>
+                        </div>
+                        <div class="option">
+                            <input type="radio" id="option_b" name="options" value="B">
+                            <label for="option_b">B the number of plants that are pollinated by insects.</label>
+                        </div>
+                        <div class="option">
+                            <input type="radio" id="option_c" name="options" value="C">
+                            <label for="option_c">C how many different animal species are currently in existence.</label>
+                        </div>
+                        <div class="option">
+                            <input type="radio" id="option_d" name="options" value="D">
+                            <label for="option_d">D how long it will be before the Earth's biodiversity is drastically reduced.</label>
+                        </div>
+                        <div class="option">
+                            <input type="radio" id="option_e" name="options" value="E">
+                            <label for="option_e">E the predominance of invertebrates among the Earth's species.</label>
+                        </div>
+                        <div class="option">
+                            <input type="radio" id="option_f" name="options" value="F">
+                            <label for="option_f">F the declining numbers of bees and butterflies.</label>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="question" id="q37">
+                    <h3>Questions 37-40</h3>
+                    <p>Choose the correct letter, A, B, C or D.</p>
+                    
+                    <div class="question">
+                        <p><strong>37</strong> In the third paragraph, the writer refers to a particular slide to emphasise</p>
+                        <div class="options">
+                            <div class="option">
+                                <input type="radio" id="q37_a" name="q37" value="A">
+                                <label for="q37_a">A the predominance of insects in the world.</label>
+                            </div>
+                            <div class="option">
+                                <input type="radio" id="q37_b" name="q37" value="B">
+                                <label for="q37_b">B a common misunderstanding about global biodiversity.</label>
+                            </div>
+                            <div class="option">
+                                <input type="radio" id="q37_c" name="q37" value="C">
+                                <label for="q37_c">C our instinctive reaction towards certain types of animals.</label>
+                            </div>
+                            <div class="option">
+                                <input type="radio" id="q37_d" name="q37" value="D">
+                                <label for="q37_d">D the main distinction between vertebrates and invertebrates.</label>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="question">
+                        <p><strong>38</strong> What does 'they' in the third paragraph refer to?</p>
+                        <div class="options">
+                            <div class="option">
+                                <input type="radio" id="q38_a" name="q38" value="A">
+                                <label for="q38_a">A lectures about animals given by the writer</label>
+                            </div>
+                            <div class="option">
+                                <input type="radio" id="q38_b" name="q38" value="B">
+                                <label for="q38_b">B audiences who attend events focused on insect life</label>
+                            </div>
+                            <div class="option">
+                                <input type="radio" id="q38_c" name="q38" value="C">
+                                <label for="q38_c">C images which depict various different types of species</label>
+                            </div>
+                            <div class="option">
+                                <input type="radio" id="q38_d" name="q38" value="D">
+                                <label for="q38_d">D creatures which appear comparatively similar to humans</label>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="question">
+                        <p><strong>39</strong> What does the writer imply about 'big' science in the final paragraph?</p>
+                        <div class="options">
+                            <div class="option">
+                                <input type="radio" id="q39_a" name="q39" value="A">
+                                <label for="q39_a">A It should not be our priority at the moment.</label>
+                            </div>
+                            <div class="option">
+                                <input type="radio" id="q39_b" name="q39" value="B">
+                                <label for="q39_b">B It serves no useful purpose in the long term.</label>
+                            </div>
+                            <div class="option">
+                                <input type="radio" id="q39_c" name="q39" value="C">
+                                <label for="q39_c">C It will cost an unreasonable amount in the future.</label>
+                            </div>
+                            <div class="option">
+                                <input type="radio" id="q39_d" name="q39" value="D">
+                                <label for="q39_d">D It results from our natural curiosity about the world.</label>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="question">
+                        <p><strong>40</strong> What point does the writer make overall about insects?</p>
+                        <div class="options">
+                            <div class="option">
+                                <input type="radio" id="q40_a" name="q40" value="A">
+                                <label for="q40_a">A Certain insect species are more at risk than others.</label>
+                            </div>
+                            <div class="option">
+                                <input type="radio" id="q40_b" name="q40" value="B">
+                                <label for="q40_b">B Insects are more important than many people realise.</label>
+                            </div>
+                            <div class="option">
+                                <input type="radio" id="q40_c" name="q40" value="C">
+                                <label for="q40_c">C There is an interdependence between different insect species.</label>
+                            </div>
+                            <div class="option">
+                                <input type="radio" id="q40_d" name="q40" value="D">
+                                <label for="q40_d">D The ecological role of insects is likely to change in the near future.</label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <button class="submit-btn" onclick="submitAnswers()">Submit Answers</button>
+            </div>
+        </div>
+    </div>
+    
+    <div class="results" id="results">
+        <div class="results-content">
+            <h2>Test Results</h2>
+            <div class="score" id="score"></div>
+            
+            <div id="answers">
+                <!-- Results will be inserted here -->
+            </div>
+            
+            <button class="close-results" onclick="closeResults()">Close Results</button>
+        </div>
+    </div>
+    
+    <script>
+        // Theme switching
+        function setTheme(theme) {
+            document.body.classList.remove('night-mode', 'sepia-mode');
+            
+            if (theme === 'night') {
+                document.body.classList.add('night-mode');
+            } else if (theme === 'sepia') {
+                document.body.classList.add('sepia-mode');
+            }
+            
+            // Save theme preference
+            localStorage.setItem('theme', theme);
+        }
+        
+        // Load saved theme
+        const savedTheme = localStorage.getItem('theme');
+        if (savedTheme) {
+            setTheme(savedTheme);
+        }
+        
+        // Timer functionality
+        let timeLeft = 20 * 60; // 20 minutes in seconds
+        const timerElement = document.getElementById('timer');
+        const timeDisplay = document.getElementById('time');
+        const paletteTimeDisplay = document.getElementById('palette-time');
+        
+        function updateTimer() {
+            const minutes = Math.floor(timeLeft / 60);
+            const seconds = timeLeft % 60;
+            
+            timeDisplay.textContent = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+            paletteTimeDisplay.textContent = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+            
+            if (timeLeft === 5 * 60) {
+                timerElement.classList.add('warning');
+            }
+            
+            if (timeLeft <= 0) {
+                clearInterval(timerInterval);
+                submitAnswers();
+            } else {
+                timeLeft--;
+            }
+        }
+        
+        const timerInterval = setInterval(updateTimer, 1000);
+        
+        // Text highlighting
+        let highlightMenu = null;
+        let lastSelection = null;
+        
+        function createHighlightMenu() {
+            if (highlightMenu) {
+                document.body.removeChild(highlightMenu);
+            }
+            
+            highlightMenu = document.createElement('div');
+            highlightMenu.className = 'highlight-menu';
+            highlightMenu.style.display = 'none';
+            
+            const yellowBtn = document.createElement('button');
+            yellowBtn.className = 'highlight-btn yellow-btn';
+            yellowBtn.innerHTML = '<i class="fas fa-highlighter"></i>';
+            yellowBtn.title = 'Yellow Highlight';
+            yellowBtn.onclick = () => applyHighlight('yellow');
+            
+            const blueBtn = document.createElement('button');
+            blueBtn.className = 'highlight-btn blue-btn';
+            blueBtn.innerHTML = '<i class="fas fa-highlighter"></i>';
+            blueBtn.title = 'Blue Highlight';
+            blueBtn.onclick = () => applyHighlight('blue');
+            
+            const clearBtn = document.createElement('button');
+            clearBtn.className = 'highlight-btn clear-btn';
+            clearBtn.innerHTML = '<i class="fas fa-eraser"></i>';
+            clearBtn.title = 'Clear Highlight';
+            clearBtn.onclick = clearHighlight;
+            
+            highlightMenu.appendChild(yellowBtn);
+            highlightMenu.appendChild(blueBtn);
+            highlightMenu.appendChild(clearBtn);
+            
+            document.body.appendChild(highlightMenu);
+            
+            return highlightMenu;
+        }
+        
+        function getSelectedText() {
+            if (window.getSelection) {
+                return window.getSelection();
+            } else if (document.selection) {
+                return document.selection.createRange();
+            }
+            return null;
+        }
+        
+        function showHighlightMenu(x, y) {
+            if (!highlightMenu) {
+                highlightMenu = createHighlightMenu();
+            }
+            
+            highlightMenu.style.display = 'flex';
+            highlightMenu.style.top = (y - highlightMenu.offsetHeight - 10) + 'px';
+            highlightMenu.style.left = (x - highlightMenu.offsetWidth / 2) + 'px';
+        }
+        
+        function hideHighlightMenu() {
+            if (highlightMenu) {
+                highlightMenu.style.display = 'none';
+            }
+        }
+        
+        function applyHighlight(color) {
+            if (!lastSelection) return;
+            
+            const range = lastSelection.getRangeAt(0);
+            const selectedText = range.toString();
+            if (!selectedText.trim()) return;
+            
+            const span = document.createElement('span');
+            span.className = `highlight-${color}`;
+            
+            try {
+                span.appendChild(range.extractContents());
+                range.insertNode(span);
+            } catch (e) {
+                console.error("Error applying highlight:", e);
+            }
+            
+            // Clear selection
+            if (window.getSelection) {
+                window.getSelection().removeAllRanges();
+            }
+            
+            hideHighlightMenu();
+            lastSelection = null;
+        }
+        
+        function clearHighlight() {
+            if (!lastSelection) return;
+            
+            const range = lastSelection.getRangeAt(0);
+            let node = range.startContainer;
+            
+            // Traverse up to find highlight element
+            while (node !== document && node !== null) {
+                if (node.nodeType === Node.ELEMENT_NODE) {
+                    if (node.classList.contains('highlight-yellow') || node.classList.contains('highlight-blue')) {
+                        // Replace with text node
+                        const text = document.createTextNode(node.textContent);
+                        node.parentNode.replaceChild(text, node);
+                        break;
+                    }
+                }
+                node = node.parentNode;
+            }
+            
+            // Clear selection
+            if (window.getSelection) {
+                window.getSelection().removeAllRanges();
+            }
+            
+            hideHighlightMenu();
+            lastSelection = null;
+        }
+        
+        document.addEventListener('mouseup', (e) => {
+            const selection = getSelectedText();
+            if (!selection || selection.toString().trim() === '') {
+                hideHighlightMenu();
+                return;
+            }
+            
+            lastSelection = selection;
+            showHighlightMenu(e.pageX, e.pageY);
+        });
+        
+        document.addEventListener('mousedown', (e) => {
+            if (highlightMenu && !highlightMenu.contains(e.target)) {
+                hideHighlightMenu();
+            }
+        });
+        
+        // Question navigation
+        const questionButtons = document.querySelectorAll('.question-btn');
+        questionButtons.forEach(btn => {
+            btn.addEventListener('click', () => {
+                const questionId = btn.getAttribute('data-question');
+                const questionElement = document.getElementById(`q${questionId}`);
+                if (questionElement) {
+                    questionElement.scrollIntoView({ behavior: 'smooth' });
+                    
+                    // Update current question indicator
+                    questionButtons.forEach(b => b.classList.remove('current'));
+                    btn.classList.add('current');
+                }
+            });
+        });
+        
+        // Mark questions as answered when interacted with
+        const inputs = document.querySelectorAll('input');
+        inputs.forEach(input => {
+            input.addEventListener('change', () => {
+                // Find which question this input belongs to
+                let questionId = null;
+                if (input.name.includes('q27') || input.name.includes('q28') || 
+                    input.name.includes('q29') || input.name.includes('q30') || 
+                    input.name.includes('q31')) {
+                    questionId = input.name.replace('q', '');
+                } else if (input.name.includes('q32') || input.name.includes('q33') || 
+                          input.name.includes('q34') || input.name.includes('q35') || 
+                          input.name.includes('q36')) {
+                    questionId = input.name.replace('q', '');
+                } else if (input.name.includes('q37') || input.name.includes('q38') || 
+                          input.name.includes('q39') || input.name.includes('q40')) {
+                    questionId = input.name.replace('q', '');
+                }
+                
+                if (questionId) {
+                    const questionBtn = document.querySelector(`.question-btn[data-question="${questionId}"]`);
+                    if (questionBtn && input.value !== '') {
+                        questionBtn.classList.add('answered');
+                    }
+                }
+            });
+        });
+        
+        // Answer submission and scoring
+        const correctAnswers = {
+            q27: 'YES',
+            q28: 'NO',
+            q29: 'NOT GIVEN',
+            q30: 'YES',
+            q31: 'NO',
+            q32: 'C',
+            q33: 'E',
+            q34: 'A',
+            q35: 'F',
+            q36: 'D',
+            q37: 'C',
+            q38: 'D',
+            q39: 'A',
+            q40: 'B'
+        };
+        
+        const answerLocations = {
+            q27: "Paragraph 1: 'Some early guesses of 30 million or even 100 million have been replaced in the last few years with more reliable ones of somewhere between five to ten million species'",
+            q28: "Paragraph 3: 'Appealing they may be, but in the great ecological scheme of things, they are fairly useless'",
+            q29: "Paragraph 4: No information about how much we still need to learn",
+            q30: "Paragraph 5: 'it may come as a surprise to many that all the herds of grazing ungulates... are entirely out-munched... by myriads of tiny insects'",
+            q31: "Paragraph 7: 'We may find out sooner rather than later' (contradicts 'long time')",
+            q32: "Paragraph 1: 'Some early guesses... have been replaced... with more reliable ones'",
+            q33: "Paragraph 1: 'there is one thing which is indisputable: the vast majority of Earth's inhabitants are invertebrate'",
+            q34: "Paragraph 7: 'Almost every study that has been done to date points to a steady decline in insect species' richness'",
+            q35: "Paragraph 7: 'The decreases seen in well-studied insect groups such as bees and butterflies'",
+            q36: "Paragraph 8: 'The rate at which tropical forests are being lost... It is therefore an inescapable conclusion that our planet could lose more than half of all its living species'",
+            q37: "Paragraph 3: 'No prizes for guessing the first, and probably the only, thing audiences look at. It seems we can't help ourselves'",
+            q38: "Paragraph 3: 'creatures which appear comparatively similar to humans' (referring to vertebrates)",
+            q39: "Final paragraph: 'But do we have to do it right now? What about understanding the environment a bit better?'",
+            q40: "Throughout the text: The writer emphasizes the ecological importance of insects compared to vertebrates"
+        };
+        
+        function submitAnswers() {
+            clearInterval(timerInterval);
+            
+            let score = 0;
+            const totalQuestions = Object.keys(correctAnswers).length;
+            const answersContainer = document.getElementById('answers');
+            answersContainer.innerHTML = '';
+            
+            for (const question in correctAnswers) {
+                let userAnswer = '';
+                
+                if (question === 'q27' || question === 'q28' || question === 'q29' || 
+                    question === 'q30' || question === 'q31') {
+                    const selectedOption = document.querySelector(`input[name="${question}"]:checked`);
+                    userAnswer = selectedOption ? selectedOption.value : '';
+                } else if (question === 'q32' || question === 'q33' || question === 'q34' || 
+                          question === 'q35' || question === 'q36') {
+                    const selectedOption = document.querySelector(`input[name="${question}"]:checked`);
+                    userAnswer = selectedOption ? selectedOption.value : '';
+                } else {
+                    const selectedOption = document.querySelector(`input[name="${question}"]:checked`);
+                    userAnswer = selectedOption ? selectedOption.value : '';
+                }
+                
+                const isCorrect = userAnswer === correctAnswers[question];
+                if (isCorrect) score++;
+                
+                const answerDiv = document.createElement('div');
+                answerDiv.className = `answer ${isCorrect ? 'correct' : 'incorrect'}`;
+                
+                answerDiv.innerHTML = `
+                    <p><strong>Question ${question.toUpperCase()}:</strong> ${isCorrect ? 'Correct' : 'Incorrect'}</p>
+                    <p>Your answer: ${userAnswer || 'Not answered'}</p>
+                    <p>Correct answer: ${correctAnswers[question]}</p>
+                    <p>Location in text: ${answerLocations[question]}</p>
+                `;
+                
+                answersContainer.appendChild(answerDiv);
+            }
+            
+            document.getElementById('score').textContent = `Score: ${score}/${totalQuestions}`;
+            document.getElementById('results').style.display = 'block';
+        }
+        
+        function closeResults() {
+            document.getElementById('results').style.display = 'none';
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,770 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>IELTS Reading Simulation - Passage 2</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+            background: white;
+        }
+        .container {
+            display: flex;
+            flex: 1;
+            overflow: hidden;
+        }
+        .passage-panel {
+            flex: 1;
+            overflow-y: auto;
+            padding: 20px;
+            border-right: 1px solid #ccc;
+            min-width: 200px;
+        }
+        .questions-panel {
+            flex: 1;
+            overflow-y: auto;
+            padding: 20px;
+            min-width: 200px;
+        }
+        .resizer {
+            width: 5px;
+            background: #ccc;
+            cursor: col-resize;
+        }
+        .drop-zone {
+            display: block;
+            width: 100%;
+            max-width: 400px;
+            min-height: 40px;
+            border: 2px dashed #666;
+            text-align: left;
+            padding: 8px;
+            margin-bottom: 10px;
+            cursor: pointer;
+            border-radius: 4px;
+            font-weight: bold;
+            font-size: 14px;
+            background: #f9f9f9;
+            line-height: 1.2;
+            word-wrap: break-word;
+        }
+        .drop-zone.filled {
+            border: 2px solid #4CAF50;
+            background: #e8f5e8;
+        }
+        .drop-zone.correct {
+            background: #d4edda;
+            border-color: #28a745;
+            color: #155724;
+        }
+        .drop-zone.incorrect {
+            background: #f8d7da;
+            border-color: #dc3545;
+            color: #721c24;
+        }
+        .headings-bank ul {
+            list-style: none;
+            padding: 0;
+        }
+        .headings-bank li {
+            padding: 5px;
+            margin: 5px 0;
+            border: 1px solid #ddd;
+            cursor: grab;
+        }
+        .paragraph {
+            margin-bottom: 20px;
+        }
+        .paragraph-content {
+            margin-top: 5px;
+        }
+        .highlight {
+            background: #ffff00;
+        }
+        .comment-highlight {
+            background: #ffff00;
+            position: relative;
+        }
+        .comment-highlight:hover::after {
+            content: attr(title);
+            position: absolute;
+            background: #fff;
+            border: 1px solid #000;
+            padding: 5px;
+            z-index: 10;
+        }
+        .highlight-toolbar {
+            position: fixed;
+            background: #fff;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            padding: 5px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+            display: none;
+            z-index: 1000;
+        }
+        .highlight-toolbar button {
+            margin: 2px;
+            padding: 5px 10px;
+            border: none;
+            border-radius: 3px;
+            cursor: pointer;
+            background: #f0f0f0;
+        }
+        .highlight-toolbar button:hover {
+            background: #e0e0e0;
+        }
+        .nav-bar {
+            background: #f0f0f0;
+            padding: 10px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .nav-bar button {
+            margin: 0 2px;
+            padding: 5px;
+        }
+        .nav-bar button.active {
+            background: yellow;
+        }
+        .nav-arrows {
+            position: fixed;
+            bottom: 50px;
+            right: 20px;
+            display: flex;
+            flex-direction: column;
+        }
+        .nav-arrows button {
+            margin: 5px 0;
+            padding: 10px;
+        }
+        #part-2-explanation {
+            margin-top: 20px;
+            border: 1px solid #ccc;
+            padding: 10px;
+        }
+        .question {
+            margin-bottom: 10px;
+        }
+        .question.active {
+            background: #ffffcc;
+        }
+        select, input[type="text"] {
+            padding: 5px;
+            margin-left: 10px;
+        }
+        .correct-input {
+            border: 2px solid green;
+        }
+        .incorrect-input {
+            border: 2px solid red;
+        }
+        .top-bar {
+            background: #2c3e50;
+            color: white;
+            padding: 10px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-weight: bold;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .stopwatch {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .stopwatch-display {
+            font-size: 18px;
+            font-family: 'Courier New', monospace;
+            background: #34495e;
+            padding: 5px 15px;
+            border-radius: 5px;
+        }
+        .stopwatch-controls button {
+            background: #3498db;
+            color: white;
+            border: none;
+            padding: 5px 10px;
+            border-radius: 3px;
+            cursor: pointer;
+            margin: 0 2px;
+        }
+        .stopwatch-controls button:hover {
+            background: #2980b9;
+        }
+        .stopwatch-controls button.reset {
+            background: #e74c3c;
+        }
+        .stopwatch-controls button.reset:hover {
+            background: #c0392b;
+        }
+        .telegram-link {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            text-decoration: none;
+            color: white;
+            background: #0088cc;
+            padding: 8px 15px;
+            border-radius: 20px;
+            transition: background 0.3s;
+        }
+        .telegram-link:hover {
+            background: #006ba3;
+            color: white;
+        }
+    </style>
+</head>
+<body>
+    <div class="top-bar">
+        <div class="stopwatch">
+            <span>Timer:</span>
+            <div class="stopwatch-display" id="stopwatch">00:00:00</div>
+            <div class="stopwatch-controls">
+                <button id="start-btn">Start</button>
+                <button id="pause-btn">Pause</button>
+                <button id="reset-btn" class="reset">Reset</button>
+            </div>
+        </div>
+        
+    </div>
+    <div class="container">
+        <div class="passage-panel">
+            <div class="passage">
+                <h1>READING PASSAGE 2</h1>
+                <p>You should spend about 20 minutes on Questions 14-26, which are based on Reading passage 2 on pages 7 and 8.</p>
+                <h2 style="text-align: center; margin: 20px 0;">The attraction of video games</h2>
+                <p style="text-align: center; font-style: italic; margin-bottom: 30px;">The world's love of video games has much to do with people's desires and motives</p>
+                <div class="paragraph" id="para14">
+                    <div class="drop-zone" data-qnum="14">14</div>
+                    <div class="paragraph-content">
+                        <strong>A</strong> Video games, it is often claimed, are about wasting time. It is a misunderstanding that players and game makers have been trying to correct for many years. While movies and television are endlessly analysed in the media, games are often dismissed as irresponsible, unimportant by-products of the broader digital revolution. But a growing number of experts disagree. This is, after all, an entertainment medium that worldwide makes $50b a year. Using ideas from psychology and sociology, theorists and designers suggest that our love of video games may actually have important things to tell us about our most basic desires and motivations. Game design has become big business and has led to the creation of a multitude of companies. 'The industry attitude toward training has changed radically, says prominent game researcher Jesper Juul. 'I recall hearing professionals claim that game design was a strange and unteachable art. but now this attitude has mostly faded.' Designing video games is increasingly recognised as a valid field of university study throughout the world.
+                    </div>
+                </div>
+                <div class="paragraph" id="para15">
+                    <div class="drop-zone" data-qnum="15">15</div>
+                    <div class="paragraph-content">
+                        <strong>B</strong> Central to an understanding of games is the theory that games are fun because they teach us in a way that our brains prefer, that is, through systems and puzzles. Raph Koster, designer of multiplayer fantasy games, points out that an effective learning environment is one in which failure is acceptable, even welcomed. Accordingly, Koster says that in games, the player enters into a situation where the rules of the real world don't apply - and typically being judged on success and failure is part of the real world. When gaming, people feel free to try things and to learn, and not worry about what might happen. Consistently, Koster says, the best games are the ones that provide us with interesting tools such as weapons or magic, and allow us to experiment with them. For example, in one early game, players are given the ability to jump, and can practise this for as long as they like, but to get to the next stage they need to master this ability so they can leap over an enemy and onto a platform. 'Games allow us to create these little systems where learning is controlled really brilliantly,' says Margaret Robertson, director at a London-based game design company. 'Something we don't talk about is that, actually, one of the strengths of games is the vague sense of disapproval that still surrounds them - they feel like something that's forbidden!' And that can, of course, be very exciting.
+                    </div>
+                </div>
+                <div class="paragraph" id="para16">
+                    <div class="drop-zone" data-qnum="16">16</div>
+                    <div class="paragraph-content">
+                        <strong>C</strong> Another important element in the popularity of games is the player's ability to determine what happens. Games tap into our need to have direction; this is very obvious in games where we shape the lives of virtual humans, but it's becoming a vital element of action adventures too. 'Games are increasingly complex systems,' says Dan Pinchbeck, an experimental game designer. 'There's an emphasis on the pleasure of choosing and planning. We've moved quite dramatically away from the very first video games. These games mostly involved the player merely reacting to events. But games then became more about approaching a situation and making a plan depending on your preferred play style.'
+                    </div>
+                </div>
+                <div class="paragraph" id="para17">
+                    <div class="drop-zone" data-qnum="17">17</div>
+                    <div class="paragraph-content">
+                        <strong>D</strong> Many studios design their games around reward systems. 'A good game will have progression at the end of each level, but it will also provide surprise rewards halfway through, says Ben Weedon, a games studio consultant. In a game, you're essentially pressing the same buttons and doing the same things over and over again, so you need those occasional surprises to stay motivated.'
+                    </div>
+                </div>
+                <div class="paragraph" id="para18">
+                    <div class="drop-zone" data-qnum="18">18</div>
+                    <div class="paragraph-content">
+                        <strong>E</strong> Games have constantly evolved over the years and continue to do so right up to the present. Now, incorporating a narrative structure into a game is becoming increasingly important. Many games have adopted Hollywood's three-act structure, which is designed to maintain our loyalty to a particular game. As in many films, a short final act is often used to give a sense of acceleration towards a preferably startling climax. Opening levels of games are also short, because this flatters us into thinking we're making good progress, whereas the middle levels are more extensive.
+                    </div>
+                </div>
+                <div class="paragraph" id="para19">
+                    <div class="drop-zone" data-qnum="19">19</div>
+                    <div class="paragraph-content">
+                        <strong>F</strong> Games even tap into our friendships. The rise of multiplayer gaming means that gaming increasingly involves social interaction. And other businesses are taking notice and using this as an element in advertising their brands. Then there's the new concept of 'gamification', in which websites and smartphone apps are being designed like games, with high scores and achievement points to keep customers entertained. Research estimates that businesses spent more than $100m worldwide on gamification projects last year, a figure predicted to rise to $1.6b in the next four years. So, in fact, games aren't just an insignificant fad, as some people might suggest. They fulfil intrinsic human needs, whether we are conscious of it or not. The loop of learning control and rewards is at the heart of something very important, and very attractive.
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="resizer"></div>
+        <div class="questions-panel">
+            <div class="questions">
+                <h2>Questions 14-19</h2>
+                <p>Reading Passage 2 has six sections, <strong>A-F</strong>.</p>
+                <p>Choose the correct heading for each section from the list of headings below.</p>
+                <p>Write the correct number, <strong>i-vii</strong>, in boxes <strong>14-19</strong> on your answer sheet.</p>
+                <div class="headings-bank">
+                    <h3>List of Headings</h3>
+                    <ul>
+                        <li draggable="true" data-heading="i">i Being able to experiment without consequences</li>
+                        <li draggable="true" data-heading="ii">ii Why stories are included in games</li>
+                        <li draggable="true" data-heading="iii">iii The key role of the unexpected for game players</li>
+                        <li draggable="true" data-heading="iv">iv Transferring features of games to other types of products</li>
+                        <li draggable="true" data-heading="v">v The age group that games most appeal to</li>
+                        <li draggable="true" data-heading="vi">vi The video game design industry</li>
+                        <li draggable="true" data-heading="vii">vii Players' ability to control what occurs in games</li>
+                    </ul>
+                </div>
+                <h2>Questions 20-23</h2>
+                <p>Look at the following statements (Questions <strong>20-23</strong>) and the list of experts below.</p>
+                <p>Match each statement with the correct expert, <strong>A-E</strong>.</p>
+                <p>Write the correct letter, <strong>A-E</strong>, in boxes <strong>20-23</strong> on your answer sheet.</p>
+                <p><strong>NB</strong> You may use any letter more than once.</p>
+                <div class="question" id="q20">
+                    <strong>20</strong> Players' involvement in games often includes thinking ahead. <select><option value="">--</option><option value="A">A</option><option value="B">B</option><option value="C">C</option><option value="D">D</option><option value="E">E</option></select>
+                </div>
+                <div class="question" id="q21">
+                    <strong>21</strong> The inclusion of unanticipated elements keeps players interested. <select><option value="">--</option><option value="A">A</option><option value="B">B</option><option value="C">C</option><option value="D">D</option><option value="E">E</option></select>
+                </div>
+                <div class="question" id="q22">
+                    <strong>22</strong> It's now accepted that creating video games is a skill that can be learned. <select><option value="">--</option><option value="A">A</option><option value="B">B</option><option value="C">C</option><option value="D">D</option><option value="E">E</option></select>
+                </div>
+                <div class="question" id="q23">
+                    <strong>23</strong> Early games were much simpler than more recent ones. <select><option value="">--</option><option value="A">A</option><option value="B">B</option><option value="C">C</option><option value="D">D</option><option value="E">E</option></select>
+                </div>
+                <h3>List of experts</h3>
+                <p><strong>A</strong> Jesper Juul</p>
+                <p><strong>B</strong> Raph Koster</p>
+                <p><strong>C</strong> Margaret Robertson</p>
+                <p><strong>D</strong> Dan Pinchbeck</p>
+                <p><strong>E</strong> Ben Weedon</p>
+                <h2>Questions 24-26</h2>
+                <p>Complete the sentences below.</p>
+                <p>Choose ONE WORD ONLY from the passage for each answer.</p>
+                <p>Write your answers in boxes <strong>24-26</strong> on your answer sheet.</p>
+                <div class="question" id="q24">
+                    <strong>24</strong> Koster believes that games remove people's fear of………. <input type="text">
+                </div>
+                <div class="question" id="q25">
+                    <strong>25</strong> Robertson's view is that games feel exciting partly because of the……….that is associated with them. <input type="text">
+                </div>
+                <div class="question" id="q26">
+                    <strong>26</strong> Narrative games are often structured so that the first and last part are both………. <input type="text">
+                </div>
+            </div>
+            <button id="check-answers">Check Answers</button>
+            <button id="show-explanation-btn" style="background: #4a90e2; color: white;">Show Explanation</button>
+            <div id="part-2-explanation" style="display: none;">
+                <h3>Answer Keys and Explanations</h3>
+                <p><strong>Questions 14-19 (Matching Headings to Sections)</strong></p>
+                <p>14. vi (The video game design industry) – Discusses game design as a business and university subject.</p>
+                <p>15. i (Being able to experiment without consequences) – Explains how games allow players to fail without real-world consequences.</p>
+                <p>16. vii (Players' ability to control what occurs in games) – Describes how players influence game outcomes.</p>
+                <p>17. iii (The key role of the unexpected for game players) – Talks about surprise rewards in games.</p>
+                <p>18. ii (Why stories are included in games) – Explains the increasing use of narratives in games.</p>
+                <p>19. iv (Transferring features of games to other types of products) – Discusses gamification in business.</p>
+                <p><strong>Questions 20-23 (Matching Experts to Statements)</strong></p>
+                <p>20. D (Dan Pinchbeck) – Discusses planning and strategy in games.</p>
+                <p>21. E (Ben Weedon) – Highlights the importance of surprise rewards.</p>
+                <p>22. A (Jesper Juul) – States that game design is now considered a teachable skill.</p>
+                <p>23. D (Dan Pinchbeck) – Notes that early games were simpler.</p>
+                <p><strong>Questions 24-26 (Sentence Completion)</strong></p>
+                <p>24. Failure – Koster states that games eliminate the fear of failure.</p>
+                <p>25. Disapproval – Robertson argues that games feel exciting due to the disapproval surrounding them.</p>
+                <p>26. Short – Narrative games have short beginnings and endings.</p>
+            </div>
+        </div>
+    </div>
+    <div class="nav-bar">
+        <span id="progress">0 of 13</span>
+        <div id="nav-buttons"></div>
+    </div>
+    <div class="nav-arrows">
+        <button id="prev-arrow">&lt;</button>
+        <button id="next-arrow">&gt;</button>
+    </div>
+
+    <!-- Floating highlight toolbar -->
+    <div class="highlight-toolbar" id="highlightToolbar">
+        <button id="auto-highlight-btn">Highlight</button>
+        <button id="auto-add-note-btn">Add Note</button>
+        <button id="auto-clear-highlight-btn">Clear</button>
+    </div>
+
+    <script>
+        // Correct answers
+        const correctHeadings = {
+            14: 'vi',
+            15: 'i',
+            16: 'vii',
+            17: 'iii',
+            18: 'ii',
+            19: 'iv'
+        };
+        const correctMatching = {
+            20: 'D',
+            21: 'E',
+            22: 'A',
+            23: 'D'
+        };
+        const correctGaps = {
+            24: 'failure',
+            25: 'disapproval',
+            26: 'short'
+        };
+
+        // Assignments map
+        const assignments = {};
+
+        // Function to restore a heading back to the bank
+        function restoreHeadingToBank(heading) {
+            const headingsList = ['i', 'ii', 'iii', 'iv', 'v', 'vi', 'vii'];
+            const headingTexts = {
+                'i': 'i Being able to experiment without consequences',
+                'ii': 'ii Why stories are included in games',
+                'iii': 'iii The key role of the unexpected for game players',
+                'iv': 'iv Transferring features of games to other types of products',
+                'v': 'v The age group that games most appeal to',
+                'vi': 'vi The video game design industry',
+                'vii': 'vii Players\' ability to control what occurs in games'
+            };
+            
+            if (headingTexts[heading]) {
+                const li = document.createElement('li');
+                li.draggable = true;
+                li.dataset.heading = heading;
+                li.textContent = headingTexts[heading];
+                document.querySelector('.headings-bank ul').appendChild(li);
+            }
+        }
+
+        // Drag and drop
+        let draggedItem = null;
+
+        document.addEventListener('dragstart', (e) => {
+            if (e.target.tagName === 'LI' && e.target.draggable) {
+                draggedItem = e.target;
+                e.dataTransfer.effectAllowed = 'move';
+            }
+        });
+
+        document.addEventListener('dragover', (e) => {
+            if (e.target.classList.contains('drop-zone')) {
+                e.preventDefault();
+            }
+        });
+
+        document.addEventListener('drop', (e) => {
+            if (e.target.classList.contains('drop-zone') && draggedItem) {
+                e.preventDefault();
+                const zone = e.target;
+                const qnum = zone.dataset.qnum;
+                const heading = draggedItem.dataset.heading;
+                const fullText = draggedItem.textContent;
+
+                // If zone already has a heading, restore it back to bank
+                if (assignments[qnum]) {
+                    restoreHeadingToBank(assignments[qnum]);
+                }
+
+                // Place new - show the full heading text horizontally
+                zone.innerHTML = fullText;
+                zone.classList.add('filled');
+                assignments[qnum] = heading;
+
+                // Remove the dragged item from the bank
+                draggedItem.remove();
+
+                updateProgress();
+            }
+            draggedItem = null;
+        });
+
+        // Resizer
+        const resizer = document.querySelector('.resizer');
+        let isResizing = false;
+
+        resizer.addEventListener('mousedown', (e) => {
+            isResizing = true;
+            document.body.style.cursor = 'col-resize';
+        });
+
+        document.addEventListener('mousemove', (e) => {
+            if (isResizing) {
+                const container = document.querySelector('.container');
+                const left = document.querySelector('.passage-panel');
+                const rect = container.getBoundingClientRect();
+                let newWidth = e.clientX - rect.left;
+                if (newWidth < 200) newWidth = 200;
+                if (newWidth > rect.width - 200) newWidth = rect.width - 200;
+                left.style.flex = '0 0 ' + newWidth + 'px';
+            }
+        });
+
+        document.addEventListener('mouseup', () => {
+            isResizing = false;
+            document.body.style.cursor = 'default';
+        });
+
+        // Auto highlight functionality
+        const highlightToolbar = document.getElementById('highlightToolbar');
+        let currentSelection = null;
+        let mouseX = 0;
+        let mouseY = 0;
+
+        // Track mouse position
+        document.addEventListener('mousemove', (e) => {
+            mouseX = e.clientX;
+            mouseY = e.clientY;
+        });
+
+        // Show toolbar when text is selected
+        document.addEventListener('mouseup', (e) => {
+            const selection = window.getSelection();
+            if (selection.toString().trim().length > 0) {
+                currentSelection = selection;
+                
+                // Position toolbar near mouse cursor
+                highlightToolbar.style.left = (mouseX + 10) + 'px';
+                highlightToolbar.style.top = (mouseY - 40) + 'px';
+                highlightToolbar.style.display = 'block';
+            } else {
+                highlightToolbar.style.display = 'none';
+            }
+        });
+
+        // Hide toolbar when clicking elsewhere
+        document.addEventListener('mousedown', (e) => {
+            if (!highlightToolbar.contains(e.target)) {
+                highlightToolbar.style.display = 'none';
+            }
+        });
+
+        // Highlight button
+        document.getElementById('auto-highlight-btn').addEventListener('click', () => {
+            if (currentSelection && currentSelection.rangeCount > 0) {
+                const range = currentSelection.getRangeAt(0);
+                const span = document.createElement('span');
+                span.className = 'highlight';
+                range.surroundContents(span);
+                highlightToolbar.style.display = 'none';
+                currentSelection.removeAllRanges();
+            }
+        });
+
+        // Add note button
+        document.getElementById('auto-add-note-btn').addEventListener('click', () => {
+            if (currentSelection && currentSelection.rangeCount > 0) {
+                const note = prompt('Enter note:');
+                if (note) {
+                    const range = currentSelection.getRangeAt(0);
+                    const span = document.createElement('span');
+                    span.className = 'comment-highlight';
+                    span.title = note;
+                    range.surroundContents(span);
+                    highlightToolbar.style.display = 'none';
+                    currentSelection.removeAllRanges();
+                }
+            }
+        });
+
+        // Clear highlight button
+        document.getElementById('auto-clear-highlight-btn').addEventListener('click', () => {
+            if (currentSelection && currentSelection.rangeCount > 0) {
+                const range = currentSelection.getRangeAt(0);
+                const parent = range.commonAncestorContainer;
+                if (parent.nodeType === 3) {
+                    parent.parentNode.replaceWith(...parent.parentNode.childNodes);
+                } else {
+                    const highlights = parent.querySelectorAll('.highlight, .comment-highlight');
+                    highlights.forEach(h => h.replaceWith(...h.childNodes));
+                }
+                highlightToolbar.style.display = 'none';
+                currentSelection.removeAllRanges();
+            }
+        });
+
+        // Navigation
+        const navButtons = document.getElementById('nav-buttons');
+        for (let i = 14; i <= 26; i++) {
+            const btn = document.createElement('button');
+            btn.textContent = i;
+            btn.dataset.qnum = i;
+            btn.addEventListener('click', () => goToQuestion(i));
+            navButtons.appendChild(btn);
+        }
+
+        let currentQ = 14;
+
+        function goToQuestion(qNum) {
+            document.querySelectorAll('.nav-bar button').forEach(b => b.classList.remove('active'));
+            document.querySelector(`.nav-bar button[data-qnum="${qNum}"]`).classList.add('active');
+
+            document.querySelectorAll('.drop-zone.active, .question.active').forEach(el => el.classList.remove('active'));
+
+            if (qNum <= 19) {
+                const para = document.getElementById(`para${qNum}`);
+                if (para) {
+                    para.scrollIntoView({ behavior: 'smooth' });
+                    const zone = para.querySelector('.drop-zone');
+                    if (zone) zone.classList.add('active');
+                }
+                const headingsSection = document.querySelector('.questions h2:first-of-type');
+                if (headingsSection) headingsSection.scrollIntoView({ behavior: 'smooth' });
+            } else {
+                const qEl = document.getElementById(`q${qNum}`);
+                if (qEl) {
+                    qEl.scrollIntoView({ behavior: 'smooth' });
+                    qEl.classList.add('active');
+                }
+            }
+            currentQ = qNum;
+        }
+
+        document.getElementById('prev-arrow').addEventListener('click', () => {
+            if (currentQ > 14) goToQuestion(currentQ - 1);
+        });
+
+        document.getElementById('next-arrow').addEventListener('click', () => {
+            if (currentQ < 26) goToQuestion(currentQ + 1);
+        });
+
+        // Progress
+        function updateProgress() {
+            let answered = 0;
+            for (let i = 14; i <= 19; i++) {
+                if (assignments[i]) answered++;
+            }
+            for (let i = 20; i <= 23; i++) {
+                const sel = document.getElementById(`q${i}`).querySelector('select');
+                if (sel.value !== '') answered++;
+            }
+            for (let i = 24; i <= 26; i++) {
+                const inp = document.getElementById(`q${i}`).querySelector('input');
+                if (inp.value.trim() !== '') answered++;
+            }
+            document.getElementById('progress').textContent = `${answered} of 13`;
+        }
+
+        // Listen for changes
+        document.querySelectorAll('select, input[type="text"]').forEach(el => {
+            el.addEventListener('change', updateProgress);
+        });
+
+        // Check answers
+        document.getElementById('check-answers').addEventListener('click', () => {
+            // Mapping for full heading texts
+            const fullHeadingTexts = {
+                'i': 'i Being able to experiment without consequences',
+                'ii': 'ii Why stories are included in games',
+                'iii': 'iii The key role of the unexpected for game players',
+                'iv': 'iv Transferring features of games to other types of products',
+                'v': 'v The age group that games most appeal to',
+                'vi': 'vi The video game design industry',
+                'vii': 'vii Players\' ability to control what occurs in games'
+            };
+            
+            // Headings
+            for (let i = 14; i <= 19; i++) {
+                const zone = document.querySelector(`.drop-zone[data-qnum="${i}"]`);
+                zone.classList.remove('correct', 'incorrect');
+                const assigned = assignments[i] || null;
+                if (assigned === correctHeadings[i]) {
+                    zone.classList.add('correct');
+                    zone.textContent = fullHeadingTexts[assigned];
+                } else {
+                    zone.classList.add('incorrect');
+                    if (assigned) {
+                        zone.textContent = `${fullHeadingTexts[assigned]} (Correct: ${fullHeadingTexts[correctHeadings[i]]})`;
+                    } else {
+                        zone.textContent = `Correct: ${fullHeadingTexts[correctHeadings[i]]}`;
+                    }
+                }
+            }
+
+            // Matching
+            for (let i = 20; i <= 23; i++) {
+                const sel = document.getElementById(`q${i}`).querySelector('select');
+                sel.classList.remove('correct-input', 'incorrect-input');
+                if (sel.value === correctMatching[i]) {
+                    sel.classList.add('correct-input');
+                } else {
+                    sel.classList.add('incorrect-input');
+                    sel.title = `Correct: ${correctMatching[i]}`;
+                }
+            }
+
+            // Gaps
+            for (let i = 24; i <= 26; i++) {
+                const inp = document.getElementById(`q${i}`).querySelector('input');
+                inp.classList.remove('correct-input', 'incorrect-input');
+                const val = inp.value.trim().toLowerCase();
+                if (val === correctGaps[i]) {
+                    inp.classList.add('correct-input');
+                } else {
+                    inp.classList.add('incorrect-input');
+                    inp.title = `Correct: ${correctGaps[i]}`;
+                }
+            }
+        });
+
+        // Explanation toggle
+        const expBtn = document.getElementById('show-explanation-btn');
+        const expSection = document.getElementById('part-2-explanation');
+        expBtn.addEventListener('click', () => {
+            if (expSection.style.display === 'none') {
+                expSection.style.display = 'block';
+                expBtn.textContent = 'Hide Explanation';
+                expBtn.style.background = '#dc3545';
+            } else {
+                expSection.style.display = 'none';
+                expBtn.textContent = 'Show Explanation';
+                expBtn.style.background = '#4a90e2';
+            }
+        });
+
+        // Initial
+        goToQuestion(14);
+        updateProgress();
+
+        // Stopwatch functionality
+        let stopwatchInterval;
+        let stopwatchTime = 0;
+        let isRunning = false;
+
+        const stopwatchDisplay = document.getElementById('stopwatch');
+        const startBtn = document.getElementById('start-btn');
+        const pauseBtn = document.getElementById('pause-btn');
+        const resetBtn = document.getElementById('reset-btn');
+
+        function formatTime(seconds) {
+            const hours = Math.floor(seconds / 3600);
+            const minutes = Math.floor((seconds % 3600) / 60);
+            const secs = seconds % 60;
+            return `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+        }
+
+        function updateStopwatchDisplay() {
+            stopwatchDisplay.textContent = formatTime(stopwatchTime);
+        }
+
+        startBtn.addEventListener('click', () => {
+            if (!isRunning) {
+                isRunning = true;
+                stopwatchInterval = setInterval(() => {
+                    stopwatchTime++;
+                    updateStopwatchDisplay();
+                }, 1000);
+                startBtn.textContent = 'Running...';
+                startBtn.disabled = true;
+            }
+        });
+
+        pauseBtn.addEventListener('click', () => {
+            if (isRunning) {
+                isRunning = false;
+                clearInterval(stopwatchInterval);
+                startBtn.textContent = 'Resume';
+                startBtn.disabled = false;
+            }
+        });
+
+        resetBtn.addEventListener('click', () => {
+            isRunning = false;
+            clearInterval(stopwatchInterval);
+            stopwatchTime = 0;
+            updateStopwatchDisplay();
+            startBtn.textContent = 'Start';
+            startBtn.disabled = false;
+        });
+
+        // Initialize stopwatch display
+        updateStopwatchDisplay();
+    </script>
+</body>
+</html>

@@ -1,0 +1,1222 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>IELTS Reading Test - The Extinction of Cave Bears</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        /* Main styles */
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: Arial, sans-serif;
+            overflow: hidden;
+            background-color: #e6f3fa;
+        }
+        .test-wrapper {
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+        }
+        .test-container {
+            display: flex;
+            flex: 1;
+            overflow: hidden;
+        }
+        /* Header styles */
+        .header {
+            background-color: #fff;
+            border-bottom: 1px solid #ccc;
+            padding: 10px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .header__logo img {
+            height: 40px;
+        }
+        .header__timer {
+            font-size: 1.2rem;
+            font-weight: bold;
+            color: #333;
+            background-color: #d0e7f5;
+            padding: 5px 15px;
+            border-radius: 20px;
+            border: 1px solid #ccc;
+            transition: all 0.3s ease;
+        }
+        .header__icons {
+            display: flex;
+            gap: 15px;
+            align-items: center;
+        }
+        .header__icon {
+            font-size: 1.2rem;
+            color: #555;
+            cursor: pointer;
+            transition: color 0.2s ease;
+        }
+        .header__icon:hover {
+            color: #0066cc;
+        }
+        .tg-btn {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            padding: 8px 12px;
+            background: #0088cc;
+            color: white;
+            text-decoration: none;
+            border-radius: 8px;
+            font-weight: 600;
+            font-size: 14px;
+        }
+        .tg-btn:hover {
+            background: #0077b5;
+        }
+        /* Settings Modal */
+        .settings-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: rgba(0,0,0,0.7);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+        }
+        .settings-content {
+            background-color: white;
+            width: 90%;
+            max-width: 500px;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+        }
+        .settings-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 20px;
+            border-bottom: 1px solid #ccc;
+            background-color: #e6f3fa;
+        }
+        .settings-header h2 {
+            margin: 0;
+            font-size: 1.2rem;
+        }
+        .settings-close {
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: #555;
+        }
+        .settings-close:hover {
+            color: #0066cc;
+        }
+        .settings-body {
+            padding: 20px;
+        }
+        .settings-option {
+            display: flex;
+            align-items: center;
+            padding: 10px 0;
+            border-bottom: 1px solid #eee;
+            cursor: pointer;
+            transition: background-color 0.2s ease;
+        }
+        .settings-option:hover {
+            background-color: #f5f5f5;
+        }
+        .settings-option:last-child {
+            border-bottom: none;
+        }
+        .settings-option i {
+            margin-right: 15px;
+            width: 20px;
+            text-align: center;
+            color: #0066cc;
+        }
+        .settings-option span {
+            flex: 1;
+        }
+        .sectionRubric {
+            margin: 1em;
+            width: calc(100% - 4em - 3px);
+            border-radius: 4px;
+            padding: 0.75em 1em;
+            background: white;
+            border: 1px solid #ccc;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .sectionRubric h2, .sectionRubric p {
+            margin: 0;
+        }
+        .sectionRubric h2 {
+            font-size: 1rem;
+            margin-bottom: 0.25em;
+        }
+        /* Passage container */
+        .passage-container {
+            width: 45%;
+            height: 100%;
+            overflow-y: auto;
+            padding: 20px;
+            box-sizing: border-box;
+            background-color: #e6f3fa;
+            position: relative;
+            -webkit-user-select: text;
+            user-select: text;
+        }
+        /* Questions container */
+        .questions-container {
+            flex: 1;
+            overflow-y: auto;
+            padding: 20px;
+            box-sizing: border-box;
+            background-color: #e6f3fa;
+            -webkit-user-select: text;
+            user-select: text;
+        }
+        /* Highlight styles */
+        .highlight {
+            position: relative;
+            border-radius: 2px;
+            padding: 0 2px;
+            margin: 0 -2px;
+        }
+        .highlight.yellow {
+            background-color: rgba(255, 255, 0, 0.3);
+        }
+        .highlight.green {
+            background-color: rgba(0, 255, 0, 0.3);
+        }
+        .highlight.pink {
+            background-color: rgba(255, 105, 180, 0.3);
+        }
+        .highlight.blue {
+            background-color: rgba(0, 191, 255, 0.3);
+        }
+        .highlight-toolbar {
+            position: fixed;
+            background: white;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+            display: none;
+            z-index: 1000;
+            padding: 5px;
+            transform: translate(-50%, -100%);
+            margin-top: -5px;
+        }
+        .highlight-toolbar button {
+            background: none;
+            border: none;
+            width: 24px;
+            height: 24px;
+            cursor: pointer;
+            margin: 0 2px;
+            border-radius: 3px;
+            transition: background-color 0.2s ease;
+        }
+        .highlight-toolbar button:hover {
+            background: #f0f0f0;
+        }
+        .highlight-toolbar button.remove {
+            color: #ff0000;
+        }
+        /* Divider styling */
+        .divider {
+            width: 10px;
+            background: #ccc;
+            cursor: col-resize;
+            position: relative;
+        }
+        .divider-handle {
+            width: 4px;
+            height: 40px;
+            background: #888;
+            border-radius: 2px;
+            position: absolute;
+            top: 50%;
+            left: 3px;
+            transform: translateY(-50%);
+        }
+        /* Question styling */
+        .question {
+            margin-bottom: 30px;
+            background: white;
+            padding: 15px;
+            border-radius: 4px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .question-rubric {
+            margin-bottom: 15px;
+            font-weight: bold;
+        }
+        .question-options {
+            list-style-type: none;
+            padding: 0;
+        }
+        .question-options li {
+            margin: 10px 0;
+            display: flex;
+            align-items: center;
+        }
+        /* True/False/Not Given questions */
+        .true-false-option {
+            display: flex;
+            align-items: center;
+            margin: 5px 0;
+        }
+        .true-false-option select {
+            min-width: 100px;
+            padding: 6px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            margin-left: 10px;
+            font-size: 14px;
+        }
+        /* Notes completion styles */
+        .notes-completion-container {
+            margin-top: 20px;
+        }
+        .notes-text p {
+            line-height: 1.8;
+            font-size: 16px;
+        }
+        .notes-input {
+            width: 100px;
+            padding: 6px;
+            border: 2px dashed #888;
+            border-radius: 4px;
+            margin: 0 5px;
+            font-size: 15px;
+            font-weight: bold;
+            background-color: #d0e7f5;
+        }
+        .notes-input.correct {
+            border-color: #28a745;
+            background-color: #e9f7ef;
+            border-style: solid;
+        }
+        .notes-input.incorrect {
+            border-color: #dc3545;
+            background-color: #f8d7da;
+            border-style: solid;
+        }
+        .notes-feedback {
+            display: inline-block;
+            margin-left: 10px;
+            font-size: 14px;
+        }
+        .notes-feedback.correct {
+            color: #28a745;
+        }
+        .notes-feedback.incorrect {
+            color: #dc3545;
+        }
+        /* Footer styles */
+        .footer {
+            background: #f5f5f5;
+            border-top: 1px solid #ccc;
+            padding: 10px;
+        }
+        .nav-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        .footer__questionWrapper {
+            display: flex;
+            align-items: center;
+        }
+        .footer__questionNo {
+            background: none;
+            border: none;
+            padding: 5px 10px;
+            cursor: pointer;
+            font-weight: bold;
+            font-size: 14px;
+        }
+        .footer__subquestionWrapper {
+            display: flex;
+            flex-wrap: wrap;
+            margin-left: 10px;
+        }
+        .subQuestion {
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            border: 1px solid #ccc;
+            background: #f0f0f0;
+            margin: 2px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #555;
+            font-size: 14px;
+            transition: all 0.2s ease;
+        }
+        .subQuestion:hover {
+            background: #d0e7f5;
+        }
+        .subQuestion.active {
+            background: #0066cc;
+            color: white;
+            border-color: #0066cc;
+        }
+        .subQuestion.attempted {
+            background: #0066cc;
+            color: white;
+        }
+        .footer__deliverButton {
+            background: #0066cc;
+            color: white;
+            border: none;
+            padding: 8px 15px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: bold;
+            font-size: 14px;
+            transition: background-color 0.2s ease;
+        }
+        .footer__deliverButton:hover {
+            background: #0055aa;
+        }
+        .footer__deliverButton:disabled {
+            background: #cccccc;
+            cursor: not-allowed;
+        }
+        .sr-only {
+            position: absolute;
+            width: 1px;
+            height: 1px;
+            padding: 0;
+            margin: -1px;
+            overflow: hidden;
+            clip: rect(0, 0, 0, 0);
+            white-space: nowrap;
+            border-width: 0;
+        }
+        /* Highlight color buttons */
+        .highlight-color {
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            display: inline-block;
+            margin: 0 2px;
+            cursor: pointer;
+            border: 1px solid #ccc;
+        }
+        .highlight-color.yellow { background-color: #ffff00; }
+        .highlight-color.green { background-color: #00ff00; }
+        .highlight-color.pink { background-color: #ff69b4; }
+        .highlight-color.blue { background-color: #00bfff; }
+        /* Submission modal styles */
+        .submission-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: rgba(0,0,0,0.8);
+            z-index: 2000;
+            justify-content: center;
+            align-items: center;
+        }
+        .submission-content {
+            background-color: white;
+            width: 80%;
+            max-width: 800px;
+            border-radius: 10px;
+            padding: 30px;
+            box-shadow: 0 5px 30px rgba(0,0,0,0.5);
+            max-height: 80vh;
+            overflow-y: auto;
+        }
+        .submission-content h2 {
+            margin-top: 0;
+            color: #0066cc;
+            border-bottom: 2px solid #0066cc;
+            padding-bottom: 10px;
+        }
+        .submission-content p {
+            margin-bottom: 20px;
+            color: #333;
+        }
+        .answers-section {
+            margin-top: 20px;
+        }
+        .answers-section h3 {
+            color: #0066cc;
+            margin-bottom: 15px;
+        }
+        .answer-item {
+            padding: 10px;
+            margin-bottom: 8px;
+            border-radius: 4px;
+            border-left: 4px solid #ccc;
+            background-color: #f9f9f9;
+        }
+        .answer-item.correct {
+            border-left-color: #4CAF50;
+            background-color: #f0fff0;
+        }
+        .answer-item.incorrect {
+            border-left-color: #f44336;
+            background-color: #fff0f0;
+        }
+        .answer-text {
+            font-weight: bold;
+        }
+        .correct-answer {
+            color: #4CAF50;
+            margin-left: 10px;
+        }
+        .incorrect-answer {
+            color: #f44336;
+            margin-left: 10px;
+        }
+        .answer-status {
+            float: right;
+            margin-left: 15px;
+        }
+        .correct-status {
+            color: #4CAF50;
+        }
+        .incorrect-status {
+            color: #f44336;
+        }
+        .submission-buttons {
+            margin-top: 25px;
+            text-align: right;
+            clear: both;
+        }
+        .submission-buttons button {
+            padding: 8px 15px;
+            margin-left: 10px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+        .submission-buttons .confirm {
+            background: #0066cc;
+            color: white;
+            border: none;
+        }
+        .submission-buttons .confirm:hover {
+            background: #0055aa;
+        }
+        /* Disabled state */
+        input:disabled, select:disabled {
+            background-color: #f5f5f5;
+            cursor: not-allowed;
+        }
+        /* Score display styles */
+        .score-display {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        .score-number {
+            font-size: 3rem;
+            font-weight: bold;
+            color: #0066cc;
+            margin: 10px 0;
+        }
+        .score-total {
+            font-size: 1.5rem;
+            color: #555;
+        }
+        .performance-rating {
+            font-size: 1.5rem;
+            font-weight: bold;
+            margin: 15px 0;
+            padding: 10px;
+            border-radius: 5px;
+        }
+        .excellent {
+            color: #2E7D32;
+            background-color: #E8F5E9;
+        }
+        .very-good {
+            color: #388E3C;
+            background-color: #E8F5E9;
+        }
+        .good {
+            color: #689F38;
+            background-color: #F1F8E9;
+        }
+        .fair {
+            color: #F57C00;
+            background-color: #FFF3E0;
+        }
+        .poor {
+            color: #D32F2F;
+            background-color: #FFEBEE;
+        }
+        /* IELTS Band Score */
+        .band-score {
+            font-size: 2rem;
+            font-weight: bold;
+            color: #0066cc;
+            margin: 10px 0;
+        }
+        /* Correct answer highlight */
+        .correct-highlight {
+            background-color: rgba(76, 175, 80, 0.3);
+            padding: 2px;
+            border-radius: 2px;
+        }
+        /* Incorrect answer highlight */
+        .incorrect-highlight {
+            background-color: rgba(244, 67, 54, 0.3);
+            padding: 2px;
+            border-radius: 2px;
+        }
+        /* Answer comparison section */
+        .answer-comparison {
+            margin-top: 20px;
+            padding: 15px;
+            background-color: #f5f5f5;
+            border-radius: 5px;
+            display: none;
+        }
+        .answer-comparison h3 {
+            margin-top: 0;
+            color: #0066cc;
+        }
+        /* Time spent indicator */
+        .time-spent {
+            font-size: 1rem;
+            color: #555;
+            margin-bottom: 15px;
+            text-align: center;
+        }
+        /* Dropdown answer display */
+        .dropdown-answer {
+            display: inline-block;
+            margin-left: 10px;
+            font-weight: normal;
+        }
+        .dropdown-answer.correct {
+            color: #4CAF50;
+        }
+        .dropdown-answer.incorrect {
+            color: #f44336;
+        }
+    </style>
+</head>
+<body>
+    <div class="test-wrapper">
+        <!-- Header with Timer -->
+        <header class="header">
+            <div class="header__logo">
+                <h4 style="font-weight: bold; margin: 0; color: #333;">IELTS Reading Practice</h4>
+            </div>
+            <div class="header__timer" id="testTimer">00:00</div>
+            <div class="header__icons">
+                <i class="fas fa-wifi header__icon"></i>
+                <i class="fas fa-bell header__icon"></i>
+                <i class="fas fa-cog header__icon" id="settingsButton"></i>
+                
+            </div>
+        </header>
+        <!-- Settings Modal -->
+        <div class="settings-modal" id="settingsModal">
+            <div class="settings-content">
+                <div class="settings-header">
+                    <h2>Options</h2>
+                    <button class="settings-close" id="settingsClose">&times;</button>
+                </div>
+                <div class="settings-body">
+                    <div class="settings-option">
+                        <i class="fas fa-paper-plane"></i>
+                        <span>Go to submission page</span>
+                    </div>
+                    <div class="settings-option" id="contrastOption">
+                        <i class="fas fa-adjust"></i>
+                        <span>Contrast</span>
+                    </div>
+                    <div class="settings-option" id="textSizeOption">
+                        <i class="fas fa-search-plus"></i>
+                        <span>Text size</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- Section Rubric -->
+        <div class="sectionRubric" id="sectionRubric">
+            <h2>Reading Passage 1</h2>
+            <p>You should spend about 20 minutes on Questions 1-13, which are based on Reading Passage 1 below.</p>
+        </div>
+        <div class="test-container">
+            <!-- Passage Section -->
+            <div class="passage-container" id="passage-container">
+                <div class="highlight-toolbar" id="highlightToolbar">
+                    <button class="highlight-color yellow" data-color="yellow" title="Yellow highlight"></button>
+                    <button class="highlight-color green" data-color="green" title="Green highlight"></button>
+                    <button class="highlight-color pink" data-color="pink" title="Pink highlight"></button>
+                    <button class="highlight-color blue" data-color="blue" title="Blue highlight"></button>
+                    <button class="remove" title="Remove highlight"><i class="fas fa-times"></i></button>
+                </div>
+                <div id="passageContent">
+                    <h2 style="text-align: center;">The Extinction of Cave Bears</h2>
+                    <p><strong>A</strong> Hervé Bocherens, an evolutionary biologist at the University of Tübingen, Germany, says his colleagues find his research methods a little 'crude'. He dissolves 30,000-year-old animal bones in hydrochloric acid, which is strong enough to burn through metal, soaks the bone solution in lye, cooks it at about 200 degrees Fahrenheit and freeze-dries it, until what's left is a speck of powder weighing less than one one-hundredth of an ounce. The method may be harsh, but the yield is precious – the biography of a cave bear as told through its chemical components. Bocherens is at the forefront of research on the bear, a European species that died out 25,000 years ago. People have been excavating cave bear remains for hundreds of years – in the Middle Ages, the massive skulls were attributed to dragons – but the past decade has seen a burst of discoveries about how the bears lived and why they became extinct. An abundance of bones has been found from Spain to Romania in caves where the animals once hibernated. 'Caves are good places to preserve bones, and cave bears had the good sense to die there.' Bocherens says.</p>
+                    <p><strong>B</strong> Along with mammoths, lions and woolly rhinos, cave bears (Ursus spelaeus) were once among Europe's most impressive creatures. Males weighed up to 1,500 pounds, 50 per cent more than the largest modern grizzly bears. Cave bears had wider heads than today's bears, and powerful shoulders and forelimbs. But the relationship between humans and cave bears has been mysterious. Were humans prey for the bears, or predators? Were bears the object of worship or fear?</p>
+                    <p><strong>C</strong> Initially, cave bears shared the continent of Europe more than 100,000 years ago, with Neanderthal, a primitive species of humans. Modern humans arrived in Europe about 40,000 years ago, and were soon aware of the bears. They painted images of the animals on cave walls, and carved their likeness in fragments of mammoth tusk. The walls of France's Chauvet cave are painted with lions, hyenas and bears; dating back 32,000 years these are perhaps the oldest paintings in the world. The painters weren't the cave's only occupants: the floor is covered with 150 cave bear skeletons, and its soft clay still holds paw prints. Most dramatically, a cave bear skull was perched on a stone slab in the center of one chamber, placed deliberately by some long-gone cave inhabitant. 'There's no way to tell if it was just curiosity that made someone put a skull on the rock, or if it had religious significance.' says Bocherens.</p>
+                    <p><strong>D</strong> Another discovery, hundreds of miles to the east of Chauvet, would shed light on the relationship between cave bears and humans. The Swabian Jura is a limestone plateau in southwestern Germany that is riddled with caves. A steel gate guards the Hohle Fels cave from vandals and curiosity-seekers. Floodlights in the cave's main chamber illuminate the ceiling, vaulted like a cathedral above 5,000 square feet of floor space. Long ago, as shown by the bones and tools that archaeologists have found, cave bears and human beings sought shelter here from winter weather.</p>
+                    <p><strong>E</strong> In 2000, University of Tübingen paleobiologist Susanne Münzel unearthed a bear vertebra with a tiny triangular piece of flint embedded in it. The flint was likely a broken spear point, hard evidence of a successful bear hunt 29,000 years ago. Münzel also found bear bones that had clearly been scraped by stone tools. Evidence for bears being a food source for early humans was shown by cut marks on skulls and leg bones where the flesh had been cut away. Many of the bones were from baby bears, perhaps caught while hibernating.</p>
+                    <p><strong>F</strong> Cave bears disappeared not long after humans spread throughout Europe, and one theory is that hunting led to the bears' extinction. Hervé Bocherens' test tubes may hold the clues. Running his white powder through a mass spectrometer, he identifies different isotopes, or chemical forms, of elements such as carbon and nitrogen that reflect what the bears were eating and how quickly they grew. After studying hundreds of bones from dozens of sites in Europe, Bocherens has found that cave bears ate mainly plants.</p>
+                    <p><strong>G</strong> This would have made bears particularly vulnerable to the last Ice Age, which began around 30,000 years ago. This Ice Age shortened or eliminated growing seasons, and altered the distributions of plant species across Europe. Cave bears began to move from their old territories, according to a DNA analysis of teeth found near the Danube River. The cave bear population there was relatively stable, with the same genetic patterns showing up generation after generation. But about 28,000 years ago, newcomers with different DNA patterns arrived – a possible sign of hungry bears suddenly on the move.</p>
+                    <p><strong>H</strong> But changes in the climate can't be solely to blame for the bears' extinction. According to the latest study, by Erik Trinkaus and his colleagues at the Max Planck Institute, cave bear populations began a long, slow decline 50,000 years ago—well before the climate began to change. The new study supports a different explanation for the cave bears' demise. As Neanderthals, and then a growing population of modern humans moved into the caves of Europe, cave bears had fewer safe places to hibernate. An acute housing shortage may have been the final blow for these magnificent beasts.</p>
+                </div>
+            </div>
+            <!-- Draggable Divider -->
+            <div class="divider" id="divider">
+                <div class="divider-handle"></div>
+            </div>
+            <!-- Questions Section -->
+            <div class="questions-container" id="questions-container">
+                <!-- Questions 1-6 - True/False/Not Given -->
+                <div class="question">
+                    <div class="question-rubric">
+                        <h3>Questions 1-6</h3>
+                        <p>Do the following statements agree with the information given in Reading Passage 1?</p>
+                        <p>In boxes 1-6 on your answer sheet, write</p>
+                        <p><strong>TRUE</strong> if the statement agrees with the information</p>
+                        <p><strong>FALSE</strong> if the statement contradicts the information</p>
+                        <p><strong>NOT GIVEN</strong> if there is no information on this</p>
+                    </div>
+                    <div class="question-content">
+                        <div class="question-item">
+                            <p><span class="question-number">1</span> Bocherens' findings on cave bears involve measuring the length of complete bones.</p>
+                            <div class="true-false-option">
+                                <select name="q1" id="q1">
+                                    <option value="">--</option>
+                                    <option value="TRUE">TRUE</option>
+                                    <option value="FALSE">FALSE</option>
+                                    <option value="NOT GIVEN">NOT GIVEN</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="question-item">
+                            <p><span class="question-number">2</span> Bocherens was the first person to conduct analytical research on cave bears in a laboratory.</p>
+                            <div class="true-false-option">
+                                <select name="q2" id="q2">
+                                    <option value="">--</option>
+                                    <option value="TRUE">TRUE</option>
+                                    <option value="FALSE">FALSE</option>
+                                    <option value="NOT GIVEN">NOT GIVEN</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="question-item">
+                            <p><span class="question-number">3</span> Cave bears have been extinct for 25,000 years.</p>
+                            <div class="true-false-option">
+                                <select name="q3" id="q3">
+                                    <option value="">--</option>
+                                    <option value="TRUE">TRUE</option>
+                                    <option value="FALSE">FALSE</option>
+                                    <option value="NOT GIVEN">NOT GIVEN</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="question-item">
+                            <p><span class="question-number">4</span> At one time, people thought the excavated remains of bears were those of dragons.</p>
+                            <div class="true-false-option">
+                                <select name="q4" id="q4">
+                                    <option value="">--</option>
+                                    <option value="TRUE">TRUE</option>
+                                    <option value="FALSE">FALSE</option>
+                                    <option value="NOT GIVEN">NOT GIVEN</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="question-item">
+                            <p><span class="question-number">5</span> Modern grizzly bears are similar in size to cave bears.</p>
+                            <div class="true-false-option">
+                                <select name="q5" id="q5">
+                                    <option value="">--</option>
+                                    <option value="TRUE">TRUE</option>
+                                    <option value="FALSE">FALSE</option>
+                                    <option value="NOT GIVEN">NOT GIVEN</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="question-item">
+                            <p><span class="question-number">6</span> Neanderthals understood cave bear behaviour better than modern humans did.</p>
+                            <div class="true-false-option">
+                                <select name="q6" id="q6">
+                                    <option value="">--</option>
+                                    <option value="TRUE">TRUE</option>
+                                    <option value="FALSE">FALSE</option>
+                                    <option value="NOT GIVEN">NOT GIVEN</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- Questions 7-13 - Notes Completion -->
+                <div class="question">
+                    <div class="question-rubric">
+                        <h3>Questions 7-13</h3>
+                        <p>Complete the notes below.</p>
+                        <p>Choose <strong>ONE WORD ONLY</strong> from the passage for each answer.</p>
+                        <p>Write your answers in boxes <strong>7-13</strong> on your answer sheet.</p>
+                    </div>
+                    <div class="question-content">
+                        <div class="notes-completion-container">
+                            <div class="notes-text">
+                                <p style="text-align: center;"><strong>Research into the existence and disappearance of cave bears</strong></p>
+                                <p><strong>Evidence from the Chauvet cave in France</strong></p>
+                                <p>· Paintings on the walls include bears.</p>
+                                <p>· Over a hundred <input type="text" class="notes-input" id="q7" name="q7"> of cave bears together with paw prints were found on the floor of the cave.</p>
+                                <p>· The <input type="text" class="notes-input" id="q8" name="q8"> of a cave bear was found in a prominent position in the cave.</p>
+                                <p><strong>Evidence from the Hohle Fels cave in the Swabian Jura in Germany</strong></p>
+                                <p>· Bones and tools found in the cave indicate it provided <input type="text" class="notes-input" id="q9" name="q9"> for both bears and humans.</p>
+                                <p><strong>Susanne Münzel's findings</strong></p>
+                                <p>· A spear point in the vertebra of a bear indicates that a hunt had taken place.</p>
+                                <p>· Marks on the bones of bears indicate the removal of flesh.</p>
+                                <p><strong>Hervé Bocherens' findings</strong></p>
+                                <p>· Isotopes from the bones indicate that <input type="text" class="notes-input" id="q10" name="q10"> were the cave bears' preferred food.</p>
+                                <p><strong>Factors leading to the disappearance of the cave bear</strong></p>
+                                <p>· <strong>Climate change</strong></p>
+                                <p>  - The Ice Age changed vegetation growth in <input type="text" class="notes-input" id="q11" name="q11">.</p>
+                                <p>  - Bears were forced to migrate.</p>
+                                <p>  - Support for the above explanation comes from a study of changes in the DNA in the <input type="text" class="notes-input" id="q12" name="q12"> of the population of cave bears near the Danube River at this time.</p>
+                                <p>· <strong>Human population expansion</strong></p>
+                                <p>  - Competition from Neanderthals and modern humans for caves may have reduced opportunities for cave bears to <input type="text" class="notes-input" id="q13" name="q13">.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- Footer -->
+        <footer class="footer">
+            <nav class="nav-row perScorableItem" aria-label="Questions">
+                <div class="footer__questionWrapper selected multiple" role="tablist">
+                    <button role="tab" class="footer__questionNo" data-sectionid="128121930" tabindex="-1">
+                        <span>
+                            <span aria-hidden="true" class="section-prefix">Part </span>
+                            <span class="sectionNr" aria-hidden="true">1</span>
+                        </span>
+                    </button>
+                    <div class="footer__subquestionWrapper">
+                        <button class="subQuestion" data-contentrevisionid="128121896" data-ordernumber="1" data-sectionid="128121930" tabindex="0">
+                            <span class="sr-only">Question 1</span>
+                            <span aria-hidden="true">1</span>
+                            <span class="sr-only">Not attempted</span>
+                        </button>
+                        <button class="subQuestion" data-contentrevisionid="128121896" data-ordernumber="2" data-sectionid="128121930" tabindex="0">
+                            <span class="sr-only">Question 2</span>
+                            <span aria-hidden="true">2</span>
+                            <span class="sr-only">Not attempted</span>
+                        </button>
+                        <button class="subQuestion" data-contentrevisionid="128121896" data-ordernumber="3" data-sectionid="128121930" tabindex="0">
+                            <span class="sr-only">Question 3</span>
+                            <span aria-hidden="true">3</span>
+                            <span class="sr-only">Not attempted</span>
+                        </button>
+                        <button class="subQuestion" data-contentrevisionid="128121896" data-ordernumber="4" data-sectionid="128121930" tabindex="0">
+                            <span class="sr-only">Question 4</span>
+                            <span aria-hidden="true">4</span>
+                            <span class="sr-only">Not attempted</span>
+                        </button>
+                        <button class="subQuestion" data-contentrevisionid="128121896" data-ordernumber="5" data-sectionid="128121930" tabindex="0">
+                            <span class="sr-only">Question 5</span>
+                            <span aria-hidden="true">5</span>
+                            <span class="sr-only">Not attempted</span>
+                        </button>
+                        <button class="subQuestion" data-contentrevisionid="128121896" data-ordernumber="6" data-sectionid="128121930" tabindex="0">
+                            <span class="sr-only">Question 6</span>
+                            <span aria-hidden="true">6</span>
+                            <span class="sr-only">Not attempted</span>
+                        </button>
+                        <button class="subQuestion" data-contentrevisionid="128121896" data-ordernumber="7" data-sectionid="128121930" tabindex="0">
+                            <span class="sr-only">Question 7</span>
+                            <span aria-hidden="true">7</span>
+                            <span class="sr-only">Not attempted</span>
+                        </button>
+                        <button class="subQuestion" data-contentrevisionid="128121896" data-ordernumber="8" data-sectionid="128121930" tabindex="0">
+                            <span class="sr-only">Question 8</span>
+                            <span aria-hidden="true">8</span>
+                            <span class="sr-only">Not attempted</span>
+                        </button>
+                        <button class="subQuestion" data-contentrevisionid="128121896" data-ordernumber="9" data-sectionid="128121930" tabindex="0">
+                            <span class="sr-only">Question 9</span>
+                            <span aria-hidden="true">9</span>
+                            <span class="sr-only">Not attempted</span>
+                        </button>
+                        <button class="subQuestion" data-contentrevisionid="128121896" data-ordernumber="10" data-sectionid="128121930" tabindex="0">
+                            <span class="sr-only">Question 10</span>
+                            <span aria-hidden="true">10</span>
+                            <span class="sr-only">Not attempted</span>
+                        </button>
+                        <button class="subQuestion" data-contentrevisionid="128121896" data-ordernumber="11" data-sectionid="128121930" tabindex="0">
+                            <span class="sr-only">Question 11</span>
+                            <span aria-hidden="true">11</span>
+                            <span class="sr-only">Not attempted</span>
+                        </button>
+                        <button class="subQuestion" data-contentrevisionid="128121896" data-ordernumber="12" data-sectionid="128121930" tabindex="0">
+                            <span class="sr-only">Question 12</span>
+                            <span aria-hidden="true">12</span>
+                            <span class="sr-only">Not attempted</span>
+                        </button>
+                        <button class="subQuestion" data-contentrevisionid="128121896" data-ordernumber="13" data-sectionid="128121930" tabindex="0">
+                            <span class="sr-only">Question 13</span>
+                            <span aria-hidden="true">13</span>
+                            <span class="sr-only">Not attempted</span>
+                        </button>
+                    </div>
+                </div>
+                <button id="deliver-button" aria-label="Review your answers" class="footer__deliverButton">
+                    <i class="fas fa-check"></i> Submit
+                </button>
+            </nav>
+        </footer>
+    </div>
+    <!-- Submission Modal -->
+    <div class="submission-modal" id="submissionModal">
+        <div class="submission-content">
+            <h2 id="submissionTitle">Test Results</h2>
+            <div class="score-display">
+                <div>Your Score:</div>
+                <div class="score-number" id="userScore">0</div>
+                <div class="score-total">out of <span id="totalQuestions">13</span></div>
+                <div class="band-score" id="bandScore">Band: 0.0</div>
+                <div class="performance-rating" id="performanceRating">Poor - Needs Improvement</div>
+            </div>
+            <div class="time-spent" id="timeSpent"></div>
+            <div class="answers-section">
+                <h3>Your Answers:</h3>
+                <div id="answersList"></div>
+            </div>
+            <div class="submission-buttons">
+                <button class="confirm" id="closeSubmission">Close</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Correct answers
+        const correctAnswers = {
+            1: "FALSE",
+            2: "NOT GIVEN",
+            3: "TRUE",
+            4: "TRUE",
+            5: "FALSE",
+            6: "NOT GIVEN",
+            7: "skeletons",
+            8: "skull",
+            9: "shelter",
+            10: "plants",
+            11: "Europe",
+            12: "teeth",
+            13: "hibernate"
+        };
+
+        // Timer functionality
+        let totalSeconds = 0;
+        const timerElement = document.getElementById('testTimer');
+        let testSubmitted = false;
+        let userAnswers = {};
+        let startTime = new Date();
+        let resultsShown = false;
+
+        function updateTimer() {
+            if (testSubmitted) return;
+            const minutes = Math.floor(totalSeconds / 60);
+            const seconds = totalSeconds % 60;
+            const formattedTime = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+            timerElement.textContent = formattedTime;
+            totalSeconds++;
+        }
+
+        function disableAllInputs() {
+            document.querySelectorAll('input[type="text"], select').forEach(input => {
+                input.disabled = true;
+            });
+            document.getElementById('deliver-button').disabled = true;
+        }
+
+        function showSubmissionModal() {
+            const modal = document.getElementById('submissionModal');
+            document.getElementById('submissionTitle').textContent = 'Test Results';
+            
+            // Calculate time spent
+            const endTime = new Date();
+            const timeDiff = endTime - startTime;
+            const minutes = Math.floor(timeDiff / 60000);
+            const seconds = Math.floor((timeDiff % 60000) / 1000);
+            document.getElementById('timeSpent').textContent = `Time spent: ${minutes}m ${seconds}s`;
+
+            const answersList = document.getElementById('answersList');
+            answersList.innerHTML = '';
+            let score = 0;
+            userAnswers = {};
+
+            // Process True/False/Not Given questions (1-6)
+            for (let i = 1; i <= 6; i++) {
+                const select = document.getElementById(`q${i}`);
+                const userAnswer = select ? select.value : 'Not answered';
+                userAnswers[i] = userAnswer;
+                const correctAnswer = correctAnswers[i];
+                const isCorrect = userAnswer === correctAnswer;
+                if (isCorrect) score++;
+
+                const answerItem = document.createElement('div');
+                answerItem.className = `answer-item ${isCorrect ? 'correct' : 'incorrect'}`;
+                answerItem.innerHTML = `
+                    <div class="answer-text">Question ${i}: ${userAnswer}</div>
+                    <span class="${isCorrect ? 'correct-answer' : 'incorrect-answer'}">(Correct answer: ${correctAnswer})</span>
+                    <span class="answer-status ${isCorrect ? 'correct-status' : 'incorrect-status'}">
+                        ${isCorrect ? '✓' : '✗'}
+                    </span>
+                `;
+                answersList.appendChild(answerItem);
+            }
+
+            // Process Notes Completion questions (7-13)
+            for (let i = 7; i <= 13; i++) {
+                const input = document.getElementById(`q${i}`);
+                const userAnswer = input ? input.value.trim().toLowerCase() : 'Not answered';
+                userAnswers[i] = userAnswer;
+                const correctAnswer = correctAnswers[i].toLowerCase();
+                const isCorrect = userAnswer === correctAnswer;
+                if (isCorrect) score++;
+
+                const answerItem = document.createElement('div');
+                answerItem.className = `answer-item ${isCorrect ? 'correct' : 'incorrect'}`;
+                answerItem.innerHTML = `
+                    <div class="answer-text">Question ${i}: ${userAnswer}</div>
+                    <span class="${isCorrect ? 'correct-answer' : 'incorrect-answer'}">(Correct answer: ${correctAnswers[i]})</span>
+                    <span class="answer-status ${isCorrect ? 'correct-status' : 'incorrect-status'}">
+                        ${isCorrect ? '✓' : '✗'}
+                    </span>
+                `;
+                answersList.appendChild(answerItem);
+            }
+
+            // Update score display
+            document.getElementById('userScore').textContent = score;
+            document.getElementById('totalQuestions').textContent = "13";
+
+            // Calculate IELTS band score
+            const bandScore = calculateBandScore(score);
+            document.getElementById('bandScore').textContent = `Band: ${bandScore.toFixed(1)}`;
+
+            // Calculate performance rating
+            const percentage = (score / 13) * 100;
+            let rating, ratingClass;
+            if (score >= 12) {
+                rating = "Excellent!";
+                ratingClass = "excellent";
+            } else if (score >= 10) {
+                rating = "Very Good";
+                ratingClass = "very-good";
+            } else if (score >= 8) {
+                rating = "Good";
+                ratingClass = "good";
+            } else if (score >= 6) {
+                rating = "Fair";
+                ratingClass = "fair";
+            } else {
+                rating = "Poor - Needs Improvement";
+                ratingClass = "poor";
+            }
+
+            const ratingElement = document.getElementById('performanceRating');
+            ratingElement.textContent = rating;
+            ratingElement.className = `performance-rating ${ratingClass}`;
+
+            modal.style.display = 'flex';
+            resultsShown = true;
+
+            // Highlight answers in the questions
+            highlightAnswers();
+        }
+
+        function calculateBandScore(score) {
+            if (score >= 12) return 9.0;
+            if (score >= 11) return 8.5;
+            if (score >= 10) return 8.0;
+            if (score >= 9) return 7.5;
+            if (score >= 8) return 7.0;
+            if (score >= 7) return 6.5;
+            if (score >= 6) return 6.0;
+            if (score >= 5) return 5.5;
+            if (score >= 4) return 5.0;
+            return 0.0;
+        }
+
+        function highlightAnswers() {
+            // Highlight True/False/Not Given questions (1-6)
+            for (let i = 1; i <= 6; i++) {
+                const select = document.getElementById(`q${i}`);
+                const userAnswer = userAnswers[i];
+                const correctAnswer = correctAnswers[i];
+                
+                if (select && userAnswer && userAnswer !== 'Not answered') {
+                    select.classList.add(userAnswer === correctAnswer ? 'correct' : 'incorrect');
+                    
+                    // Remove existing feedback if any
+                    const existingFeedback = select.parentNode.querySelector('.dropdown-answer');
+                    if (existingFeedback) {
+                        existingFeedback.remove();
+                    }
+                    
+                    const feedback = document.createElement('span');
+                    feedback.className = `dropdown-answer ${userAnswer === correctAnswer ? 'correct' : 'incorrect'}`;
+                    feedback.textContent = userAnswer === correctAnswer ? '✓ Correct' : `✗ Correct: ${correctAnswer}`;
+                    select.parentNode.appendChild(feedback);
+                }
+            }
+
+            // Highlight Notes Completion questions (7-13)
+            for (let i = 7; i <= 13; i++) {
+                const input = document.getElementById(`q${i}`);
+                const userAnswer = userAnswers[i];
+                const correctAnswer = correctAnswers[i].toLowerCase();
+                
+                if (input && userAnswer && userAnswer !== 'Not answered') {
+                    input.classList.add(userAnswer === correctAnswer ? 'correct' : 'incorrect');
+                    
+                    // Remove existing feedback if any
+                    const existingFeedback = input.parentNode.querySelector('.notes-feedback');
+                    if (existingFeedback) {
+                        existingFeedback.remove();
+                    }
+                    
+                    const feedback = document.createElement('span');
+                    feedback.className = `notes-feedback ${userAnswer === correctAnswer ? 'correct' : 'incorrect'}`;
+                    feedback.textContent = userAnswer === correctAnswer ? '✓ Correct' : `✗ Correct: ${correctAnswers[i]}`;
+                    input.parentNode.insertBefore(feedback, input.nextSibling);
+                }
+            }
+        }
+
+        // Handle manual submission
+        document.getElementById('deliver-button').addEventListener('click', function() {
+            if (resultsShown) {
+                document.getElementById('submissionModal').style.display = 'flex';
+                return;
+            }
+            
+            if (testSubmitted) return;
+            
+            if (confirm('Are you sure you want to submit your test? You won\'t be able to make changes after submission.')) {
+                clearInterval(timerInterval);
+                testSubmitted = true;
+                disableAllInputs();
+                showSubmissionModal();
+            }
+        });
+
+        // Close submission modal
+        document.getElementById('closeSubmission').addEventListener('click', function() {
+            document.getElementById('submissionModal').style.display = 'none';
+        });
+
+        // Start the timer
+        const timerInterval = setInterval(updateTimer, 1000);
+
+        // Settings Modal functionality
+        const settingsButton = document.getElementById('settingsButton');
+        const settingsModal = document.getElementById('settingsModal');
+        const settingsClose = document.getElementById('settingsClose');
+
+        settingsButton.addEventListener('click', function() {
+            settingsModal.style.display = 'flex';
+        });
+
+        settingsClose.addEventListener('click', function() {
+            settingsModal.style.display = 'none';
+        });
+
+        window.addEventListener('click', function(event) {
+            if (event.target === settingsModal) {
+                settingsModal.style.display = 'none';
+            }
+            if (event.target === document.getElementById('submissionModal')) {
+                document.getElementById('submissionModal').style.display = 'none';
+            }
+        });
+
+        // Draggable Divider Functionality
+        const divider = document.getElementById('divider');
+        const passageContainer = document.getElementById('passage-container');
+        const questionsContainer = document.getElementById('questions-container');
+        let isDragging = false;
+        let startX, startPassageWidth;
+
+        divider.addEventListener('mousedown', (e) => {
+            isDragging = true;
+            startX = e.clientX;
+            startPassageWidth = parseInt(document.defaultView.getComputedStyle(passageContainer).width, 10);
+            document.body.style.cursor = 'col-resize';
+            document.addEventListener('mousemove', onMouseMove);
+            document.addEventListener('mouseup', onMouseUp);
+            e.preventDefault();
+        });
+
+        function onMouseMove(e) {
+            if (!isDragging) return;
+            const containerWidth = document.querySelector('.test-container').offsetWidth;
+            const newPassageWidth = startPassageWidth + e.clientX - startX;
+            const minWidth = containerWidth * 0.3;
+            const maxWidth = containerWidth * 0.7;
+            
+            if (newPassageWidth >= minWidth && newPassageWidth <= maxWidth) {
+                passageContainer.style.width = `${newPassageWidth}px`;
+            }
+        }
+
+        function onMouseUp() {
+            isDragging = false;
+            document.body.style.cursor = '';
+            document.removeEventListener('mousemove', onMouseMove);
+            document.removeEventListener('mouseup', onMouseUp);
+        }
+
+        // Question navigation functionality
+        document.querySelectorAll('.subQuestion').forEach(button => {
+            button.addEventListener('click', function() {
+                document.querySelectorAll('.subQuestion').forEach(btn => {
+                    btn.classList.remove('active');
+                });
+                this.classList.add('active');
+                const questionNumber = parseInt(this.textContent.trim());
+                
+                if (questionNumber >= 1 && questionNumber <= 6) {
+                    document.querySelector('.question:nth-of-type(1)').scrollIntoView({ behavior: 'smooth' });
+                } else if (questionNumber >= 7 && questionNumber <= 13) {
+                    document.querySelector('.question:nth-of-type(2)').scrollIntoView({ behavior: 'smooth' });
+                }
+            });
+        });
+
+        // Mark questions as attempted when answered
+        document.querySelectorAll('select, input[type="text"]').forEach(input => {
+            input.addEventListener('change', function() {
+                const questionNumber = parseInt(this.name.replace('q', ''));
+                const questionButton = document.querySelector(`.subQuestion[data-ordernumber="${questionNumber}"]`);
+                if (questionButton && (this.value || this.value.trim())) {
+                    questionButton.classList.add('attempted');
+                }
+            });
+        });
+
+        // Initialize the test
+        startTime = new Date();
+    </script>
+</body>
+</html>

@@ -1,0 +1,1512 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>IELTS Full Reading Practice</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #ffffff;
+            line-height: 1.4;
+            font-size: 16px;
+        }
+
+        .header {
+            background-color: #ffffff;
+            padding: 12px 20px;
+            border-bottom: 1px solid #e0e0e0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 100;
+            height: 60px;
+        }
+
+        .timer-container {
+            display: flex;
+            position: relative;
+            cursor: default;
+            color: #333;
+            font-size: 16px;
+            font-weight: 500;
+            align-items: center;
+        }
+
+        .timer-controls {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-left: 15px;
+        }
+
+        .timer-controls button {
+            background: #f0f0f0;
+            border: 1px solid #ccc;
+            border-radius: 50%;
+            padding: 0;
+            cursor: pointer;
+            width: 32px;
+            height: 32px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: background-color 0.2s;
+        }
+
+        .timer-controls button:hover {
+            background: #e0e0e0;
+        }
+
+        .telegram-link {
+            color: #0088cc;
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 16px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .telegram-link:hover {
+            text-decoration: underline;
+        }
+
+        .telegram-link::before {
+            content: '';
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            background-color: currentColor;
+            -webkit-mask-image: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.78 18.65l.28-4.23l7.68-6.92c.34-.31-.07-.46-.52-.19L7.74 13.3L3.64 12c-.88-.25-.89-1.37.2-1.64l16.56-6.4c.75-.29 1.4.22 1.2.94l-2.67 12.61c-.22.95-1.13 1.18-1.78.73l-4.5-3.32l-2.23 2.15c-.47.44-1.29.21-1.48-.37z"/></svg>');
+            mask-image: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.78 18.65l.28-4.23l7.68-6.92c.34-.31-.07-.46-.52-.19L7.74 13.3L3.64 12c-.88-.25-.89-1.37.2-1.64l16.56-6.4c.75-.29 1.4.22 1.2.94l-2.67 12.61c-.22.95-1.13 1.18-1.78.73l-4.5-3.32l-2.23 2.15c-.47.44-1.29.21-1.48-.37z"/></svg>');
+            background-size: contain;
+            background-repeat: no-repeat;
+        }
+
+        .main-container {
+            margin-top: 60px;
+            display: flex;
+            flex-direction: column;
+            background: #ffffff;
+            height: calc(100vh - 60px);
+        }
+
+        .panels-container {
+            display: flex;
+            flex: 1;
+            overflow: hidden;
+        }
+
+        .passage-panel {
+            flex: 1;
+            padding: 20px 20px 100px;
+            overflow-y: auto;
+            min-width: 200px;
+        }
+
+        .text-center {
+            text-align: center;
+        }
+       
+        .reading-passage h4.text-center {
+            font-size: 24px;
+            font-weight: bold;
+            margin-bottom: 15px;
+        }
+       
+        .reading-passage p {
+            margin-bottom: 1.2em;
+        }
+
+        .questions-panel {
+            flex: 1;
+            padding: 20px 20px 100px;
+            overflow-y: auto;
+            min-width: 200px;
+            border-left: 1px solid #e0e0e0;
+        }
+
+        .resizer {
+            width: 10px;
+            cursor: col-resize;
+            background-color: #f0f0f0;
+            background-image: url('data:image/svg+xml;charset=UTF-8,<svg xmlns="http://www.w3.org/2000/svg" width="10" height="30" viewBox="0 0 10 30"><path d="M4 11h2v2H4zM4 15h2v2H4zM4 19h2v2H4z" fill="%23888"/></svg>');
+            background-repeat: no-repeat;
+            background-position: center;
+            flex-shrink: 0;
+            flex-grow: 0;
+        }
+
+        .part-header {
+            background-color: #f1f2ec;
+            padding: 15px 20px;
+            border: 1px solid #e0e0e0;
+            text-align: left;
+            margin: 10px 20px;
+            border-radius: 5px;
+        }
+
+        .part-header p {
+            margin: 0;
+        }
+
+        .part-header p:first-child {
+            margin-bottom: 5px;
+        }
+
+        .question {
+            margin-bottom: 40px;
+        }
+
+        .question-prompt {
+            margin-bottom: 20px;
+        }
+
+        .answer-input {
+            border: 1px solid #888;
+            border-radius: 4px;
+            background-color: #fff;
+            padding: 2px 5px;
+            font-size: 16px;
+            text-align: center;
+            margin-right: 4px;
+            margin-left: 4px;
+            transition: border-color 0.3s, box-shadow 0.3s;
+        }
+
+        .answer-input.correct {
+            border-color: #28a745;
+            background-color: #e9f7ef;
+        }
+
+        .answer-input.incorrect {
+            border-color: #dc3545;
+            background-color: #f8d7da;
+            color: #721c24;
+        }
+
+        .matching-question-container {
+            display: flex;
+            gap: 20px;
+            margin-top: 15px;
+        }
+
+        .matching-options-bank {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .matching-questions {
+            flex: 1.5;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .matching-question-item {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            border: 2px solid transparent;
+            border-radius: 4px;
+            transition: border-color 0.3s;
+            padding: 10px;
+        }
+
+        .matching-question-item.correct {
+            background-color: #e9f7ef;
+            border-color: #28a745 !important;
+        }
+
+        .matching-question-item.incorrect {
+            background-color: #f8d7da;
+            border-color: #dc3545 !important;
+        }
+
+        .matching-question-item .drop-zone {
+            width: 200px;
+            flex-shrink: 0;
+            margin: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            color: #aaa;
+            border: 2px dashed #aaa;
+            border-radius: 4px;
+            height: 40px;
+            transition: background-color 0.2s, border-color 0.2s;
+        }
+
+        .matching-question-item .drop-zone.correct {
+            background-color: #e9f7ef;
+            border-color: #28a745;
+            border-style: solid;
+        }
+
+        .matching-question-item .drop-zone.incorrect {
+            background-color: #f8d7da;
+            border-color: #dc3545;
+            border-style: solid;
+        }
+
+        .drag-item {
+            background: white;
+            border: 1px solid #ddd;
+            padding: 8px 12px;
+            border-radius: 4px;
+            cursor: move;
+            font-size: 16px;
+            transition: all 0.2s;
+            user-select: none;
+        }
+
+        .drag-item:hover {
+            background: #e9ecef;
+        }
+
+        .drag-item.dragging {
+            opacity: 0.5;
+        }
+
+        .drop-zone.drag-over {
+            background-color: #e6f4ff;
+            border-color: #4a90e2;
+        }
+
+        .paragraph-matching-question {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 15px;
+            margin-bottom: 12px;
+            padding: 10px;
+            border-radius: 4px;
+            transition: background-color 0.3s;
+        }
+
+        .paragraph-matching-question.correct {
+            background-color: #e9f7ef;
+        }
+
+        .paragraph-matching-question.incorrect {
+            background-color: #f8d7da;
+        }
+
+        .example-box {
+            border: 1px solid #ddd;
+            background-color: #f9f9f9;
+            padding: 15px;
+            border-radius: 5px;
+            margin: 20px 0;
+        }
+
+        .summary-text p {
+            line-height: 2.5;
+            font-size: 16px;
+        }
+
+        .nav-arrows {
+            position: fixed;
+            bottom: 100px;
+            right: 20px;
+            display: flex;
+            gap: 5px;
+            z-index: 101;
+        }
+
+        .nav-arrow {
+            width: 50px;
+            height: 50px;
+            background: #333;
+            color: white;
+            border: none;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 22px;
+            font-weight: bold;
+        }
+
+        .nav-arrow:hover {
+            background: #555;
+        }
+
+        .nav-arrow:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+        }
+
+        .nav-row {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: #ffffff;
+            padding: 0;
+            display: flex;
+            align-items: center;
+            height: 80px;
+            z-index: 100;
+            border-top: 1px solid #e0e0e0;
+        }
+
+        .footer__questionWrapper {
+            display: flex;
+            align-items: center;
+            margin-right: 20px;
+        }
+
+        .footer__questionNo {
+            background: none;
+            border: none;
+            padding: 10px 15px;
+            font-size: 16px;
+            font-weight: 600;
+            color: #333;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            transition: background-color 0.2s;
+        }
+
+        .footer__questionNo:hover {
+            background-color: #f8f9fa;
+        }
+
+        .footer__subquestionWrapper {
+            display: none;
+            gap: 2px;
+            margin-left: 10px;
+        }
+
+        .footer__questionWrapper.selected .footer__subquestionWrapper {
+            display: flex;
+        }
+
+        .subQuestion {
+            width: 32px;
+            height: 32px;
+            border: 1px solid #ccc;
+            background: white;
+            color: #333;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s;
+            border-radius: 2px;
+        }
+
+        .subQuestion.answered {
+            background-color: #e9ecef;
+            border-color: #ddd;
+        }
+
+        .subQuestion.correct {
+            background-color: #28a745;
+            color: white;
+            border-color: #28a745;
+        }
+
+        .subQuestion.incorrect {
+            background-color: #dc3545;
+            color: white;
+            border-color: #dc3545;
+        }
+
+        .subQuestion:hover {
+            background-color: #f0f0f0;
+            border-color: #999;
+        }
+
+        .subQuestion.active {
+            background-color: #4a90e2;
+            color: white;
+            border-color: #4a90e2;
+        }
+
+        .footer__deliverButton {
+            margin-left: auto;
+            margin-right: 20px;
+            background-color: #0066cc;
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 4px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: background-color 0.2s;
+            min-width: 170px;
+            justify-content: center;
+        }
+
+        .footer__deliverButton:hover {
+            background-color: #0055aa;
+        }
+
+        .footer__deliverButton:disabled {
+            background: #cccccc;
+            cursor: not-allowed;
+        }
+
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.7);
+            z-index: 2000;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .modal-overlay.hidden {
+            display: none;
+        }
+
+        .modal-content {
+            background: white;
+            padding: 25px;
+            border-radius: 8px;
+            width: 90%;
+            max-width: 600px;
+            max-height: 80vh;
+            display: flex;
+            flex-direction: column;
+            position: relative;
+        }
+
+        .modal-close-btn {
+            position: absolute;
+            top: 10px;
+            right: 15px;
+            background: none;
+            border: none;
+            font-size: 28px;
+            cursor: pointer;
+            color: #888;
+        }
+
+        .modal-content h2 {
+            text-align: center;
+            margin-bottom: 15px;
+            color: #333;
+        }
+
+        .results-summary {
+            display: flex;
+            justify-content: space-around;
+            margin-bottom: 20px;
+            font-size: 18px;
+            font-weight: bold;
+            text-align: center;
+            border-bottom: 1px solid #eee;
+            padding-bottom: 15px;
+        }
+
+        .results-details-container {
+            overflow-y: auto;
+            padding-right: 10px;
+        }
+
+        .result-row {
+            display: grid;
+            grid-template-columns: 40px 1fr 1fr;
+            gap: 15px;
+            padding: 8px 5px;
+            border-bottom: 1px solid #f0f0f0;
+            font-size: 15px;
+        }
+
+        .result-row.incorrect {
+            background-color: #f8d7da;
+        }
+
+        .result-row .q-num {
+            font-weight: bold;
+        }
+
+        .result-row .user-ans {
+            color: #555;
+        }
+
+        .result-row .correct-ans {
+            color: #155724;
+            font-weight: 500;
+        }
+
+        .hidden {
+            display: none !important;
+        }
+
+        /* Highlight System Styles */
+        .highlight-toolbar {
+            position: fixed;
+            background: white;
+            border: 1px solid #ccc;
+            border-radius: 6px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+            z-index: 10000;
+            display: none;
+            padding: 5px;
+            gap: 5px;
+            align-items: center;
+        }
+
+        .highlight-btn {
+            width: 30px;
+            height: 30px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
+            transition: all 0.2s;
+        }
+
+        .highlight-btn:hover {
+            transform: scale(1.1);
+        }
+
+        .highlight-btn.yellow {
+            background-color: #ffeb3b;
+        }
+
+        .highlight-btn.blue {
+            background-color: #2196f3;
+            color: white;
+        }
+
+        .highlight-btn.clear {
+            background-color: #f44336;
+            color: white;
+            font-size: 12px;
+        }
+
+        .highlight-yellow {
+            background-color: rgba(255, 235, 59, 0.3);
+            padding: 1px 2px;
+            border-radius: 2px;
+        }
+
+        .highlight-blue {
+            background-color: rgba(33, 150, 243, 0.3);
+            padding: 1px 2px;
+            border-radius: 2px;
+        }
+
+        .highlight-yellow, .highlight-blue {
+            cursor: pointer;
+        }
+
+        .highlight-yellow:hover, .highlight-blue:hover {
+            opacity: 0.8;
+        }
+
+        .yes-no-options {
+            display: flex;
+            gap: 15px;
+            margin-top: 10px;
+        }
+
+        .yes-no-option {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .multiple-choice-container {
+            display: flex;
+            flex-direction: column;
+            gap: 25px;
+            margin-top: 15px;
+        }
+
+        .multiple-choice-question {
+            border: 1px solid #e0e0e0;
+            border-radius: 8px;
+            padding: 15px;
+            background-color: #fafafa;
+        }
+
+        .multiple-choice-prompt {
+            font-weight: 600;
+            margin-bottom: 12px;
+            font-size: 16px;
+            color: #333;
+        }
+
+        .multiple-choice-options {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .multiple-choice-option {
+            display: flex;
+            align-items: flex-start;
+            gap: 10px;
+            padding: 10px;
+            border-radius: 4px;
+            transition: background-color 0.2s;
+            cursor: pointer;
+        }
+
+        .multiple-choice-option:hover {
+            background-color: #f0f0f0;
+        }
+
+        .multiple-choice-option input[type="radio"] {
+            width: 18px;
+            height: 18px;
+            margin-top: 2px;
+            flex-shrink: 0;
+        }
+
+        .multiple-choice-option label {
+            cursor: pointer;
+            line-height: 1.4;
+        }
+
+        .multiple-choice-option.correct {
+            background-color: #e9f7ef;
+            border-left: 4px solid #28a745;
+        }
+
+        .multiple-choice-option.incorrect {
+            background-color: #f8d7da;
+            border-left: 4px solid #dc3545;
+        }
+
+        .sentence-completion-container {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            margin-top: 15px;
+        }
+
+        .sentence-completion-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .summary-completion {
+            background-color: #f9f9f9;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            padding: 20px;
+            margin-top: 15px;
+        }
+
+        .summary-completion p {
+            line-height: 2.5;
+            margin-bottom: 15px;
+        }
+
+        .word-bank {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+            margin-top: 15px;
+            padding: 15px;
+            background-color: #f0f0f0;
+            border-radius: 5px;
+        }
+
+        .word-option {
+            padding: 8px 12px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            background-color: white;
+            cursor: pointer;
+            text-align: center;
+            transition: all 0.2s;
+        }
+
+        .word-option:hover {
+            background-color: #e9ecef;
+        }
+
+        .word-option.selected {
+            background-color: #4a90e2;
+            color: white;
+            border-color: #4a90e2;
+        }
+
+        .word-option.correct {
+            background-color: #28a745;
+            color: white;
+            border-color: #28a745;
+        }
+
+        .word-option.incorrect {
+            background-color: #dc3545;
+            color: white;
+            border-color: #dc3545;
+        }
+    </style>
+</head>
+<body>
+    <!-- Highlight Toolbar -->
+    <div id="highlight-toolbar" class="highlight-toolbar">
+        <button class="highlight-btn yellow" title="Yellow Highlight" onclick="applyHighlight('yellow')">Y</button>
+        <button class="highlight-btn blue" title="Blue Highlight" onclick="applyHighlight('blue')">B</button>
+        <button class="highlight-btn clear" title="Clear Highlight" onclick="clearHighlight()">×</button>
+    </div>
+
+    <div class="header">
+        <div class="timer-container">
+            <span class="timer-display">20:00</span>
+            <div class="timer-controls">
+                <button id="timer-toggle-btn" title="Pause/Resume Timer">
+                    <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 0 24 24" width="24px"><path d="M0 0h24v24H0V0z" fill="none"/><path d="M8 5v14l11-7L8 5z"/></svg>
+                </button>
+                <button id="timer-reset-btn" title="Reset Timer">
+                    <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 0 24 24" width="24px"><path d="M0 0h24v24H0V0z" fill="none"/><path d="M12 5V1L7 6l5 5V7c3.31 0 6 2.69 6 6s-2.69 6-6 6-6-2.69-6-6H4c0 4.42 3.58 8 8 8s8-3.58 8-8s-3.58-8-8-8z"/></svg>
+                </button>
+            </div>
+        </div>
+        
+    </div>
+
+    <div class="main-container" id="main-container">
+        <div id="passage-header-container">
+            <div id="part-header-3" class="part-header">
+                <p><strong>Reading Passage 3</strong></p>
+                <p>You should spend about 20 minutes on <strong>Questions 30-46</strong>, which are based on Reading Passage 3.</p>
+            </div>
+        </div>
+        <div class="panels-container">
+            <div class="passage-panel" id="passage-panel">
+                <div id="passage-text-3" class="reading-passage">
+                    <h4 class="text-center">The Rise of Multicultural London English</h4>
+                    <p>Immigrants from the Caribbean first arrived in Britain during the wave of immigration which took place in the 1950s. While immigrants from the Indian subcontinent made their homes throughout the UK, the African-Caribbean communities mainly settled in parts of London and several other major cities. Their vibrant Caribbean culture, however, has had a significant impact on the whole of British life, particularly on youth culture. Their influence on the music young people listen to is widely accepted, but what is less well known is the impact they have had on the way young British people now speak. Slang from Jamaican patois (an English-based Creole language spoken by Jamaicans and the Jamaican diaspora), as well as from other African-Caribbean communities, forms the backbone of what has become known as Multicultural London English (MLE).</p>
+                    <p>Ask any parent or secondary school teacher in London and they might reluctantly be able to come up with a few MLE expressions. Particularly of interest for linguists is the use of 'man' as a pronoun, because it is relatively rare for new pronouns to emerge in a language and, when they do, it takes many years for them to become established unlike the way 'man' has become. In the example 'I don't care what my girl looks like it's her personality man's looking at,' the speaker explains that personality is more important than appearance when it comes to choosing a girlfriend. Here the pronoun 'man' takes on the same kind of grammatical function as the pronoun 'I', but gives greater communicative force to the expression of a personal opinion.</p>
+                    <p>Some linguists who have been tracking the growth of MLE argue that it may be better to refer to it as Urban British English, as even young people far away from London are often able to understand some of the core terms, such as 'peng' and 'creps', meaning attractive and trainers respectively. 'The term MLE describes a "social dialect", a colloquial spoken style of UK English used initially among younger speakers and first identified and associated with London,' says Antony Thorne, a linguistics researcher at King's College London. This way of speaking is characterised by a vocabulary reflecting a high proportion of terms coined by African-Caribbeans, especially Jamaicans, together with very obvious elements of Cockney, the traditional local London dialect. Its structure and grammar may deviate from traditionally taught forms of standard English. However, not all of the slang in MLE is based on Jamaican patois; Thorne notes that there are South Asian, Turkish and Polish influences, to varying extents, on MLE's vocabulary and intonation.</p>
+                    <p>In schools in some areas of inner London, pupils come from many different cultural backgrounds. In some schools, as many as 80 languages can be heard in the playground. From a very young age, friendship groups are typically multiethnic. MLE could also be described as a 'multiethnolect', reflecting the fact that it is a socially inclusive variety of English spoken by young people from all ethnic groups living in the multilingual inner city area, including the indigenous Cockney families.</p>
+                    <p>MLE cannot therefore be attributed solely to the effects of large-scale immigration from former British colonies, as many linguists initially thought. Caribbean English entered mainstream British culture in the 1960s and 1970s through styles of music such as ska and reggae; by the 1980s, speech patterns that were predominantly associated with ethnic minorities began to gain prestige in playgrounds, streets and clubs in all parts of London. In plain English, MLE became cool. By the 1990s, Thorne noted that he had recorded white working-class school kids using Jamaican-influenced lexis, or what the mainstream media dubbed, 'Jafalcan' (fake Jamaican). Vocabulary and intonation patterns associated with music trends, such as the UK grime scene and US hip-hop, augmented these developments.</p>
+                    <p>Some commentators have alleged that the use of MLE will affect its users in more formal situations, such as in a job or college interview, and could hamper their opportunities of career advancement. Yet some of the young men who Dr Rob Drummond and his team of researchers spoke to in Manchester in a 2014 study didn't necessarily agree. Much like the rest of society, they knew the difference between a job interview and hanging out with their friends, and demonstrated it to those researchers. You just have to watch a teenager get a phone call from their grandma to see how quickly young people can adapt to varying contexts.</p>
+                    <p>It's becoming clear that MLE has the potential to change English forever, even outside of youth culture. Some people are unhappy about this but, of course, language isn't and shouldn't be a static monolith. There are similar trends taking place in all kinds of global urban environments, such as 'Turken-Deutsch,' Turkish-influenced slang used by teenagers in Berlin. Linguistic change is as natural as language itself; it's a fundamental part of how languages are actually formed throughout the world. Many English words are derived from other European tongues and English is the richer for that. MLE is a valuable continuation of this process. Just as all other languages evolve, so too must English change and mutate to remain both relevant and useful.</p>
+                </div>
+            </div>
+            <div class="resizer" id="resizer"></div>
+            <div class="questions-panel" id="questions-panel">
+                <div id="questions-3" class="question-set">
+                    <div class="questions-container">
+                        <div class="question" data-q-start="30" data-q-end="34">
+                            <div class="question-prompt">
+                                <p><strong>Questions 30-34</strong><br>Choose the correct letter, <strong>A</strong>, <strong>B</strong>, <strong>C</strong> or <strong>D</strong>.</p>
+                                <p>Write the correct letter in boxes 30-34 on your answer sheet.</p>
+                            </div>
+                            <div class="multiple-choice-container">
+                                <div class="multiple-choice-question">
+                                    <div class="multiple-choice-prompt">
+                                        <strong>30</strong> What are we told in the first paragraph about African-Caribbean communities in the UK?
+                                    </div>
+                                    <div class="multiple-choice-options">
+                                        <div class="multiple-choice-option">
+                                            <input type="radio" id="q30a" name="q30" value="A">
+                                            <label for="q30a"><strong>A</strong> Their influence is limited to the largest cities in the UK.</label>
+                                        </div>
+                                        <div class="multiple-choice-option">
+                                            <input type="radio" id="q30b" name="q30" value="B">
+                                            <label for="q30b"><strong>B</strong> There is a lack of awareness about their impact on language.</label>
+                                        </div>
+                                        <div class="multiple-choice-option">
+                                            <input type="radio" id="q30c" name="q30" value="C">
+                                            <label for="q30c"><strong>C</strong> They arrived in Britain in greater numbers than other immigrant groups.</label>
+                                        </div>
+                                        <div class="multiple-choice-option">
+                                            <input type="radio" id="q30d" name="q30" value="D">
+                                            <label for="q30d"><strong>D</strong> They have developed a special culture based on British and Caribbean influences.</label>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="multiple-choice-question">
+                                    <div class="multiple-choice-prompt">
+                                        <strong>31</strong> Linguists find the use of 'man' as a pronoun interesting because
+                                    </div>
+                                    <div class="multiple-choice-options">
+                                        <div class="multiple-choice-option">
+                                            <input type="radio" id="q31a" name="q31" value="A">
+                                            <label for="q31a"><strong>A</strong> it is an unusually creative use of language.</label>
+                                        </div>
+                                        <div class="multiple-choice-option">
+                                            <input type="radio" id="q31b" name="q31" value="B">
+                                            <label for="q31b"><strong>B</strong> it has no recognisable origins.</label>
+                                        </div>
+                                        <div class="multiple-choice-option">
+                                            <input type="radio" id="q31c" name="q31" value="C">
+                                            <label for="q31c"><strong>C</strong> it has spread remarkably quickly.</label>
+                                        </div>
+                                        <div class="multiple-choice-option">
+                                            <input type="radio" id="q31d" name="q31" value="D">
+                                            <label for="q31d"><strong>D</strong> it is widely understood.</label>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="multiple-choice-question">
+                                    <div class="multiple-choice-prompt">
+                                        <strong>32</strong> What point is the writer making about MLE in the fourth paragraph?
+                                    </div>
+                                    <div class="multiple-choice-options">
+                                        <div class="multiple-choice-option">
+                                            <input type="radio" id="q32a" name="q32" value="A">
+                                            <label for="q32a"><strong>A</strong> It is beginning to replace the many native languages of the capital's immigrant communities.</label>
+                                        </div>
+                                        <div class="multiple-choice-option">
+                                            <input type="radio" id="q32b" name="q32" value="B">
+                                            <label for="q32b"><strong>B</strong> Its vocabulary reflects the wide range of ethnicities in the UK's cities.</label>
+                                        </div>
+                                        <div class="multiple-choice-option">
+                                            <input type="radio" id="q32c" name="q32" value="C">
+                                            <label for="q32c"><strong>C</strong> It gives London schoolchildren a sense of their individual cultural identities.</label>
+                                        </div>
+                                        <div class="multiple-choice-option">
+                                            <input type="radio" id="q32d" name="q32" value="D">
+                                            <label for="q32d"><strong>D</strong> It has a unifying function within a diverse society.</label>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="multiple-choice-question">
+                                    <div class="multiple-choice-prompt">
+                                        <strong>33</strong> What is the writer's main point about music in the fifth paragraph?
+                                    </div>
+                                    <div class="multiple-choice-options">
+                                        <div class="multiple-choice-option">
+                                            <input type="radio" id="q33a" name="q33" value="A">
+                                            <label for="q33a"><strong>A</strong> Certain musical genres introduced Caribbean English to the wider UK population.</label>
+                                        </div>
+                                        <div class="multiple-choice-option">
+                                            <input type="radio" id="q33b" name="q33" value="B">
+                                            <label for="q33b"><strong>B</strong> American hip-hop was also influenced by Caribbean English.</label>
+                                        </div>
+                                        <div class="multiple-choice-option">
+                                            <input type="radio" id="q33c" name="q33" value="C">
+                                            <label for="q33c"><strong>C</strong> MLE is starting to inspire new generations of musicians.</label>
+                                        </div>
+                                        <div class="multiple-choice-option">
+                                            <input type="radio" id="q33d" name="q33" value="D">
+                                            <label for="q33d"><strong>D</strong> Reggae and ska have had the greatest impact on MLE.</label>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="multiple-choice-question">
+                                    <div class="multiple-choice-prompt">
+                                        <strong>34</strong> The writer uses the example of a teenager speaking to a grandparent to show that
+                                    </div>
+                                    <div class="multiple-choice-options">
+                                        <div class="multiple-choice-option">
+                                            <input type="radio" id="q34a" name="q34" value="A">
+                                            <label for="q34a"><strong>A</strong> MLE can be used in a variety of social and family situations.</label>
+                                        </div>
+                                        <div class="multiple-choice-option">
+                                            <input type="radio" id="q34b" name="q34" value="B">
+                                            <label for="q34b"><strong>B</strong> concerns about the inappropriate use of MLE are unnecessary.</label>
+                                        </div>
+                                        <div class="multiple-choice-option">
+                                            <input type="radio" id="q34c" name="q34" value="C">
+                                            <label for="q34c"><strong>C</strong> older generations of British people are becoming used to MLE.</label>
+                                        </div>
+                                        <div class="multiple-choice-option">
+                                            <input type="radio" id="q34d" name="q34" value="D">
+                                            <label for="q34d"><strong>D</strong> MLE has had a positive impact on the way young people communicate.</label>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="question" data-q-start="35" data-q-end="40">
+                            <div class="question-prompt">
+                                <p><strong>Questions 35-40</strong><br>Complete the summary using the list of words, <strong>A-K</strong>, below.</p>
+                                <p>Write the correct letter, <strong>A-K</strong>, in boxes 35-40 on your answer sheet.</p>
+                            </div>
+                            <div class="summary-completion">
+                                <p><strong>The growth of MLE</strong></p>
+                                <p>Some linguists claim that it would be <select class="answer-input" id="q35"><option value=""></option><option value="A">A</option><option value="B">B</option><option value="C">C</option><option value="D">D</option><option value="E">E</option><option value="F">F</option><option value="G">G</option><option value="H">H</option><option value="I">I</option><option value="J">J</option><option value="K">K</option></select> to refer to MLE as Urban British English. This is because many of its basic words are <select class="answer-input" id="q36"><option value=""></option><option value="A">A</option><option value="B">B</option><option value="C">C</option><option value="D">D</option><option value="E">E</option><option value="F">F</option><option value="G">G</option><option value="H">H</option><option value="I">I</option><option value="J">J</option><option value="K">K</option></select> to young people around the rest of the UK. MLE can be defined as a social dialect used by young people for <select class="answer-input" id="q37"><option value=""></option><option value="A">A</option><option value="B">B</option><option value="C">C</option><option value="D">D</option><option value="E">E</option><option value="F">F</option><option value="G">G</option><option value="H">H</option><option value="I">I</option><option value="J">J</option><option value="K">K</option></select> communication with each other.</p>
+                                <p>African-Caribbean dialects are a major influence on MLE, but it is also <select class="answer-input" id="q38"><option value=""></option><option value="A">A</option><option value="B">B</option><option value="C">C</option><option value="D">D</option><option value="E">E</option><option value="F">F</option><option value="G">G</option><option value="H">H</option><option value="I">I</option><option value="J">J</option><option value="K">K</option></select> to detect the influence of Cockney. There are also several other influences, but some of these are less <select class="answer-input" id="q39"><option value=""></option><option value="A">A</option><option value="B">B</option><option value="C">C</option><option value="D">D</option><option value="E">E</option><option value="F">F</option><option value="G">G</option><option value="H">H</option><option value="I">I</option><option value="J">J</option><option value="K">K</option></select>. Many of MLE's grammatical forms would be considered <select class="answer-input" id="q40"><option value=""></option><option value="A">A</option><option value="B">B</option><option value="C">C</option><option value="D">D</option><option value="E">E</option><option value="F">F</option><option value="G">G</option><option value="H">H</option><option value="I">I</option><option value="J">J</option><option value="K">K</option></select> by users of standard English.</p>
+                            </div>
+                            <div class="word-bank">
+                                <div class="word-option" data-value="A">A different</div>
+                                <div class="word-option" data-value="B">B impossible</div>
+                                <div class="word-option" data-value="C">C informal</div>
+                                <div class="word-option" data-value="D">D incomprehensible</div>
+                                <div class="word-option" data-value="E">E familiar</div>
+                                <div class="word-option" data-value="F">F incorrect</div>
+                                <div class="word-option" data-value="G">G significant</div>
+                                <div class="word-option" data-value="H">H easy</div>
+                                <div class="word-option" data-value="I">I appropriate</div>
+                                <div class="word-option" data-value="J">J amusing</div>
+                                <div class="word-option" data-value="K">K attractive</div>
+                            </div>
+                        </div>
+                        <div class="question" data-q-start="41" data-q-end="46">
+                            <div class="question-prompt">
+                                <p><strong>Questions 41-46</strong><br>Do the following statements agree with the views of the writer in Reading Passage 3?</p>
+                                <p>In boxes 41-46 on your answer sheet, write</p>
+                                <div class="example-box">
+                                    <p><strong>YES</strong> if the statement agrees with the views of the writer</p>
+                                    <p><strong>NO</strong> if the statement contradicts the views of the writer</p>
+                                    <p><strong>NOT GIVEN</strong> if it is impossible to say what the writer thinks about this</p>
+                                </div>
+                            </div>
+                            <div class="paragraph-matching-question">
+                                <span><strong>41</strong>&nbsp;&nbsp;The effect of MLE on the ways people speak is likely to be short-lived.</span>
+                                <select class="answer-input" id="q41"><option value=""></option><option value="YES">YES</option><option value="NO">NO</option><option value="NOT GIVEN">NOT GIVEN</option></select>
+                            </div>
+                            <div class="paragraph-matching-question">
+                                <span><strong>42</strong>&nbsp;&nbsp;It is mainly the older generation who are worried about the effects of MLE on youth culture.</span>
+                                <select class="answer-input" id="q42"><option value=""></option><option value="YES">YES</option><option value="NO">NO</option><option value="NOT GIVEN">NOT GIVEN</option></select>
+                            </div>
+                            <div class="paragraph-matching-question">
+                                <span><strong>43</strong>&nbsp;&nbsp;MLE is unique in the way it has influenced the speech of urban teenagers.</span>
+                                <select class="answer-input" id="q43"><option value=""></option><option value="YES">YES</option><option value="NO">NO</option><option value="NOT GIVEN">NOT GIVEN</option></select>
+                            </div>
+                            <div class="paragraph-matching-question">
+                                <span><strong>44</strong>&nbsp;&nbsp;English has undergone greater linguistic change than other world languages.</span>
+                                <select class="answer-input" id="q44"><option value=""></option><option value="YES">YES</option><option value="NO">NO</option><option value="NOT GIVEN">NOT GIVEN</option></select>
+                            </div>
+                            <div class="paragraph-matching-question">
+                                <span><strong>45</strong>&nbsp;&nbsp;English vocabulary has benefitted from the influences of other languages.</span>
+                                <select class="answer-input" id="q45"><option value=""></option><option value="YES">YES</option><option value="NO">NO</option><option value="NOT GIVEN">NOT GIVEN</option></select>
+                            </div>
+                            <div class="paragraph-matching-question">
+                                <span><strong>46</strong>&nbsp;&nbsp;MLE is a welcome development of the English language.</span>
+                                <select class="answer-input" id="q46"><option value=""></option><option value="YES">YES</option><option value="NO">NO</option><option value="NOT GIVEN">NOT GIVEN</option></select>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Navigation Arrows -->
+    <div class="nav-arrows">
+        <button class="nav-arrow" onclick="previousQuestion()" id="prevBtn">‹</button>
+        <button class="nav-arrow" onclick="nextQuestion()" id="nextBtn">›</button>
+    </div>
+
+    <!-- Bottom Navigation -->
+    <nav class="nav-row perScorableItem" aria-label="Questions">
+        <div class="footer__questionWrapper selected multiple" role="tablist">
+            <button role="tab" class="footer__questionNo" onclick="switchToPart(3)">
+                <span>
+                    <span aria-hidden="true" class="section-prefix">Part </span>
+                    <span class="sectionNr" aria-hidden="true">3</span>
+                </span>
+            </button>
+            <div class="footer__subquestionWrapper">
+                <button class="subQuestion" onclick="goToQuestion(30)"><span aria-hidden="true">30</span></button>
+                <button class="subQuestion" onclick="goToQuestion(31)"><span aria-hidden="true">31</span></button>
+                <button class="subQuestion" onclick="goToQuestion(32)"><span aria-hidden="true">32</span></button>
+                <button class="subQuestion" onclick="goToQuestion(33)"><span aria-hidden="true">33</span></button>
+                <button class="subQuestion" onclick="goToQuestion(34)"><span aria-hidden="true">34</span></button>
+                <button class="subQuestion" onclick="goToQuestion(35)"><span aria-hidden="true">35</span></button>
+                <button class="subQuestion" onclick="goToQuestion(36)"><span aria-hidden="true">36</span></button>
+                <button class="subQuestion" onclick="goToQuestion(37)"><span aria-hidden="true">37</span></button>
+                <button class="subQuestion" onclick="goToQuestion(38)"><span aria-hidden="true">38</span></button>
+                <button class="subQuestion" onclick="goToQuestion(39)"><span aria-hidden="true">39</span></button>
+                <button class="subQuestion" onclick="goToQuestion(40)"><span aria-hidden="true">40</span></button>
+                <button class="subQuestion" onclick="goToQuestion(41)"><span aria-hidden="true">41</span></button>
+                <button class="subQuestion" onclick="goToQuestion(42)"><span aria-hidden="true">42</span></button>
+                <button class="subQuestion" onclick="goToQuestion(43)"><span aria-hidden="true">43</span></button>
+                <button class="subQuestion" onclick="goToQuestion(44)"><span aria-hidden="true">44</span></button>
+                <button class="subQuestion" onclick="goToQuestion(45)"><span aria-hidden="true">45</span></button>
+                <button class="subQuestion" onclick="goToQuestion(46)"><span aria-hidden="true">46</span></button>
+            </div>
+        </div>
+        
+        <button id="deliver-button" aria-label="Review your answers" class="footer__deliverButton">
+            <i class="fa fa-check" aria-hidden="true"></i>
+            <span>Check Answers</span>
+        </button>
+    </nav>
+
+    <!-- Results Modal -->
+    <div id="results-modal" class="modal-overlay hidden">
+        <div class="modal-content">
+            <button class="modal-close-btn" onclick="closeResultsModal()">&times;</button>
+            <h2>Results</h2>
+            <div class="results-summary">
+                <p>Score: <span id="results-score"></span> / 17</p>
+                <p>IELTS Band: <span id="results-band"></span></p>
+            </div>
+            <div id="results-details" class="results-details-container">
+                <!-- Results for each question will be injected here -->
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // --- STATE VARIABLES ---
+        let currentPassage = 3;
+        let currentQuestion = 30;
+        let timeInSeconds = 1200; // 20 minutes
+        let timerInterval;
+        let draggedItem = null;
+        let currentSelection = null;
+
+        // --- DOM ELEMENTS ---
+        const timerDisplay = document.querySelector('.timer-display');
+        const timerToggleButton = document.getElementById('timer-toggle-btn');
+        const timerResetButton = document.getElementById('timer-reset-btn');
+        const deliverButton = document.getElementById('deliver-button');
+        const resizer = document.getElementById('resizer');
+        const highlightToolbar = document.getElementById('highlight-toolbar');
+
+        // --- CORRECT ANSWERS ---
+        const correctAnswers = {
+            '30': 'B', '31': 'C', '32': 'B', '33': 'A', '34': 'B',
+            '35': 'I', '36': 'E', '37': 'C', '38': 'H', '39': 'G', '40': 'F',
+            '41': 'NO', '42': 'NOT GIVEN', '43': 'NO', '44': 'NOT GIVEN', '45': 'YES', '46': 'YES'
+        };
+
+        // --- HIGHLIGHT SYSTEM ---
+        function initializeHighlightSystem() {
+            // Listen for text selection
+            document.addEventListener('mouseup', handleTextSelection);
+            document.addEventListener('touchend', handleTextSelection);
+            
+            // Hide toolbar when clicking outside
+            document.addEventListener('mousedown', hideHighlightToolbar);
+            document.addEventListener('touchstart', hideHighlightToolbar);
+            
+            // Prevent toolbar from hiding when clicking on it
+            highlightToolbar.addEventListener('mousedown', (e) => e.stopPropagation());
+            highlightToolbar.addEventListener('touchstart', (e) => e.stopPropagation());
+        }
+
+        function handleTextSelection(e) {
+            const selection = window.getSelection();
+            const selectedText = selection.toString().trim();
+            
+            if (selectedText.length > 0 && isSelectionInContent(selection)) {
+                currentSelection = selection;
+                showHighlightToolbar(selection);
+            } else {
+                hideHighlightToolbar();
+            }
+        }
+
+        function isSelectionInContent(selection) {
+            if (!selection.rangeCount) return false;
+            
+            const range = selection.getRangeAt(0);
+            const passagePanel = document.getElementById('passage-panel');
+            const questionsPanel = document.getElementById('questions-panel');
+            
+            return passagePanel.contains(range.commonAncestorContainer) || 
+                   questionsPanel.contains(range.commonAncestorContainer);
+        }
+
+        function showHighlightToolbar(selection) {
+            if (!selection.rangeCount) return;
+            
+            const range = selection.getRangeAt(0);
+            const rect = range.getBoundingClientRect();
+            
+            if (rect.width === 0 && rect.height === 0) return;
+            
+            // Position toolbar above selection
+            const toolbarRect = highlightToolbar.getBoundingClientRect();
+            let top = rect.top - toolbarRect.height - 10;
+            let left = rect.left + (rect.width / 2) - (toolbarRect.width / 2);
+            
+            // Adjust if toolbar goes off screen
+            if (top < 10) top = rect.bottom + 10;
+            if (left < 10) left = 10;
+            if (left + toolbarRect.width > window.innerWidth - 10) {
+                left = window.innerWidth - toolbarRect.width - 10;
+            }
+            
+            highlightToolbar.style.top = (top + window.scrollY) + 'px';
+            highlightToolbar.style.left = (left + window.scrollX) + 'px';
+            highlightToolbar.style.display = 'flex';
+        }
+
+        function hideHighlightToolbar() {
+            highlightToolbar.style.display = 'none';
+            currentSelection = null;
+            window.getSelection().removeAllRanges();
+        }
+
+        function applyHighlight(color) {
+            if (!currentSelection || !currentSelection.rangeCount) return;
+            
+            try {
+                const range = currentSelection.getRangeAt(0);
+                const selectedContent = range.extractContents();
+                const span = document.createElement('span');
+                
+                span.className = `highlight-${color}`;
+                span.appendChild(selectedContent);
+                range.insertNode(span);
+                
+                // Clean up empty text nodes
+                span.parentNode.normalize();
+                
+            } catch (error) {
+                console.error('Error applying highlight:', error);
+            }
+            
+            hideHighlightToolbar();
+        }
+
+        function clearHighlight() {
+            if (!currentSelection || !currentSelection.rangeCount) return;
+            
+            try {
+                const range = currentSelection.getRangeAt(0);
+                const container = range.commonAncestorContainer;
+                
+                // Find highlighted elements within selection
+                const walker = document.createTreeWalker(
+                    container,
+                    NodeFilter.SHOW_ELEMENT,
+                    {
+                        acceptNode: function(node) {
+                            return node.classList && 
+                                  (node.classList.contains('highlight-yellow') || 
+                                   node.classList.contains('highlight-blue')) 
+                                ? NodeFilter.FILTER_ACCEPT 
+                                : NodeFilter.FILTER_SKIP;
+                        }
+                    },
+                    false
+                );
+                
+                let node;
+                const highlightsToRemove = [];
+                
+                while (node = walker.nextNode()) {
+                    if (range.intersectsNode(node)) {
+                        highlightsToRemove.push(node);
+                    }
+                }
+                
+                // Remove highlights
+                highlightsToRemove.forEach(highlight => {
+                    const parent = highlight.parentNode;
+                    while (highlight.firstChild) {
+                        parent.insertBefore(highlight.firstChild, highlight);
+                    }
+                    parent.removeChild(highlight);
+                    parent.normalize();
+                });
+                
+            } catch (error) {
+                console.error('Error clearing highlight:', error);
+            }
+            
+            hideHighlightToolbar();
+        }
+
+        // --- INITIALIZATION ---
+        function initialize() {
+            startTimer();
+            initializeHighlightSystem();
+            switchToPart(3);
+            
+            document.body.addEventListener('input', updateAllIndicators);
+            document.body.addEventListener('change', updateAllIndicators);
+            
+            deliverButton.addEventListener('click', checkAnswers);
+            timerToggleButton.addEventListener('click', toggleTimer);
+            timerResetButton.addEventListener('click', resetTimer);
+
+            resizer.addEventListener('mousedown', initResize, false);
+            
+            // Initialize word bank selection
+            initializeWordBank();
+            
+            updateNavigation();
+        }
+
+        // --- WORD BANK SYSTEM ---
+        function initializeWordBank() {
+            const wordOptions = document.querySelectorAll('.word-option');
+            wordOptions.forEach(option => {
+                option.addEventListener('click', function() {
+                    const value = this.getAttribute('data-value');
+                    const currentSelect = document.querySelector('.answer-input:focus');
+                    if (currentSelect) {
+                        currentSelect.value = value;
+                        updateAllIndicators();
+                    }
+                });
+            });
+        }
+
+        // --- CHECK ANSWERS FUNCTION ---
+        function checkAnswers() {
+            clearInterval(timerInterval);
+            let score = 0;
+            const resultsDetailsContainer = document.getElementById('results-details');
+            resultsDetailsContainer.innerHTML = '';
+
+            // Clear previous markings
+            document.querySelectorAll('.correct, .incorrect').forEach(el => {
+                el.classList.remove('correct', 'incorrect');
+            });
+
+            // Check each question from 30 to 46
+            for (let qNum = 30; qNum <= 46; qNum++) {
+                const correctAnswer = correctAnswers[qNum];
+                let userAnswer = '';
+                let isCorrect = false;
+
+                // Get user answer based on question type
+                if (qNum >= 30 && qNum <= 34) {
+                    // Multiple choice questions (30-34)
+                    const radioInput = document.querySelector(`input[name="q${qNum}"]:checked`);
+                    if (radioInput) {
+                        userAnswer = radioInput.value;
+                        isCorrect = userAnswer === correctAnswer;
+                        
+                        // Mark the radio options
+                        const allOptions = document.querySelectorAll(`input[name="q${qNum}"]`);
+                        allOptions.forEach(option => {
+                            const optionContainer = option.closest('.multiple-choice-option');
+                            if (option.value === correctAnswer) {
+                                optionContainer.classList.add('correct');
+                            } else if (option.checked && !isCorrect) {
+                                optionContainer.classList.add('incorrect');
+                            }
+                        });
+                    }
+                } else if (qNum >= 35 && qNum <= 40) {
+                    // Summary completion questions (35-40)
+                    const selectInput = document.getElementById(`q${qNum}`);
+                    if (selectInput) {
+                        userAnswer = selectInput.value;
+                        isCorrect = userAnswer === correctAnswer;
+                        
+                        selectInput.classList.add(isCorrect ? 'correct' : 'incorrect');
+                    }
+                } else if (qNum >= 41 && qNum <= 46) {
+                    // YES/NO/NOT GIVEN questions (41-46)
+                    const selectInput = document.getElementById(`q${qNum}`);
+                    if (selectInput) {
+                        userAnswer = selectInput.value;
+                        isCorrect = userAnswer === correctAnswer;
+                        
+                        selectInput.classList.add(isCorrect ? 'correct' : 'incorrect');
+                        selectInput.closest('.paragraph-matching-question').classList.add(isCorrect ? 'correct' : 'incorrect');
+                    }
+                }
+
+                // Update score
+                if (isCorrect) {
+                    score++;
+                }
+
+                // Update question buttons
+                const subQuestionBtn = document.querySelector(`.subQuestion[onclick="goToQuestion(${qNum})"]`);
+                if (subQuestionBtn) {
+                    subQuestionBtn.classList.add(isCorrect ? 'correct' : 'incorrect');
+                }
+
+                // Add to results modal
+                const userAnswerDisplay = userAnswer || 'Not answered';
+                
+                const resultRow = document.createElement('div');
+                resultRow.className = `result-row ${isCorrect ? '' : 'incorrect'}`;
+                resultRow.innerHTML = `
+                    <span class="q-num">${qNum}</span>
+                    <span class="user-ans">${userAnswerDisplay}</span>
+                    <span class="correct-ans">${correctAnswer}</span>
+                `;
+                resultsDetailsContainer.appendChild(resultRow);
+            }
+
+            // Update score display
+            document.getElementById('results-score').textContent = score;
+            document.getElementById('results-band').textContent = calculateBandScore(score);
+            
+            // Show results modal
+            document.getElementById('results-modal').classList.remove('hidden');
+            
+            // Disable inputs after checking
+            disableInputs();
+        }
+
+        function calculateBandScore(score) {
+            const mapping = {
+                17: '9.0', 16: '9.0', 15: '8.5', 14: '8.5', 
+                13: '8.0', 12: '8.0', 11: '7.5', 10: '7.5',
+                9: '7.0', 8: '7.0', 7: '6.5', 6: '6.5',
+                5: '6.0', 4: '6.0', 3: '5.5', 2: '5.5',
+                1: '5.0', 0: '0.0'
+            };
+            return mapping[score] || '0.0';
+        }
+
+        function disableInputs() {
+            deliverButton.innerHTML = `<span>Checked! View Results.</span>`;
+            deliverButton.onclick = showResultsModal;
+
+            // Disable all inputs
+            document.querySelectorAll('input, select').forEach(el => {
+                el.disabled = true;
+            });
+        }
+
+        function showResultsModal() {
+            document.getElementById('results-modal').classList.remove('hidden');
+        }
+
+        window.closeResultsModal = function() {
+            document.getElementById('results-modal').classList.add('hidden');
+        }
+
+        // --- TIMER FUNCTIONS ---
+        function startTimer() {
+            if (timerInterval) clearInterval(timerInterval);
+            timerInterval = setInterval(() => {
+                timeInSeconds--;
+                const minutes = Math.floor(timeInSeconds / 60);
+                const seconds = timeInSeconds % 60;
+                timerDisplay.textContent = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+                if (timeInSeconds <= 0) {
+                    clearInterval(timerInterval);
+                    timerDisplay.textContent = "Time's up!";
+                    checkAnswers();
+                }
+            }, 1000);
+            timerToggleButton.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 0 24 24" width="24px"><path d="M0 0h24v24H0V0z" fill="none"/><path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/></svg>';
+        }
+
+        function pauseTimer() {
+            clearInterval(timerInterval);
+            timerToggleButton.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 0 24 24" width="24px"><path d="M0 0h24v24H0V0z" fill="none"/><path d="M8 5v14l11-7L8 5z"/></svg>';
+        }
+
+        function toggleTimer() {
+            if (timerToggleButton.innerHTML.includes('M6 19h4V5H6v14z')) {
+                pauseTimer();
+            } else {
+                startTimer();
+            }
+        }
+
+        function resetTimer() {
+            pauseTimer();
+            timeInSeconds = 1200;
+            timerDisplay.textContent = '20:00';
+            startTimer();
+        }
+
+        // --- NAVIGATION ---
+        window.switchToPart = function(partNumber) {
+            currentPassage = partNumber;
+            document.querySelectorAll('.reading-passage, .question-set, .part-header').forEach(el => el.classList.add('hidden'));
+            document.getElementById(`passage-text-${partNumber}`)?.classList.remove('hidden');
+            document.getElementById(`questions-${partNumber}`)?.classList.remove('hidden');
+            document.getElementById(`part-header-${partNumber}`)?.classList.remove('hidden');
+            
+            goToQuestion(30);
+        }
+        
+        window.goToQuestion = function(questionNumber) {
+            currentQuestion = questionNumber;
+            updateNavigation();
+            
+            // Scroll to the question
+            const questionElement = document.querySelector(`[data-q-start="${questionNumber}"]`);
+            if (questionElement) {
+                questionElement.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            }
+        }
+
+        function updateNavigation() {
+            document.querySelectorAll('.subQuestion').forEach(btn => btn.classList.remove('active'));
+            document.querySelector(`.subQuestion[onclick="goToQuestion(${currentQuestion})"]`)?.classList.add('active');
+            
+            document.getElementById('prevBtn').disabled = currentQuestion === 30;
+            document.getElementById('nextBtn').disabled = currentQuestion === 46;
+        }
+        
+        window.nextQuestion = () => currentQuestion < 46 && goToQuestion(currentQuestion + 1);
+        window.previousQuestion = () => currentQuestion > 30 && goToQuestion(currentQuestion - 1);
+
+        function updateAllIndicators() {
+            updateAnsweredIndicators();
+        }
+        
+        function updateAnsweredIndicators() {
+            for (let qNum = 30; qNum <= 46; qNum++) {
+                const btn = document.querySelector(`.subQuestion[onclick="goToQuestion(${qNum})"]`);
+                if (!btn || btn.classList.contains('correct') || btn.classList.contains('incorrect')) continue;
+
+                let isAnswered = false;
+
+                if (qNum >= 30 && qNum <= 34) {
+                    const radioInput = document.querySelector(`input[name="q${qNum}"]:checked`);
+                    isAnswered = radioInput !== null;
+                } else if (qNum >= 35 && qNum <= 40) {
+                    const selectInput = document.getElementById(`q${qNum}`);
+                    isAnswered = selectInput && selectInput.value !== '';
+                } else if (qNum >= 41 && qNum <= 46) {
+                    const selectInput = document.getElementById(`q${qNum}`);
+                    isAnswered = selectInput && selectInput.value !== '';
+                }
+                
+                btn.classList.toggle('answered', isAnswered);
+            }
+        }
+
+        // --- RESIZER ---
+        function initResize(e) {
+            e.preventDefault();
+            const startX = e.clientX;
+            const startWidth = document.getElementById('passage-panel').offsetWidth;
+            
+            const doDrag = (e) => {
+                const newWidth = startWidth + e.clientX - startX;
+                if (newWidth > 200 && (document.body.clientWidth - newWidth - resizer.offsetWidth) > 200) {
+                    document.getElementById('passage-panel').style.flex = `0 0 ${newWidth}px`;
+                }
+            };
+            
+            const stopDrag = () => {
+                window.removeEventListener('mousemove', doDrag, false);
+                window.removeEventListener('mouseup', stopDrag, false);
+            };
+            
+            window.addEventListener('mousemove', doDrag, false);
+            window.addEventListener('mouseup', stopDrag, false);
+        }
+
+        // --- START THE APP ---
+        document.addEventListener('DOMContentLoaded', initialize);
+    </script>
+</body>
+</html>

@@ -1,0 +1,1227 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>IELTS Reading: Australian Parrots</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --day-bg: #f8f9fa;
+            --day-text: #212529;
+            --day-primary: #4caf50;
+            --day-secondary: #e9ecef;
+            --day-highlight: #fff9c4;
+            --day-highlight-blue: #bbdefb;
+            
+            --night-bg: #1a1a2e;
+            --night-text: #e6e6e6;
+            --night-primary: #81c784;
+            --night-secondary: #2d3748;
+            --night-highlight: #52525b;
+            --night-highlight-blue: #1e3a8a;
+            
+            --sepia-bg: #f5efe0;
+            --sepia-text: #5c4b37;
+            --sepia-primary: #689f38;
+            --sepia-secondary: #e8d9c0;
+            --sepia-highlight: #e3cda5;
+            --sepia-highlight-blue: #c3d6e8;
+            
+            --transition: all 0.3s ease;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            margin: 0;
+            padding: 0;
+            background-color: var(--day-bg);
+            color: var(--day-text);
+            transition: var(--transition);
+        }
+
+        body.night-mode {
+            background-color: var(--night-bg);
+            color: var(--night-text);
+        }
+
+        body.sepia-mode {
+            background-color: var(--sepia-bg);
+            color: var(--sepia-text);
+        }
+
+        .container {
+            display: flex;
+            flex-direction: column;
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 20px;
+            border-radius: 12px;
+            margin-bottom: 20px;
+            background-color: var(--day-primary);
+            color: white;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            transition: var(--transition);
+        }
+
+        .night-mode header {
+            background-color: var(--night-primary);
+        }
+
+        .sepia-mode header {
+            background-color: var(--sepia-primary);
+        }
+
+        .logo {
+            font-size: 1.8rem;
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+        }
+
+        .logo i {
+            margin-right: 10px;
+        }
+
+        .theme-switcher {
+            display: flex;
+            gap: 10px;
+        }
+
+        .theme-btn {
+            background: none;
+            border: 2px solid rgba(255, 255, 255, 0.5);
+            color: white;
+            padding: 8px 15px;
+            border-radius: 20px;
+            cursor: pointer;
+            transition: var(--transition);
+            font-weight: 500;
+        }
+
+        .theme-btn:hover {
+            background: rgba(255, 255, 255, 0.2);
+        }
+
+            background-color: #0088cc;
+            color: white;
+            text-decoration: none;
+            padding: 10px 20px;
+            border-radius: 20px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-weight: 500;
+            transition: var(--transition);
+        }
+
+            background-color: #006da3;
+            transform: translateY(-2px);
+        }
+
+        .timer {
+            font-size: 1.5rem;
+            font-weight: bold;
+            padding: 10px 20px;
+            border-radius: 12px;
+            background-color: var(--day-secondary);
+            margin-bottom: 20px;
+            text-align: center;
+            transition: var(--transition);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.05);
+        }
+
+        .night-mode .timer {
+            background-color: var(--night-secondary);
+        }
+
+        .sepia-mode .timer {
+            background-color: var(--sepia-secondary);
+        }
+
+        .timer.warning {
+            background-color: #ffecb3;
+            color: #ff6f00;
+            animation: pulse 1s infinite;
+        }
+
+        .night-mode .timer.warning {
+            background-color: #5a3c1d;
+            color: #ffab40;
+        }
+
+        .sepia-mode .timer.warning {
+            background-color: #e3cda5;
+            color: #8b5a2b;
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.02); }
+            100% { transform: scale(1); }
+        }
+
+        .content {
+            display: flex;
+            gap: 30px;
+            margin-bottom: 30px;
+        }
+
+        @media (max-width: 992px) {
+            .content {
+                flex-direction: column;
+            }
+        }
+
+        .passage-container {
+            flex: 1;
+            background-color: white;
+            border-radius: 12px;
+            padding: 25px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+            transition: var(--transition);
+            max-height: 80vh;
+            overflow-y: auto;
+        }
+
+        .night-mode .passage-container {
+            background-color: #2d3748;
+        }
+
+        .sepia-mode .passage-container {
+            background-color: #f0e6d2;
+        }
+
+        .questions-container {
+            flex: 1;
+            background-color: white;
+            border-radius: 12px;
+            padding: 25px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+            transition: var(--transition);
+            max-height: 80vh;
+            overflow-y: auto;
+        }
+
+        .night-mode .questions-container {
+            background-color: #2d3748;
+        }
+
+        .sepia-mode .questions-container {
+            background-color: #f0e6d2;
+        }
+
+        h1 {
+            font-size: 1.8rem;
+            margin-top: 0;
+            color: var(--day-primary);
+            transition: var(--transition);
+        }
+
+        .night-mode h1 {
+            color: var(--night-primary);
+        }
+
+        .sepia-mode h1 {
+            color: var(--sepia-primary);
+        }
+
+        h2 {
+            font-size: 1.4rem;
+            margin-top: 0;
+            color: var(--day-primary);
+            transition: var(--transition);
+        }
+
+        .night-mode h2 {
+            color: var(--night-primary);
+        }
+
+        .sepia-mode h2 {
+            color: var(--sepia-primary);
+        }
+
+        .passage-text {
+            font-size: 1.1rem;
+            line-height: 1.7;
+        }
+
+        .passage-text p {
+            margin-bottom: 20px;
+        }
+
+        .highlight-menu {
+            position: absolute;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+            padding: 8px;
+            display: flex;
+            gap: 5px;
+            z-index: 1000;
+            transform: translateY(-100%);
+            opacity: 0;
+            transition: opacity 0.2s ease;
+            pointer-events: none;
+        }
+
+        .highlight-menu.show {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        .highlight-btn {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            border: none;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 16px;
+            transition: var(--transition);
+        }
+
+        .highlight-btn.yellow {
+            background-color: #ffeb3b;
+        }
+
+        .highlight-btn.blue {
+            background-color: #90caf9;
+            color: #0d47a1;
+        }
+
+        .highlight-btn.clear {
+            background-color: #f5f5f5;
+        }
+
+        .highlight-btn:hover {
+            transform: scale(1.1);
+        }
+
+        .highlight-yellow {
+            background-color: var(--day-highlight);
+            transition: var(--transition);
+        }
+
+        .night-mode .highlight-yellow {
+            background-color: var(--night-highlight);
+        }
+
+        .sepia-mode .highlight-yellow {
+            background-color: var(--sepia-highlight);
+        }
+
+        .highlight-blue {
+            background-color: var(--day-highlight-blue);
+            transition: var(--transition);
+        }
+
+        .night-mode .highlight-blue {
+            background-color: var(--night-highlight-blue);
+        }
+
+        .sepia-mode .highlight-blue {
+            background-color: var(--sepia-highlight-blue);
+        }
+
+        .question-block {
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid #e9ecef;
+            transition: var(--transition);
+        }
+
+        .night-mode .question-block {
+            border-bottom: 1px solid #4a5568;
+        }
+
+        .sepia-mode .question-block {
+            border-bottom: 1px solid #d9c9a6;
+        }
+
+        .question-title {
+            font-weight: 600;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .question-title i {
+            color: var(--day-primary);
+            transition: var(--transition);
+        }
+
+        .night-mode .question-title i {
+            color: var(--night-primary);
+        }
+
+        .sepia-mode .question-title i {
+            color: var(--sepia-primary);
+        }
+
+        .options-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+
+        .option-btn {
+            padding: 10px;
+            border: 2px solid #dee2e6;
+            border-radius: 8px;
+            background: white;
+            cursor: pointer;
+            text-align: center;
+            transition: var(--transition);
+            font-weight: 500;
+        }
+
+        .night-mode .option-btn {
+            background: #2d3748;
+            border-color: #4a5568;
+            color: #e6e6e6;
+        }
+
+        .sepia-mode .option-btn {
+            background: #f0e6d2;
+            border-color: #d9c9a6;
+            color: #5c4b37;
+        }
+
+        .option-btn:hover {
+            border-color: var(--day-primary);
+            transform: translateY(-2px);
+        }
+
+        .night-mode .option-btn:hover {
+            border-color: var(--night-primary);
+        }
+
+        .sepia-mode .option-btn:hover {
+            border-color: var(--sepia-primary);
+        }
+
+        .option-btn.selected {
+            background-color: var(--day-primary);
+            color: white;
+            border-color: var(--day-primary);
+        }
+
+        .night-mode .option-btn.selected {
+            background-color: var(--night-primary);
+            border-color: var(--night-primary);
+        }
+
+        .sepia-mode .option-btn.selected {
+            background-color: var(--sepia-primary);
+            border-color: var(--sepia-primary);
+            color: white;
+        }
+
+        .input-box {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #dee2e6;
+            border-radius: 8px;
+            font-size: 1rem;
+            transition: var(--transition);
+            margin-bottom: 10px;
+        }
+
+        .night-mode .input-box {
+            background: #2d3748;
+            border-color: #4a5568;
+            color: #e6e6e6;
+        }
+
+        .sepia-mode .input-box {
+            background: #f0e6d2;
+            border-color: #d9c9a6;
+            color: #5c4b37;
+        }
+
+        .input-box:focus {
+            border-color: var(--day-primary);
+            outline: none;
+        }
+
+        .night-mode .input-box:focus {
+            border-color: var(--night-primary);
+        }
+
+        .sepia-mode .input-box:focus {
+            border-color: var(--sepia-primary);
+        }
+
+        .word-bank {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-top: 10px;
+        }
+
+        .word-option {
+            padding: 8px 15px;
+            background: #e9ecef;
+            border-radius: 20px;
+            cursor: pointer;
+            transition: var(--transition);
+            font-size: 0.9rem;
+        }
+
+        .night-mode .word-option {
+            background: #4a5568;
+        }
+
+        .sepia-mode .word-option {
+            background: #e8d9c0;
+        }
+
+        .word-option:hover {
+            background: #dee2e6;
+            transform: translateY(-2px);
+        }
+
+        .night-mode .word-option:hover {
+            background: #718096;
+        }
+
+        .sepia-mode .word-option:hover {
+            background: #d9c9a6;
+        }
+
+        .submit-btn {
+            display: block;
+            width: 100%;
+            padding: 15px;
+            background-color: var(--day-primary);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-size: 1.2rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: var(--transition);
+            margin-top: 20px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+
+        .night-mode .submit-btn {
+            background-color: var(--night-primary);
+        }
+
+        .sepia-mode .submit-btn {
+            background-color: var(--sepia-primary);
+        }
+
+        .submit-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 16px rgba(0, 0, 0, 0.15);
+        }
+
+        .results-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.8);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 2000;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s ease;
+        }
+
+        .results-container.show {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        .results-content {
+            background-color: white;
+            width: 90%;
+            max-width: 800px;
+            max-height: 90vh;
+            border-radius: 12px;
+            padding: 30px;
+            overflow-y: auto;
+            position: relative;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+        }
+
+        .night-mode .results-content {
+            background-color: #2d3748;
+            color: #e6e6e6;
+        }
+
+        .sepia-mode .results-content {
+            background-color: #f0e6d2;
+            color: #5c4b37;
+        }
+
+        .close-results {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: #6c757d;
+            transition: var(--transition);
+        }
+
+        .close-results:hover {
+            color: #495057;
+        }
+
+        .night-mode .close-results:hover {
+            color: #e6e6e6;
+        }
+
+        .sepia-mode .close-results:hover {
+            color: #8b5a2b;
+        }
+
+        .score-display {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .score-value {
+            font-size: 3rem;
+            font-weight: bold;
+            color: var(--day-primary);
+            margin: 10px 0;
+            transition: var(--transition);
+        }
+
+        .night-mode .score-value {
+            color: var(--night-primary);
+        }
+
+        .sepia-mode .score-value {
+            color: var(--sepia-primary);
+        }
+
+        .result-item {
+            margin-bottom: 20px;
+            padding: 15px;
+            border-radius: 8px;
+            background-color: #f8f9fa;
+            transition: var(--transition);
+        }
+
+        .night-mode .result-item {
+            background-color: #4a5568;
+        }
+
+        .sepia-mode .result-item {
+            background-color: #e8d9c0;
+        }
+
+        .result-item.correct {
+            border-left: 4px solid #28a745;
+        }
+
+        .result-item.incorrect {
+            border-left: 4px solid #dc3545;
+        }
+
+        .result-question {
+            font-weight: 600;
+            margin-bottom: 10px;
+        }
+
+        .result-answer {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 5px;
+        }
+
+        .result-icon {
+            font-size: 1.2rem;
+        }
+
+        .correct .result-icon {
+            color: #28a745;
+        }
+
+        .incorrect .result-icon {
+            color: #dc3545;
+        }
+
+        .result-location {
+            font-size: 0.9rem;
+            color: #6c757d;
+            margin-top: 5px;
+        }
+
+        .night-mode .result-location {
+            color: #a0aec0;
+        }
+
+        .sepia-mode .result-location {
+            color: #8b5a2b;
+        }
+
+        .passage-reference {
+            margin-top: 10px;
+            padding: 10px;
+            background-color: #e9ecef;
+            border-radius: 6px;
+            font-style: italic;
+            transition: var(--transition);
+        }
+
+        .night-mode .passage-reference {
+            background-color: #4a5568;
+        }
+
+        .sepia-mode .passage-reference {
+            background-color: #e8d9c0;
+        }
+
+        .footer {
+            text-align: center;
+            padding: 20px;
+            margin-top: 30px;
+            color: #6c757d;
+            font-size: 0.9rem;
+            transition: var(--transition);
+        }
+
+        .night-mode .footer {
+            color: #a0aec0;
+        }
+
+        .sepia-mode .footer {
+            color: #8b5a2b;
+        }
+    </style>
+</head>
+<body class="day-mode">
+    <div class="container">
+        <header>
+            <div class="logo">
+                <i class="fas fa-feather-alt"></i>
+                <span>IELTS Reading Practice</span>
+            </div>
+            <div class="theme-switcher">
+                <button class="theme-btn" id="day-theme">Day</button>
+                <button class="theme-btn" id="night-theme">Night</button>
+                <button class="theme-btn" id="sepia-theme">Sepia</button>
+            </div>
+        </header>
+
+        <div class="timer" id="timer">
+            <i class="fas fa-clock"></i>
+            <span id="time">20:00</span>
+        </div>
+
+        <div class="content">
+            <div class="passage-container">
+                <h1>Australian Parrots and Their Adaptation to Habitat Change</h1>
+                <div class="passage-text" id="passage-text">
+                    <p><strong>A</strong> Parrots are found across the tropic and in all southern hemisphere continents except Antarctica, but nowhere do they display such a richness of diversity and form as in Australia. One-sixth of the world's 345 parrot species are found there, and Australia has long been renowned for the number and variety of its parrots.</p>
+                    
+                    <p><strong>B</strong> In the 16th century, the German cartographer Mercator made a world map that included a place, somewhere near present-day Australia, that he named Terra Psittacorum - the Land of Parrots - and the first European settlers in Australia often referred to the country as Parrot Land. In 1865, the celebrated British naturalist and wildlife artist John Gould said: "No group of birds gives Australia so tropical and benign an air as the numerous species of this great family by which it is tenanted.</p>
+                    
+                    <p><strong>C</strong> Parrots are descendants of an ancient line. Due to their great diversity, and since most species inhabit Africa, Australia and South America, it seems almost certain that parrots originated millions of years ago on the ancient southern continent of Gondwana, before it broke up into the separate southern hemisphere continents we know today. Much of Gondwana comprised vast rainforests intersected by huge slow-flowing rivers and expansive lakes, but by eight million years ago, great changes were underway. The center of the continent of Australia had begun to dry out, and the rainforests that once covered it gradually contracted to the continental margins, where, to a limited extent, they still exist today.</p>
+                    
+                    <p><strong>D</strong> The creatures that remained in those shrinking rainforests had to adapt to the drier conditions or face extinction. Reacting to these desperate circumstances, the parrot family, typically found in jungles in other parts of the world, has populated some of Australia's harshest environments. The parrots spread from ancestral forests through eucalypt woodlands to colonies the central deserts of Australia, and as a consequence they diversified into a wide range of species with adaptations that reflect the many changes animals and plants had to make to survive in these areas.</p>
+                    
+                    <p><strong>E</strong> These evolutionary pressures helped mould keratin, the substance from which beaks are made into a range of tools capable of gathering the new food types favored by various species of parrot. The size of a parrot's short, blunt beak and the length of that beak's curved upper section are related to the type of food each species eats. Some have comparatively long beaks that are perfect for extracting seeds from fruit; others have broader and stronger beaks that are designed for cracking hard seeds.</p>
+                    
+                    <p><strong>F</strong> Differently shaped beaks are not the only adaptations that have been made during the developing relationship between parrots and their food plants. Like all of Australia's many honey eating birds, the rainbow-coloured lorikeets and the flowers on which they feed have long coevolved with features such as the shape and colour of the flowers adapted to the bird's particular needs. For example, red is the most attractive colour to birds, and thus flowers which depend on birds for pollination are more often red, and lorikeets' tongues have bristles which help them to collect as much pollen as possible.</p>
+                    
+                    <p><strong>G</strong> Today, most of Australia's parrots inhabit woodland and open forest, and their numbers decline towards both deserts and wetter areas. The majority are nomadic to some degree, moving around to take advantage of feeding and breeding places. Two of the dry country parrots, the pink and grey galah and the pink, white and yellow corella have expanded their ranges in recent years. They are among the species that have adapted well to the changes brought about by European settlement. Forest clearing created grasslands where galahs and corellas thrive.</p>
+                    
+                    <p><strong>H</strong> But other parrot species did not fare so well when their environments were altered. The clearing of large areas of rainforest is probably responsible for the disappearance of the double-eyed fig parrot, and numbers of ground parrots declined when a great part of their habitat was destroyed by the draining of coastal swamps. Even some parrot species that benefited from forest clearing at first are now confronted by a shortage of nesting sites due to further man-made changes.</p>
+                    
+                    <p><strong>I</strong> New conditions also sometimes favour an incoming species over one that originally inhabited the area. For example, after farmers cleared large areas of forest on Kangaroo Island off the coast of South Australia, the island was colonised by galahs. They were soon going down holes and destroying black cockatoo eggs in order to take the hole for their own use. Their success precipitated a partial collapse in the black cockatoo population when the later lost the struggle for scarce nesting hollows.</p>
+                    
+                    <p><strong>J</strong> There may be no final answer to ensuring an equitable balance between parrot species. Nest box programs help ease the shortage of nesting sites in some places, but there are not enough, they are expensive and they are not an adequate substitute for large, old trees, such as the habitat they represent and nectar, pollen and seeds they provide. Competition between parrots for nest sites is a result of the changes we humans have made to the Earth. We are the most widespread and dangerous competitors that parrots have ever had to face, but we also have the knowledge and skill to maintain the wonderfully rich diversity of Australia's parrots. All we need is the will to do so.</p>
+                </div>
+            </div>
+
+            <div class="questions-container">
+                <h2>Questions 1-13</h2>
+                
+                <div class="question-block">
+                    <div class="question-title">
+                        <i class="fas fa-list-ol"></i>
+                        <span>Questions 1-6</span>
+                    </div>
+                    <p>Reading Passage has ten paragraphs A-J. Which paragraph contains the following information?</p>
+                    <p>Write the correct letter, A-J in boxes 1-6 on your answer sheet.</p>
+                    
+                    <div class="questions-list">
+                        <div class="question-item">
+                            <p>1. An example of how one parrot species may survive at the expense of another</p>
+                            <div class="answer-buttons" data-question="1">
+                                <div class="option-btn" data-value="A">A</div>
+                                <div class="option-btn" data-value="B">B</div>
+                                <div class="option-btn" data-value="C">C</div>
+                                <div class="option-btn" data-value="D">D</div>
+                                <div class="option-btn" data-value="E">E</div>
+                                <div class="option-btn" data-value="F">F</div>
+                                <div class="option-btn" data-value="G">G</div>
+                                <div class="option-btn" data-value="H">H</div>
+                                <div class="option-btn" data-value="I">I</div>
+                                <div class="option-btn" data-value="J">J</div>
+                            </div>
+                        </div>
+                        
+                        <div class="question-item">
+                            <p>2. A description of how plants may adapt to attract birds</p>
+                            <div class="answer-buttons" data-question="2">
+                                <div class="option-btn" data-value="A">A</div>
+                                <div class="option-btn" data-value="B">B</div>
+                                <div class="option-btn" data-value="C">C</div>
+                                <div class="option-btn" data-value="D">D</div>
+                                <div class="option-btn" data-value="E">E</div>
+                                <div class="option-btn" data-value="F">F</div>
+                                <div class="option-btn" data-value="G">G</div>
+                                <div class="option-btn" data-value="H">H</div>
+                                <div class="option-btn" data-value="I">I</div>
+                                <div class="option-btn" data-value="J">J</div>
+                            </div>
+                        </div>
+                        
+                        <div class="question-item">
+                            <p>3. Example of two parrot species which benefited from changes to the environment</p>
+                            <div class="answer-buttons" data-question="3">
+                                <div class="option-btn" data-value="A">A</div>
+                                <div class="option-btn" data-value="B">B</div>
+                                <div class="option-btn" data-value="C">C</div>
+                                <div class="option-btn" data-value="D">D</div>
+                                <div class="option-btn" data-value="E">E</div>
+                                <div class="option-btn" data-value="F">F</div>
+                                <div class="option-btn" data-value="G">G</div>
+                                <div class="option-btn" data-value="H">H</div>
+                                <div class="option-btn" data-value="I">I</div>
+                                <div class="option-btn" data-value="J">J</div>
+                            </div>
+                        </div>
+                        
+                        <div class="question-item">
+                            <p>4. How the varied Australian landscape resulted in a great variety of parrot species</p>
+                            <div class="answer-buttons" data-question="4">
+                                <div class="option-btn" data-value="A">A</div>
+                                <div class="option-btn" data-value="B">B</div>
+                                <div class="option-btn" data-value="C">C</div>
+                                <div class="option-btn" data-value="D">D</div>
+                                <div class="option-btn" data-value="E">E</div>
+                                <div class="option-btn" data-value="F">F</div>
+                                <div class="option-btn" data-value="G">G</div>
+                                <div class="option-btn" data-value="H">H</div>
+                                <div class="option-btn" data-value="I">I</div>
+                                <div class="option-btn" data-value="J">J</div>
+                            </div>
+                        </div>
+                        
+                        <div class="question-item">
+                            <p>5. A reason why most parrot species are native to the southern hemisphere</p>
+                            <div class="answer-buttons" data-question="5">
+                                <div class="option-btn" data-value="A">A</div>
+                                <div class="option-btn" data-value="B">B</div>
+                                <div class="option-btn" data-value="C">C</div>
+                                <div class="option-btn" data-value="D">D</div>
+                                <div class="option-btn" data-value="E">E</div>
+                                <div class="option-btn" data-value="F">F</div>
+                                <div class="option-btn" data-value="G">G</div>
+                                <div class="option-btn" data-value="H">H</div>
+                                <div class="option-btn" data-value="I">I</div>
+                                <div class="option-btn" data-value="J">J</div>
+                            </div>
+                        </div>
+                        
+                        <div class="question-item">
+                            <p>6. An example of a parrot species which did not survive changes to its habitat</p>
+                            <div class="answer-buttons" data-question="6">
+                                <div class="option-btn" data-value="A">A</div>
+                                <div class="option-btn" data-value="B">B</div>
+                                <div class="option-btn" data-value="C">C</div>
+                                <div class="option-btn" data-value="D">D</div>
+                                <div class="option-btn" data-value="E">E</div>
+                                <div class="option-btn" data-value="F">F</div>
+                                <div class="option-btn" data-value="G">G</div>
+                                <div class="option-btn" data-value="H">H</div>
+                                <div class="option-btn" data-value="I">I</div>
+                                <div class="option-btn" data-value="J">J</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="question-block">
+                    <div class="question-title">
+                        <i class="fas fa-check-circle"></i>
+                        <span>Questions 7-9</span>
+                    </div>
+                    <p>Choose the correct letter <strong>A</strong>, <strong>B</strong>, <strong>C</strong>, or <strong>D</strong>.</p>
+                    <p>Write the correct letter in boxes 7-9 on your answer sheet.</p>
+                    
+                    <div class="questions-list">
+                        <div class="question-item">
+                            <p>7. The writer believes that most parrot species</p>
+                            <div class="answer-buttons" data-question="7">
+                                <div class="option-btn" data-value="A">A Move from Africa and South America to Australia</div>
+                                <div class="option-btn" data-value="B">B Had ancestors in either Africa, Australia or South America</div>
+                                <div class="option-btn" data-value="C">C Had ancestors in a continent which later split up</div>
+                                <div class="option-btn" data-value="D">D Came from a continent now covered by water</div>
+                            </div>
+                        </div>
+                        
+                        <div class="question-item">
+                            <p>8. What does the Writer say about parrot's beak?</p>
+                            <div class="answer-buttons" data-question="8">
+                                <div class="option-btn" data-value="A">A They are longer than those of other birds</div>
+                                <div class="option-btn" data-value="B">B They are made of a unique material</div>
+                                <div class="option-btn" data-value="C">C They are used more efficiently than those of other species</div>
+                                <div class="option-btn" data-value="D">D They are specially adapted to suit the diet</div>
+                            </div>
+                        </div>
+                        
+                        <div class="question-item">
+                            <p>9. Which of the following is NOT mentioned by the writer as a disadvantage of nesting boxes?</p>
+                            <div class="answer-buttons" data-question="9">
+                                <div class="option-btn" data-value="A">A They cost too much</div>
+                                <div class="option-btn" data-value="B">B They need to be maintained</div>
+                                <div class="option-btn" data-value="C">C They provide only shelter, not food</div>
+                                <div class="option-btn" data-value="D">D There are too few of them</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="question-block">
+                    <div class="question-title">
+                        <i class="fas fa-edit"></i>
+                        <span>Questions 10-13</span>
+                    </div>
+                    <p>Complete the summary below.</p>
+                    <p>Choose <strong>NO MORE THAN TWO WORDS AND/OR A NUMBER</strong> from the passage for each answer.</p>
+                    <p>Write your answers in boxes 10-13 on your answer sheet.</p>
+                    
+                    <div class="questions-list">
+                        <div class="question-item">
+                            <p>There are 345 varieties of parrot in existence and, of these, <input type="text" class="input-box" data-question="10"> live in Australia. As early as the <input type="text" class="input-box" data-question="11">, the mapmaker <input type="text" class="input-box" data-question="12"> recognized that parrots lived in that part of the world. <input type="text" class="input-box" data-question="13">, the famous painter of animals and birds, commented on the size and beauty of the Australian parrot family.</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <button class="submit-btn" id="submit-btn">
+                    <i class="fas fa-paper-plane"></i>
+                    Submit Answers
+                </button>
+            </div>
+        </div>
+
+        <div class="footer">
+            <p>IELTS Reading Practice Test • Good luck with your preparation!</p>
+        </div>
+    </div>
+
+    <div class="highlight-menu" id="highlight-menu">
+        <button class="highlight-btn yellow" data-color="yellow">
+            <i class="fas fa-highlighter"></i>
+        </button>
+        <button class="highlight-btn blue" data-color="blue">
+            <i class="fas fa-highlighter"></i>
+        </button>
+        <button class="highlight-btn clear" data-color="clear">
+            <i class="fas fa-eraser"></i>
+        </button>
+    </div>
+
+    <div class="results-container" id="results-container">
+        <div class="results-content">
+            <button class="close-results" id="close-results">
+                <i class="fas fa-times"></i>
+            </button>
+            <div class="score-display">
+                <h2>Your Results</h2>
+                <div class="score-value" id="score-value">0/13</div>
+                <p id="score-message">Well done!</p>
+            </div>
+            
+            <div id="results-list">
+                <!-- Results will be inserted here -->
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Theme switching
+            const body = document.body;
+            const dayThemeBtn = document.getElementById('day-theme');
+            const nightThemeBtn = document.getElementById('night-theme');
+            const sepiaThemeBtn = document.getElementById('sepia-theme');
+            
+            dayThemeBtn.addEventListener('click', () => {
+                body.className = 'day-mode';
+            });
+            
+            nightThemeBtn.addEventListener('click', () => {
+                body.className = 'night-mode';
+            });
+            
+            sepiaThemeBtn.addEventListener('click', () => {
+                body.className = 'sepia-mode';
+            });
+            
+            // Timer functionality
+            const timerElement = document.getElementById('timer');
+            const timeDisplay = document.getElementById('time');
+            let timeLeft = 20 * 60; // 20 minutes in seconds
+            let timerInterval;
+            
+            function startTimer() {
+                clearInterval(timerInterval);
+                timerInterval = setInterval(updateTimer, 1000);
+            }
+            
+            function updateTimer() {
+                if (timeLeft <= 0) {
+                    clearInterval(timerInterval);
+                    timeDisplay.textContent = '00:00';
+                    timerElement.classList.add('warning');
+                    submitAnswers();
+                    return;
+                }
+                
+                timeLeft--;
+                
+                const minutes = Math.floor(timeLeft / 60);
+                const seconds = timeLeft % 60;
+                
+                timeDisplay.textContent = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+                
+                if (timeLeft === 5 * 60) {
+                    timerElement.classList.add('warning');
+                }
+            }
+            
+            startTimer();
+            
+            // Text highlighting
+            const passageText = document.getElementById('passage-text');
+            const highlightMenu = document.getElementById('highlight-menu');
+            let currentSelection = null;
+            
+            passageText.addEventListener('mouseup', function(e) {
+                const selection = window.getSelection();
+                if (!selection.toString().trim()) return;
+                
+                currentSelection = selection;
+                
+                const range = selection.getRangeAt(0);
+                const rect = range.getBoundingClientRect();
+                
+                highlightMenu.style.top = (rect.top + window.scrollY - 45) + 'px';
+                highlightMenu.style.left = (rect.left + window.scrollX + rect.width / 2 - 60) + 'px';
+                highlightMenu.classList.add('show');
+            });
+            
+            document.addEventListener('mousedown', function(e) {
+                if (!highlightMenu.contains(e.target)) {
+                    highlightMenu.classList.remove('show');
+                }
+            });
+            
+            document.querySelectorAll('.highlight-btn').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    if (!currentSelection) return;
+                    
+                    const color = this.dataset.color;
+                    
+                    if (color === 'clear') {
+                        removeHighlight(currentSelection);
+                    } else {
+                        applyHighlight(currentSelection, color);
+                    }
+                    
+                    highlightMenu.classList.remove('show');
+                    currentSelection = null;
+                });
+            });
+            
+            function applyHighlight(selection, color) {
+                const range = selection.getRangeAt(0);
+                const selectedText = range.extractContents();
+                
+                const span = document.createElement('span');
+                span.appendChild(selectedText);
+                span.classList.add(`highlight-${color}`);
+                
+                range.insertNode(span);
+            }
+            
+            function removeHighlight(selection) {
+                const range = selection.getRangeAt(0);
+                const parentElement = range.startContainer.parentElement;
+                
+                if (parentElement.classList.contains('highlight-yellow') || 
+                    parentElement.classList.contains('highlight-blue')) {
+                    
+                    const text = parentElement.textContent;
+                    parentElement.parentNode.replaceChild(document.createTextNode(text), parentElement);
+                }
+            }
+            
+            // Answer selection
+            document.querySelectorAll('.option-btn').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const questionNum = this.parentElement.dataset.question;
+                    const value = this.dataset.value;
+                    
+                    // Remove selected class from all buttons in this question
+                    this.parentElement.querySelectorAll('.option-btn').forEach(b => {
+                        b.classList.remove('selected');
+                    });
+                    
+                    // Add selected class to clicked button
+                    this.classList.add('selected');
+                    
+                    // Store the answer
+                    this.closest('.question-item').dataset.answer = value;
+                });
+            });
+            
+            // Submit answers
+            const submitBtn = document.getElementById('submit-btn');
+            const resultsContainer = document.getElementById('results-container');
+            const closeResults = document.getElementById('close-results');
+            const scoreValue = document.getElementById('score-value');
+            const scoreMessage = document.getElementById('score-message');
+            const resultsList = document.getElementById('results-list');
+            
+            submitBtn.addEventListener('click', submitAnswers);
+            closeResults.addEventListener('click', () => {
+                resultsContainer.classList.remove('show');
+            });
+            
+            function submitAnswers() {
+                clearInterval(timerInterval);
+                
+                // Correct answers
+                const correctAnswers = {
+                    1: 'I',
+                    2: 'F',
+                    3: 'G',
+                    4: 'D',
+                    5: 'C',
+                    6: 'H',
+                    7: 'C',
+                    8: 'D',
+                    9: 'B',
+                    10: 'one-sixth',
+                    11: '16th century',
+                    12: 'Mercator',
+                    13: 'John Gould'
+                };
+                
+                // Answer locations in the text
+                const answerLocations = {
+                    1: "Paragraph I: 'after farmers cleared large areas of forest on Kangaroo Island... the island was colonised by galahs. They were soon going down holes and destroying black cockatoo eggs...'",
+                    2: "Paragraph F: 'flowers which depend on birds for pollination are more often red, and lorikeets' tongues have bristles which help them to collect as much pollen as possible.'",
+                    3: "Paragraph G: 'Two of the dry country parrots, the pink and grey galah and the pink, white and yellow corella have expanded their ranges in recent years.'",
+                    4: "Paragraph D: 'The parrots spread from ancestral forests through eucalypt woodlands to colonies the central deserts of Australia, and as a consequence they diversified into a wide range of species...'",
+                    5: "Paragraph C: 'it seems almost certain that parrots originated millions of years ago on the ancient southern continent of Gondwana, before it broke up into the separate southern hemisphere continents we know today.'",
+                    6: "Paragraph H: 'The clearing of large areas of rainforest is probably responsible for the disappearance of the double-eyed fig parrot...'",
+                    7: "Paragraph C: 'it seems almost certain that parrots originated millions of years ago on the ancient southern continent of Gondwana, before it broke up into the separate southern hemisphere continents we know today.'",
+                    8: "Paragraph E: 'The size of a parrot's short, blunt beak and the length of that beak's curved upper section are related to the type of food each species eats.'",
+                    9: "Paragraph J: 'Nest box programs help ease the shortage of nesting sites in some places, but there are not enough, they are expensive and they are not an adequate substitute for large, old trees...'",
+                    10: "Paragraph A: 'One-sixth of the world's 345 parrot species are found there...'",
+                    11: "Paragraph B: 'In the 16th century, the German cartographer Mercator made a world map...'",
+                    12: "Paragraph B: 'In the 16th century, the German cartographer Mercator made a world map...'",
+                    13: "Paragraph B: 'In 1865, the celebrated British naturalist and wildlife artist John Gould said...'"
+                };
+                
+                let score = 0;
+                resultsList.innerHTML = '';
+                
+                // Check answers for questions 1-9
+                for (let i = 1; i <= 9; i++) {
+                    const questionElement = document.querySelector(`.question-item[data-question="${i}"]`);
+                    const userAnswer = questionElement ? questionElement.dataset.answer : '';
+                    const isCorrect = userAnswer === correctAnswers[i];
+                    
+                    if (isCorrect) score++;
+                    
+                    const resultItem = document.createElement('div');
+                    resultItem.className = `result-item ${isCorrect ? 'correct' : 'incorrect'}`;
+                    resultItem.innerHTML = `
+                        <div class="result-question">Question ${i}: Your answer: ${userAnswer || 'Not answered'} ${isCorrect ? '✓' : '✗'}</div>
+                        <div class="result-answer">
+                            <span class="result-icon">${isCorrect ? '✓' : '✗'}</span>
+                            <span>Correct answer: ${correctAnswers[i]}</span>
+                        </div>
+                        <div class="result-location">Location in text: ${answerLocations[i]}</div>
+                    `;
+                    
+                    resultsList.appendChild(resultItem);
+                }
+                
+                // Check answers for questions 10-13
+                for (let i = 10; i <= 13; i++) {
+                    const inputElement = document.querySelector(`.input-box[data-question="${i}"]`);
+                    const userAnswer = inputElement ? inputElement.value.trim().toLowerCase() : '';
+                    const isCorrect = userAnswer === correctAnswers[i].toLowerCase();
+                    
+                    if (isCorrect) score++;
+                    
+                    const resultItem = document.createElement('div');
+                    resultItem.className = `result-item ${isCorrect ? 'correct' : 'incorrect'}`;
+                    resultItem.innerHTML = `
+                        <div class="result-question">Question ${i}: Your answer: ${userAnswer || 'Not answered'} ${isCorrect ? '✓' : '✗'}</div>
+                        <div class="result-answer">
+                            <span class="result-icon">${isCorrect ? '✓' : '✗'}</span>
+                            <span>Correct answer: ${correctAnswers[i]}</span>
+                        </div>
+                        <div class="result-location">Location in text: ${answerLocations[i]}</div>
+                    `;
+                    
+                    resultsList.appendChild(resultItem);
+                }
+                
+                // Update score display
+                scoreValue.textContent = `${score}/13`;
+                
+                // Set message based on score
+                if (score >= 11) {
+                    scoreMessage.textContent = 'Excellent work! You have a strong understanding of the text.';
+                } else if (score >= 8) {
+                    scoreMessage.textContent = 'Good job! With a bit more practice, you\'ll improve even more.';
+                } else if (score >= 5) {
+                    scoreMessage.textContent = 'Not bad! Review the text and try again to improve your score.';
+                } else {
+                    scoreMessage.textContent = 'Keep practicing! Review the text and try again.';
+                }
+                
+                // Show results
+                resultsContainer.classList.add('show');
+            }
+        });
+    </script>
+</body>
+</html>

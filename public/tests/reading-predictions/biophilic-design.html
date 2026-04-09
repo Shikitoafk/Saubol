@@ -1,0 +1,1302 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>IELTS Reading Test - Biophilic Design</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        /* Main styles */
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: Arial, sans-serif;
+            overflow: hidden;
+            background-color: #f0f8ff;
+        }
+        .test-wrapper {
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+        }
+        .test-container {
+            display: flex;
+            flex: 1;
+            overflow: hidden;
+        }
+        /* Header styles */
+        .header {
+            background-color: #fff;
+            border-bottom: 1px solid #ddd;
+            padding: 10px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .header__logo img {
+            height: 40px;
+        }
+        .header__timer {
+            font-size: 1.2rem;
+            font-weight: bold;
+            color: #333;
+            background-color: #e6f2ff;
+            padding: 5px 15px;
+            border-radius: 20px;
+            border: 1px solid #ddd;
+            transition: all 0.3s ease;
+        }
+        .header__icons {
+            display: flex;
+            gap: 15px;
+        }
+        .header__icon {
+            font-size: 1.2rem;
+            color: #666;
+            cursor: pointer;
+        }
+        
+        
+        /* Settings Modal */
+        .settings-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: rgba(0,0,0,0.7);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+        }
+        .settings-content {
+            background-color: white;
+            width: 90%;
+            max-width: 500px;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+        }
+        .settings-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 20px;
+            border-bottom: 1px solid #ddd;
+            background-color: #f0f8ff;
+        }
+        .settings-header h2 {
+            margin: 0;
+            font-size: 1.2rem;
+        }
+        .settings-close {
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: #666;
+        }
+        .settings-body {
+            padding: 20px;
+        }
+        .settings-option {
+            display: flex;
+            align-items: center;
+            padding: 10px 0;
+            border-bottom: 1px solid #eee;
+            cursor: pointer;
+        }
+        .settings-option:last-child {
+            border-bottom: none;
+        }
+        .settings-option i {
+            margin-right: 15px;
+            width: 20px;
+            text-align: center;
+            color: #2a6c96;
+        }
+        .settings-option span {
+            flex: 1;
+        }
+        .sectionRubric {
+            margin: 1em;
+            width: calc(100% - 4em - 3px);
+            border-radius: 4px;
+            padding: 0.75em 1em;
+            background: white;
+            border: 1px solid #d5d5d5;
+        }
+        .sectionRubric h2, .sectionRubric p {
+            margin: 0;
+        }
+        .sectionRubric h2 {
+            font-size: 1rem;
+            margin-bottom: 0.25em;
+        }
+        /* Passage container */
+        .passage-container {
+            width: 45%;
+            height: 100%;
+            overflow-y: auto;
+            padding: 20px;
+            box-sizing: border-box;
+            background-color: #f0f8ff;
+            position: relative;
+            -webkit-user-select: text;
+            user-select: text;
+        }
+        /* Questions container */
+        .questions-container {
+            flex: 1;
+            overflow-y: auto;
+            padding: 20px;
+            box-sizing: border-box;
+            background-color: #f0f8ff;
+            -webkit-user-select: text;
+            user-select: text;
+        }
+        /* Highlight styles */
+        .highlight {
+            position: relative;
+            border-radius: 2px;
+            padding: 0 1px;
+            margin: 0 -1px;
+        }
+        .highlight.yellow {
+            background-color: rgba(255, 255, 0, 0.3);
+        }
+        .highlight.green {
+            background-color: rgba(0, 255, 0, 0.3);
+        }
+        .highlight.pink {
+            background-color: rgba(255, 105, 180, 0.3);
+        }
+        .highlight.blue {
+            background-color: rgba(0, 191, 255, 0.3);
+        }
+        .highlight-toolbar {
+            position: fixed;
+            background: white;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+            display: none;
+            z-index: 1000;
+            padding: 5px;
+            transform: translate(-50%, -100%);
+            margin-top: -5px;
+        }
+        .highlight-toolbar button {
+            background: none;
+            border: none;
+            width: 24px;
+            height: 24px;
+            cursor: pointer;
+            margin: 0 2px;
+            border-radius: 3px;
+        }
+        .highlight-toolbar button:hover {
+            background: #f0f0f0;
+        }
+        .highlight-toolbar button.remove {
+            color: #ff0000;
+        }
+        /* Divider styling */
+        .divider {
+            width: 10px;
+            background: #ddd;
+            cursor: col-resize;
+            position: relative;
+        }
+        .divider-handle {
+            width: 4px;
+            height: 40px;
+            background: #999;
+            border-radius: 2px;
+            position: absolute;
+            top: 50%;
+            left: 3px;
+            transform: translateY(-50%);
+        }
+        /* Question styling */
+        .question {
+            margin-bottom: 30px;
+        }
+        .question-rubric {
+            margin-bottom: 15px;
+            font-weight: bold;
+        }
+        .question-options {
+            list-style-type: none;
+            padding: 0;
+        }
+        .question-options li {
+            margin: 10px 0;
+            display: flex;
+            align-items: center;
+        }
+        .question-options li input[type="checkbox"] {
+            margin-right: 10px;
+        }
+        /* Matching questions */
+        .matching-option {
+            display: flex;
+            align-items: center;
+            margin: 5px 0;
+        }
+        .matching-option select {
+            min-width: 50px;
+            padding: 5px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            margin-left: 10px;
+        }
+        /* Sentence completion styles */
+        .sentence-completion-container {
+            margin-top: 20px;
+        }
+        .sentence-text p {
+            line-height: 2.5;
+            font-size: 16px;
+        }
+        .sentence-input {
+            width: 100px;
+            padding: 5px;
+            border: 2px dashed #999;
+            border-radius: 4px;
+            margin: 0 5px;
+            font-size: 15px;
+            font-weight: bold;
+            background-color: #e3f2fd;
+        }
+        .sentence-input.correct {
+            border-color: #28a745;
+            background-color: #e9f7ef;
+            border-style: solid;
+        }
+        .sentence-input.incorrect {
+            border-color: #dc3545;
+            background-color: #f8d7da;
+            border-style: solid;
+        }
+        .sentence-feedback {
+            display: inline-block;
+            margin-left: 10px;
+            font-size: 14px;
+        }
+        .sentence-feedback.correct {
+            color: #28a745;
+        }
+        .sentence-feedback.incorrect {
+            color: #dc3545;
+        }
+        /* Footer styles */
+        .footer {
+            background: #f5f5f5;
+            border-top: 1px solid #ddd;
+            padding: 10px;
+        }
+        .nav-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        .footer__questionWrapper {
+            display: flex;
+            align-items: center;
+        }
+        .footer__questionNo {
+            background: none;
+            border: none;
+            padding: 5px 10px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+        .footer__subquestionWrapper {
+            display: flex;
+            flex-wrap: wrap;
+            margin-left: 10px;
+        }
+        .subQuestion {
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            border: 1px solid #ccc;
+            background: #f0f0f0;
+            margin: 2px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #666;
+        }
+        .subQuestion.active {
+            background: #0066cc;
+            color: white;
+            border-color: #0066cc;
+        }
+        .subQuestion.attempted {
+            background: #0066cc;
+            color: white;
+        }
+        .footer__deliverButton {
+            background: #0066cc;
+            color: white;
+            border: none;
+            padding: 8px 15px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+        .footer__deliverButton:disabled {
+            background: #cccccc;
+            cursor: not-allowed;
+        }
+        .sr-only {
+            position: absolute;
+            width: 1px;
+            height: 1px;
+            padding: 0;
+            margin: -1px;
+            overflow: hidden;
+            clip: rect(0, 0, 0, 0);
+            white-space: nowrap;
+            border-width: 0;
+        }
+        /* Highlight color buttons */
+        .highlight-color {
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            display: inline-block;
+            margin: 0 2px;
+            cursor: pointer;
+            border: 1px solid #ccc;
+        }
+        .highlight-color.yellow {
+            background-color: #ffff00;
+        }
+        .highlight-color.green {
+            background-color: #00ff00;
+        }
+        .highlight-color.pink {
+            background-color: #ff69b4;
+        }
+        .highlight-color.blue {
+            background-color: #00bfff;
+        }
+        /* Time warning styles */
+        .timer-warning {
+            color: #ff0000;
+            animation: blink 1s infinite;
+        }
+        @keyframes blink {
+            0% { opacity: 1; }
+            50% { opacity: 0.5; }
+            100% { opacity: 1; }
+        }
+        /* Submission modal styles */
+        .submission-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: rgba(0,0,0,0.8);
+            z-index: 2000;
+            justify-content: center;
+            align-items: center;
+        }
+        .submission-content {
+            background-color: white;
+            width: 80%;
+            max-width: 800px;
+            border-radius: 10px;
+            padding: 30px;
+            box-shadow: 0 5px 30px rgba(0,0,0,0.5);
+            max-height: 80vh;
+            overflow-y: auto;
+        }
+        .submission-content h2 {
+            margin-top: 0;
+            color: #0066cc;
+            border-bottom: 2px solid #0066cc;
+            padding-bottom: 10px;
+        }
+        .submission-content p {
+            margin-bottom: 20px;
+            color: #333;
+        }
+        .answers-section {
+            margin-top: 20px;
+        }
+        .answers-section h3 {
+            color: #0066cc;
+            margin-bottom: 15px;
+        }
+        .answer-item {
+            padding: 10px;
+            margin-bottom: 8px;
+            border-radius: 4px;
+            border-left: 4px solid #ddd;
+            background-color: #f9f9f9;
+        }
+        .answer-item.correct {
+            border-left-color: #4CAF50;
+            background-color: #f0fff0;
+        }
+        .answer-item.incorrect {
+            border-left-color: #f44336;
+            background-color: #fff0f0;
+        }
+        .answer-text {
+            font-weight: bold;
+        }
+        .correct-answer {
+            color: #4CAF50;
+            margin-left: 10px;
+        }
+        .incorrect-answer {
+            color: #f44336;
+            margin-left: 10px;
+        }
+        .answer-status {
+            float: right;
+            margin-left: 15px;
+        }
+        .correct-status {
+            color: #4CAF50;
+        }
+        .incorrect-status {
+            color: #f44336;
+        }
+        .submission-buttons {
+            margin-top: 25px;
+            text-align: right;
+            clear: both;
+        }
+        .submission-buttons button {
+            padding: 8px 15px;
+            margin-left: 10px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+        .submission-buttons .confirm {
+            background: #0066cc;
+            color: white;
+            border: none;
+        }
+        /* Disabled state */
+        input:disabled, select:disabled {
+            background-color: #f5f5f5;
+            cursor: not-allowed;
+        }
+        /* Score display styles */
+        .score-display {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        .score-number {
+            font-size: 3rem;
+            font-weight: bold;
+            color: #0066cc;
+            margin: 10px 0;
+        }
+        .score-total {
+            font-size: 1.5rem;
+            color: #666;
+        }
+        .performance-rating {
+            font-size: 1.5rem;
+            font-weight: bold;
+            margin: 15px 0;
+            padding: 10px;
+            border-radius: 5px;
+        }
+        .excellent {
+            color: #2E7D32;
+            background-color: #E8F5E9;
+        }
+        .very-good {
+            color: #388E3C;
+            background-color: #E8F5E9;
+        }
+        .good {
+            color: #689F38;
+            background-color: #F1F8E9;
+        }
+        .fair {
+            color: #F57C00;
+            background-color: #FFF3E0;
+        }
+        .poor {
+            color: #D32F2F;
+            background-color: #FFEBEE;
+        }
+        /* IELTS Band Score */
+        .band-score {
+            font-size: 2rem;
+            font-weight: bold;
+            color: #0066cc;
+            margin: 10px 0;
+        }
+        /* Correct answer highlight */
+        .correct-highlight {
+            background-color: rgba(76, 175, 80, 0.3);
+            padding: 2px;
+            border-radius: 2px;
+        }
+        /* Incorrect answer highlight */
+        .incorrect-highlight {
+            background-color: rgba(244, 67, 54, 0.3);
+            padding: 2px;
+            border-radius: 2px;
+        }
+        /* Answer comparison section */
+        .answer-comparison {
+            margin-top: 20px;
+            padding: 15px;
+            background-color: #f5f5f5;
+            border-radius: 5px;
+            display: none;
+        }
+        .answer-comparison h3 {
+            margin-top: 0;
+            color: #0066cc;
+        }
+        /* Time spent indicator */
+        .time-spent {
+            font-size: 1rem;
+            color: #666;
+            margin-bottom: 15px;
+            text-align: center;
+        }
+        /* Dropdown answer display */
+        .dropdown-answer {
+            display: inline-block;
+            margin-left: 10px;
+            font-weight: normal;
+        }
+        .dropdown-answer.correct {
+            color: #4CAF50;
+        }
+        .dropdown-answer.incorrect {
+            color: #f44336;
+        }
+    </style>
+</head>
+<body>
+    <div class="test-wrapper">
+        <!-- Header with Timer -->
+        <header class="header">
+            <div class="header__logo">
+                <img src="https://d2snzxottmona5.cloudfront.net/releases/3.46.0/images/logo/ielts.svg" alt="IELTS Logo">
+                
+            </div>
+            <div class="header__timer" id="testTimer">00:00</div>
+            <div class="header__icons">
+                <i class="fas fa-wifi header__icon"></i>
+                <i class="fas fa-bell header__icon"></i>
+                <i class="fas fa-cog header__icon" id="settingsButton"></i>
+            </div>
+        </header>
+        <!-- Settings Modal -->
+        <div class="settings-modal" id="settingsModal">
+            <div class="settings-content">
+                <div class="settings-header">
+                    <h2>Options</h2>
+                    <button class="settings-close" id="settingsClose">&times;</button>
+                </div>
+                <div class="settings-body">
+                    <div class="settings-option">
+                        <i class="fas fa-paper-plane"></i>
+                        <span>Go to submission page</span>
+                    </div>
+                    <div class="settings-option" id="contrastOption">
+                        <i class="fas fa-adjust"></i>
+                        <span>Contrast</span>
+                    </div>
+                    <div class="settings-option" id="textSizeOption">
+                        <i class="fas fa-search-plus"></i>
+                        <span>Text size</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- Section Rubric -->
+        <div class="sectionRubric" id="sectionRubric">
+            <h2>Part 2</h2>
+            <p>You should spend about 20 minutes on Questions 14-26, which are based on Reading Passage 2.</p>
+        </div>
+        <div class="test-container">
+            <!-- Passage Section -->
+            <div class="passage-container" id="passage-container">
+                <div class="highlight-toolbar" id="highlightToolbar">
+                    <button class="highlight-color yellow" data-color="yellow" title="Yellow highlight"></button>
+                    <button class="highlight-color green" data-color="green" title="Green highlight"></button>
+                    <button class="highlight-color pink" data-color="pink" title="Pink highlight"></button>
+                    <button class="highlight-color blue" data-color="blue" title="Blue highlight"></button>
+                    <button class="remove" title="Remove highlight"><i class="fas fa-times"></i></button>
+                </div>
+                <div id="passageContent">
+                    <h2 style="text-align: center;">Biophilic Design</h2>
+                    <p style="text-align: center; font-style: italic;">New approaches to green architecture</p>
+                    <p><strong>A</strong> Biophilic design, a movement related to green architecture, has gained much momentum within the building community in recent years. The premise of biophilic design seeks both to avoid or minimize harmful impacts on the natural environment, and equally importantly, to provide and restore beneficial contacts between people and nature in the built environment.</p>
+                    <p><strong>B</strong> People have a psychologically developed need to commune with nature but this has frequently been neglected. All too often, architects have put creative originality before the needs of the people who have to live and work in their futuristic constructions, with scant regard for emotional, as well as practical, considerations. Biophilic design does not advocate tree houses or cave-dwelling, but it does provide the nature-based features that maximize human functioning and health. Though not technically a biophilic design, Fallingwater - the stunning house in rural Pennsylvania designed in the 1930s by Frank Lloyd Wright - arguably speaks to the human soul much more than the box-like blocks of flats designed by his contemporary Le Corbusier.</p>
+                    <p><strong>C</strong> In the modern world, much of our built environment is obstructing the age-old connection between humans and nature. The rates of technological progress are far exceeding rates of psychological evolution, leaving us ill-equipped to cope with our lifestyle, which in turn leads to increased stress. Because biophilia attempts to integrate basic and current needs, it can alleviate the difficulties caused by the brain's constant attempts to function in a modern environment it has not yet evolved to handle. For example, one crucial element of the natural landscape to human health is sunlight. We are evolutionarily programmed to respond positively to sunny areas over dark or overcast ones, and sense that they will foster restoration, improve emotional well-being and promote health.</p>
+                    <p><strong>D</strong> Because of its tremendous impact on human psychology, biophilic design plays a vital role in healthcare and healthcare delivery. The current healthcare system contains many flaws, especially in its physical spaces. Hospitals, clinics, and offices are high-stress environments for patients, visitors and healthcare professionals alike. One well-known study looked at the impact of nature on patients after surgery. One group had a view of a tree; the others had a window looking onto a brick wall. The first group had shorter hospital stays, received fewer negative comments from the nurses, required fewer analgesics, and had slightly fewer post-operative complications.</p>
+                    <p><strong>E</strong> As a consequence of this and other studies, nature and nature-based design have been integrated into the physical design of many hospitals. For example, Dartmouth-Hitchcock Medical Center (DHMC) in New Hampshire boasts an atrium design, illuminating the entire facility. Natural elements also permeate the building, including wood, stone, and numerous live plants. While DHMC was built to incorporate these qualities, other hospitals have had biophilic features added to existing structures. The application of biophilia's concepts to interior design in hospitals has increased substantially as administrators have witnessed patients' positive responses to nature.</p>
+                    <p><strong>F</strong> Many existing buildings contain biophilic elements, but only a few have been built with the specific idea of biophilic design in mind. One such building is the Adam Joseph Lewis Center for Environmental Studies at Oberlin College, in Ohio. The director of Oberlin's Environmental Studies Program, David Orr, explained the building's goals were 'to create not just a place for classes but rather a building that would help to redefine the relationship between humankind and the environment — one that would expand our sense of ecological possibilities'. The Lewis Center is sustainable in a broader sense than in the typical application of the word. It harnesses solar power, utilizes both active and passive air systems, and monitors the weather to adapt to conditions. The Center's 'Living Machine' treats wastewater by combining traditional wastewater technology with wetland ecosystems' purification processes, producing water that can be used in the toilets and for irrigation. In their design, Orr and his team of architects engineered a healthy and comfortable space for students, while ensuring the surrounding environment was undamaged.</p>
+                    <p><strong>G</strong> Another example is the University of Guelph-Humber building in Ontario, Canada. It contains a centrally located bio-wall, vertically spanning the building. The wall is covered in dense foliage which not only connects people to nature on the inside of the building, but also functions as a new filtration system prototype. The wall purifies the air and has the potential to fulfill the building's fresh air intake requirements. This is another example of how biophilic design principles can be applied in a variety of contexts. These examples prove that the built environment need not interfere with biological human needs to commune with nature, nor with existing ecological systems.</p>
+                    <p><strong>H</strong> Ancient architects built for their cultures, which were almost always more in touch with the earth than western society of the present. They mimicked nature's forms, producing magnificent structures with which we are still awed—though biophilic design is a novel concept, they certainly employed some of its recommendations. Today, we can add another layer to this tradition and ensure maximal benefit for our planet and ourselves.</p>
+                </div>
+            </div>
+            <!-- Draggable Divider -->
+            <div class="divider" id="divider">
+                <div class="divider-handle"></div>
+            </div>
+            <!-- Questions Section -->
+            <div class="questions-container" id="questions-container">
+                <!-- Questions 14-19 - Matching Information -->
+                <div class="question">
+                    <div class="question-rubric">
+                        <h3>Questions 14-19</h3>
+                        <p>Reading Passage 2 has eight paragraphs, <strong>A-H</strong>.</p>
+                        <p>Which paragraph contains the following information?</p>
+                        <p>Write the correct letter, <strong>A-H</strong>, in boxes <strong>14-19</strong> on your answer sheet.</p>
+                        <p><strong>NB</strong> You may use any letter more than once.</p>
+                    </div>
+                    <div class="question-content">
+                        <div class="question-item">
+                            <p><span class="question-number">14</span> a description of how rapid change has a negative effect on people</p>
+                            <div class="matching-option">
+                                <select name="q14" id="q14">
+                                    <option value="">--</option>
+                                    <option value="A">A</option>
+                                    <option value="B">B</option>
+                                    <option value="C">C</option>
+                                    <option value="D">D</option>
+                                    <option value="E">E</option>
+                                    <option value="F">F</option>
+                                    <option value="G">G</option>
+                                    <option value="H">H</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="question-item">
+                            <p><span class="question-number">15</span> a reference to an architect whose designs were uncharacteristic of biophilia</p>
+                            <div class="matching-option">
+                                <select name="q15" id="q15">
+                                    <option value="">--</option>
+                                    <option value="A">A</option>
+                                    <option value="B">B</option>
+                                    <option value="C">C</option>
+                                    <option value="D">D</option>
+                                    <option value="E">E</option>
+                                    <option value="F">F</option>
+                                    <option value="G">G</option>
+                                    <option value="H">H</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="question-item">
+                            <p><span class="question-number">16</span> a definition of the two main aims of biophilia</p>
+                            <div class="matching-option">
+                                <select name="q16" id="q16">
+                                    <option value="">--</option>
+                                    <option value="A">A</option>
+                                    <option value="B">B</option>
+                                    <option value="C">C</option>
+                                    <option value="D">D</option>
+                                    <option value="E">E</option>
+                                    <option value="F">F</option>
+                                    <option value="G">G</option>
+                                    <option value="H">H</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="question-item">
+                            <p><span class="question-number">17</span> a positive claim about early forms of architecture</p>
+                            <div class="matching-option">
+                                <select name="q17" id="q17">
+                                    <option value="">--</option>
+                                    <option value="A">A</option>
+                                    <option value="B">B</option>
+                                    <option value="C">C</option>
+                                    <option value="D">D</option>
+                                    <option value="E">E</option>
+                                    <option value="F">F</option>
+                                    <option value="G">G</option>
+                                    <option value="H">H</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="question-item">
+                            <p><span class="question-number">18</span> a reference to the fact that many architects are too focused on innovation</p>
+                            <div class="matching-option">
+                                <select name="q18" id="q18">
+                                    <option value="">--</option>
+                                    <option value="A">A</option>
+                                    <option value="B">B</option>
+                                    <option value="C">C</option>
+                                    <option value="D">D</option>
+                                    <option value="E">E</option>
+                                    <option value="F">F</option>
+                                    <option value="G">G</option>
+                                    <option value="H">H</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="question-item">
+                            <p><span class="question-number">19</span> a description of features which conserve energy in a biophilic design</p>
+                            <div class="matching-option">
+                                <select name="q19" id="q19">
+                                    <option value="">--</option>
+                                    <option value="A">A</option>
+                                    <option value="B">B</option>
+                                    <option value="C">C</option>
+                                    <option value="D">D</option>
+                                    <option value="E">E</option>
+                                    <option value="F">F</option>
+                                    <option value="G">G</option>
+                                    <option value="H">H</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- Questions 20-24 - Sentence Completion -->
+                <div class="question">
+                    <div class="question-rubric">
+                        <h3>Questions 20-24</h3>
+                        <p>Complete the sentences below.</p>
+                        <p>Choose <strong>ONE WORD ONLY</strong> from the passage for each answer.</p>
+                        <p>Write your answers in boxes <strong>20-24</strong> on your answer sheet.</p>
+                    </div>
+                    <div class="question-content">
+                        <div class="sentence-completion-container">
+                            <div class="sentence-text">
+                                <p><span class="question-number">20</span> In the modern world, <input type="text" class="sentence-input" id="q20" name="q20"> advancements are happening so quickly that humans are unable to adjust to them.</p>
+                                <p><span class="question-number">21</span> Biophilia can help us deal with the <input type="text" class="sentence-input" id="q21" name="q21"> caused by the difficulties of our current lifestyles.</p>
+                                <p><span class="question-number">22</span> People instinctively feel more comfortable in places which have plenty of <input type="text" class="sentence-input" id="q22" name="q22"> something which is necessary for health and well-being.</p>
+                                <p><span class="question-number">23</span> An experiment designed to test the effect of nature on patient recovery times found that those who could see a <input type="text" class="sentence-input" id="q23" name="q23"> made a faster recovery.</p>
+                                <p><span class="question-number">24</span> There is a biophilic design feature in the University of Guelph-Humber building which improves the quality of the <input type="text" class="sentence-input" id="q24" name="q24">.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- Questions 25-26 - Multiple Choice -->
+                <div class="question">
+                    <div class="question-rubric">
+                        <h3>Questions 25 and 26</h3>
+                        <p>Choose TWO letters, <strong>A-E</strong>.</p>
+                        <p>Write the correct letters in boxes <strong>25 and 26</strong> on your answer sheet.</p>
+                        <p>Which TWO of the following statements does the writer make about the Adam Joseph Lewis Center at Oberlin College?</p>
+                    </div>
+                    <div class="question-content">
+                        <ul class="question-options">
+                            <li>
+                                <input type="checkbox" name="q25_26" id="q25_26_A" value="A">
+                                <label for="q25_26_A">A It was the first educational establishment designed with biophilic principles.</label>
+                            </li>
+                            <li>
+                                <input type="checkbox" name="q25_26" id="q25_26_B" value="B">
+                                <label for="q25_26_B">B It is beneficial for both students and the environment.</label>
+                            </li>
+                            <li>
+                                <input type="checkbox" name="q25_26" id="q25_26_C" value="C">
+                                <label for="q25_26_C">C It has established new concepts for classroom design.</label>
+                            </li>
+                            <li>
+                                <input type="checkbox" name="q25_26" id="q25_26_D" value="D">
+                                <label for="q25_26_D">D It uses a natural method of treating waste water.</label>
+                            </li>
+                            <li>
+                                <input type="checkbox" name="q25_26" id="q25_26_E" value="E">
+                                <label for="q25_26_E">E It has been copied by other educational institutions.</label>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- Footer with Navigation -->
+        <footer class="footer">
+            <div class="nav-row">
+                <div class="footer__questionWrapper">
+                    <button class="footer__questionNo" id="prevQuestion">Previous</button>
+                    <div class="footer__subquestionWrapper" id="subquestionWrapper">
+                        <div class="subQuestion active" data-question="14">14</div>
+                        <div class="subQuestion" data-question="15">15</div>
+                        <div class="subQuestion" data-question="16">16</div>
+                        <div class="subQuestion" data-question="17">17</div>
+                        <div class="subQuestion" data-question="18">18</div>
+                        <div class="subQuestion" data-question="19">19</div>
+                        <div class="subQuestion" data-question="20">20</div>
+                        <div class="subQuestion" data-question="21">21</div>
+                        <div class="subQuestion" data-question="22">22</div>
+                        <div class="subQuestion" data-question="23">23</div>
+                        <div class="subQuestion" data-question="24">24</div>
+                        <div class="subQuestion" data-question="25">25</div>
+                        <div class="subQuestion" data-question="26">26</div>
+                    </div>
+                    <button class="footer__questionNo" id="nextQuestion">Next</button>
+                </div>
+                <button class="footer__deliverButton" id="submitButton">Submit</button>
+            </div>
+        </footer>
+    </div>
+    <!-- Submission Modal -->
+    <div class="submission-modal" id="submissionModal">
+        <div class="submission-content">
+            <h2>Test Submission</h2>
+            <p>Are you sure you want to submit your test? You cannot change your answers after submission.</p>
+            <div class="answers-section">
+                <h3>Your Answers</h3>
+                <div id="answersList"></div>
+            </div>
+            <div class="submission-buttons">
+                <button class="confirm" id="confirmSubmission">Submit Test</button>
+                <button id="cancelSubmission">Cancel</button>
+            </div>
+        </div>
+    </div>
+    <!-- Results Modal -->
+    <div class="submission-modal" id="resultsModal">
+        <div class="submission-content">
+            <h2>Test Results</h2>
+            <div class="score-display">
+                <div class="score-number"><span id="scoreValue">0</span>/<span id="totalQuestions">13</span></div>
+                <div class="performance-rating" id="performanceRating">Excellent</div>
+                <div class="band-score">IELTS Band: <span id="bandScore">9.0</span></div>
+                <div class="time-spent">Time spent: <span id="timeSpent">00:00</span></div>
+            </div>
+            <div class="answers-section">
+                <h3>Answer Details</h3>
+                <div id="answersDetails"></div>
+            </div>
+            <div class="answer-comparison" id="answerComparison">
+                <h3>Answer Comparison</h3>
+                <div id="comparisonContent"></div>
+            </div>
+            <div class="submission-buttons">
+                <button class="confirm" id="closeResults">Close</button>
+                <button id="showComparison">Show Answer Comparison</button>
+            </div>
+        </div>
+    </div>
+    <script>
+        // Timer functionality
+        let startTime = new Date();
+        let timerInterval;
+        function updateTimer() {
+            const now = new Date();
+            const diff = now - startTime;
+            const minutes = Math.floor(diff / 60000);
+            const seconds = Math.floor((diff % 60000) / 1000);
+            document.getElementById('testTimer').textContent = 
+                `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+            
+            // Add warning when time is running out (after 15 minutes)
+            if (minutes >= 15) {
+                document.getElementById('testTimer').classList.add('timer-warning');
+            }
+        }
+        timerInterval = setInterval(updateTimer, 1000);
+        // Settings modal functionality
+        const settingsButton = document.getElementById('settingsButton');
+        const settingsModal = document.getElementById('settingsModal');
+        const settingsClose = document.getElementById('settingsClose');
+        settingsButton.addEventListener('click', () => {
+            settingsModal.style.display = 'flex';
+        });
+        settingsClose.addEventListener('click', () => {
+            settingsModal.style.display = 'none';
+        });
+        window.addEventListener('click', (event) => {
+            if (event.target === settingsModal) {
+                settingsModal.style.display = 'none';
+            }
+        });
+        // Text size toggle
+        const textSizeOption = document.getElementById('textSizeOption');
+        let textSizeIncreased = false;
+        textSizeOption.addEventListener('click', () => {
+            const passageContent = document.getElementById('passageContent');
+            const questionsContainer = document.getElementById('questions-container');
+            if (!textSizeIncreased) {
+                passageContent.style.fontSize = '18px';
+                questionsContainer.style.fontSize = '18px';
+                textSizeIncreased = true;
+            } else {
+                passageContent.style.fontSize = '';
+                questionsContainer.style.fontSize = '';
+                textSizeIncreased = false;
+            }
+        });
+        // Contrast toggle
+        const contrastOption = document.getElementById('contrastOption');
+        let highContrast = false;
+        contrastOption.addEventListener('click', () => {
+            if (!highContrast) {
+                document.body.style.backgroundColor = '#000';
+                document.body.style.color = '#fff';
+                document.querySelector('.passage-container').style.backgroundColor = '#000';
+                document.querySelector('.questions-container').style.backgroundColor = '#000';
+                document.querySelector('.passage-container').style.color = '#fff';
+                document.querySelector('.questions-container').style.color = '#fff';
+                highContrast = true;
+            } else {
+                document.body.style.backgroundColor = '#f0f8ff';
+                document.body.style.color = '#000';
+                document.querySelector('.passage-container').style.backgroundColor = '#f0f8ff';
+                document.querySelector('.questions-container').style.backgroundColor = '#f0f8ff';
+                document.querySelector('.passage-container').style.color = '#000';
+                document.querySelector('.questions-container').style.color = '#000';
+                highContrast = false;
+            }
+        });
+        // Highlight functionality
+        const passageContent = document.getElementById('passageContent');
+        const highlightToolbar = document.getElementById('highlightToolbar');
+        let currentSelection = null;
+        let currentColor = 'yellow';
+        // Show highlight toolbar when text is selected
+        passageContent.addEventListener('mouseup', (e) => {
+            const selection = window.getSelection();
+            if (selection.toString().trim() !== '') {
+                currentSelection = selection;
+                const range = selection.getRangeAt(0);
+                const rect = range.getBoundingClientRect();
+                highlightToolbar.style.left = `${rect.left + window.scrollX + rect.width / 2}px`;
+                highlightToolbar.style.top = `${rect.top + window.scrollY - 10}px`;
+                highlightToolbar.style.display = 'block';
+            }
+        });
+        // Hide toolbar when clicking elsewhere
+        document.addEventListener('mousedown', (e) => {
+            if (!highlightToolbar.contains(e.target)) {
+                highlightToolbar.style.display = 'none';
+            }
+        });
+        // Highlight color buttons
+        document.querySelectorAll('.highlight-color').forEach(button => {
+            button.addEventListener('click', () => {
+                currentColor = button.getAttribute('data-color');
+                applyHighlight(currentColor);
+            });
+        });
+        // Remove highlight button
+        document.querySelector('.highlight-toolbar button.remove').addEventListener('click', () => {
+            if (currentSelection) {
+                const range = currentSelection.getRangeAt(0);
+                const selectedText = currentSelection.toString();
+                const span = document.createElement('span');
+                span.textContent = selectedText;
+                range.deleteContents();
+                range.insertNode(span);
+                currentSelection.removeAllRanges();
+                highlightToolbar.style.display = 'none';
+            }
+        });
+        function applyHighlight(color) {
+            if (currentSelection) {
+                const range = currentSelection.getRangeAt(0);
+                const selectedText = currentSelection.toString();
+                const span = document.createElement('span');
+                span.className = `highlight ${color}`;
+                span.textContent = selectedText;
+                range.deleteContents();
+                range.insertNode(span);
+                currentSelection.removeAllRanges();
+                highlightToolbar.style.display = 'none';
+            }
+        }
+        // Divider functionality
+        const divider = document.getElementById('divider');
+        const passageContainer = document.getElementById('passage-container');
+        const questionsContainer = document.getElementById('questions-container');
+        let isResizing = false;
+        divider.addEventListener('mousedown', (e) => {
+            isResizing = true;
+            document.body.style.cursor = 'col-resize';
+            document.addEventListener('mousemove', handleMouseMove);
+            document.addEventListener('mouseup', () => {
+                isResizing = false;
+                document.body.style.cursor = '';
+                document.removeEventListener('mousemove', handleMouseMove);
+            });
+        });
+        function handleMouseMove(e) {
+            if (!isResizing) return;
+            const containerWidth = document.querySelector('.test-container').offsetWidth;
+            const newPassageWidth = (e.clientX / containerWidth) * 100;
+            if (newPassageWidth > 20 && newPassageWidth < 80) {
+                passageContainer.style.width = `${newPassageWidth}%`;
+                questionsContainer.style.width = `${100 - newPassageWidth}%`;
+            }
+        }
+        // Question navigation
+        const prevButton = document.getElementById('prevQuestion');
+        const nextButton = document.getElementById('nextQuestion');
+        const subQuestions = document.querySelectorAll('.subQuestion');
+        let currentQuestion = 14;
+        function updateActiveQuestion() {
+            subQuestions.forEach(sub => {
+                if (parseInt(sub.getAttribute('data-question')) === currentQuestion) {
+                    sub.classList.add('active');
+                    // Scroll to question
+                    const questionElement = document.querySelector(`[id="q${currentQuestion}"]`);
+                    if (questionElement) {
+                        questionElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                    }
+                } else {
+                    sub.classList.remove('active');
+                }
+            });
+        }
+        prevButton.addEventListener('click', () => {
+            if (currentQuestion > 14) {
+                currentQuestion--;
+                updateActiveQuestion();
+            }
+        });
+        nextButton.addEventListener('click', () => {
+            if (currentQuestion < 26) {
+                currentQuestion++;
+                updateActiveQuestion();
+            }
+        });
+        subQuestions.forEach(sub => {
+            sub.addEventListener('click', () => {
+                currentQuestion = parseInt(sub.getAttribute('data-question'));
+                updateActiveQuestion();
+            });
+        });
+        // Mark questions as attempted when answered
+        document.querySelectorAll('select, .sentence-input, input[type="checkbox"]').forEach(element => {
+            element.addEventListener('change', () => {
+                let questionNumber;
+                if (element.id.startsWith('q')) {
+                    questionNumber = element.id.replace('q', '');
+                } else if (element.name.startsWith('q')) {
+                    questionNumber = element.name.replace('q', '');
+                }
+                if (questionNumber) {
+                    const subQuestion = document.querySelector(`.subQuestion[data-question="${questionNumber}"]`);
+                    if (subQuestion) {
+                        subQuestion.classList.add('attempted');
+                    }
+                }
+            });
+        });
+        // Submit functionality
+        const submitButton = document.getElementById('submitButton');
+        const submissionModal = document.getElementById('submissionModal');
+        const confirmSubmission = document.getElementById('confirmSubmission');
+        const cancelSubmission = document.getElementById('cancelSubmission');
+        const resultsModal = document.getElementById('resultsModal');
+        const closeResults = document.getElementById('closeResults');
+        const showComparison = document.getElementById('showComparison');
+        const answerComparison = document.getElementById('answerComparison');
+        // Correct answers
+        const correctAnswers = {
+            q14: 'C',
+            q15: 'B',
+            q16: 'A',
+            q17: 'H',
+            q18: 'B',
+            q19: 'F',
+            q20: 'technological',
+            q21: 'stress',
+            q22: 'sunlight',
+            q23: 'tree',
+            q24: 'air',
+            q25_26: ['B', 'D'] // Multiple answers for checkbox question
+        };
+        submitButton.addEventListener('click', () => {
+            // Populate answers list in submission modal
+            const answersList = document.getElementById('answersList');
+            answersList.innerHTML = '';
+            for (let i = 14; i <= 26; i++) {
+                const answerItem = document.createElement('div');
+                answerItem.className = 'answer-item';
+                let answerText = 'Not answered';
+                if (i <= 19) {
+                    // Matching questions
+                    const select = document.getElementById(`q${i}`);
+                    if (select && select.value) {
+                        answerText = select.value;
+                    }
+                } else if (i <= 24) {
+                    // Sentence completion
+                    const input = document.getElementById(`q${i}`);
+                    if (input && input.value) {
+                        answerText = input.value;
+                    }
+                } else {
+                    // Multiple choice (checkboxes for questions 25-26)
+                    const checkboxes = document.querySelectorAll('input[name="q25_26"]:checked');
+                    if (checkboxes.length > 0) {
+                        answerText = Array.from(checkboxes).map(cb => cb.value).join(', ');
+                    }
+                }
+                answerItem.innerHTML = `<strong>Question ${i}:</strong> ${answerText}`;
+                answersList.appendChild(answerItem);
+            }
+            submissionModal.style.display = 'flex';
+        });
+        cancelSubmission.addEventListener('click', () => {
+            submissionModal.style.display = 'none';
+        });
+        confirmSubmission.addEventListener('click', () => {
+            submissionModal.style.display = 'none';
+            calculateScore();
+            showResults();
+        });
+        closeResults.addEventListener('click', () => {
+            resultsModal.style.display = 'none';
+        });
+        showComparison.addEventListener('click', () => {
+            answerComparison.style.display = answerComparison.style.display === 'block' ? 'none' : 'block';
+        });
+        function calculateScore() {
+            let score = 0;
+            const totalQuestions = 13; // 14-26 inclusive
+            // Check matching questions (14-19)
+            for (let i = 14; i <= 19; i++) {
+                const userAnswer = document.getElementById(`q${i}`).value;
+                if (userAnswer === correctAnswers[`q${i}`]) {
+                    score++;
+                }
+            }
+            // Check sentence completion (20-24)
+            for (let i = 20; i <= 24; i++) {
+                const userAnswer = document.getElementById(`q${i}`).value.toLowerCase().trim();
+                if (userAnswer === correctAnswers[`q${i}`]) {
+                    score++;
+                }
+            }
+            // Check multiple choice (25-26)
+            const checkboxes = document.querySelectorAll('input[name="q25_26"]:checked');
+            const userAnswers = Array.from(checkboxes).map(cb => cb.value);
+            // Check if user answers match correct answers (order doesn't matter)
+            const correctSet = new Set(correctAnswers.q25_26);
+            const userSet = new Set(userAnswers);
+            let correctCount = 0;
+            userSet.forEach(answer => {
+                if (correctSet.has(answer)) {
+                    correctCount++;
+                }
+            });
+            // For questions 25-26, both answers must be correct to get points
+            if (correctCount === 2 && userAnswers.length === 2) {
+                score += 2; // Each question is worth 1 point, so 2 points total
+            } else if (correctCount === 1 && userAnswers.length === 1) {
+                score += 1; // Only one correct answer selected
+            }
+            // Update score display
+            document.getElementById('scoreValue').textContent = score;
+            document.getElementById('totalQuestions').textContent = totalQuestions;
+            // Calculate IELTS band score (simplified)
+            const percentage = (score / totalQuestions) * 100;
+            let bandScore;
+            if (percentage >= 90) bandScore = '9.0';
+            else if (percentage >= 80) bandScore = '8.0';
+            else if (percentage >= 70) bandScore = '7.0';
+            else if (percentage >= 60) bandScore = '6.0';
+            else if (percentage >= 50) bandScore = '5.0';
+            else if (percentage >= 40) bandScore = '4.0';
+            else if (percentage >= 30) bandScore = '3.0';
+            else bandScore = '2.0';
+            document.getElementById('bandScore').textContent = bandScore;
+            // Performance rating
+            const performanceRating = document.getElementById('performanceRating');
+            if (percentage >= 90) {
+                performanceRating.textContent = 'Excellent';
+                performanceRating.className = 'performance-rating excellent';
+            } else if (percentage >= 80) {
+                performanceRating.textContent = 'Very Good';
+                performanceRating.className = 'performance-rating very-good';
+            } else if (percentage >= 70) {
+                performanceRating.textContent = 'Good';
+                performanceRating.className = 'performance-rating good';
+            } else if (percentage >= 60) {
+                performanceRating.textContent = 'Fair';
+                performanceRating.className = 'performance-rating fair';
+            } else {
+                performanceRating.textContent = 'Needs Improvement';
+                performanceRating.className = 'performance-rating poor';
+            }
+            // Time spent
+            const now = new Date();
+            const diff = now - startTime;
+            const minutes = Math.floor(diff / 60000);
+            const seconds = Math.floor((diff % 60000) / 1000);
+            document.getElementById('timeSpent').textContent = 
+                `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+            return score;
+        }
+        function showResults() {
+            const answersDetails = document.getElementById('answersDetails');
+            answersDetails.innerHTML = '';
+            const comparisonContent = document.getElementById('comparisonContent');
+            comparisonContent.innerHTML = '';
+            // Process each question
+            for (let i = 14; i <= 26; i++) {
+                const answerDetail = document.createElement('div');
+                let userAnswer = '';
+                let isCorrect = false;
+                if (i <= 19) {
+                    // Matching questions
+                    const select = document.getElementById(`q${i}`);
+                    userAnswer = select ? select.value : 'Not answered';
+                    isCorrect = userAnswer === correctAnswers[`q${i}`];
+                } else if (i <= 24) {
+                    // Sentence completion
+                    const input = document.getElementById(`q${i}`);
+                    userAnswer = input ? input.value : 'Not answered';
+                    isCorrect = userAnswer.toLowerCase().trim() === correctAnswers[`q${i}`];
+                } else {
+                    // Multiple choice (questions 25-26)
+                    const checkboxes = document.querySelectorAll('input[name="q25_26"]:checked');
+                    userAnswer = checkboxes.length > 0 ? 
+                        Array.from(checkboxes).map(cb => cb.value).join(', ') : 'Not answered';
+                    // For multiple answer questions, check if all correct answers are selected
+                    const userAnswers = userAnswer.split(', ').filter(a => a !== '');
+                    const correctSet = new Set(correctAnswers.q25_26);
+                    isCorrect = userAnswers.length === correctSet.size && 
+                                userAnswers.every(answer => correctSet.has(answer));
+                }
+                answerDetail.className = `answer-item ${isCorrect ? 'correct' : 'incorrect'}`;
+                let correctAnswerText = correctAnswers[`q${i}`];
+                if (Array.isArray(correctAnswerText)) {
+                    correctAnswerText = correctAnswerText.join(', ');
+                }
+                answerDetail.innerHTML = `
+                    <div class="answer-text">Question ${i}: ${userAnswer || 'Not answered'}</div>
+                    <div class="answer-status ${isCorrect ? 'correct-status' : 'incorrect-status'}">
+                        ${isCorrect ? '✓ Correct' : '✗ Incorrect'}
+                    </div>
+                    ${!isCorrect ? `<div class="correct-answer">Correct answer: ${correctAnswerText}</div>` : ''}
+                `;
+                answersDetails.appendChild(answerDetail);
+                // Add to comparison content
+                const comparisonItem = document.createElement('div');
+                comparisonItem.innerHTML = `
+                    <p><strong>Question ${i}:</strong> Your answer: "${userAnswer || 'Not answered'}" 
+                    ${isCorrect ? '✓' : `✗ (Correct: ${correctAnswerText})`}</p>
+                `;
+                comparisonContent.appendChild(comparisonItem);
+            }
+            resultsModal.style.display = 'flex';
+        }
+        // Initialize the test
+        updateTimer();
+        updateActiveQuestion();
+    </script>
+</body>
+</html>

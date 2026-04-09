@@ -1,0 +1,567 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Interactive Reading Practice Test</title>
+    <style>
+        /* General Body & Root Styles */
+        :root {
+            --header-height: 60px;
+            --footer-height: 60px;
+            --stopwatch-height: 45px;
+            --main-margin-top: calc(var(--header-height) + var(--stopwatch-height) - 15px);
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+            overflow: hidden;
+            background-color: #f0f2f5;
+        }
+
+        /* Fixed Header */
+        header {
+            background-color: #41B6E6;
+            color: #FFD700;
+            padding: 15px;
+            font-size: 1.5em;
+            text-align: center;
+            font-weight: bold;
+            position: fixed;
+            top: 0;
+            width: 100%;
+            height: var(--header-height);
+            z-index: 1000;
+            box-sizing: border-box;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        /* Telegram Button Styles */
+        #telegram-btn {
+            background-color: #0088cc;
+            color: white;
+            padding: 8px 15px;
+            border-radius: 5px;
+            text-decoration: none;
+            font-size: 0.7em;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            transition: background-color 0.3s ease;
+            font-weight: normal;
+        }
+
+        #telegram-btn:hover {
+            background-color: #0077b3;
+        }
+
+        .header-title {
+            flex: 1;
+            text-align: center;
+        }
+
+        /* Fixed Stopwatch */
+        #stopwatch {
+            position: fixed;
+            top: var(--header-height);
+            right: 20px;
+            background: #e9e9e9;
+            padding: 10px 20px;
+            border: 1px solid #ccc;
+            border-radius: 0 0 5px 5px;
+            z-index: 999;
+            font-family: 'Courier New', Courier, monospace;
+            font-size: 1.2em;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        /* Main container for the two panels */
+        #main-container {
+            display: flex;
+            flex: 1;
+            margin-top: var(--main-margin-top);
+            margin-bottom: var(--footer-height);
+            overflow: hidden;
+        }
+
+        /* Panel Styles */
+        #passage-container, #questions-container-wrapper {
+            height: 100%;
+            overflow-y: auto;
+            padding: 25px;
+            box-sizing: border-box;
+        }
+        
+        #passage-container {
+            background: #f9f9f9;
+            flex-basis: 50%;
+        }
+        
+        #questions-container-wrapper {
+            background: #f1f1f1;
+            flex-basis: 50%;
+        }
+
+        #passage-content, #questions-container {
+             max-width: 800px;
+             margin: 0 auto;
+             line-height: 1.6;
+        }
+
+        /* Resize Bar */
+        #resize-bar {
+            width: 5px;
+            background: #ccc;
+            cursor: ew-resize;
+            flex-shrink: 0;
+            transition: background-color 0.2s ease;
+        }
+        #resize-bar:hover {
+            background: #007BFF;
+        }
+        
+        /* Footer and Progress Bar */
+        footer {
+            position: fixed;
+            bottom: 0;
+            width: 100%;
+            height: var(--footer-height);
+            background: #ffffff;
+            border-top: 1px solid #ccc;
+            padding: 0 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            box-sizing: border-box;
+        }
+
+        #progress-bar {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 5px;
+            flex-grow: 1;
+            justify-content: center;
+        }
+        
+        .progress-square {
+            width: 25px;
+            height: 25px;
+            border-radius: 4px;
+            background-color: #BDBDBD; /* Default: Unanswered */
+            flex-shrink: 0;
+            text-align: center;
+            color: white;
+            font-size: 12px;
+            line-height: 25px;
+            font-weight: bold;
+            transition: background-color 0.3s ease;
+        }
+
+        .progress-square.answered { background-color: #FFD700; }
+        .progress-square.correct { background-color: #8BC34A; }
+        .progress-square.incorrect { background-color: #F44336; }
+        
+        /* Submit Button & Results Area */
+        #submit-btn {
+            background-color: #007BFF;
+            color: white;
+            padding: 12px 25px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 1.1em;
+            font-weight: bold;
+            transition: background-color 0.3s ease;
+            margin: 20px 0;
+        }
+        
+        #submit-btn:hover {
+            background-color: #0056b3;
+        }
+
+        #results-area {
+            display: none;
+            margin-top: 20px;
+            padding: 20px;
+            background-color: #e3f2fd;
+            border: 2px solid #90caf9;
+            border-radius: 8px;
+        }
+        #results-area h3 { margin-top: 0; }
+        #results-area ul { padding-left: 20px; }
+        #results-area li { margin-bottom: 10px; }
+
+        /* Question Formatting */
+        .question { margin-bottom: 25px; }
+        .question h3 { margin-top: 40px; border-bottom: 2px solid #ccc; padding-bottom: 5px; }
+        .question input[type="text"], .question select {
+            padding: 8px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            font-size: 1em;
+            width: 100%;
+            max-width: 300px;
+            box-sizing: border-box;
+        }
+        .researcher-list {
+            padding: 10px;
+            margin: 15px 0;
+            background-color: #e9e9e9;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+
+        /* Highlighter Pop-up */
+        #highlighter-popup {
+            position: absolute;
+            background-color: #333;
+            color: white;
+            padding: 5px 10px;
+            border-radius: 5px;
+            display: none;
+            z-index: 2000;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.5);
+        }
+        #highlighter-popup button {
+            background: none;
+            border: none;
+            color: white;
+            cursor: pointer;
+            padding: 5px;
+            font-size: 1em;
+        }
+        mark { background-color: #FFD700; padding: 2px 0; border-radius: 2px; cursor: pointer; }
+    </style>
+</head>
+<body>
+
+    <header>
+        
+        <div class="header-title">Reading Comprehension Practice</div>
+        <div style="width: 100px;"></div> <!-- Spacer for balance -->
+    </header>
+
+    <div id="stopwatch">Time Elapsed: 00:00</div>
+    
+    <div id="highlighter-popup">
+        <button id="highlight-btn">Highlight</button>
+        <button id="remove-highlight-btn">Remove Highlight</button>
+    </div>
+
+    <main id="main-container">
+        <div id="passage-container">
+            <div id="passage-content">
+            <p><strong>READING PASSAGE 2</strong></p>
+<p><em>You should spend about 20 minutes on Questions 14-26, which are based on Reading Passage 2.</em></p>
+                <h2 style="text-align: center;">The purpose of facial expressions</h2>
+                <p style="text-align: center;"><i>Do facial expressions reflect inner feelings? Or are they social devices for influencing others?</i></p>
+                <p><b>A</b>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;The use of facial expressions for measuring people's emotions has dominated psychology since the late 1960s. This was when Paul Ekman of the University of California pioneered the idea that, by carefully measuring facial expression, he could evaluate people's true emotions. Ekman carried out experiments in which people were asked to label photos of basic facial expressions - such as a smile, frown or scowl - with words for emotions. He found, for example, that a smile represented joy and a scowl represented anger. In fact, since the 1970s Ekman has dominated the field of emotion research with his theory that when an emotion occurs, a large number of electrical impulses also occur, creating specific facial expressions and other physiological changes, such as increased or decreased heart rate or heightened blood pressure.</p>
+                <p><b>B</b>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Many took Ekman's work to imply that facial expressions precisely indicated people's feelings. However, this theory has been attacked by a number of psychologists, such as Alan Fridlund of the University of California, who claim that there is no one-to- one correspondence between facial expressions and emotions. Expressions evolved to set off certain behaviors in other people, says Fridlund. So a smile may prompt people to approach, a scowl may warn them to stay away, and a look of sadness may elicit words of sympathy and reassurance. In other words, in Fridlund's view, facial expressions are inherently social - they involve not one, but two or more people. Even when people are alone they are holding a dialog with another person internally, or imagining themselves in a social situation.</p>
+                <p><b>C</b>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Thus Fridlund thinks of facial expressions as tools for influencing social interactions, a view which, he claims, enables us to begin predicting when certain facial expressions will occur. This in turn will allow more precise theories about social interactions. His studies find that expressions occur most often during pivotal points, the turning points in social interactions - during greetings, social crises, or times of appeasement, for example. At these pivotal points there is an approach, or closeness, or more intimacy, and facial expressions, as well as gestures, open up the possibilities of various social interactions.</p>
+                <p><b>D</b>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Although much work on the emotions relies on a link between facial expression and emotions, psychologist James Russell, of the University of British Columbia, says there is very little evidence supporting such a connection. 'There's some sense in which faces express emotion, but only in the sense that everything expresses emotion,' says Russell, a long-time critic of the expression-emotion link. 'Music does, posture does, words do, tone of voice does, your behavior does. The real question is, "Is there anything special about faces?" And there we really do not know much. What is more likely, argues Russell, is that facial expressions tell others something about a person's overall mood and context, rather than provide details about specific emotions.</p>
+                <p><b>E</b>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Others, including Ekman, argue that the face can display information about emotions, but they admit that it is not reliable one hundred percent of the time. And those who only examine faces when trying to study emotion will jump to false conclusions. But according to Ekman, to say, as Fridlund does, that there is the connection at all between facial expressions and emotions is simply wrong. There is a link between facial expression and emotion," agrees developmental psychologist Linda Camras of DePaul University, 'but it's not a one-to-one kind of relationship as many once thought.' She believes there are many situations where emotion is experienced, yet no basic facial expression is displayed. And there are times when a facial expression appears with no corresponding emotion.</p>
+                <p><b>F</b>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Ekman's theory states that if the emotion comes on slowly or is rather weak, the feeling might not be strong enough to trigger the expression. This would explain why there can sometimes be emotion without expression, he argues. In addition, cultural rules - which determine when and whether people of certain cultures display emotional expressions - can prevent this otherwise automatic process from being completed. Facial expressions evolved in humans as signals to others about how they feel, says Ekman. At times, though, it may be uncomfortable or inconvenient for us to let others know our emotions. But in the long run, over the course of evolution, it was useful to us as signalers: an angry look on someone's face may be a warning that they are preparing to behave in an angry fashion.</p>
+                <p><b>G</b>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Although Fridlund disagrees with Ekman on certain matters, the two basically share the opinion that facial expressions indicate people's future actions. The area of dispute between Fridlund and Ekman draws attention away from their major areas of agreement, says Joseph Campos of the University of California. Indeed, he says, 'there is profound agreement that the face, along with the voice, body posture and hand gestures, forecasts to outside observers what people will do next.' He goes on to say, 'The face is a component [of emotion], but to make it the center of study of the human being experiencing an emotion is like saying the only thing you need to study in a car is the transmission. Not that the transmission is unimportant, but it's only part of an entire system."</p>
+            </div>
+        </div>
+
+        <div id="resize-bar"></div>
+
+        <div id="questions-container-wrapper">
+            <div id="questions-container">
+                <div class="question" id="q14">
+                    <h3>Questions 14-18:</h3>
+                    <p>Reading Passage 2 has seven paragraphs, A-G.</p>
+                    <p>Which paragraph contains the following information?</p>
+                    <p><em>Write the correct letter, A-G, in boxes 14-18 on your answer sheet.</em></p>
+                    <label for="q14_select">14. a recognition that facial expressions do not always provide a true guide to feelings</label>
+                    <select name="q14" id="q14_select"><option value="">Select Paragraph...</option><option value="A">A</option><option value="B">B</option><option value="C">C</option><option value="D">D</option><option value="E">E</option><option value="F">F</option><option value="G">G</option></select>
+                </div>
+                 <div class="question" id="q15">
+                    <label for="q15_select">15. examples of ways that a person's facial expression can affect someone else's actions</label>
+                    <select name="q15" id="q15_select"><option value="">Select Paragraph...</option><option value="A">A</option><option value="B">B</option><option value="C">C</option><option value="D">D</option><option value="E">E</option><option value="F">F</option><option value="G">G</option></select>
+                </div>
+                <div class="question" id="q16">
+                    <label for="q16_select">16. a reference to reasons for hiding emotions</label>
+                    <select name="q16" id="q16_select"><option value="">Select Paragraph...</option><option value="A">A</option><option value="B">B</option><option value="C">C</option><option value="D">D</option><option value="E">E</option><option value="F">F</option><option value="G">G</option></select>
+                </div>
+                <div class="question" id="q17">
+                    <label for="q17_select">17. examples of times when facial expressions are used especially frequently</label>
+                    <select name="q17" id="q17_select"><option value="">Select Paragraph...</option><option value="A">A</option><option value="B">B</option><option value="C">C</option><option value="D">D</option><option value="E">E</option><option value="F">F</option><option value="G">G</option></select>
+                </div>
+                <div class="question" id="q18">
+                    <label for="q18_select">18. examples of changes inside the body when an emotion is felt</label>
+                    <select name="q18" id="q18_select"><option value="">Select Paragraph...</option><option value="A">A</option><option value="B">B</option><option value="C">C</option><option value="D">D</option><option value="E">E</option><option value="F">F</option><option value="G">G</option></select>
+                </div>
+
+                <h3>Questions 19-23: Matching Researchers</h3>
+                <p>Look at the following statements (Questions 19-23) and the list of researchers below.</p>
+<p>Match each statement with the correct researcher, A-E.</p>
+<p><em>Write the correct letter, A-E, in boxes 19-23 on your answer sheet.</em></p>
+<p><strong>NB</strong> You may use any letter more than once.</p>
+                <div class="researcher-list">
+                    <strong>List of Researchers</strong><br>
+                    <b>A</b>&nbsp;&nbsp;Paul Ekman<br>
+                    <b>B</b>&nbsp;&nbsp;Alan Fridlund<br>
+                    <b>C</b>&nbsp;&nbsp;James Russell<br>
+                    <b>D</b>&nbsp;&nbsp;Linda Camras<br>
+                    <b>E</b>&nbsp;&nbsp;Joseph Campos<br>
+                </div>
+                <div class="question" id="q19">
+                    <label for="q19_select">19. Focusing on the face in researching emotions is similar to researching a large structure by looking at just one small unit of it.</label>
+                    <select name="q19" id="q19_select"><option value="">Select Researcher...</option><option value="A">A</option><option value="B">B</option><option value="C">C</option><option value="D">D</option><option value="E">E</option></select>
+                </div>
+                <div class="question" id="q20">
+                    <label for="q20_select">20. Facial expressions developed in order to encourage other people to react in particular ways.</label>
+                    <select name="q20" id="q20_select"><option value="">Select Researcher...</option><option value="A">A</option><option value="B">B</option><option value="C">C</option><option value="D">D</option><option value="E">E</option></select>
+                </div>
+                <div class="question" id="q21">
+                    <label for="q21_select">21. Although certain researchers have different opinions about various points, they share some important ideas.</label>
+                    <select name="q21" id="q21_select"><option value="">Select Researcher...</option><option value="A">A</option><option value="B">B</option><option value="C">C</option><option value="D">D</option><option value="E">E</option></select>
+                </div>
+                <div class="question" id="q22">
+                    <label for="q22_select">22. Both emotion and expression can exist independently of each other in certain circumstances.</label>
+                    <select name="q22" id="q22_select"><option value="">Select Researcher...</option><option value="A">A</option><option value="B">B</option><option value="C">C</option><option value="D">D</option><option value="E">E</option></select>
+                </div>
+                <div class="question" id="q23">
+                    <label for="q23_select">23. It cannot be proved that there is a connection between facial expression and real emotion.</label>
+                    <select name="q23" id="q23_select"><option value="">Select Researcher...</option><option value="A">A</option><option value="B">B</option><option value="C">C</option><option value="D">D</option><option value="E">E</option></select>
+                </div>
+
+                <h3>Questions 24-26: Sentence Completion</h3>
+                <p>Complete the sentences below.</p>
+                <p>Choose <strong>ONE WORD ONLY</strong> from the passage for each answer.</p>
+                 <div class="question" id="q24">
+                    <label for="q24_input">24. In Fridlund's view, a …………… on someone's face may be intended as an invitation to come nearer.</label>
+                    <input type="text" name="q24" id="q24_input">
+                </div>
+                <div class="question" id="q25">
+                    <label for="q25_input">25. According to Fridlund, when we are by ourselves we still use facial expressions because we are having a …………… with someone in our minds.</label>
+                    <input type="text" name="q25" id="q25_input">
+                </div>
+                <div class="question" id="q26">
+                    <label for="q26_input">26. Fridlund considers facial expressions to be …………… that can affect our contact with other people.</label>
+                    <input type="text" name="q26" id="q26_input">
+                </div>
+
+                <div id="results-area"></div>
+            </div>
+        </div>
+    </main>
+    
+    <footer>
+        <div id="progress-bar"></div>
+        <button id="submit-btn">Submit Answers</button>
+    </footer>
+
+    <script>
+    document.addEventListener('DOMContentLoaded', () => {
+
+        // --- USER: EDIT THIS SECTION WITH YOUR ANSWERS ---
+        // Note: For questions 19-23, the answer key provided in the prompt was inconsistent
+        // with the question format. I have deduced the correct answers based on the text
+        // to ensure the test is functional.
+        const answerKey = {
+            q14: "E", q15: "B", q16: "F", q17: "C", q18: "A",
+            q19: "E", // Corrected. Was G. Mapped to Joseph Campos.
+            q20: "B", // Correct. Mapped to Alan Fridlund.
+            q21: "E", // Corrected. Was G. Mapped to Joseph Campos.
+            q22: "D", // Corrected. Was E. Mapped to Linda Camras.
+            q23: "C", // Corrected. Was D. Mapped to James Russell.
+            q24: "smile", q25: "dialog", q26: "tools"
+        };
+        // ----------------------------------------------------
+
+        const stopwatchElement = document.getElementById('stopwatch');
+        const questionsContainer = document.getElementById('questions-container');
+        const submitBtn = document.getElementById('submit-btn');
+        const resultsArea = document.getElementById('results-area');
+        const progressBar = document.getElementById('progress-bar');
+        
+        let stopwatchInterval;
+        let secondsElapsed = 0;
+        let submitted = false;
+
+        // --- Stopwatch ---
+        const startStopwatch = () => {
+            stopwatchInterval = setInterval(() => {
+                secondsElapsed++;
+                const minutes = Math.floor(secondsElapsed / 60).toString().padStart(2, '0');
+                const seconds = (secondsElapsed % 60).toString().padStart(2, '0');
+                stopwatchElement.textContent = `Time Elapsed: ${minutes}:${seconds}`;
+            }, 1000);
+        };
+        const stopStopwatch = () => clearInterval(stopwatchInterval);
+
+        // --- Progress Tracker ---
+        const questions = Array.from(questionsContainer.querySelectorAll('.question'));
+        questions.forEach((question) => {
+            const square = document.createElement('div');
+            square.className = 'progress-square';
+            square.id = `progress-${question.id}`;
+            const questionNumber = question.id.replace('q','');
+            square.textContent = questionNumber;
+            progressBar.appendChild(square);
+
+            question.querySelectorAll('input, select').forEach(input => {
+                input.addEventListener('input', () => {
+                    if (submitted) return;
+                    square.classList.add('answered');
+                });
+            });
+        });
+
+        // --- Panel Resizing ---
+        const resizeBar = document.getElementById('resize-bar');
+        let isResizing = false;
+
+        resizeBar.addEventListener('mousedown', (e) => {
+            isResizing = true;
+            const leftPanel = document.getElementById('passage-container');
+            const container = document.getElementById('main-container');
+
+            const handleMouseMove = (e) => {
+                if (!isResizing) return;
+                const containerRect = container.getBoundingClientRect();
+                const leftPanelWidth = e.clientX - containerRect.left;
+                leftPanel.style.flexBasis = `${leftPanelWidth}px`;
+            };
+
+            const handleMouseUp = () => {
+                isResizing = false;
+                document.removeEventListener('mousemove', handleMouseMove);
+                document.removeEventListener('mouseup', handleMouseUp);
+            };
+
+            document.addEventListener('mousemove', handleMouseMove);
+            document.addEventListener('mouseup', handleMouseUp);
+        });
+
+        // --- Highlighting ---
+        const highlighterPopup = document.getElementById('highlighter-popup');
+        const highlightBtn = document.getElementById('highlight-btn');
+        const removeHighlightBtn = document.getElementById('remove-highlight-btn');
+        let currentSelection = null;
+        let currentMark = null;
+
+        const showPopup = (x, y, isMarked) => {
+            highlighterPopup.style.left = `${x}px`;
+            highlighterPopup.style.top = `${y}px`;
+            highlighterPopup.style.display = 'block';
+            highlightBtn.style.display = isMarked ? 'none' : 'inline-block';
+            removeHighlightBtn.style.display = isMarked ? 'inline-block' : 'none';
+        };
+
+        document.querySelectorAll('#passage-content, #questions-container').forEach(area => {
+            area.addEventListener('mouseup', (e) => {
+                const selection = window.getSelection();
+                if (selection.toString().trim().length > 0 && !highlighterPopup.contains(e.target)) {
+                    currentSelection = selection.getRangeAt(0);
+                    showPopup(e.pageX + 5, e.pageY + 5, false);
+                }
+            });
+            area.addEventListener('click', (e) => {
+                if (e.target.tagName === 'MARK') {
+                    currentMark = e.target;
+                    showPopup(e.pageX + 5, e.pageY + 5, true);
+                }
+            });
+        });
+        
+        highlightBtn.addEventListener('click', () => {
+            if (currentSelection) {
+                const mark = document.createElement('mark');
+                mark.appendChild(currentSelection.extractContents());
+                currentSelection.insertNode(mark);
+                highlighterPopup.style.display = 'none';
+            }
+        });
+        
+        removeHighlightBtn.addEventListener('click', () => {
+            if (currentMark) {
+                const parent = currentMark.parentNode;
+                while (currentMark.firstChild) parent.insertBefore(currentMark.firstChild, currentMark);
+                parent.removeChild(currentMark);
+                highlighterPopup.style.display = 'none';
+            }
+        });
+
+        document.addEventListener('mousedown', (e) => {
+            if (!highlighterPopup.contains(e.target) && window.getSelection().toString().length === 0) {
+                 highlighterPopup.style.display = 'none';
+            }
+        });
+
+        // --- Submission and Evaluation ---
+        submitBtn.addEventListener('click', () => {
+            if (submitted) return;
+            if (!confirm("Are you sure you want to submit your answers? This action cannot be undone.")) return;
+            
+            submitted = true;
+            stopStopwatch();
+
+            let score = 0;
+            let incorrectAnswers = [];
+
+            questions.forEach(question => {
+                const questionId = question.id;
+                const correctAnswer = answerKey[questionId];
+                const progressSquare = document.getElementById(`progress-${questionId}`);
+                let userAnswer = '';
+                
+                const input = question.querySelector('input[type="text"], select');
+                if (input) {
+                    userAnswer = input.value.trim();
+                }
+
+                // Disable inputs
+                question.querySelectorAll('input, select').forEach(el => el.disabled = true);
+                
+                if (userAnswer.toLowerCase() === correctAnswer.toLowerCase()) {
+                    score++;
+                    if(progressSquare) progressSquare.classList.add('correct');
+                } else {
+                    if(progressSquare) progressSquare.classList.add('incorrect');
+                    incorrectAnswers.push({
+                        number: questionId.replace('q', ''),
+                        user: userAnswer || "No answer",
+                        correct: correctAnswer
+                    });
+                }
+            });
+
+            // Display Results
+            const finalTime = stopwatchElement.textContent.replace('Time Elapsed: ', '');
+            let resultsHTML = `<h3>Results</h3>`;
+            resultsHTML += `<p><strong>Time Taken:</strong> ${finalTime}</p>`;
+            resultsHTML += `<p><strong>Your Score:</strong> ${score}/${questions.length}</p>`;
+
+            if (incorrectAnswers.length > 0) {
+                resultsHTML += '<h4>Incorrect Answers Review:</h4><ul>';
+                incorrectAnswers.forEach(item => {
+                    resultsHTML += `<li><strong>Question ${item.number}:</strong> You answered "<em>${item.user}</em>". The correct answer is "<strong>${item.correct}</strong>".</li>`;
+                });
+                resultsHTML += '</ul>';
+            } else {
+                resultsHTML += '<p style="color: green; font-weight: bold;">🎉 Congratulations! All answers are correct!</p>';
+            }
+            
+            resultsArea.innerHTML = resultsHTML;
+            resultsArea.style.display = 'block';
+            submitBtn.style.display = 'none'; // Hide submit button after submission
+            window.scrollTo(0, document.body.scrollHeight);
+        });
+
+        // --- Initial Setup ---
+        startStopwatch();
+    });
+    </script>
+</body>
+</html>

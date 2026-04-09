@@ -1,0 +1,375 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Reading Passage 1 – Sorry – who are you?</title>
+<style>
+  :root{--brand:#2563eb;--ink:#111827;--bg:#f7f7fb;--ok:#16a34a;--bad:#dc2626;--muted:#6b7280}
+  *{box-sizing:border-box}
+  body{margin:0;font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;background:var(--bg);color:#111}
+  .container{display:flex;gap:20px;max-width:1200px;margin:0 auto;padding:20px 20px 96px}
+  .card{background:#fff;border-radius:12px;box-shadow:0 4px 14px rgba(0,0,0,.08);padding:20px;overflow:auto;max-height:90vh}
+  .passage{flex:1}
+  .questions{flex:1}
+  h1{color:var(--ink);border-bottom:2px solid var(--brand);padding-bottom:10px;margin:0 0 14px}
+  h2{color:var(--brand);margin:22px 0 10px}
+  h3{margin:8px 0 0}
+  .muted{color:var(--muted)}
+  /* Timer */
+  .timerWrap{position:fixed;top:16px;right:16px;display:flex;align-items:center;gap:8px;z-index:10}
+  .timer{background:var(--brand);color:#fff;padding:10px 14px;border-radius:8px;font-weight:700}
+  .tbtn{border:1px solid #e5e7eb;background:#fff;color:#111;padding:8px 10px;border-radius:8px;cursor:pointer}
+  /* Questions */
+  .qsection{margin:14px 0 6px}
+  .qblock{padding:14px;border:1px solid #e5e7eb;border-radius:12px;margin:12px 0}
+  .qhead{font-weight:600;margin-bottom:8px}
+  .options{margin-top:8px}
+  .options label{display:block;margin:6px 0}
+  select,input[type="text"]{padding:8px;border-radius:8px;border:1px solid #e5e7eb;width:100%;max-width:520px}
+  .submit{background:var(--brand);color:#fff;border:0;padding:12px 18px;border-radius:8px;cursor:pointer;font-size:16px;margin-top:16px}
+  .submit:hover{filter:brightness(.95)}
+  /* Results */
+  .results{display:none;margin-top:18px;background:#f8f9fa;border-radius:10px;padding:16px}
+  .results ul{list-style:none;padding:0;margin:8px 0 0}
+  .results li{margin:6px 0;padding:8px;border-radius:8px}
+  .results li.ok{background:#ecfdf5;color:#065f46}
+  .results li.bad{background:#fef2f2;color:#991b1b}
+  .results .meta{font-size:13px;color:var(--muted)}
+  /* Footer chips */
+  .footerNav{position:fixed;left:0;right:0;bottom:0;background:#fff;border-top:1px solid #e5e7eb;padding:10px 12px;display:flex;flex-wrap:wrap;gap:8px;align-items:center;z-index:9}
+  .chip{border:1px solid #d1d5db;background:#fff;color:#111;padding:6px 10px;border-radius:999px;cursor:pointer;font-size:14px}
+  .chip.answered{border-color:#9ca3af;background:#f3f4f6}
+  /* Highlights */
+  .palette{position:fixed;background:#fff;padding:8px;border-radius:8px;box-shadow:0 2px 10px rgba(0,0,0,.12);display:none;z-index:9}
+  .hbtn{background:var(--brand);color:#fff;border:0;padding:6px 10px;border-radius:6px;margin:4px 4px 0 0;cursor:pointer}
+  .highlight{background:yellow}
+</style>
+</head>
+<body>
+  <div class="timerWrap">
+    <div class="timer" id="timer">20:00</div>
+    <button class="tbtn" id="pauseBtn">⏸️ Pause</button>
+    <button class="tbtn" id="resumeBtn" disabled>▶️ Resume</button>
+  </div>
+
+  <!-- Highlight palettes -->
+  <div class="palette" id="pPalette">
+    <button class="hbtn" data-color="yellow">Yellow</button>
+    <button class="hbtn" data-color="lightgreen">Green</button>
+    <button class="hbtn" data-color="lightblue">Blue</button>
+    <button class="hbtn" data-color="pink">Pink</button>
+    <button class="hbtn" data-color="orange">Orange</button>
+    <button class="hbtn" id="clearPMarks">Clear</button>
+  </div>
+  <div class="palette" id="qPalette">
+    <button class="hbtn" data-color="yellow">Yellow</button>
+    <button class="hbtn" data-color="lightgreen">Green</button>
+    <button class="hbtn" data-color="lightblue">Blue</button>
+    <button class="hbtn" data-color="pink">Pink</button>
+    <button class="hbtn" data-color="orange">Orange</button>
+    <button class="hbtn" id="clearQMarks">Clear</button>
+  </div>
+
+  <div class="container">
+    <div class="card passage" id="passageCard">
+      <h1>READING PASSAGE 1 – Sorry – who are you?</h1>
+      <div class="muted">You should spend about 20 minutes on Questions 1–13.</div>
+
+      <div id="passage">
+        <h2>Reading Passage 1</h2>
+        <h3>Sorry – who are you?<br><small>Prosopagnosia is a medical condition that stops people from recognising faces. But how common is it and why does it happen?</small></h3>
+
+        <p>It was Jacob Hodes' first day at college. He recalled pending an enjoyable afternoon
+being shown around campus by a second year students name Daniel Byme, who happened
+to be from his home town, Jacob then spent the rest of the year ignoring him, “ I never saw
+him again“ he says. Well, I’m sure I walked past him plenty of times, but I just didn’t see him.
+This behavior wasn’t intentional. Jacob just couldn’t recollect what his fellow student looked
+like. He had had the same trouble all his life. Friends and relatives would greet him and he
+would have no idea who they were. </p>
+
+        <p>It wasn't until five years ago that it all made sense. That was when Hodes was diagnosed
+with prosopagnosia, a condition that means he is unable to recognise faces. According to
+researchers, he is far from alone. In fact the condition is not that uncommon but until a few
+years ago only a few dozen cases had ever been described, and all of these had been caused
+by brain injury. Recently, though, researchers identified a second form of face blindness
+developmental prosopagnosia, which is either present from birth or develops very early in
+life.</p>
+
+        <p>In May, a team from Harvard University in the US and University College London (UCL)
+announced the results of a web survey of 1600 people, suggesting that up to 2 per cent of
+people have some degree of face blindness. Then in August, Martina Gruter and colleagues
+at the Institute for Human Genetics in Munster, Germany, similarly reported that 2.5 per
+cent of 700 secondary school pupils they had tested had trouble recognising faces. The
+results of the survey took everyone by surprise.
+</p>
+
+        <p>It seems that if you have never known what it is to recognise a face, you don't necessarily
+know that you are supposed to be able to. Prosopagnosics almost always know that they
+have trouble recognising people, but they often don’t realise that other people have better
+recognition skills than they do, says Brad Duchaine, a researcher at UCL.</p>
+
+        <p>Despite these issues, the majority of developmental prosopagnosics possess strategies that
+allow them to get around their difficulty, for instance, by recognising hair, clothing or a
+person’s way of speaking so, unless they see a familiar person out of context, with a new
+hairstyle or in difference clothes, they can recognise people just fine. Even so, the discovery
+of developmental prosopagnosia has attracted attention from neuroscientists keen to
+discover
+what is different about the brain of face-blind people. This difference, they believe, could
+help solve the problem of how the brain deals with information in general: not just visual
+data. In other words, it may show whether the brain has specialised parts for specific tasks
+or is more of a general-purpose information process.</p>
+
+        <p>One issue, however, which will present challenges for researchers is that no two
+prosopagnosics are the same. Some have problems only with faces, while others have
+trouble with ordinary everyday objects and, so it turns out, animals which would normally
+be familiar as well. Some prosopagnetles can train themselves to recognise specific faces
+others can’t even recognise their own in a mirror. When some have been tested they could
+identify the emotion which was conveyed on another’s face, even though the face itself
+seemed unfamiliar, while for other subjects this was an impossibility. Some cannot recognise
+the faces of old friends or fellow students but have no trouble telling whether a particular
+face rom such groups would be attractive to most people. Because of this diversity, working
+out the cause of prosopagnosia will not be easy.</p>
+
+        <p>In Martina Gruter's study, the prosopagnosics who agreed to have their parents and
+relatives tested reported at least one with the condition. Having looked at 38 cases in seven
+families, the German team believe they have good evidence that a single gene could be
+responsible. Duchaine also has some evidence that face blindness could be inherited but
+thinks other factors might be more significant. He refers to studies of babies born with a
+condition which means the eye's lense is not clear, and when it's the left one, being unable
+to see through this eye during the first two months of life is a major risk factor for
+prosopagnosia.</p>
+
+        <p>Whatever the cause, what most prosopagnosics want to know is whether they can do
+anything to improve their face recognition skills, Joseph Degutis, a graduate student at the
+University of California, recently reported successfully training a severe developmental
+prosopagnosic to recognise faces during tests carried out in the laboratory. The subject also
+reported that recognising faces in everyday life became easier due to the training. Duchaine
+now plans to attempt to train sufferers to recognise the five people that they most need to
+know, maybe their immediate family, for example, and essential colleagues. Thomas Gruter
+Martina Gruter's husband, who also works on her team, however, is not convinced it will
+work. 'I don't know how you can have more training than you have already had. he says.
+"Humans already spend all day looking at faces. He also points out that cheating is a
+possibility during tests and provides an example. One person we studied said that when she
+was doing the face-recognition test. She memorised the distance between nose and upper
+lip. She wasn’t the only one. So you can perform well in the test and not do so well in real life.</p>
+      </div>
+    </div>
+
+    <div class="card questions">
+      <h1>Questions</h1>
+      <div id="qroot"></div>
+      <button class="submit" id="submitBtn">Submit Answers</button>
+      <div class="results" id="results">
+        <h2>Your Results</h2>
+        <div id="score" class="meta"></div>
+        <ul id="answers"></ul>
+      </div>
+    </div>
+  </div>
+
+  <div class="footerNav" id="footerNav"></div>
+
+<script>
+/* =======================
+   CONFIG (answers included)
+   ======================= */
+const CONFIG = {
+  durationMinutes: 20,
+  showFooterNavigator: true,
+  sections: [
+    /* 1–7 TRUE/FALSE/NOT GIVEN */
+    {
+      type: "tfn",
+      heading: "Questions 1–7",
+      instructions: [
+        "Do the following statements agree with the information in Reading Passage 1?",
+        "Choose TRUE / FALSE / NOT GIVEN."
+      ],
+      items: [
+        { id: 1, text: "Before attending college Jacob was capable of recognising people he knew well.", correct: "FALSE" },
+        { id: 2, text: "Researchers believe that prosopagnosia may be a growing problem.", correct: "NOT GIVEN" },
+        { id: 3, text: "It is harder to identify developmental prosopagnosia in babies than in young children.", correct: "NOT GIVEN" },
+        { id: 4, text: "A German study seems to support the Harvard and UCL research findings.", correct: "TRUE" },
+        { id: 5, text: "In general, prosopagnosics are aware that other people can recognise faces more easily than they can.", correct: "FALSE" },
+        { id: 6, text: "In most cases, prosopagnosics have developed ways to deal with their problem.", correct: "TRUE" },
+        { id: 7, text: "The study of prosopagnosia may help neuroscientists to treat different kinds of brain injury.", correct: "FALSE" }
+      ]
+    },
+
+    /* 8–13 ONE WORD ONLY (notes completion) */
+    {
+      type: "gap1",
+      heading: "Questions 8–13",
+      instructions: [
+        "Complete the notes below.",
+        "Choose ONE WORD ONLY from the passage for each answer."
+      ],
+      items: [
+        { id: 8,  prompt: "commonly seen ______ and objects", correct: ["animals"] },
+        { id: 9,  prompt: "the ______ on someone else’s face", correct: ["emotion"] },
+        { id:10,  prompt: "just one ______ (according to Martina Grüter)", correct: ["gene"] },
+        { id:11,  prompt: "a defect in the ______ eye (according to Brad Duchaine)", correct: ["left"] },
+        { id:12,  prompt: "trained successfully inside the ______", correct: ["laboratory"] },
+        { id:13,  prompt: "tests affected by ______", correct: ["cheating"] }
+      ]
+    }
+  ]
+};
+
+/* =======================
+   RENDER ENGINE (same shell)
+   ======================= */
+const qroot = document.getElementById('qroot');
+const navIds = [];
+const answersMap = {};
+const typesMap = {};
+
+function sectionHeader(t){ const h=document.createElement('h2'); h.className='qsection'; h.textContent=t; return h; }
+
+/* TRUE/FALSE/NOT GIVEN */
+function renderTFN(sec){
+  qroot.appendChild(sectionHeader(sec.heading));
+  (sec.instructions||[]).forEach(tx=>{ const p=document.createElement('p'); p.className='muted'; p.textContent=tx; qroot.appendChild(p); });
+  sec.items.forEach(it=>{
+    const b=document.createElement('div'); b.className='qblock'; b.id=`anchor-${it.id}`;
+    const opts=['TRUE','FALSE','NOT GIVEN'].map(v=>`<label><input type="radio" name="q${it.id}" value="${v}"> ${v}</label>`).join('');
+    b.innerHTML=`<div class="qhead"><strong>${it.id}.</strong> ${it.text}</div><div class="options">${opts}</div>`;
+    qroot.appendChild(b); navIds.push(it.id); answersMap[it.id]=it.correct; typesMap[it.id]='tfn';
+  });
+}
+
+/* ONE-WORD gaps */
+function renderGAP1(sec){
+  qroot.appendChild(sectionHeader(sec.heading));
+  (sec.instructions||[]).forEach(tx=>{ const p=document.createElement('p'); p.className='muted'; p.textContent=tx; qroot.appendChild(p); });
+  sec.items.forEach(it=>{
+    const b=document.createElement('div'); b.className='qblock'; b.id=`anchor-${it.id}`;
+    b.innerHTML = `<div class="qhead"><strong>${it.id}.</strong> ${it.prompt}</div>
+                   <div class="options"><input type="text" id="q${it.id}" placeholder="ONE WORD ONLY"></div>`;
+    qroot.appendChild(b); navIds.push(it.id); answersMap[it.id]=it.correct; typesMap[it.id]='gap1';
+  });
+}
+
+/* Build UI */
+CONFIG.sections.forEach(sec=>{
+  if (sec.type==='tfn') renderTFN(sec);
+  if (sec.type==='gap1') renderGAP1(sec);
+});
+
+/* Footer chips */
+const footerNav=document.getElementById('footerNav');
+footerNav.innerHTML='<strong class="muted">Questions:</strong>';
+[...new Set(navIds)].sort((a,b)=>a-b).forEach(id=>{
+  const chip=document.createElement('button'); chip.className='chip'; chip.id=`chip-${id}`; chip.textContent=id;
+  chip.addEventListener('click',()=>{ document.getElementById(`anchor-${id}`).scrollIntoView({behavior:'smooth',block:'center'}); });
+  footerNav.appendChild(chip);
+});
+function markChipAnswered(id, answered){ const chip=document.getElementById(`chip-${id}`); if(chip) chip.classList.toggle('answered', !!answered); }
+document.addEventListener('change',(e)=>{
+  const m=String(e.target.name||e.target.id||'').match(/q(\d+)/);
+  const id=m?+m[1]:null; if(!id) return;
+  const answered=(e.target.type==='radio') ? (!!document.querySelector(`input[name='q${id}']:checked`))
+                 : (e.target.value.trim().length>0);
+  markChipAnswered(id, answered);
+});
+
+/* Timer */
+let timeLeft=Math.max(1,+CONFIG.durationMinutes||20)*60;
+const timer=document.getElementById('timer');
+const pauseBtn=document.getElementById('pauseBtn');
+const resumeBtn=document.getElementById('resumeBtn');
+let paused=false, iv;
+const fmt=s=>`${String(Math.floor(s/60)).padStart(2,'0')}:${String(s%60).padStart(2,'0')}`;
+function startTick(){ if(iv) clearInterval(iv);
+  iv=setInterval(()=>{ if(paused) return; timer.textContent=fmt(timeLeft); if(timeLeft<=0){ clearInterval(iv); alert("Time's up! Submitting."); submit(); } timeLeft--; },1000);
+}
+timer.textContent=fmt(timeLeft); startTick();
+pauseBtn.addEventListener('click',()=>{ paused=true; pauseBtn.disabled=true; resumeBtn.disabled=false; });
+resumeBtn.addEventListener('click',()=>{ paused=false; pauseBtn.disabled=false; resumeBtn.disabled=true; });
+
+/* Submit & grading */
+document.getElementById('submitBtn').addEventListener('click', submit);
+function normLower(s){ return (s||'').trim().replace(/\s+/g,' ').toLowerCase(); }
+function submit(){
+  paused=true; pauseBtn.disabled=true; resumeBtn.disabled=false;
+  let total=0, graded=0, correctCount=0;
+  const out=[];
+  const ids=[1,2,3,4,5,6,7,8,9,10,11,12,13];
+
+  ids.forEach(key=>{
+    total++;
+    const type=typesMap[key];
+    let user='', ok=false;
+
+    if(type==='tfn'){
+      const picked=document.querySelector(`input[name="q${key}"]:checked`);
+      user = picked? picked.value : '';
+      ok = normLower(user)===normLower(answersMap[key]);
+    } else if(type==='gap1'){
+      const el=document.getElementById('q'+key);
+      user = el? el.value : '';
+      const acc = Array.isArray(answersMap[key])?answersMap[key]:[answersMap[key]];
+      ok = acc.map(normLower).includes(normLower(user));
+    }
+
+    if(user) graded++;
+    if(ok) correctCount++;
+    const corrDisp = Array.isArray(answersMap[key])?answersMap[key].join(' / '):String(answersMap[key]);
+    out.push({label:key, status: ok? '✓ Correct':'✗ Incorrect', user: user||'No answer', correct: corrDisp});
+  });
+
+  document.getElementById('score').innerHTML = `Graded ${graded} of ${total} • Score: ${correctCount}/${graded||total}`;
+  document.getElementById('answers').innerHTML = out.map(it=>`<li class="${/Correct/.test(it.status)?'ok':'bad'}">Q${it.label}: ${it.status} — Your: <b>${it.user}</b> | Correct: <b>${it.correct}</b></li>`).join('');
+  const r=document.getElementById('results'); r.style.display='block'; r.scrollIntoView({behavior:'smooth'});
+}
+
+/* Highlights */
+const passageCard=document.getElementById('passageCard');
+const pPalette=document.getElementById('pPalette');
+passageCard.addEventListener('mouseup',(e)=>{
+  const sel=window.getSelection(); if(!sel||sel.toString().trim().length===0) return;
+  if(!passageCard.contains(sel.getRangeAt(0).commonAncestorContainer)) return;
+  const r=passageCard.getBoundingClientRect(), x=Math.min(e.clientX-r.left,r.width-10), y=Math.max(0,e.clientY-r.top-40);
+  pPalette.style.left=(r.left+x)+'px'; pPalette.style.top=(r.top+y)+'px'; pPalette.style.display='block';
+});
+document.addEventListener('mousedown',(e)=>{ if(!pPalette.contains(e.target)) pPalette.style.display='none'; });
+pPalette.querySelectorAll('.hbtn[data-color]').forEach(btn=>{
+  btn.addEventListener('click',()=>{ markSelection(btn.dataset.color, passageCard); pPalette.style.display='none'; });
+});
+document.getElementById('clearPMarks').addEventListener('click',()=>{
+  passageCard.querySelectorAll('span.highlight').forEach(n=>{ const p=n.parentNode; while(n.firstChild) p.insertBefore(n.firstChild,n); p.removeChild(n); p.normalize(); });
+  pPalette.style.display='none';
+});
+
+/* Questions highlight */
+const qCard=document.querySelector('.card.questions');
+const qPalette=document.getElementById('qPalette');
+qCard.addEventListener('mouseup',(e)=>{
+  const sel=window.getSelection(); if(!sel||sel.toString().trim().length===0) return;
+  if(!qCard.contains(sel.getRangeAt(0).commonAncestorContainer)) return;
+  const node = sel.getRangeAt(0).commonAncestorContainer.nodeType===1 ? sel.getRangeAt(0).commonAncestorContainer : sel.getRangeAt(0).commonAncestorContainer.parentNode;
+  if (node.closest && node.closest('input,textarea,select')) return;
+  const r=qCard.getBoundingClientRect(), x=Math.min(e.clientX-r.left,r.width-10), y=Math.max(0,e.clientY-r.top-40);
+  qPalette.style.left=(r.left+x)+'px'; qPalette.style.top=(r.top+y)+'px'; qPalette.style.display='block';
+});
+document.addEventListener('mousedown',(e)=>{ if(!qPalette.contains(e.target)) qPalette.style.display='none'; });
+qPalette.querySelectorAll('.hbtn[data-color]').forEach(btn=>{
+  btn.addEventListener('click',()=>{ markSelection(btn.dataset.color, qCard); qPalette.style.display='none'; });
+});
+document.getElementById('clearQMarks').addEventListener('click',()=>{
+  qCard.querySelectorAll('span.highlight').forEach(n=>{ const p=n.parentNode; while(n.firstChild) p.insertBefore(n.firstChild,n); p.removeChild(n); p.normalize(); });
+  qPalette.style.display='none';
+});
+
+function markSelection(color, scope){
+  const sel=window.getSelection(); if(!sel||!sel.rangeCount) return;
+  const range=sel.getRangeAt(0);
+  if(!scope.contains(range.commonAncestorContainer)) return;
+  const frag=range.extractContents();
+  const span=document.createElement('span'); span.className='highlight'; span.style.backgroundColor=color; span.appendChild(frag);
+  range.insertNode(span); sel.removeAllRanges();
+}
+</script>
+</body>
+</html>

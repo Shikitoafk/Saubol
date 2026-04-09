@@ -1,0 +1,1276 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>IELTS Reading Test - Marketing and the information age</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --day-bg: #f8f9fa;
+            --day-text: #212529;
+            --day-primary: #4a6fa5;
+            --day-secondary: #e9ecef;
+            --day-highlight: #fff9c4;
+            --day-highlight-blue: #bbdefb;
+            
+            --night-bg: #1a1a2e;
+            --night-text: #e6e6e6;
+            --night-primary: #6d9dc5;
+            --night-secondary: #16213e;
+            --night-highlight: #5d4037;
+            --night-highlight-blue: #0d47a1;
+            
+            --sepia-bg: #f4ecd8;
+            --sepia-text: #5c4b37;
+            --sepia-primary: #8b5a2b;
+            --sepia-secondary: #e3d5b8;
+            --sepia-highlight: #e6d2aa;
+            --sepia-highlight-blue: #c5d5e0;
+            
+            --transition: all 0.3s ease;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 0;
+            transition: var(--transition);
+            overflow-x: hidden;
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+        }
+
+        body.day-mode {
+            background-color: var(--day-bg);
+            color: var(--day-text);
+        }
+
+        body.night-mode {
+            background-color: var(--night-bg);
+            color: var(--night-text);
+        }
+
+        body.sepia-mode {
+            background-color: var(--sepia-bg);
+            color: var(--sepia-text);
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 20px;
+            flex-shrink: 0;
+            transition: var(--transition);
+        }
+
+        .day-mode .header {
+            background-color: var(--day-primary);
+            color: white;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .night-mode .header {
+            background-color: var(--night-primary);
+            color: white;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+        }
+
+        .sepia-mode .header {
+            background-color: var(--sepia-primary);
+            color: white;
+            box-shadow: 0 2px 10px rgba(91, 65, 24, 0.2);
+        }
+
+        .logo {
+            font-weight: bold;
+            font-size: 1.5rem;
+            display: flex;
+            align-items: center;
+        }
+
+        .logo i {
+            margin-right: 10px;
+        }
+
+        .theme-switcher {
+            display: flex;
+            gap: 10px;
+        }
+
+        .theme-btn {
+            border: none;
+            border-radius: 50%;
+            width: 30px;
+            height: 30px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: var(--transition);
+        }
+
+        .day-btn {
+            background-color: #ffc107;
+            color: #333;
+        }
+
+        .night-btn {
+            background-color: #495057;
+            color: white;
+        }
+
+        .sepia-btn {
+            background-color: #d7ccc8;
+            color: #5d4037;
+        }
+
+        
+
+        
+
+        .timer-container {
+            text-align: center;
+            padding: 10px;
+            margin: 0 20px 20px;
+            border-radius: 10px;
+            transition: var(--transition);
+            flex-shrink: 0;
+        }
+
+        .day-mode .timer-container {
+            background-color: var(--day-secondary);
+        }
+
+        .night-mode .timer-container {
+            background-color: var(--night-secondary);
+        }
+
+        .sepia-mode .timer-container {
+            background-color: var(--sepia-secondary);
+        }
+
+        .timer {
+            font-size: 1.8rem;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+
+        .timer-warning {
+            color: #e53935;
+            animation: pulse 1s infinite;
+        }
+
+
+            0% { opacity: 1; }
+            50% { opacity: 0.6; }
+            100% { opacity: 1; }
+        }
+
+        .timer-label {
+            font-size: 0.9rem;
+            opacity: 0.8;
+        }
+
+        .content-container {
+            display: flex;
+            flex-direction: row;
+            padding: 0 20px 20px;
+            gap: 30px;
+            flex: 1;
+            min-height: 0;
+            max-width: 1400px;
+            margin: 0 auto;
+            width: 100%;
+            box-sizing: border-box;
+        }
+
+
+            .content-container {
+                flex-direction: column;
+            }
+            
+            .passage-container, .questions-container {
+                max-height: 50vh !important;
+            }
+        }
+
+        .passage-container {
+            flex: 1;
+            padding: 20px;
+            border-radius: 10px;
+            transition: var(--transition);
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            max-height: 100%;
+        }
+
+        .day-mode .passage-container {
+            background-color: white;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+        }
+
+        .night-mode .passage-container {
+            background-color: #222831;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+        }
+
+        .sepia-mode .passage-container {
+            background-color: #f9f5eb;
+            box-shadow: 0 4px 12px rgba(91, 65, 24, 0.1);
+        }
+
+        .passage-title {
+            font-size: 1.5rem;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid;
+            transition: var(--transition);
+            flex-shrink: 0;
+        }
+
+        .day-mode .passage-title {
+            border-color: var(--day-primary);
+        }
+
+        .night-mode .passage-title {
+            border-color: var(--night-primary);
+        }
+
+        .sepia-mode .passage-title {
+            border-color: var(--sepia-primary);
+        }
+
+        .passage-content {
+            line-height: 1.6;
+            font-size: 1.05rem;
+            overflow-y: auto;
+            flex: 1;
+            padding-right: 10px;
+        }
+
+        .passage-content p {
+            margin-bottom: 15px;
+        }
+
+        .highlight-yellow {
+            background-color: var(--day-highlight);
+            transition: var(--transition);
+        }
+
+        .night-mode .highlight-yellow {
+            background-color: var(--night-highlight);
+        }
+
+        .sepia-mode .highlight-yellow {
+            background-color: var(--sepia-highlight);
+        }
+
+        .highlight-blue {
+            background-color: var(--day-highlight-blue);
+            transition: var(--transition);
+        }
+
+        .night-mode .highlight-blue {
+            background-color: var(--night-highlight-blue);
+        }
+
+        .sepia-mode .highlight-blue {
+            background-color: var(--sepia-highlight-blue);
+        }
+
+        .highlight-menu {
+            position: absolute;
+            background: white;
+            border-radius: 6px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+            padding: 5px;
+            z-index: 1000;
+            display: flex;
+            gap: 5px;
+        }
+
+        .highlight-btn {
+            border: none;
+            border-radius: 4px;
+            width: 30px;
+            height: 30px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: var(--transition);
+        }
+
+        .yellow-btn {
+            background-color: #fff9c4;
+        }
+
+        .blue-btn {
+            background-color: #bbdefb;
+        }
+
+        .clear-btn {
+            background-color: #f5f5f5;
+        }
+
+        .questions-container {
+            flex: 1;
+            padding: 20px;
+            border-radius: 10px;
+            transition: var(--transition);
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            max-height: 100%;
+        }
+
+        .day-mode .questions-container {
+            background-color: white;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+        }
+
+        .night-mode .questions-container {
+            background-color: #222831;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+        }
+
+        .sepia-mode .questions-container {
+            background-color: #f9f5eb;
+            box-shadow: 0 4px 12px rgba(91, 65, 24, 0.1);
+        }
+
+        .questions-scroll {
+            overflow-y: auto;
+            flex: 1;
+            padding-right: 10px;
+        }
+
+        .question-section {
+            margin-bottom: 30px;
+        }
+
+        .question-title {
+            font-size: 1.2rem;
+            margin-bottom: 15px;
+            padding-bottom: 8px;
+            border-bottom: 1px solid;
+            transition: var(--transition);
+        }
+
+        .day-mode .question-title {
+            border-color: var(--day-primary);
+        }
+
+        .night-mode .question-title {
+            border-color: var(--night-primary);
+        }
+
+        .sepia-mode .question-title {
+            border-color: var(--sepia-primary);
+        }
+
+        .question {
+            margin-bottom: 15px;
+            padding: 15px;
+            border-radius: 8px;
+            transition: var(--transition);
+        }
+
+        .day-mode .question {
+            background-color: var(--day-secondary);
+        }
+
+        .night-mode .question {
+            background-color: var(--night-secondary);
+        }
+
+        .sepia-mode .question {
+            background-color: var(--sepia-secondary);
+        }
+
+        .question-label {
+            font-weight: bold;
+            margin-bottom: 8px;
+            display: block;
+        }
+
+        .options-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-top: 10px;
+        }
+
+        .option-btn {
+            padding: 8px 15px;
+            border: 1px solid;
+            border-radius: 20px;
+            cursor: pointer;
+            transition: var(--transition);
+            background-color: transparent;
+        }
+
+        .day-mode .option-btn {
+            border-color: var(--day-primary);
+            color: var(--day-text);
+        }
+
+        .day-mode .option-btn:hover {
+            background-color: var(--day-primary);
+            color: white;
+        }
+
+        .night-mode .option-btn {
+            border-color: var(--night-primary);
+            color: var(--night-text);
+        }
+
+        .night-mode .option-btn:hover {
+            background-color: var(--night-primary);
+            color: white;
+        }
+
+        .sepia-mode .option-btn {
+            border-color: var(--sepia-primary);
+            color: var(--sepia-text);
+        }
+
+        .sepia-mode .option-btn:hover {
+            background-color: var(--sepia-primary);
+            color: white;
+        }
+
+        .option-btn.selected {
+            font-weight: bold;
+        }
+
+        .day-mode .option-btn.selected {
+            background-color: var(--day-primary);
+            color: white;
+        }
+
+        .night-mode .option-btn.selected {
+            background-color: var(--night-primary);
+            color: white;
+        }
+
+        .sepia-mode .option-btn.selected {
+            background-color: var(--sepia-primary);
+            color: white;
+        }
+
+        .letter-options {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-top: 10px;
+        }
+
+        .letter-btn {
+            width: 40px;
+            height: 40px;
+            border: 1px solid;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: var(--transition);
+            font-weight: bold;
+        }
+
+        .day-mode .letter-btn {
+            border-color: var(--day-primary);
+            color: var(--day-text);
+        }
+
+        .day-mode .letter-btn:hover {
+            background-color: var(--day-primary);
+            color: white;
+        }
+
+        .night-mode .letter-btn {
+            border-color: var(--night-primary);
+            color: var(--night-text);
+        }
+
+        .night-mode .letter-btn:hover {
+            background-color: var(--night-primary);
+            color: white;
+        }
+
+        .sepia-mode .letter-btn {
+            border-color: var(--sepia-primary);
+            color: var(--sepia-text);
+        }
+
+        .sepia-mode .letter-btn:hover {
+            background-color: var(--sepia-primary);
+            color: white;
+        }
+
+        .letter-btn.selected {
+            font-weight: bold;
+        }
+
+        .day-mode .letter-btn.selected {
+            background-color: var(--day-primary);
+            color: white;
+        }
+
+        .night-mode .letter-btn.selected {
+            background-color: var(--night-primary);
+            color: white;
+        }
+
+        .sepia-mode .letter-btn.selected {
+            background-color: var(--sepia-primary);
+            color: white;
+        }
+
+        .submit-btn-container {
+            flex-shrink: 0;
+            margin-top: 20px;
+            text-align: center;
+        }
+
+        .submit-btn {
+            padding: 12px 30px;
+            border: none;
+            border-radius: 30px;
+            font-size: 1.1rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: var(--transition);
+            background-color: var(--day-primary);
+            color: white;
+        }
+
+        .day-mode .submit-btn {
+            background-color: var(--day-primary);
+        }
+
+        .night-mode .submit-btn {
+            background-color: var(--night-primary);
+        }
+
+        .sepia-mode .submit-btn {
+            background-color: var(--sepia-primary);
+        }
+
+        .submit-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        .result-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.8);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+
+        .result-container {
+            background-color: white;
+            border-radius: 15px;
+            padding: 30px;
+            max-width: 800px;
+            width: 90%;
+            max-height: 90vh;
+            overflow-y: auto;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+        }
+
+        .night-mode .result-container {
+            background-color: #222831;
+            color: var(--night-text);
+        }
+
+        .sepia-mode .result-container {
+            background-color: #f9f5eb;
+            color: var(--sepia-text);
+        }
+
+        .result-header {
+            text-align: center;
+            margin-bottom: 25px;
+            position: relative;
+        }
+
+        .result-close {
+            position: absolute;
+            top: -10px;
+            right: -10px;
+            background: #f44336;
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 30px;
+            height: 30px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+
+        .result-score {
+            font-size: 2.5rem;
+            font-weight: bold;
+            margin-bottom: 10px;
+            transition: var(--transition);
+        }
+
+        .day-mode .result-score {
+            color: var(--day-primary);
+        }
+
+        .night-mode .result-score {
+            color: var(--night-primary);
+        }
+
+        .sepia-mode .result-score {
+            color: var(--sepia-primary);
+        }
+
+        .result-feedback {
+            font-size: 1.2rem;
+            margin-bottom: 20px;
+        }
+
+        .result-details {
+            margin-bottom: 25px;
+        }
+
+        .result-question {
+            margin-bottom: 15px;
+            padding: 15px;
+            border-radius: 8px;
+            background-color: #f8f9fa;
+        }
+
+        .night-mode .result-question {
+            background-color: #16213e;
+        }
+
+        .sepia-mode .result-question {
+            background-color: #e3d5b8;
+        }
+
+        .correct {
+            color: #28a745;
+            font-weight: bold;
+        }
+
+        .incorrect {
+            color: #dc3545;
+            font-weight: bold;
+        }
+
+        .result-reference {
+            font-style: italic;
+            margin-top: 8px;
+            font-size: 0.9rem;
+            opacity: 0.8;
+        }
+
+        .result-actions {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+        }
+
+        .result-btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 20px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: var(--transition);
+        }
+
+        .restart-btn {
+            background-color: #4a6fa5;
+            color: white;
+        }
+
+        .close-btn {
+            background-color: #6c757d;
+            color: white;
+        }
+
+        .footer {
+            text-align: center;
+            padding: 20px;
+            font-size: 0.9rem;
+            opacity: 0.7;
+            transition: var(--transition);
+            flex-shrink: 0;
+        }
+    </style>
+</head>
+<body class="day-mode">
+    <div class="header">
+        <div class="logo">
+            <i class="fas fa-book-reader"></i>
+            <span>IELTS Reading Test</span>
+        </div>
+        <div class="theme-switcher">
+            <button class="theme-btn day-btn" onclick="switchTheme('day')"><i class="fas fa-sun"></i></button>
+            <button class="theme-btn night-btn" onclick="switchTheme('night')"><i class="fas fa-moon"></i></button>
+            <button class="theme-btn sepia-btn" onclick="switchTheme('sepia')"><i class="fas fa-feather-alt"></i></button>
+        </div>
+        
+    </div>
+
+    <div class="timer-container">
+        <div class="timer" id="timer">20:00</div>
+        <div class="timer-label">Оставшееся время</div>
+    </div>
+
+    <div class="content-container">
+        <div class="passage-container">
+            <h2 class="passage-title">Marketing and the information age</h2>
+            <div class="passage-content" id="passage-content">
+                <p><strong>A</strong> For the early practitioners of marketing in the late 19th and early 20th centuries, the business of selling was simply a matter of continually finding new customers. By contrast, marketing managers in the current era recognise the importance of gathering information about the market and about potential customers. They recognise that if companies are to be profitable, customers must gain and retain their perceptions of value from the brands they buy over a long time frame, rather than from a single transaction. This also means that customers must see value in returning continually to the stores where they shop, as well as to the service providers they deal with.</p>
+                
+                <p><strong>B</strong> Marketing practitioners and marketing scientists have never worked more closely than they currently do. There are many reasons for this, including the fact that this is the <em>information age</em> where convergence in telecommunications, media and technology is causing old ways to be challenged, and new methods and tools to be tested. Customer expectations have risen as new technologies allow new approaches. For instance, the subscriber-TV music channel Channel [V], encourages its viewers to sign up for text messages and email alerts that tell them when their favourite artists and songs are about to be broadcast. Competitive advantage lies in being able to recognise which customers can be given greater attention, not just because they demand it but because it makes commercial sense to provide high levels of product quality and service.</p>
+                
+                <p><strong>C</strong> Modern marketing information systems rely on information technology to enable marketing intelligence to be gathered and to store and analyse marketing research information. While some of the information used is gathered by government bodies such as the Australian Bureau of Statistics and Statistics New Zealand, most of it is purposefully gathered by marketing organisations for client companies. In the process, computer technology is used to manipulate the data and then to present the information in such a way that executives can readily identify any problems or issues, and quickly arrive at solutions.</p>
+                
+                <p><strong>D</strong> In order to produce superior value and satisfaction for customers, marketing managers need information at almost every turn. They need information about customers-end-users and resellers - as well as competitors and governmental and other forces in the marketplace. One marketing executive put it this way: "To manage a business well is to manage its future; and to manage the future is to manage information." Increasingly, marketers are viewing information not just as an input for making better decisions but also as an important strategic asset and marketing tool. As household incomes increase, choice widens and buyers become better discriminating, so sellers need information about how buyers respond to different products and advertising campaigns.</p>
+                
+                <p><strong>E</strong> The supply of information has also increased greatly. It has been suggested by the futurist and best selling author John Naisbitt that the United States and, by observation, developed countries such as Australia, New Zealand and Singapore are moving from industrial to information-based economies. These post-industrial economies earn 70-80% of their Gross Domestic Product from services, and have entered what some commentators have termed the 'Information Age' or the 'Information Technology Era'.</p>
+                
+                <p><strong>F</strong> One study found that with all the information now available through supermarket scanners, a packaged goods product controller is bombarded with one million to one billion new numbers each week. As Naisbitt points out: 'Running out of information is not a problem, but drowning in it is. Yet marketers frequently complain that they lack information of the right kind but have plenty of the wrong kind, or they claim that marketing information is so widely spread throughout the organisation that it takes great effort to locate even simple facts. In addition, subordinates may withhold information they believe will reflect badly on their performance and important information often arrives too late to be useful, or on-time information is not accurate.</p>
+                
+                <p><strong>G</strong> So marketing managers need better information. Although marketing organisations have greater capacity to provide managers with information, they often do not use it well. As a result, many marketing organisations are now studying their managers' information needs and designing information systems specifically to meet those needs. One solution is to use a Marketing Information System (MIS). This consists of people, equipment and procedures which, when put together, are able to gather, analyse, evaluate and distribute needed, timely and accurate information to marketing decision-makers. The MIS begins and ends with marketing managers. First, it interacts with these managers to assess the information needs they have. Next, it develops the needed information from internal records, marketing intelligence activities and the research process. The analysis unit processes the data to make it more useful and, finally, the MIS distributes it to managers in the right form and at the right time to help them make better marketing decisions.</p>
+                
+                <p><strong>H</strong> However, the costs of obtaining, processing, storing and delivering information can mount quickly. In some cases additional information will do little to change or improve a manager's decision, or the costs of the information will exceed the returns from the improved decision. For example, if an organisation estimates that launching a new product without any further information will yield a profit of $500,000, then it would be foolish to spend $30,000 for additional information that would increase the profit to only $525,000. By itself information is valueless - its value comes from its use.</p>
+            </div>
+        </div>
+
+        <div class="questions-container">
+            <div class="questions-scroll">
+                <div class="question-section">
+                    <h3 class="question-title">Questions 27-31</h3>
+                    <p>Reading Passage 3 has eight paragraphs, A-H.</p>
+                    <p>Which paragraph contains the following information?</p>
+                    <p>Write the correct letter, A-H, in boxes 27-31 on your answer sheet.</p>
+
+                    <div class="question" id="q27">
+                        <span class="question-label">27. the fact that there may be too much information to cope with</span>
+                        <div class="letter-options">
+                            <button class="letter-btn" onclick="selectLetter(this, 'A', 'q27')">A</button>
+                            <button class="letter-btn" onclick="selectLetter(this, 'B', 'q27')">B</button>
+                            <button class="letter-btn" onclick="selectLetter(this, 'C', 'q27')">C</button>
+                            <button class="letter-btn" onclick="selectLetter(this, 'D', 'q27')">D</button>
+                            <button class="letter-btn" onclick="selectLetter(this, 'E', 'q27')">E</button>
+                            <button class="letter-btn" onclick="selectLetter(this, 'F', 'q27')">F</button>
+                            <button class="letter-btn" onclick="selectLetter(this, 'G', 'q27')">G</button>
+                            <button class="letter-btn" onclick="selectLetter(this, 'H', 'q27')">H</button>
+                        </div>
+                    </div>
+
+                    <div class="question" id="q28">
+                        <span class="question-label">28. the relevance of generating repeat business</span>
+                        <div class="letter-options">
+                            <button class="letter-btn" onclick="selectLetter(this, 'A', 'q28')">A</button>
+                            <button class="letter-btn" onclick="selectLetter(this, 'B', 'q28')">B</button>
+                            <button class="letter-btn" onclick="selectLetter(this, 'C', 'q28')">C</button>
+                            <button class="letter-btn" onclick="selectLetter(this, 'D', 'q28')">D</button>
+                            <button class="letter-btn" onclick="selectLetter(this, 'E', 'q28')">E</button>
+                            <button class="letter-btn" onclick="selectLetter(this, 'F', 'q28')">F</button>
+                            <button class="letter-btn" onclick="selectLetter(this, 'G', 'q28')">G</button>
+                            <button class="letter-btn" onclick="selectLetter(this, 'H', 'q28')">H</button>
+                        </div>
+                    </div>
+
+                    <div class="question" id="q29">
+                        <span class="question-label">29. an example of personalised marketing</span>
+                        <div class="letter-options">
+                            <button class="letter-btn" onclick="selectLetter(this, 'A', 'q29')">A</button>
+                            <button class="letter-btn" onclick="selectLetter(this, 'B', 'q29')">B</button>
+                            <button class="letter-btn" onclick="selectLetter(this, 'C', 'q29')">C</button>
+                            <button class="letter-btn" onclick="selectLetter(this, 'D', 'q29')">D</button>
+                            <button class="letter-btn" onclick="selectLetter(this, 'E', 'q29')">E</button>
+                            <button class="letter-btn" onclick="selectLetter(this, 'F', 'q29')">F</button>
+                            <button class="letter-btn" onclick="selectLetter(this, 'G', 'q29')">G</button>
+                            <button class="letter-btn" onclick="selectLetter(this, 'H', 'q29')">H</button>
+                        </div>
+                    </div>
+
+                    <div class="question" id="q30">
+                        <span class="question-label">30. an illustration of a situation where commissioning new information research might not be advisable</span>
+                        <div class="letter-options">
+                            <button class="letter-btn" onclick="selectLetter(this, 'A', 'q30')">A</button>
+                            <button class="letter-btn" onclick="selectLetter(this, 'B', 'q30')">B</button>
+                            <button class="letter-btn" onclick="selectLetter(this, 'C', 'q30')">C</button>
+                            <button class="letter-btn" onclick="selectLetter(this, 'D', 'q30')">D</button>
+                            <button class="letter-btn" onclick="selectLetter(this, 'E', 'q30')">E</button>
+                            <button class="letter-btn" onclick="selectLetter(this, 'F', 'q30')">F</button>
+                            <button class="letter-btn" onclick="selectLetter(this, 'G', 'q30')">G</button>
+                            <button class="letter-btn" onclick="selectLetter(this, 'H', 'q30')">H</button>
+                        </div>
+                    </div>
+
+                    <div class="question" id="q31">
+                        <span class="question-label">31. how the greater wealth of customers enables them to select from a broader range of products</span>
+                        <div class="letter-options">
+                            <button class="letter-btn" onclick="selectLetter(this, 'A', 'q31')">A</button>
+                            <button class="letter-btn" onclick="selectLetter(this, 'B', 'q31')">B</button>
+                            <button class="letter-btn" onclick="selectLetter(this, 'C', 'q31')">C</button>
+                            <button class="letter-btn" onclick="selectLetter(this, 'D', 'q31')">D</button>
+                            <button class="letter-btn" onclick="selectLetter(this, 'E', 'q31')">E</button>
+                            <button class="letter-btn" onclick="selectLetter(this, 'F', 'q31')">F</button>
+                            <button class="letter-btn" onclick="selectLetter(this, 'G', 'q31')">G</button>
+                            <button class="letter-btn" onclick="selectLetter(this, 'H', 'q31')">H</button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="question-section">
+                    <h3 class="question-title">Questions 32-36</h3>
+                    <p>Do the following statements agree with the claims of the writer in Reading Passage 3?</p>
+                    <p>In boxes 32-36 on your answer sheet, write</p>
+                    <p><strong>YES</strong> - if the statement agrees with the claims of the writer<br>
+                    <strong>NO</strong> - if the statement contradicts the claims of the writer<br>
+                    <strong>NOT GIVEN</strong> - if it is impossible to say what the writer thinks about this</p>
+
+                    <div class="question" id="q32">
+                        <span class="question-label">32. The majority of marketing statistics are gathered by government agencies.</span>
+                        <div class="options-container">
+                            <button class="option-btn" onclick="selectOption(this, 'YES', 'q32')">YES</button>
+                            <button class="option-btn" onclick="selectOption(this, 'NO', 'q32')">NO</button>
+                            <button class="option-btn" onclick="selectOption(this, 'NOT GIVEN', 'q32')">NOT GIVEN</button>
+                        </div>
+                    </div>
+
+                    <div class="question" id="q33">
+                        <span class="question-label">33. The move from an industrial to an information-based economy has happened more quickly in New Zealand than in Australia.</span>
+                        <div class="options-container">
+                            <button class="option-btn" onclick="selectOption(this, 'YES', 'q33')">YES</button>
+                            <button class="option-btn" onclick="selectOption(this, 'NO', 'q33')">NO</button>
+                            <button class="option-btn" onclick="selectOption(this, 'NOT GIVEN', 'q33')">NOT GIVEN</button>
+                        </div>
+                    </div>
+
+                    <div class="question" id="q34">
+                        <span class="question-label">34. Employees sometimes hide information that gives a poor impression of them.</span>
+                        <div class="options-container">
+                            <button class="option-btn" onclick="selectOption(this, 'YES', 'q34')">YES</button>
+                            <button class="option-btn" onclick="selectOption(this, 'NO', 'q34')">NO</button>
+                            <button class="option-btn" onclick="selectOption(this, 'NOT GIVEN', 'q34')">NOT GIVEN</button>
+                        </div>
+                    </div>
+
+                    <div class="question" id="q35">
+                        <span class="question-label">35. Managers frequently fail to make good use of the information they receive.</span>
+                        <div class="options-container">
+                            <button class="option-btn" onclick="selectOption(this, 'YES', 'q35')">YES</button>
+                            <button class="option-btn" onclick="selectOption(this, 'NO', 'q35')">NO</button>
+                            <button class="option-btn" onclick="selectOption(this, 'NOT GIVEN', 'q35')">NOT GIVEN</button>
+                        </div>
+                    </div>
+
+                    <div class="question" id="q36">
+                        <span class="question-label">36. Marketing information has to be used to be valuable.</span>
+                        <div class="options-container">
+                            <button class="option-btn" onclick="selectOption(this, 'YES', 'q36')">YES</button>
+                            <button class="option-btn" onclick="selectOption(this, 'NO', 'q36')">NO</button>
+                            <button class="option-btn" onclick="selectOption(this, 'NOT GIVEN', 'q36')">NOT GIVEN</button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="question-section">
+                    <h3 class="question-title">Questions 37-40</h3>
+                    <p>Complete the flow-chart below.</p>
+                    <p>Choose <strong>NO MORE THAN TWO WORDS</strong> from the passage for each answer.</p>
+                    <p>Write your answers in boxes 37-40 on your answer sheet.</p>
+
+                    <div class="question" id="q37">
+                        <span class="question-label">37. The Marketing Information System (MIS) begins and ends with marketing managers. First, it interacts with these managers to assess the __________ they have.</span>
+                        <input type="text" class="input-field" data-question="37" placeholder="Enter your answer">
+                    </div>
+
+                    <div class="question" id="q38">
+                        <span class="question-label">38. Next, it develops the needed information from __________, marketing intelligence activities and the research process.</span>
+                        <input type="text" class="input-field" data-question="38" placeholder="Enter your answer">
+                    </div>
+
+                    <div class="question" id="q39">
+                        <span class="question-label">39. The analysis unit processes the data to make it more useful and, finally, the MIS distributes it to managers in the right form and at the right time to help them make better marketing decisions. The analysis unit is called the __________.</span>
+                        <input type="text" class="input-field" data-question="39" placeholder="Enter your answer">
+                    </div>
+
+                    <div class="question" id="q40">
+                        <span class="question-label">40. The MIS distributes information to managers in the right form and at the right time to help them make better __________.</span>
+                        <input type="text" class="input-field" data-question="40" placeholder="Enter your answer">
+                    </div>
+                </div>
+            </div>
+            
+            <div class="submit-btn-container">
+                <button class="submit-btn" onclick="submitAnswers()">Submit Answers</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="result-overlay" id="result-overlay">
+        <div class="result-container">
+            <div class="result-header">
+                <button class="result-close" onclick="closeResults()">×</button>
+                <div class="result-score" id="result-score"></div>
+                <div class="result-feedback" id="result-feedback"></div>
+            </div>
+            <div class="result-details" id="result-details"></div>
+            <div class="result-actions">
+                <button class="result-btn restart-btn" onclick="restartTest()">Restart Test</button>
+                <button class="result-btn close-btn" onclick="closeResults()">Close</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="footer">
+        <p>IELTS Reading Practice Test | Created with ❤️ for English Learners</p>
+    </div>
+
+    <script>
+        // Таймер
+        let timeLeft = 20 * 60; // 20 минут в секундах
+        let timerInterval;
+        
+        function startTimer() {
+            clearInterval(timerInterval);
+            timerInterval = setInterval(updateTimer, 1000);
+        }
+        
+        function updateTimer() {
+            const minutes = Math.floor(timeLeft / 60);
+            let seconds = timeLeft % 60;
+            
+            // Добавляем ведущий ноль, если секунды меньше 10
+            seconds = seconds < 10 ? '0' + seconds : seconds;
+            
+            document.getElementById('timer').textContent = `${minutes}:${seconds}`;
+            
+            // Меняем цвет, если осталось меньше 5 минут
+            if (timeLeft <= 5 * 60) {
+                document.getElementById('timer').classList.add('timer-warning');
+            }
+            
+            if (timeLeft <= 0) {
+                clearInterval(timerInterval);
+                submitAnswers();
+            } else {
+                timeLeft--;
+            }
+        }
+        
+        // Переключение темы
+        function switchTheme(theme) {
+            document.body.className = `${theme}-mode`;
+            // Сохраняем выбор темы в localStorage
+            localStorage.setItem('theme', theme);
+        }
+        
+        // Выбор варианта ответа
+        function selectOption(button, value, questionId) {
+            // Сбрасываем выделение у всех кнопок в этом вопросе
+            const question = document.getElementById(questionId);
+            const buttons = question.querySelectorAll('.option-btn');
+            buttons.forEach(btn => btn.classList.remove('selected'));
+            
+            // Выделяем выбранную кнопку
+            button.classList.add('selected');
+            
+            // Сохраняем значение ответа
+            question.setAttribute('data-answer', value);
+        }
+        
+        // Выбор буквы для вопросов 27-31
+        function selectLetter(button, value, questionId) {
+            // Сбрасываем выделение у всех кнопок в этом вопросе
+            const question = document.getElementById(questionId);
+            const buttons = question.querySelectorAll('.letter-btn');
+            buttons.forEach(btn => btn.classList.remove('selected'));
+            
+            // Выделяем выбранную кнопку
+            button.classList.add('selected');
+            
+            // Сохраняем значение ответа
+            question.setAttribute('data-answer', value);
+        }
+        
+        // Проверка ответов
+        function submitAnswers() {
+            clearInterval(timerInterval);
+            
+            // Правильные ответы
+            const correctAnswers = {
+                q27: 'F',
+                q28: 'A',
+                q29: 'B',
+                q30: 'H',
+                q31: 'D',
+                q32: 'NO',
+                q33: 'NOT GIVEN',
+                q34: 'YES',
+                q35: 'YES',
+                q36: 'YES',
+                q37: 'information needs',
+                q38: 'internal records',
+                q39: 'analysis unit',
+                q40: 'marketing decisions'
+            };
+            
+            // Объяснения ответов
+            const explanations = {
+                q27: "Paragraph F states: 'Running out of information is not a problem, but drowning in it is.'",
+                q28: "Paragraph A discusses the importance of 'customers returning continually to the stores where they shop'",
+                q29: "Paragraph B gives an example of Channel [V] sending personalized alerts to viewers",
+                q30: "Paragraph H provides an example where spending $30,000 for information only increases profit by $25,000",
+                q31: "Paragraph D explains how 'household incomes increase, choice widens and buyers become better discriminating'",
+                q32: "Paragraph C states: 'While some of the information used is gathered by government bodies... most of it is purposefully gathered by marketing organizations'",
+                q33: "Paragraph E mentions both countries but doesn't compare the speed of transition",
+                q34: "Paragraph F states: 'subordinates may withhold information they believe will reflect badly on their performance'",
+                q35: "Paragraph G states: 'Although marketing organisations have greater capacity to provide managers with information, they often do not use it well'",
+                q36: "Paragraph H concludes: 'By itself information is valueless - its value comes from its use'",
+                q37: "Paragraph G mentions: 'it interacts with these managers to assess the information needs they have'",
+                q38: "Paragraph G states: 'it develops the needed information from internal records, marketing intelligence activities and the research process'",
+                q39: "Paragraph G mentions: 'The analysis unit processes the data to make it more useful'",
+                q40: "Paragraph G concludes: 'the MIS distributes it to managers in the right form and at the right time to help them make better marketing decisions'"
+            };
+            
+            let score = 0;
+            let resultsHTML = '';
+            
+            // Проверяем все вопросы
+            for (let i = 27; i <= 40; i++) {
+                const questionId = 'q' + i;
+                const question = document.getElementById(questionId);
+                let userAnswer;
+                
+                if (i >= 27 && i <= 31) {
+                    // Для вопросов с выбором букв
+                    userAnswer = question.getAttribute('data-answer');
+                } else if (i >= 32 && i <= 36) {
+                    // Для вопросов YES/NO/NOT GIVEN
+                    userAnswer = question.getAttribute('data-answer');
+                } else {
+                    // Для вопросов с текстовым вводом
+                    const input = question.querySelector('.input-field');
+                    userAnswer = input ? input.value.trim().toLowerCase() : '';
+                }
+                
+                const isCorrect = userAnswer === correctAnswers[questionId];
+                
+                if (isCorrect) score++;
+                
+                resultsHTML += `
+                    <div class="result-question">
+                        <p><strong>Question ${i}</strong>: ${isCorrect ? '<span class="correct">Correct</span>' : '<span class="incorrect">Incorrect</span>'}</p>
+                        <p>Your answer: ${userAnswer || 'Not answered'}</p>
+                        <p>Correct answer: ${correctAnswers[questionId]}</p>
+                        <p class="result-reference">${explanations[questionId]}</p>
+                    </div>
+                `;
+            }
+            
+            // Показываем результат
+            const totalQuestions = 14; // 27-40
+            const percentage = Math.round((score / totalQuestions) * 100);
+            document.getElementById('result-score').textContent = `${score}/${totalQuestions} (${percentage}%)`;
+            
+            let feedback = '';
+            if (percentage >= 90) feedback = 'Excellent! You have a great understanding of the text.';
+            else if (percentage >= 70) feedback = 'Good job! Your reading comprehension is solid.';
+            else if (percentage >= 50) feedback = 'Not bad! With more practice, you can improve further.';
+            else feedback = 'Keep practicing! Review the answers and try again.';
+            
+            document.getElementById('result-feedback').textContent = feedback;
+            document.getElementById('result-details').innerHTML = resultsHTML;
+            document.getElementById('result-overlay').style.display = 'flex';
+        }
+        
+        // Закрытие результатов
+        function closeResults() {
+            document.getElementById('result-overlay').style.display = 'none';
+        }
+        
+        // Перезапуск теста
+        function restartTest() {
+            // Сбрасываем таймер
+            timeLeft = 20 * 60;
+            startTimer();
+            document.getElementById('timer').classList.remove('timer-warning');
+            
+            // Сбрасываем ответы
+            document.querySelectorAll('.option-btn, .letter-btn').forEach(btn => {
+                btn.classList.remove('selected');
+            });
+            
+            document.querySelectorAll('.input-field').forEach(input => {
+                input.value = '';
+            });
+            
+            document.querySelectorAll('.question').forEach(question => {
+                question.removeAttribute('data-answer');
+            });
+            
+            // Закрываем результаты
+            closeResults();
+            
+            // Прокручиваем наверх
+            window.scrollTo(0, 0);
+        }
+        
+        // Система выделения текста
+        let highlightMenu = null;
+        
+        function createHighlightMenu(x, y) {
+            // Удаляем существующее меню, если есть
+            if (highlightMenu) {
+                document.body.removeChild(highlightMenu);
+            }
+            
+            // Создаем новое меню
+            highlightMenu = document.createElement('div');
+            highlightMenu.className = 'highlight-menu';
+            highlightMenu.style.position = 'absolute';
+            highlightMenu.style.left = `${x}px`;
+            highlightMenu.style.top = `${y}px`;
+            
+            // Кнопка желтого выделения
+            const yellowBtn = document.createElement('button');
+            yellowBtn.className = 'highlight-btn yellow-btn';
+            yellowBtn.innerHTML = '<i class="fas fa-highlighter"></i>';
+            yellowBtn.onclick = () => applyHighlight('yellow');
+            highlightMenu.appendChild(yellowBtn);
+            
+            // Кнопка синего выделения
+            const blueBtn = document.createElement('button');
+            blueBtn.className = 'highlight-btn blue-btn';
+            blueBtn.innerHTML = '<i class="fas fa-highlighter"></i>';
+            blueBtn.onclick = () => applyHighlight('blue');
+            highlightMenu.appendChild(blueBtn);
+            
+            // Кнопка очистки выделения
+            const clearBtn = document.createElement('button');
+            clearBtn.className = 'highlight-btn clear-btn';
+            clearBtn.innerHTML = '<i class="fas fa-eraser"></i>';
+            clearBtn.onclick = removeHighlight;
+            highlightMenu.appendChild(clearBtn);
+            
+            document.body.appendChild(highlightMenu);
+        }
+        
+        function applyHighlight(color) {
+            const selection = window.getSelection();
+            if (!selection.rangeCount) return;
+            
+            const range = selection.getRangeAt(0);
+            const selectedText = range.toString();
+            
+            if (!selectedText.trim()) return;
+            
+            const span = document.createElement('span');
+            span.className = `highlight-${color}`;
+            span.textContent = selectedText;
+            
+            range.deleteContents();
+            range.insertNode(span);
+            
+            // Удаляем меню
+            if (highlightMenu) {
+                document.body.removeChild(highlightMenu);
+                highlightMenu = null;
+            }
+            
+            // Снимаем выделение
+            selection.removeAllRanges();
+        }
+        
+        function removeHighlight() {
+            const selection = window.getSelection();
+            if (!selection.rangeCount) return;
+            
+            const range = selection.getRangeAt(0);
+            const selectedText = range.toString();
+            
+            if (!selectedText.trim()) return;
+            
+            // Находим родительский элемент с выделением
+            let parent = range.startContainer.parentNode;
+            while (parent && !parent.classList.contains('highlight-yellow') && !parent.classList.contains('highlight-blue')) {
+                parent = parent.parentNode;
+            }
+            
+            if (parent && (parent.classList.contains('highlight-yellow') || parent.classList.contains('highlight-blue'))) {
+                // Заменяем выделенный span на текстовый узел
+                const textNode = document.createTextNode(parent.textContent);
+                parent.parentNode.replaceChild(textNode, parent);
+            }
+            
+            // Удаляем меню
+            if (highlightMenu) {
+                document.body.removeChild(highlightMenu);
+                highlightMenu = null;
+            }
+            
+            // Снимаем выделение
+            selection.removeAllRanges();
+        }
+        
+        // Обработчики событий для выделения текста
+        document.addEventListener('selectionchange', () => {
+            // Удаляем меню, если выделение снято
+            if (window.getSelection().toString() === '' && highlightMenu) {
+                document.body.removeChild(highlightMenu);
+                highlightMenu = null;
+            }
+        });
+        
+        document.addEventListener('mousedown', (e) => {
+            // Закрываем меню при клике вне его
+            if (highlightMenu && !highlightMenu.contains(e.target)) {
+                document.body.removeChild(highlightMenu);
+                highlightMenu = null;
+            }
+        });
+        
+        document.getElementById('passage-content').addEventListener('mouseup', (e) => {
+            const selection = window.getSelection();
+            const selectedText = selection.toString();
+            
+            if (selectedText.trim() && !highlightMenu) {
+                // Показываем меню рядом с выделенным текстом
+                const range = selection.getRangeAt(0);
+                const rect = range.getBoundingClientRect();
+                
+                createHighlightMenu(rect.right, rect.top - 40);
+            }
+        });
+        
+        // Инициализация при загрузке
+        window.onload = function() {
+            // Запускаем таймер
+            startTimer();
+            
+            // Восстанавливаем тему из localStorage
+            const savedTheme = localStorage.getItem('theme');
+            if (savedTheme) {
+                switchTheme(savedTheme);
+            }
+        };
+    </script>
+</body>
+</html>

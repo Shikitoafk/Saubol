@@ -1,0 +1,1168 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>IELTS Reading Test - Decisions, Decisions</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --day-bg: #f8f9fa;
+            --day-text: #212529;
+            --day-primary: #007bff;
+            --day-secondary: #6c757d;
+            --day-highlight-yellow: rgba(255, 255, 0, 0.3);
+            --day-highlight-blue: rgba(0, 123, 255, 0.3);
+            --day-panel: #ffffff;
+            --day-border: #dee2e6;
+            
+            --night-bg: #121212;
+            --night-text: #e0e0e0;
+            --night-primary: #bb86fc;
+            --night-secondary: #a0a0a0;
+            --night-highlight-yellow: rgba(255, 255, 0, 0.5);
+            --night-highlight-blue: rgba(30, 144, 255, 0.5);
+            --night-panel: #1e1e1e;
+            --night-border: #2d2d2d;
+            
+            --sepia-bg: #f4ecd8;
+            --sepia-text: #5a4a42;
+            --sepia-primary: #a67c52;
+            --sepia-secondary: #8a7866;
+            --sepia-highlight-yellow: rgba(204, 173, 108, 0.4);
+            --sepia-highlight-blue: rgba(118, 159, 203, 0.4);
+            --sepia-panel: #e6d9bc;
+            --sepia-border: #c4b5a3;
+            
+            --current-bg: var(--day-bg);
+            --current-text: var(--day-text);
+            --current-primary: var(--day-primary);
+            --current-secondary: var(--day-secondary);
+            --current-highlight-yellow: var(--day-highlight-yellow);
+            --current-highlight-blue: var(--day-highlight-blue);
+            --current-panel: var(--day-panel);
+            --current-border: var(--day-border);
+            
+            --transition-speed: 0.3s;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--current-bg);
+            color: var(--current-text);
+            margin: 0;
+            padding: 0;
+            transition: background-color var(--transition-speed), color var(--transition-speed);
+            line-height: 1.6;
+        }
+
+        .container {
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+
+        header {
+            background-color: var(--current-primary);
+            color: white;
+            padding: 1rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            position: relative;
+            z-index: 100;
+        }
+
+        .header-center {
+            position: absolute;
+            left: 50%;
+            transform: translateX(-50%);
+        }
+
+        
+
+        
+
+        .theme-selector {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .theme-btn {
+            background: var(--current-panel);
+            border: 1px solid var(--current-border);
+            border-radius: 50%;
+            width: 30px;
+            height: 30px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s;
+        }
+
+        .theme-btn:hover {
+            transform: scale(1.1);
+        }
+
+        .theme-day {
+            background: linear-gradient(135deg, #ffcc00 0%, #ffcc00 50%, #66ccff 50%, #66ccff 100%);
+        }
+
+        .theme-night {
+            background: linear-gradient(135deg, #2c3e50 0%, #2c3e50 50%, #34495e 50%, #34495e 100%);
+        }
+
+        .theme-sepia {
+            background: linear-gradient(135deg, #d2b48c 0%, #d2b48c 50%, #bc9a6a 50%, #bc9a6a 100%);
+        }
+
+        .timer {
+            background-color: var(--current-panel);
+            padding: 0.5rem 1rem;
+            border-radius: 50px;
+            font-weight: bold;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .timer.warning {
+            animation: pulse 1s infinite;
+            color: #dc3545;
+        }
+
+         pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+
+        .content {
+            display: flex;
+            flex: 1;
+            overflow: hidden;
+        }
+
+         (max-width: 992px) {
+            .content {
+                flex-direction: column;
+            }
+        }
+
+        .passage-container {
+            flex: 1;
+            overflow-y: auto;
+            padding: 1.5rem;
+            border-right: 1px solid var(--current-border);
+        }
+
+        .questions-container {
+            flex: 1;
+            overflow-y: auto;
+            padding: 1.5rem;
+            background-color: var(--current-panel);
+        }
+
+        .passage {
+            max-width: 800px;
+            margin: 0 auto;
+            background-color: var(--current-panel);
+            padding: 2rem;
+            border-radius: 10px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+        }
+
+        .passage h2 {
+            color: var(--current-primary);
+            margin-top: 0;
+            border-bottom: 2px solid var(--current-primary);
+            padding-bottom: 0.5rem;
+        }
+
+        .passage p {
+            margin-bottom: 1rem;
+            position: relative;
+            z-index: 1;
+        }
+
+        .highlight-menu {
+            position: absolute;
+            background: var(--current-panel);
+            border: 1px solid var(--current-border);
+            border-radius: 6px;
+            padding: 0.5rem;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+            display: flex;
+            gap: 0.5rem;
+            z-index: 1000;
+        }
+
+        .highlight-btn {
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            border: none;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s;
+        }
+
+        .highlight-btn:hover {
+            transform: scale(1.1);
+        }
+
+        .yellow-btn {
+            background-color: #ffd700;
+        }
+
+        .blue-btn {
+            background-color: #87ceeb;
+        }
+
+        .clear-btn {
+            background-color: #f8f9fa;
+            border: 1px solid #dee2e6;
+        }
+
+        .highlight-yellow {
+            background-color: var(--current-highlight-yellow);
+            border-radius: 3px;
+            padding: 0 2px;
+        }
+
+        .highlight-blue {
+            background-color: var(--current-highlight-blue);
+            border-radius: 3px;
+            padding: 0 2px;
+        }
+
+        .question {
+            margin-bottom: 1.5rem;
+            padding: 1rem;
+            border-radius: 8px;
+            background-color: var(--current-bg);
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+        }
+
+        .question h3 {
+            margin-top: 0;
+            color: var(--current-primary);
+        }
+
+        .options {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+            margin-top: 0.5rem;
+        }
+
+        .option {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.5rem;
+            border-radius: 5px;
+            transition: background-color 0.2s;
+            cursor: pointer;
+        }
+
+        .option:hover {
+            background-color: rgba(0, 0, 0, 0.05);
+        }
+
+        .option input {
+            cursor: pointer;
+        }
+
+        .text-input {
+            padding: 0.5rem;
+            border: 1px solid var(--current-border);
+            border-radius: 4px;
+            background-color: var(--current-panel);
+            color: var(--current-text);
+            width: 200px;
+        }
+
+        .submit-btn {
+            background-color: var(--current-primary);
+            color: white;
+            border: none;
+            padding: 0.75rem 1.5rem;
+            border-radius: 50px;
+            font-size: 1.1rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: block;
+            margin: 2rem auto;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .submit-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+        }
+
+        .results {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: var(--current-bg);
+            color: var(--current-text);
+            padding: 2rem;
+            overflow-y: auto;
+            z-index: 1000;
+            display: none;
+        }
+
+        .results-content {
+            max-width: 800px;
+            margin: 0 auto;
+            background-color: var(--current-panel);
+            padding: 2rem;
+            border-radius: 10px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+        }
+
+        .results h2 {
+            color: var(--current-primary);
+            text-align: center;
+            margin-top: 0;
+        }
+
+        .score {
+            text-align: center;
+            font-size: 2rem;
+            margin: 1rem 0;
+            font-weight: bold;
+        }
+
+        .answer {
+            padding: 1rem;
+            margin: 1rem 0;
+            border-radius: 8px;
+            border-left: 4px solid var(--current-secondary);
+        }
+
+        .correct {
+            border-left-color: #28a745;
+            background-color: rgba(40, 167, 69, 0.1);
+        }
+
+        .incorrect {
+            border-left-color: #dc3545;
+            background-color: rgba(220, 53, 69, 0.1);
+        }
+
+        .close-results {
+            background-color: var(--current-primary);
+            color: white;
+            border: none;
+            padding: 0.75rem 1.5rem;
+            border-radius: 50px;
+            font-size: 1.1rem;
+            cursor: pointer;
+            display: block;
+            margin: 2rem auto 0;
+        }
+
+        .night-mode {
+            --current-bg: var(--night-bg);
+            --current-text: var(--night-text);
+            --current-primary: var(--night-primary);
+            --current-secondary: var(--night-secondary);
+            --current-highlight-yellow: var(--night-highlight-yellow);
+            --current-highlight-blue: var(--night-highlight-blue);
+            --current-panel: var(--night-panel);
+            --current-border: var(--night-border);
+        }
+
+        .sepia-mode {
+            --current-bg: var(--sepia-bg);
+            --current-text: var(--sepia-text);
+            --current-primary: var(--sepia-primary);
+            --current-secondary: var(--sepia-secondary);
+            --current-highlight-yellow: var(--sepia-highlight-yellow);
+            --current-highlight-blue: var(--sepia-highlight-blue);
+            --current-panel: var(--sepia-panel);
+            --current-border: var(--sepia-border);
+        }
+
+        .section-title {
+            font-weight: bold;
+            margin-top: 1.5rem;
+            margin-bottom: 0.5rem;
+            color: var(--current-primary);
+        }
+
+        .question-palette {
+            position: sticky;
+            top: 1rem;
+            background-color: var(--current-panel);
+            padding: 1rem;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            margin-bottom: 1.5rem;
+        }
+
+        .question-palette h3 {
+            margin-top: 0;
+            color: var(--current-primary);
+            text-align: center;
+            border-bottom: 1px solid var(--current-border);
+            padding-bottom: 0.5rem;
+        }
+
+        .question-buttons {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+            justify-content: center;
+            margin-top: 1rem;
+        }
+
+        .question-btn {
+            width: 35px;
+            height: 35px;
+            border-radius: 50%;
+            border: 1px solid var(--current-border);
+            background-color: var(--current-bg);
+            color: var(--current-text);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .question-btn.answered {
+            background-color: #28a745;
+            color: white;
+            border-color: #28a745;
+        }
+
+        .question-btn.current {
+            border: 2px solid var(--current-primary);
+            transform: scale(1.1);
+        }
+
+        .question-btn:hover {
+            transform: scale(1.1);
+        }
+
+        .dropdown-options {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+            margin-top: 1rem;
+        }
+
+        .dropdown-option {
+            padding: 0.5rem;
+            border: 1px solid var(--current-border);
+            border-radius: 4px;
+            background-color: var(--current-panel);
+            color: var(--current-text);
+            min-width: 100px;
+        }
+
+        .yes-no-options {
+            display: flex;
+            gap: 1rem;
+            margin-top: 0.5rem;
+        }
+
+        .yes-no-option {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <div class="theme-selector">
+                <button class="theme-btn theme-day" title="Day Mode" onclick="setTheme('day')"><i class="fas fa-sun"></i></button>
+                <button class="theme-btn theme-night" title="Night Mode" onclick="setTheme('night')"><i class="fas fa-moon"></i></button>
+                <button class="theme-btn theme-sepia" title="Sepia Mode" onclick="setTheme('sepia')"><i class="fas fa-book"></i></button>
+            </div>
+            
+            <div class="header-center">
+                
+            </div>
+            
+            <div class="timer" id="timer">
+                <i class="fas fa-clock"></i> <span id="time">20:00</span>
+            </div>
+        </header>
+        
+        <div class="content">
+            <div class="passage-container">
+                <div class="passage" id="passage">
+                    <h2>Decisions, Decisions.</h2>
+                    <p><i>Research explores when we can make a vital decision quickly and we need to proceed more deliberately</i></p>
+                    
+                    <div class="section-title">Section A</div>
+                    <p>A widely recognised legend tells us that in Gordium (in what is now Turkey) in the fourth century BC an oxcart was roped to a pole with a complex knot. It was said that the first person to untie it would become the king of Asia. Unfortunately, the knot proved impossible to untie. The story continues that when confronted with this problem, rather than deliberating on how to untie the Gordian knot. Alexander, the famous ruler of the Greeks in the ancient world, simply took out his sword and cut it in two – then went on to conquer Asia. Ever since the notion of a 'Gordian solution' has referred to the attractiveness of a simple answer to an otherwise intractable problem.</p>
+                    
+                    <div class="section-title">Section B</div>
+                    <p>Among researchers in the psychology of decision making, however, such solutions have traditionally held little appeal. In particular, the 'conflict model' of decision making proposed by psychologists Irving Janis and Leon Mann in their 1977 book, Decision Making, argued that a complex decision-making process is essential for guarding individuals and groups from the peril of 'group-think'. Decisions made without thorough canvassing, surveying, weighing, examining and reexamining relevant information and options would be suboptimal and often disastrous. One foreign affair decision made by a well-known US political leader in the 1960s is typically held us as an example of the perils of inadequate thought, whereas his successful handling of a water crisis is cited as an example of the advantages of careful deliberation. However, examination of these historical events by Peter Suedfield, a psychologist at the University of British Columbia, and Roderick Kramer, a psychologist at the Stanford Graduate School of Business, found little difference in the two decision-making processes; both crises required and received complex consideration by the political administration, but later only the second one was deemed to be the effective.</p>
+                    
+                    <div class="section-title">Section C</div>
+                    <p>In general, however, organizational and political science offers little evidence that complex decisions fare better than simpler ones. In fact, a growing body of work suggests that in many situations simply 'snap' decisions with being routinely superior to more complex ones – an idea that gained widespread public appeal with Malcolm Gladwell's best-selling book Blink (2005).</p>
+                    
+                    <div class="section-title">Section D</div>
+                    <p>An article by Ap Dijksterhuis of the University of Amsterdam and his colleagues, Making the Right Choice: the Deliberation-without-attention Effect', runs very much in the spirit of Gladwell's influential text. Its core argument is that to be effective, conscious (deliberative) decision making requires cognitive resources. Because increasingly complex decisions place increasing strain on those resources, the quality of our decisions declines as their complexity increases. In short, complex decisions overrun our cognitive powers. On the other hand, unconscious decision making (what the author refer to as 'deliberation without attention') requires no cognitive resources, so task complexity does not Effectiveness. The seemingly counterintuitive conclusion is that although conscious thought enhances simple decisions, the opposite holds true for more complex decisions.</p>
+                    
+                    <div class="section-title">Section E</div>
+                    <p>Dijksterhuis reports four Simple but elegant studies supporting this argument. In one, participants assessed the quality of four hypothetical cars by considering either four attributes (a simple task) or 12 attributes (a complex task). Among participants who considered four attributes, those who were allowed to engage in undistracted deliberative thought did better at discriminating between the best and worst cars. Those who were distracted and thus unable to deliberate had to rely on their unconscious thinking and did less well. The opposite pattern emerged when people considered 12 criteria. In this case, conscious deliberation led to inferior discrimination and poor decisions.</p>
+                    
+                    <div class="section-title">Section F</div>
+                    <p>In other studies, Dijksterhuis surveyed people shopping for clothes ('simple' products) and furniture ('complex' products). Compared with those who said they had deliberated long and hard, shoppers who bought with little conscious deliberation felt less happy with their simple clothing purchase but happier with the complex furniture purchases. Deliberation without attention actually produced better results as the decisions became more complex.</p>
+                    
+                    <div class="section-title">Section G</div>
+                    <p>From there, however, the researchers take a big leap. They write: There is no reason to assume that the deliberation-without-attention effect does not generalize to other types of choices – political, managerial or otherwise. In such cases, it should benefit the individual to think consciously about simple matters and to delegate thinking about more complicated matters to the unconscious.</p>
+                    
+                    <div class="section-title">Section H</div>
+                    <p>This radical inference contradicts standard political and managerial theory but doubtless comforts those in politics and management who always find the simple solution to the complex problem an attractive proposition. Indeed, one suspects many of our political leaders already embrace this wisdom.</p>
+                    
+                    <div class="section-title">Section I</div>
+                    <p>Still, it is there, in the realms of society and its governance, that the more problematic implications of deliberation without attention begin to surface. Variables that can be neatly circumscribed in decisions about shopping lose clarity in a world of group dynamics, social interaction, history and politics. Two pertinent questions arise. First, what counts as a complex decision? And second, what counts as a good outcome?</p>
+                    
+                    <div class="section-title">Section J</div>
+                    <p>As social psychologist Kurt Lewin (1890 – 1947) noted, a 'good' decision that nobody respects is actually bad, his classic studies of decision making showed that participating in deliberative processes makes people more likely to abide by the results. The issue here is that when political decision-makers make mistakes, it is their politics, or the relationship between their politics and our own, rather than psychology which is at fault.</p>
+                    
+                    <div class="section-title">Section K</div>
+                    <p>Gladwell's book and Dijksterhuis's paper are invaluable in pointing out the limitations of the conventional wisdom that decision quality rises with decision-making complexity. But this work still tempts us to believe that decision making is simply a matter of psychology, rather than also a question of politics, ideology and group membership. Avoiding social considerations in a search for general appeal rather than toward it.</p>
+                </div>
+            </div>
+            
+            <div class="questions-container">
+                <div class="question-palette">
+                    <h3>Question Palette</h3>
+                    <div class="timer">
+                        <i class="fas fa-clock"></i> <span id="palette-time">20:00</span>
+                    </div>
+                    <div class="question-buttons">
+                        <div class="question-btn" data-question="27">27</div>
+                        <div class="question-btn" data-question="28">28</div>
+                        <div class="question-btn" data-question="29">29</div>
+                        <div class="question-btn" data-question="30">30</div>
+                        <div class="question-btn" data-question="31">31</div>
+                        <div class="question-btn" data-question="32">32</div>
+                        <div class="question-btn" data-question="33">33</div>
+                        <div class="question-btn" data-question="34">34</div>
+                        <div class="question-btn" data-question="35">35</div>
+                        <div class="question-btn" data-question="36">36</div>
+                        <div class="question-btn" data-question="37">37</div>
+                        <div class="question-btn" data-question="38">38</div>
+                        <div class="question-btn" data-question="39">39</div>
+                        <div class="question-btn" data-question="40">40</div>
+                    </div>
+                </div>
+                
+                <h2>Questions 27-40</h2>
+                
+                <div class="question" id="q27">
+                    <h3>Questions 27-31</h3>
+                    <p>Choose the correct letter, A, B, C or D.</p>
+                    
+                    <div class="question">
+                        <p><strong>27</strong> The legend of the Gordian knot is used to illustrate the idea that</p>
+                        <div class="options">
+                            <div class="option">
+                                <input type="radio" id="q27_a" name="q27" value="a">
+                                <label for="q27_a">A anyone can solve a difficult problem</label>
+                            </div>
+                            <div class="option">
+                                <input type="radio" id="q27_b" name="q27" value="b">
+                                <label for="q27_b">B difficult problems can have easy solutions</label>
+                            </div>
+                            <div class="option">
+                                <input type="radio" id="q27_c" name="q27" value="c">
+                                <label for="q27_c">C the solution to any problem requires a lot of thought</label>
+                            </div>
+                            <div class="option">
+                                <input type="radio" id="q27_d" name="q27" value="d">
+                                <label for="q27_d">D people who can solve complex problems make good leaders</label>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="question">
+                        <p><strong>28</strong> The 'conflict model' of decision making proposed by Janis and Mann requires that</p>
+                        <div class="options">
+                            <div class="option">
+                                <input type="radio" id="q28_a" name="q28" value="a">
+                                <label for="q28_a">A opposing political parties be involved</label>
+                            </div>
+                            <div class="option">
+                                <input type="radio" id="q28_b" name="q28" value="b">
+                                <label for="q28_b">B all-important facts be considered</label>
+                            </div>
+                            <div class="option">
+                                <input type="radio" id="q28_c" name="q28" value="c">
+                                <label for="q28_c">C people be encouraged to have different ideas</label>
+                            </div>
+                            <div class="option">
+                                <input type="radio" id="q28_d" name="q28" value="d">
+                                <label for="q28_d">D previous similar situations be thoroughly examined</label>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="question">
+                        <p><strong>29</strong> According to recent thinking reinforced by Malcolm Gladwell, the best decisions</p>
+                        <div class="options">
+                            <div class="option">
+                                <input type="radio" id="q29_a" name="q29" value="a">
+                                <label for="q29_a">A involve consultation</label>
+                            </div>
+                            <div class="option">
+                                <input type="radio" id="q29_b" name="q29" value="b">
+                                <label for="q29_b">B involve complex thought</label>
+                            </div>
+                            <div class="option">
+                                <input type="radio" id="q29_c" name="q29" value="c">
+                                <label for="q29_c">C are made very quickly</label>
+                            </div>
+                            <div class="option">
+                                <input type="radio" id="q29_d" name="q29" value="d">
+                                <label for="q29_d">D are the most attractive option</label>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="question">
+                        <p><strong>30</strong> Dijksterhuis and his colleagues claim in their article that</p>
+                        <div class="options">
+                            <div class="option">
+                                <input type="radio" id="q30_a" name="q30" value="a">
+                                <label for="q30_a">A our cognitive resources improve as tasks become more complex</label>
+                            </div>
+                            <div class="option">
+                                <input type="radio" id="q30_b" name="q30" value="b">
+                                <label for="q30_b">B conscious decision making is negatively affected by task complexity</label>
+                            </div>
+                            <div class="option">
+                                <input type="radio" id="q30_c" name="q30" value="c">
+                                <label for="q30_c">C unconscious decision making is a popular approach</label>
+                            </div>
+                            <div class="option">
+                                <input type="radio" id="q30_d" name="q30" value="d">
+                                <label for="q30_d">D deliberation without attention defines the way we make decisions</label>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="question">
+                        <p><strong>31</strong> Dijksterhuis's car study found that, in simple tasks, participants</p>
+                        <div class="options">
+                            <div class="option">
+                                <input type="radio" id="q31_a" name="q31" value="a">
+                                <label for="q31_a">A were involved in lengthy discussions</label>
+                            </div>
+                            <div class="option">
+                                <input type="radio" id="q31_b" name="q31" value="b">
+                                <label for="q31_b">B found it impossible to make decisions quickly</label>
+                            </div>
+                            <div class="option">
+                                <input type="radio" id="q31_c" name="q31" value="c">
+                                <label for="q31_c">C were unable to differentiate between the options</label>
+                            </div>
+                            <div class="option">
+                                <input type="radio" id="q31_d" name="q31" value="d">
+                                <label for="q31_d">D could make a better choice when allowed to concentrate</label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="question" id="q32">
+                    <h3>Questions 32-35</h3>
+                    <p>Complete the summary using the list of words A-I below.</p>
+                    <p><strong>Dijksterhuis's shopping study and its conclusions</strong></p>
+                    <p>Using clothing and furniture as examples of different types of purchases, Dijksterhuis questioned shoppers on their satisfaction with what they had bought. People who spent <select class="dropdown-option" id="q32_select">
+                        <option value="">Select</option>
+                        <option value="A">A more</option>
+                        <option value="B">B counterintuitive</option>
+                        <option value="C">C simple</option>
+                        <option value="D">D better</option>
+                        <option value="E">E conscious</option>
+                        <option value="F">F obvious</option>
+                        <option value="G">G complex</option>
+                        <option value="H">H less</option>
+                        <option value="I">I worse</option>
+                    </select> time buying simple clothing items were more satisfied than those who had not. However, when buying furniture, shoppers made <select class="dropdown-option" id="q33_select">
+                        <option value="">Select</option>
+                        <option value="A">A more</option>
+                        <option value="B">B counterintuitive</option>
+                        <option value="C">C simple</option>
+                        <option value="D">D better</option>
+                        <option value="E">E conscious</option>
+                        <option value="F">F obvious</option>
+                        <option value="G">G complex</option>
+                        <option value="H">H less</option>
+                        <option value="I">I worse</option>
+                    </select> purchasing decisions if they didn't think too hard. From this, the researchers concluded that in other choices, perhaps more important than shopping. <select class="dropdown-option" id="q34_select">
+                        <option value="">Select</option>
+                        <option value="A">A more</option>
+                        <option value="B">B counterintuitive</option>
+                        <option value="C">C simple</option>
+                        <option value="D">D better</option>
+                        <option value="E">E conscious</option>
+                        <option value="F">F obvious</option>
+                        <option value="G">G complex</option>
+                        <option value="H">H less</option>
+                        <option value="I">I worse</option>
+                    </select> decisions are best made by the unconscious. The writer comments that Dijksterhuis's finding is apparently <select class="dropdown-option" id="q35_select">
+                        <option value="">Select</option>
+                        <option value="A">A more</option>
+                        <option value="B">B counterintuitive</option>
+                        <option value="C">C simple</option>
+                        <option value="D">D better</option>
+                        <option value="E">E conscious</option>
+                        <option value="F">F obvious</option>
+                        <option value="G">G complex</option>
+                        <option value="H">H less</option>
+                        <option value="I">I worse</option>
+                    </select> but nonetheless true.</p>
+                </div>
+                
+                <div class="question" id="q36">
+                    <h3>Questions 36-40</h3>
+                    <p>Do the following statements agree with the views of the writer in Reading Passage?</p>
+                    <p>In boxes 36-40 on your answer sheet, write</p>
+                    <p><strong>YES</strong> if the statement agrees with the views of the writer</p>
+                    <p><strong>NO</strong> if the statement contradicts the views of the writer</p>
+                    <p><strong>NOT GIVEN</strong> if it is impossible to say what the writer thinks about this</p>
+                    
+                    <div class="question">
+                        <p><strong>36</strong> Dijksterhuis's findings agree with existing political and management theories.</p>
+                        <div class="yes-no-options">
+                            <div class="yes-no-option">
+                                <input type="radio" id="q36_yes" name="q36" value="YES">
+                                <label for="q36_yes">YES</label>
+                            </div>
+                            <div class="yes-no-option">
+                                <input type="radio" id="q36_no" name="q36" value="NO">
+                                <label for="q36_no">NO</label>
+                            </div>
+                            <div class="yes-no-option">
+                                <input type="radio" id="q36_ng" name="q36" value="NOT GIVEN">
+                                <label for="q36_ng">NOT GIVEN</label>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="question">
+                        <p><strong>37</strong> Some political leaders seem to use deliberation without attention when making complex decisions.</p>
+                        <div class="yes-no-options">
+                            <div class="yes-no-option">
+                                <input type="radio" id="q37_yes" name="q37" value="YES">
+                                <label for="q37_yes">YES</label>
+                            </div>
+                            <div class="yes-no-option">
+                                <input type="radio" id="q37_no" name="q37" value="NO">
+                                <label for="q37_no">NO</label>
+                            </div>
+                            <div class="yes-no-option">
+                                <input type="radio" id="q37_ng" name="q37" value="NOT GIVEN">
+                                <label for="q37_ng">NOT GIVEN</label>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="question">
+                        <p><strong>38</strong> All political decisions are complex ones.</p>
+                        <div class="yes-no-options">
+                            <div class="yes-no-option">
+                                <input type="radio" id="q38_yes" name="q38" value="YES">
+                                <label for="q38_yes">YES</label>
+                            </div>
+                            <div class="yes-no-option">
+                                <input type="radio" id="q38_no" name="q38" value="NO">
+                                <label for="q38_no">NO</label>
+                            </div>
+                            <div class="yes-no-option">
+                                <input type="radio" id="q38_ng" name="q38" value="NOT GIVEN">
+                                <label for="q38_ng">NOT GIVEN</label>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="question">
+                        <p><strong>39</strong> We judge political errors according to our own political beliefs.</p>
+                        <div class="yes-no-options">
+                            <div class="yes-no-option">
+                                <input type="radio" id="q39_yes" name="q39" value="YES">
+                                <label for="q39_yes">YES</label>
+                            </div>
+                            <div class="yes-no-option">
+                                <input type="radio" id="q39_no" name="q39" value="NO">
+                                <label for="q39_no">NO</label>
+                            </div>
+                            <div class="yes-no-option">
+                                <input type="radio" id="q39_ng" name="q39" value="NOT GIVEN">
+                                <label for="q39_ng">NOT GIVEN</label>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="question">
+                        <p><strong>40</strong> Social considerations must be taken into account for any examination of decision making to prove useful.</p>
+                        <div class="yes-no-options">
+                            <div class="yes-no-option">
+                                <input type="radio" id="q40_yes" name="q40" value="YES">
+                                <label for="q40_yes">YES</label>
+                            </div>
+                            <div class="yes-no-option">
+                                <input type="radio" id="q40_no" name="q40" value="NO">
+                                <label for="q40_no">NO</label>
+                            </div>
+                            <div class="yes-no-option">
+                                <input type="radio" id="q40_ng" name="q40" value="NOT GIVEN">
+                                <label for="q40_ng">NOT GIVEN</label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <button class="submit-btn" onclick="submitAnswers()">Submit Answers</button>
+            </div>
+        </div>
+    </div>
+    
+    <div class="results" id="results">
+        <div class="results-content">
+            <h2>Test Results</h2>
+            <div class="score" id="score"></div>
+            
+            <div id="answers">
+                <!-- Results will be inserted here -->
+            </div>
+            
+            <button class="close-results" onclick="closeResults()">Close Results</button>
+        </div>
+    </div>
+    
+    <script>
+        // Theme switching
+        function setTheme(theme) {
+            document.body.classList.remove('night-mode', 'sepia-mode');
+            
+            if (theme === 'night') {
+                document.body.classList.add('night-mode');
+            } else if (theme === 'sepia') {
+                document.body.classList.add('sepia-mode');
+            }
+            
+            // Save theme preference
+            localStorage.setItem('theme', theme);
+        }
+        
+        // Load saved theme
+        const savedTheme = localStorage.getItem('theme');
+        if (savedTheme) {
+            setTheme(savedTheme);
+        }
+        
+        // Timer functionality
+        let timeLeft = 20 * 60; // 20 minutes in seconds
+        const timerElement = document.getElementById('timer');
+        const timeDisplay = document.getElementById('time');
+        const paletteTimeDisplay = document.getElementById('palette-time');
+        
+        function updateTimer() {
+            const minutes = Math.floor(timeLeft / 60);
+            const seconds = timeLeft % 60;
+            
+            timeDisplay.textContent = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+            paletteTimeDisplay.textContent = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+            
+            if (timeLeft === 5 * 60) {
+                timerElement.classList.add('warning');
+            }
+            
+            if (timeLeft <= 0) {
+                clearInterval(timerInterval);
+                submitAnswers();
+            } else {
+                timeLeft--;
+            }
+        }
+        
+        const timerInterval = setInterval(updateTimer, 1000);
+        
+        // Text highlighting
+        let highlightMenu = null;
+        let lastSelection = null;
+        
+        function createHighlightMenu() {
+            if (highlightMenu) {
+                document.body.removeChild(highlightMenu);
+            }
+            
+            highlightMenu = document.createElement('div');
+            highlightMenu.className = 'highlight-menu';
+            highlightMenu.style.display = 'none';
+            
+            const yellowBtn = document.createElement('button');
+            yellowBtn.className = 'highlight-btn yellow-btn';
+            yellowBtn.innerHTML = '<i class="fas fa-highlighter"></i>';
+            yellowBtn.title = 'Yellow Highlight';
+            yellowBtn.onclick = () => applyHighlight('yellow');
+            
+            const blueBtn = document.createElement('button');
+            blueBtn.className = 'highlight-btn blue-btn';
+            blueBtn.innerHTML = '<i class="fas fa-highlighter"></i>';
+            blueBtn.title = 'Blue Highlight';
+            blueBtn.onclick = () => applyHighlight('blue');
+            
+            const clearBtn = document.createElement('button');
+            clearBtn.className = 'highlight-btn clear-btn';
+            clearBtn.innerHTML = '<i class="fas fa-eraser"></i>';
+            clearBtn.title = 'Clear Highlight';
+            clearBtn.onclick = clearHighlight;
+            
+            highlightMenu.appendChild(yellowBtn);
+            highlightMenu.appendChild(blueBtn);
+            highlightMenu.appendChild(clearBtn);
+            
+            document.body.appendChild(highlightMenu);
+            
+            return highlightMenu;
+        }
+        
+        function getSelectedText() {
+            if (window.getSelection) {
+                return window.getSelection();
+            } else if (document.selection) {
+                return document.selection.createRange();
+            }
+            return null;
+        }
+        
+        function showHighlightMenu(x, y) {
+            if (!highlightMenu) {
+                highlightMenu = createHighlightMenu();
+            }
+            
+            highlightMenu.style.display = 'flex';
+            highlightMenu.style.top = (y - highlightMenu.offsetHeight - 10) + 'px';
+            highlightMenu.style.left = (x - highlightMenu.offsetWidth / 2) + 'px';
+        }
+        
+        function hideHighlightMenu() {
+            if (highlightMenu) {
+                highlightMenu.style.display = 'none';
+            }
+        }
+        
+        function applyHighlight(color) {
+            if (!lastSelection) return;
+            
+            const range = lastSelection.getRangeAt(0);
+            const selectedText = range.toString();
+            if (!selectedText.trim()) return;
+            
+            const span = document.createElement('span');
+            span.className = `highlight-${color}`;
+            
+            try {
+                span.appendChild(range.extractContents());
+                range.insertNode(span);
+            } catch (e) {
+                console.error("Error applying highlight:", e);
+            }
+            
+            // Clear selection
+            if (window.getSelection) {
+                window.getSelection().removeAllRanges();
+            }
+            
+            hideHighlightMenu();
+            lastSelection = null;
+        }
+        
+        function clearHighlight() {
+            if (!lastSelection) return;
+            
+            const range = lastSelection.getRangeAt(0);
+            let node = range.startContainer;
+            
+            // Traverse up to find highlight element
+            while (node !== document && node !== null) {
+                if (node.nodeType === Node.ELEMENT_NODE) {
+                    if (node.classList.contains('highlight-yellow') || node.classList.contains('highlight-blue')) {
+                        // Replace with text node
+                        const text = document.createTextNode(node.textContent);
+                        node.parentNode.replaceChild(text, node);
+                        break;
+                    }
+                }
+                node = node.parentNode;
+            }
+            
+            // Clear selection
+            if (window.getSelection) {
+                window.getSelection().removeAllRanges();
+            }
+            
+            hideHighlightMenu();
+            lastSelection = null;
+        }
+        
+        document.addEventListener('mouseup', (e) => {
+            const selection = getSelectedText();
+            if (!selection || selection.toString().trim() === '') {
+                hideHighlightMenu();
+                return;
+            }
+            
+            lastSelection = selection;
+            showHighlightMenu(e.pageX, e.pageY);
+        });
+        
+        document.addEventListener('mousedown', (e) => {
+            if (highlightMenu && !highlightMenu.contains(e.target)) {
+                hideHighlightMenu();
+            }
+        });
+        
+        // Question navigation
+        const questionButtons = document.querySelectorAll('.question-btn');
+        questionButtons.forEach(btn => {
+            btn.addEventListener('click', () => {
+                const questionId = btn.getAttribute('data-question');
+                const questionElement = document.getElementById(`q${questionId}`);
+                if (questionElement) {
+                    questionElement.scrollIntoView({ behavior: 'smooth' });
+                    
+                    // Update current question indicator
+                    questionButtons.forEach(b => b.classList.remove('current'));
+                    btn.classList.add('current');
+                }
+            });
+        });
+        
+        // Mark questions as answered when interacted with
+        const inputs = document.querySelectorAll('input, select');
+        inputs.forEach(input => {
+            input.addEventListener('change', () => {
+                // Find which question this input belongs to
+                let questionId = null;
+                if (input.name.includes('q27') || input.name.includes('q28') || 
+                    input.name.includes('q29') || input.name.includes('q30') || 
+                    input.name.includes('q31')) {
+                    questionId = input.name.replace('q', '');
+                } else if (input.id.includes('q32') || input.id.includes('q33') || 
+                          input.id.includes('q34') || input.id.includes('q35')) {
+                    questionId = input.id.replace('_select', '').replace('q', '');
+                } else if (input.name.includes('q36') || input.name.includes('q37') || 
+                          input.name.includes('q38') || input.name.includes('q39') || 
+                          input.name.includes('q40')) {
+                    questionId = input.name.replace('q', '');
+                }
+                
+                if (questionId) {
+                    const questionBtn = document.querySelector(`.question-btn[data-question="${questionId}"]`);
+                    if (questionBtn && input.value !== '') {
+                        questionBtn.classList.add('answered');
+                    }
+                }
+            });
+        });
+        
+        // Answer submission and scoring
+        const correctAnswers = {
+            q27: 'b',
+            q28: 'b',
+            q29: 'c',
+            q30: 'b',
+            q31: 'd',
+            q32: 'A',
+            q33: 'D',
+            q34: 'G',
+            q35: 'B',
+            q36: 'NO',
+            q37: 'NOT GIVEN',
+            q38: 'NOT GIVEN',
+            q39: 'YES',
+            q40: 'NOT GIVEN'
+        };
+        
+        const answerLocations = {
+            q27: "Section A: 'the attractiveness of a simple answer to an otherwise intractable problem'",
+            q28: "Section B: 'thorough canvassing, surveying, weighing, examining and reexamining relevant information and options'",
+            q29: "Section C: 'simply snap decisions with being routinely superior to more complex ones'",
+            q30: "Section D: 'conscious decision making requires cognitive resources... quality of our decisions declines as their complexity increases'",
+            q31: "Section E: 'those who were allowed to engage in undistracted deliberative thought did better at discriminating between the best and worst cars'",
+            q32: "Section F: 'shoppers who bought with little conscious deliberation felt less happy with their simple clothing purchase'",
+            q33: "Section F: 'Deliberation without attention actually produced better results as the decisions became more complex'",
+            q34: "Section G: 'more complicated matters to the unconscious'",
+            q35: "Section D: 'The seemingly counterintuitive conclusion'",
+            q36: "Section H: 'This radical inference contradicts standard political and managerial theory'",
+            q37: "Section H: 'one suspects many of our political leaders already embrace this wisdom' (not explicitly stated)",
+            q38: "Section I: 'Two pertinent questions arise. First, what counts as a complex decision?' (not all are necessarily complex)",
+            q39: "Section J: 'when political decision-makers make mistakes, it is their politics, or the relationship between their politics and our own'",
+            q40: "Section K: 'Avoiding social considerations in a search for general appeal rather than toward it' (not explicitly stated as necessary)"
+        };
+        
+        function submitAnswers() {
+            clearInterval(timerInterval);
+            
+            let score = 0;
+            const totalQuestions = Object.keys(correctAnswers).length;
+            const answersContainer = document.getElementById('answers');
+            answersContainer.innerHTML = '';
+            
+            for (const question in correctAnswers) {
+                let userAnswer = '';
+                
+                if (question === 'q32' || question === 'q33' || question === 'q34' || question === 'q35') {
+                    const selectElement = document.getElementById(`${question}_select`);
+                    userAnswer = selectElement ? selectElement.value : '';
+                } else if (question === 'q36' || question === 'q37' || question === 'q38' || 
+                           question === 'q39' || question === 'q40') {
+                    const selectedOption = document.querySelector(`input[name="${question}"]:checked`);
+                    userAnswer = selectedOption ? selectedOption.value : '';
+                } else {
+                    const selectedOption = document.querySelector(`input[name="${question}"]:checked`);
+                    userAnswer = selectedOption ? selectedOption.value : '';
+                }
+                
+                const isCorrect = userAnswer === correctAnswers[question];
+                if (isCorrect) score++;
+                
+                const answerDiv = document.createElement('div');
+                answerDiv.className = `answer ${isCorrect ? 'correct' : 'incorrect'}`;
+                
+                answerDiv.innerHTML = `
+                    <p><strong>Question ${question.toUpperCase()}:</strong> ${isCorrect ? 'Correct' : 'Incorrect'}</p>
+                    <p>Your answer: ${userAnswer || 'Not answered'}</p>
+                    <p>Correct answer: ${correctAnswers[question]}</p>
+                    <p>Location in text: ${answerLocations[question]}</p>
+                `;
+                
+                answersContainer.appendChild(answerDiv);
+            }
+            
+            document.getElementById('score').textContent = `Score: ${score}/${totalQuestions}`;
+            document.getElementById('results').style.display = 'block';
+        }
+        
+        function closeResults() {
+            document.getElementById('results').style.display = 'none';
+        }
+    </script>
+</body>
+</html>
