@@ -12,10 +12,10 @@ export default function Home() {
         <div className="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1523050854058-8df90110c9f1?q=80&w=2070&auto=format&fit=crop')] opacity-10 bg-cover bg-center mix-blend-overlay"></div>
         <div className="container mx-auto px-4 relative z-10 flex flex-col items-center text-center">
           <h1 className="text-4xl md:text-5xl lg:text-7xl font-extrabold tracking-tight max-w-4xl mb-6">
-            Your path to the world's best universities
+            Your path to top universities worldwide
           </h1>
           <p className="text-lg md:text-xl lg:text-2xl text-primary-foreground/90 max-w-2xl mb-10 font-medium leading-relaxed">
-            Expert guidance, test preparation, and exclusive programs for ambitious students aiming for global excellence.
+            Personalized guidance, test prep, and high-impact programs to help you build a standout application.
           </p>
           <div className="flex flex-col sm:flex-row gap-4 w-full sm:w-auto">
             <Link to="/programs">

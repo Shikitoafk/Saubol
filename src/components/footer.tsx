@@ -16,7 +16,7 @@ export function Footer() {
               </span>
             </div>
             <p className="text-muted text-sm md:text-base leading-relaxed max-w-sm">
-              Your trusted guide to the world's best universities. We help ambitious students navigate international admissions, prepare for standardized tests, and find life-changing educational programs.
+              Your trusted guide to top universities. We help ambitious students navigate admissions, prepare for tests, and find educational opportunities that match their goals.
             </p>
           </div>
 
@@ -71,14 +71,10 @@ export function Footer() {
           </div>
         </div>
 
-        <div className="mt-12 pt-8 border-t border-muted-foreground/20 text-center md:text-left flex flex-col md:flex-row justify-between items-center gap-4">
+        <div className="mt-12 pt-8 border-t border-muted-foreground/20 text-center md:text-left flex items-center justify-center md:justify-start">
           <p className="text-muted text-xs">
             © {new Date().getFullYear()} Saubol Global Education Gateway. All rights reserved.
           </p>
-          <div className="flex gap-4 text-xs text-muted">
-            <a href="#" className="hover:text-white transition-colors">Privacy Policy</a>
-            <a href="#" className="hover:text-white transition-colors">Terms of Service</a>
-          </div>
         </div>
       </div>
     </footer>

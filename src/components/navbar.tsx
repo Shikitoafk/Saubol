@@ -44,8 +44,10 @@ export function Navbar() {
               {link.name}
             </Link>
           ))}
-          <Button variant="default" className="bg-primary text-primary-foreground font-medium ml-4 hover:bg-primary/90" data-testid="btn-nav-contact">
-            Contact Us
+          <Button asChild variant="default" className="bg-primary text-primary-foreground font-medium ml-4 hover:bg-primary/90" data-testid="btn-nav-contact">
+            <a href="https://t.me/shikitoafk" target="_blank" rel="noopener noreferrer">
+              Contact Us
+            </a>
           </Button>
         </div>
 
@@ -72,8 +74,10 @@ export function Navbar() {
                     {link.name}
                   </Link>
                 ))}
-                <Button className="mt-4 bg-primary text-primary-foreground w-full" data-testid="btn-mobile-contact">
-                  Contact Us
+                <Button asChild className="mt-4 bg-primary text-primary-foreground w-full" data-testid="btn-mobile-contact">
+                  <a href="https://t.me/shikitoafk" target="_blank" rel="noopener noreferrer">
+                    Contact Us
+                  </a>
                 </Button>
               </div>
             </SheetContent>

@@ -1,5 +1,4 @@
 import { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
 import {
   BookOpen,
   Headphones,
@@ -380,7 +379,6 @@ const difficultyColor: Record<string, string> = {
 };
 
 const IELTSPrep = () => {
-  const nav = useNavigate();
   const [selectedSkill, setSelectedSkill] = useState<Skill | null>(null);
   const [selectedType, setSelectedType] = useState<TestType | null>(null);
   const [tests, setTests] = useState<TestItem[]>([]);
@@ -522,33 +520,6 @@ const IELTSPrep = () => {
                     </span>
                   </button>
                 ))}
-              </div>
-
-              <div className="mt-12">
-                <h2 className="text-2xl font-bold text-foreground mb-1">Mock Tests</h2>
-                <p className="text-sm text-muted-foreground mb-6">Full simulation tests covering Reading, Listening and Writing</p>
-                <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
-                  {[25, 26, 27, 28].map((num) => (
-                    <div key={num} className="flex flex-col rounded-xl border bg-card p-6 shadow-sm">
-                      <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-lg bg-primary/10">
-                        <GraduationCap className="h-6 w-6 text-primary" />
-                      </div>
-                      <h3 className="text-lg font-semibold text-card-foreground">Mock Test {num}</h3>
-                      <p className="mt-1 text-sm text-muted-foreground flex-1">Full simulation — Reading, Listening & Writing</p>
-                      <div className="mt-5 flex flex-col gap-2">
-                        <Button size="sm" variant="outline" className="justify-start gap-2" onClick={() => nav(`/ielts/test/mock-${num}-reading`)}>
-                          <BookOpen className="h-4 w-4" /> Reading
-                        </Button>
-                        <Button size="sm" variant="outline" className="justify-start gap-2" onClick={() => nav(`/ielts/test/mock-${num}-listening`)}>
-                          <Headphones className="h-4 w-4" /> Listening
-                        </Button>
-                        <Button size="sm" variant="outline" className="justify-start gap-2" onClick={() => nav(`/ielts/test/mock-${num}-writing`)}>
-                          <PenTool className="h-4 w-4" /> Writing
-                        </Button>
-                      </div>
-                    </div>
-                  ))}
-                </div>
               </div>
             </>
           )}
