@@ -44,9 +44,19 @@
             align-items: center;
         }
 
-        
+        .telegram-link {
+            color: #0088cc;
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 16px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
 
-        
+        .telegram-link:hover {
+            text-decoration: underline;
+        }
 
         .main-container {
             margin-top: 60px;
@@ -588,9 +598,110 @@
             height: 18px;
         }
 
-        
+        /* Login Screen Styles */
+        .login-screen {
+                    position: fixed;
+                    top: 0;
+                    left: 0;
+                    width: 100%;
+                    height: 100%;
+                    background: linear-gradient(350deg, #393E46 100%, #948979 100%);
+                    display: flex;
+                    justify-content: center;
+                    align-items: center;
+                    z-index: 10000;
+                }
 
-                
+                .login-content {
+                    background: white;
+                    padding: 40px;
+                    border-radius: 12px;
+                    box-shadow: 0 8px 32px rgba(0,0,0,0.1);
+                    max-width: 400px;
+                    width: 90%;
+                    text-align: center;
+                }
+
+                .login-logo {
+                    margin-bottom: 30px;
+                    display: flex;
+                    justify-content: center;
+                    align-items: center;
+                }
+
+                .login-logo img {
+                    width: 80px;
+                    height: 80px;
+                    object-fit: contain;
+                    filter: drop-shadow(0 2px 4px rgba(0,0,0,0.1));
+                }
+
+                .login-content h1 {
+                    color: #333;
+                    font-size: 24px;
+                    margin-bottom: 10px;
+                    font-weight: 600;
+                }
+
+                .login-content p {
+                    color: #666;
+                    font-size: 16px;
+                    margin-bottom: 30px;
+                }
+
+                .form-group {
+                    margin-bottom: 20px;
+                    text-align: left;
+                }
+
+                .form-group label {
+                    display: block;
+                    margin-bottom: 8px;
+                    color: #333;
+                    font-weight: 500;
+                    font-size: 14px;
+                }
+
+                .form-group input {
+                    width: 100%;
+                    padding: 12px 16px;
+                    border: 2px solid #e1e5e9;
+                    border-radius: 8px;
+                    font-size: 16px;
+                    transition: border-color 0.3s ease;
+                    box-sizing: border-box;
+                }
+
+                .form-group input:focus {
+                    outline: none;
+                    border-color: #DFD0B8;
+                    box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+                }
+
+                .login-button {
+                    width: 100%;
+                    background: #948979;
+                    color: white;
+                    border: none;
+                    padding: 14px 20px;
+                    font-size: 16px;
+                    font-weight: 600;
+                    border-radius: 8px;
+                    cursor: pointer;
+                    transition: all 0.3s ease;
+                    margin-top: 10px;
+                }
+
+                .login-button:hover {
+                    background: #DFD0B8;
+                    transform: translateY(-1px);
+                }
+
+                .login-button:disabled {
+                    background: #ccc;
+                    cursor: not-allowed;
+                    transform: none;
+                }
 
                 .loading {
                     opacity: 0.7;
@@ -607,7 +718,12 @@
                     75% { transform: translateX(5px); }
                 }
 
-                
+                .error-message {
+                    color: #e74c3c;
+                    font-size: 14px;
+                    margin-top: 10px;
+                    display: none;
+                }
 
                 .success-message {
                     color: #27ae60;
@@ -844,9 +960,58 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.29/jspdf.plugin.autotable.min.js"></script>
+    <style>
+        #login-screen { display: none !important; }
+        .candidate-screen { display: none !important; }
+        .start-screen { display: flex !important; }
+    </style>
 </head>
 <body>
     <!-- Login Screen -->
+    
+
+    <!-- Candidate ID Screen -->
+    <div id="candidate-screen" class="candidate-screen">
+        <div class="candidate-content">
+            <div class="candidate-logo">
+                <img src="logo.png" alt="Logo" style="width: 200px; height: 80px; object-fit: contain;">
+            </div>
+            <h1>Candidate Verification</h1>
+            <p>Please enter your candidate ID to proceed</p>
+            <form id="candidate-form">
+                <input type="text" id="candidate-id" class="candidate-id-input" placeholder="Enter Candidate ID" maxlength="10" required>
+                <button type="submit" class="candidate-button" id="candidate-btn">Continue</button>
+                <button type="button" class="back-button" id="back-to-login">Back to Login</button>
+                <div class="error-message" id="candidate-error">Please enter a valid candidate ID.</div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Start Screen -->
+    <div id="start-screen" class="start-screen">
+        <div class="start-content">
+            <div class="writing-icon">
+                <svg width="80" height="80" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                    <path d="M12 19l7-7 3 3-7 7-3-3z"></path>
+                    <path d="M18 13l-1.5-7.5L2 2l3.5 14.5L13 18l5-5z"></path>
+                    <path d="M2 2l7.586 7.586"></path>
+                    <circle cx="11" cy="11" r="2"></circle>
+                </svg>
+            </div>
+            <h1>IELTS Writing Mock Test</h1>
+            <p class="main-description">This is a timed writing test. You have 60 minutes to complete both Task 1 and Task 2.</p>
+            <div class="instructions-section">
+                <h3>Instructions:</h3>
+                <ul>
+                    <li>Task 1: Spend about 20 minutes, write at least 150 words</li>
+                    <li>Task 2: Spend about 40 minutes, write at least 250 words</li>
+                    <li>You can switch between tasks at any time</li>
+                    <li>Word count is displayed below each writing area</li>
+                </ul>
+            </div>
+            <button id="start-test-btn" class="start-test-button">Start Test</button>
+        </div>
+    </div>
     <div class="header">
         <div style="display: flex; align-items: center; gap: 10px;">
             <img src="logo.png" alt="Logo" style="width: 200px; object-fit: contain;">
@@ -1314,9 +1479,9 @@ COMMON MISTAKES TO AVOID:
         // Auto-save functionality removed - no longer saving to localStorage
 
         // --- LOGIN STATE VARIABLES ---
-        
-        let candidateId = 'student';
-        let isAuthenticated = true;
+        const CORRECT_PASSWORD = '1234'; // You can change this password
+        let candidateId = '';
+        let isAuthenticated = false;
         let sessionStartTime = null;
         const SESSION_TIMEOUT = 4 * 60 * 60 * 1000; // 4 hours in milliseconds
 
@@ -1330,7 +1495,9 @@ COMMON MISTAKES TO AVOID:
             
             // Prevent right-click context menu
             document.addEventListener('contextmenu', function(e) {
-                
+                if (isAuthenticated) {
+                    e.preventDefault();
+                }
             });
             
             // Login form submission
@@ -1362,7 +1529,40 @@ COMMON MISTAKES TO AVOID:
             });
         }
 
-        
+        function handleLogin(e) {
+            e.preventDefault();
+            const password = document.getElementById('password').value;
+            const errorElement = document.getElementById('login-error');
+            const loginBtn = document.getElementById('login-btn');
+            
+            // Add loading state
+            loginBtn.disabled = true;
+            loginBtn.textContent = 'Verifying...';
+            loginBtn.classList.add('loading');
+            
+            // Simulate a small delay for better UX
+            setTimeout(() => {
+                if (password === CORRECT_PASSWORD) {
+                    errorElement.style.display = 'none';
+                    document.getElementById('login-screen').style.display = 'none';
+                    document.getElementById('candidate-screen').style.display = 'flex';
+                    document.getElementById('candidate-id').focus();
+                } else {
+                    errorElement.style.display = 'block';
+                    document.getElementById('password').value = '';
+                    document.getElementById('password').focus();
+                    document.getElementById('login-screen').classList.add('shake');
+                    setTimeout(() => {
+                        document.getElementById('login-screen').classList.remove('shake');
+                    }, 500);
+                }
+                
+                // Reset button state
+                loginBtn.disabled = false;
+                loginBtn.textContent = 'Login';
+                loginBtn.classList.remove('loading');
+            }, 500);
+        }
 
         function handleCandidateId(e) {
             e.preventDefault();
@@ -1445,7 +1645,9 @@ COMMON MISTAKES TO AVOID:
         }
 
         // Initialize login system
-        initializeLogin();
+        isAuthenticated = true;
+        candidateId = 'guest';
+        sessionStartTime = Date.now();
 
         // Add logout functionality
         document.getElementById('logout-btn').addEventListener('click', () => {
@@ -1465,7 +1667,12 @@ COMMON MISTAKES TO AVOID:
             // Add start button functionality
             document.getElementById('start-test-btn').addEventListener('click', () => {
                 // Security check - ensure user is authenticated
-                
+                if (!isAuthenticated || !candidateId) {
+                    alert('Authentication required. Please login with password and enter candidate ID.');
+                    document.getElementById('start-screen').style.display = 'none';
+                    document.getElementById('login-screen').style.display = 'flex';
+                    return;
+                }
                 
                 // Hide start screen
                 document.getElementById('start-screen').style.display = 'none';

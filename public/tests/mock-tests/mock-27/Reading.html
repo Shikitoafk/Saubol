@@ -18,9 +18,110 @@
             font-size: 16px;
         }
 
-        
+        /* Login Screen Styles */
+        .login-screen {
+                    position: fixed;
+                    top: 0;
+                    left: 0;
+                    width: 100%;
+                    height: 100%;
+                    background: linear-gradient(350deg, #393E46 100%, #948979 100%);
+                    display: flex;
+                    justify-content: center;
+                    align-items: center;
+                    z-index: 10000;
+                }
 
-                
+                .login-content {
+                    background: white;
+                    padding: 40px;
+                    border-radius: 12px;
+                    box-shadow: 0 8px 32px rgba(0,0,0,0.1);
+                    max-width: 400px;
+                    width: 90%;
+                    text-align: center;
+                }
+
+                .login-logo {
+                    margin-bottom: 30px;
+                    display: flex;
+                    justify-content: center;
+                    align-items: center;
+                }
+
+                .login-logo img {
+                    width: 80px;
+                    height: 80px;
+                    object-fit: contain;
+                    filter: drop-shadow(0 2px 4px rgba(0,0,0,0.1));
+                }
+
+                .login-content h1 {
+                    color: #333;
+                    font-size: 24px;
+                    margin-bottom: 10px;
+                    font-weight: 600;
+                }
+
+                .login-content p {
+                    color: #666;
+                    font-size: 16px;
+                    margin-bottom: 30px;
+                }
+
+                .form-group {
+                    margin-bottom: 20px;
+                    text-align: left;
+                }
+
+                .form-group label {
+                    display: block;
+                    margin-bottom: 8px;
+                    color: #333;
+                    font-weight: 500;
+                    font-size: 14px;
+                }
+
+                .form-group input {
+                    width: 100%;
+                    padding: 12px 16px;
+                    border: 2px solid #e1e5e9;
+                    border-radius: 8px;
+                    font-size: 16px;
+                    transition: border-color 0.3s ease;
+                    box-sizing: border-box;
+                }
+
+                .form-group input:focus {
+                    outline: none;
+                    border-color: #DFD0B8;
+                    box-shadow: 0 0 0 3px rgba(158, 158, 158, 0.1);
+                }
+
+                .login-button {
+                    width: 100%;
+                    background: #948979;
+                    color: white;
+                    border: none;
+                    padding: 14px 20px;
+                    font-size: 16px;
+                    font-weight: 600;
+                    border-radius: 8px;
+                    cursor: pointer;
+                    transition: all 0.3s ease;
+                    margin-top: 10px;
+                }
+
+                .login-button:hover {
+                    background: #DFD0B8;
+                    transform: translateY(-1px);
+                }
+
+                .login-button:disabled {
+                    background: #ccc;
+                    cursor: not-allowed;
+                    transform: none;
+                }
 
                 .loading {
                     opacity: 0.7;
@@ -37,7 +138,12 @@
                     75% { transform: translateX(5px); }
                 }
 
-                
+                .error-message {
+                    color: #e74c3c;
+                    font-size: 14px;
+                    margin-top: 10px;
+                    display: none;
+                }
 
                 .success-message {
                     color: #27ae60;
@@ -240,11 +346,31 @@
             align-items: center;
         }
 
-        
+        .telegram-link {
+            color: #0088cc;
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 16px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
 
-        
+        .telegram-link:hover {
+            text-decoration: underline;
+        }
 
-        
+        .telegram-link::before {
+            content: '';
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            background-color: currentColor;
+            -webkit-mask-image: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.78 18.65l.28-4.23l7.68-6.92c.34-.31-.07-.46-.52-.19L7.74 13.3L3.64 12c-.88-.25-.89-1.37.2-1.64l16.56-6.4c.75-.29 1.4.22 1.2.94l-2.67 12.61c-.22.95-1.13 1.18-1.78.73l-4.5-3.32l-2.23 2.15c-.47.44-1.29.21-1.48-.37z"/></svg>');
+            mask-image: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.78 18.65l.28-4.23l7.68-6.92c.34-.31-.07-.46-.52-.19L7.74 13.3L3.64 12c-.88-.25-.89-1.37.2-1.64l16.56-6.4c.75-.29 1.4.22 1.2.94l-2.67 12.61c-.22.95-1.13 1.18-1.78.73l-4.5-3.32l-2.23 2.15c-.47.44-1.29.21-1.48-.37z"/></svg>');
+            background-size: contain;
+            background-repeat: no-repeat;
+        }
 
         #volume-slider {
             -webkit-appearance: none;
@@ -1648,9 +1774,56 @@
         }
 
     </style>
+    <style>
+        #login-screen { display: none !important; }
+        .candidate-screen { display: none !important; }
+        .start-screen { display: flex !important; }
+    </style>
 </head>
 <body>
     <!-- Login Screen -->
+    
+
+    <!-- Candidate ID Screen -->
+    <div id="candidate-screen" class="candidate-screen">
+        <div class="candidate-content">
+            <div class="candidate-logo">
+                <img src="logo.png" alt="Logo" style="width: 80px; height: 80px; object-fit: contain;">
+            </div>
+            <h1>Candidate Verification</h1>
+            <p>Please enter your candidate ID to proceed</p>
+            <form id="candidate-form">
+                <input type="text" id="candidate-id" class="candidate-id-input" placeholder="Enter Candidate ID" maxlength="10" required>
+                <button type="submit" class="candidate-button" id="candidate-btn">Continue</button>
+                <button type="button" class="back-button" id="back-to-login">Back to Login</button>
+                <div class="error-message" id="candidate-error">Please enter a valid candidate ID.</div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Start Screen -->
+    <div id="start-screen" class="start-screen">
+        <div class="start-content">
+            <div class="headphone-icon">
+                <svg width="80" height="80" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                    <path d="M3 18v-6a9 9 0 0 1 18 0v6"></path>
+                    <path d="M21 19a2 2 0 0 1-2 2h-1a2 2 0 0 1-2-2v-3a2 2 0 0 1 2-2h3zM3 19a2 2 0 0 0 2 2h1a2 2 0 0 0 2-2v-3a2 2 0 0 0-2-2H3z"></path>
+                </svg>
+            </div>
+            <h1>IELTS Reading Mock Test</h1>
+            <p class="main-description">This is a timed reading test. You have 60 minutes to complete all 40 questions.</p>
+            <div class="instructions-section">
+                <h3>Instructions:</h3>
+                <ul>
+                    <li>The test contains 40 questions divided into 3 parts</li>
+                    <li>You have 60 minutes to complete the test</li>
+                    <li>Read all passages carefully and answer all questions</li>
+                    <li>You can navigate between questions and parts freely</li>
+                </ul>
+            </div>
+            <button id="start-test-btn" class="start-test-button">Start Test</button>
+        </div>
+    </div>
     <div class="header">
        
         
@@ -2153,9 +2326,9 @@
     <script>
     document.addEventListener('DOMContentLoaded', () => {
         // --- LOGIN STATE VARIABLES ---
-        
-        let candidateId = 'student';
-        let isAuthenticated = true;
+        const CORRECT_PASSWORD = '1234'; // You can change this password
+        let candidateId = '';
+        let isAuthenticated = false;
         let sessionStartTime = null;
         const SESSION_TIMEOUT = 4 * 60 * 60 * 1000; // 4 hours in milliseconds
 
@@ -2233,7 +2406,9 @@
             
             // Prevent right-click context menu
             document.addEventListener('contextmenu', function(e) {
-                
+                if (isAuthenticated) {
+                    e.preventDefault();
+                }
             });
 
             // Prevent keyboard shortcuts that could be used for cheating
@@ -2315,7 +2490,40 @@
             });
         }
 
-        
+        function handleLogin(e) {
+            e.preventDefault();
+            const password = document.getElementById('password').value;
+            const errorElement = document.getElementById('login-error');
+            const loginBtn = document.getElementById('login-btn');
+            
+            // Add loading state
+            loginBtn.disabled = true;
+            loginBtn.textContent = 'Verifying...';
+            loginBtn.classList.add('loading');
+            
+            // Simulate a small delay for better UX
+            setTimeout(() => {
+                if (password === CORRECT_PASSWORD) {
+                    errorElement.style.display = 'none';
+                    document.getElementById('login-screen').style.display = 'none';
+                    document.getElementById('candidate-screen').style.display = 'flex';
+                    document.getElementById('candidate-id').focus();
+                } else {
+                    errorElement.style.display = 'block';
+                    document.getElementById('password').value = '';
+                    document.getElementById('password').focus();
+                    document.getElementById('login-screen').classList.add('shake');
+                    setTimeout(() => {
+                        document.getElementById('login-screen').classList.remove('shake');
+                    }, 500);
+                }
+                
+                // Reset button state
+                loginBtn.disabled = false;
+                loginBtn.textContent = 'Login';
+                loginBtn.classList.remove('loading');
+            }, 500);
+        }
 
         function handleCandidateId(e) {
             e.preventDefault();
@@ -2403,7 +2611,9 @@
         // --- INITIALIZATION ---
         function initialize() {
             // Initialize login system first
-            initializeLogin();
+            isAuthenticated = true;
+            candidateId = 'guest';
+            sessionStartTime = Date.now();
             
             // Hide all content initially except login screen
             document.querySelector('.header').style.display = 'none';
@@ -2425,7 +2635,12 @@
             // Add start button functionality
             document.getElementById('start-test-btn').addEventListener('click', () => {
                 // Security check - ensure user is authenticated
-                
+                if (!isAuthenticated || !candidateId) {
+                    alert('Authentication required. Please login with password and enter candidate ID.');
+                    document.getElementById('start-screen').style.display = 'none';
+                    document.getElementById('login-screen').style.display = 'flex';
+                    return;
+                }
                 
                 // Hide start screen
                 document.getElementById('start-screen').style.display = 'none';
