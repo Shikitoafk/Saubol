@@ -19,12 +19,12 @@ export default function Home() {
           </p>
           <div className="flex flex-col sm:flex-row gap-4 w-full sm:w-auto">
             <Link to="/programs">
-              <Button size="lg" className="w-full sm:w-auto gold-gradient text-accent-foreground font-bold hover:opacity-90 shadow-lg hover:shadow-xl transition-all border-none" data-testid="btn-hero-explore">
+              <Button size="lg" className="w-full sm:w-auto gold-gradient text-accent-foreground font-bold hover:opacity-90 shadow-lg hover:shadow-xl transition-all border-none rounded-xl px-8" data-testid="btn-hero-explore">
                 Explore Programs
               </Button>
             </Link>
             <Link to="/admissions">
-              <Button size="lg" variant="outline" className="w-full sm:w-auto bg-transparent border-primary-foreground/30 text-primary-foreground hover:bg-primary-foreground/10" data-testid="btn-hero-guide">
+              <Button size="lg" variant="outline" className="w-full sm:w-auto bg-transparent border-primary-foreground/30 text-primary-foreground hover:bg-primary-foreground/10 rounded-xl px-8" data-testid="btn-hero-guide">
                 Admissions Guide
               </Button>
             </Link>
