@@ -23,6 +23,7 @@ import {
   BreadcrumbPage,
   BreadcrumbSeparator,
 } from "@/components/ui/breadcrumb";
+import { useNavigate } from "react-router-dom";
 
 type Skill = "reading" | "listening" | "writing" | "speaking";
 type TestType = "predictions" | "cambridge";
@@ -379,6 +380,7 @@ const difficultyColor: Record<string, string> = {
 };
 
 const IELTSPrep = () => {
+  const nav = useNavigate();
   const [selectedSkill, setSelectedSkill] = useState<Skill | null>(null);
   const [selectedType, setSelectedType] = useState<TestType | null>(null);
   const [tests, setTests] = useState<TestItem[]>([]);
