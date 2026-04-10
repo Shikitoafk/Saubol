@@ -51,6 +51,9 @@ const testTypes: { id: TestType; icon: typeof ClipboardList; title: string; desc
   { id: "cambridge", icon: GraduationCap, title: "Cambridge Tests", description: "Official Cambridge IELTS books 1–19" },
 ];
 
+/** Cambridge IELTS Academic — books with full Reading + Listening shells */
+const CAMBRIDGE_ACADEMIC_BOOKS = [19, 18, 17, 16, 15, 14, 13, 12, 11, 10] as const;
+
 const listeningPredictionTests: TestItem[] = [
   { id: "L1",    name: "Full Listening Test 1",         topic: "Full Listening Practice", difficulty: "Hard", questions: 40, time: "40 min", slug: "full-listening-1" },
   { id: "L2",    name: "Full Listening Test 2",         topic: "Full Listening Practice", difficulty: "Hard", questions: 40, time: "40 min", slug: "full-listening-2" },
@@ -416,11 +419,22 @@ const IELTSPrep = () => {
 
     if (selectedSkill === "reading" && selectedType === "predictions") {
       setTests(readingPredictionTests);
+      setLoading(false);
+      setError(null);
       return;
     }
 
     if (selectedSkill === "listening" && selectedType === "predictions") {
       setTests(listeningPredictionTests);
+      setLoading(false);
+      setError(null);
+      return;
+    }
+
+    if (selectedType === "cambridge") {
+      setTests([]);
+      setLoading(false);
+      setError(null);
       return;
     }
 
@@ -547,7 +561,63 @@ const IELTSPrep = () => {
             </div>
           )}
 
-          {level === 3 && (
+          {level === 3 && selectedType === "cambridge" && (
+            <div className="mt-6 space-y-10">
+              {selectedSkill === "reading" || selectedSkill === "listening" ? (
+                CAMBRIDGE_ACADEMIC_BOOKS.map((book) => (
+                  <div key={book}>
+                    <h2 className="mb-4 text-lg font-semibold text-foreground border-b border-border pb-2">
+                      Cambridge IELTS {book} Academic
+                    </h2>
+                    <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+                      {([1, 2, 3, 4] as const).map((testNum) => (
+                        <div
+                          key={testNum}
+                          className="flex flex-col rounded-xl border bg-card p-5 shadow-sm transition-all hover:border-primary/30 hover:shadow-md"
+                        >
+                          <div className="text-sm font-medium text-muted-foreground">Full test</div>
+                          <h3 className="mt-1 text-base font-semibold text-card-foreground">Test {testNum}</h3>
+                          <p className="mt-1 text-xs text-muted-foreground">40 questions each paper</p>
+                          <div className="mt-4 flex flex-col gap-2 sm:flex-row">
+                            <Button
+                              size="sm"
+                              className="gap-1.5 flex-1"
+                              onClick={() =>
+                                nav(`/ielts/test/cambridge-ielts-${book}-academic-test-${testNum}-reading`)
+                              }
+                            >
+                              <BookOpen className="h-4 w-4 shrink-0" />
+                              Reading
+                            </Button>
+                            <Button
+                              size="sm"
+                              variant="outline"
+                              className="gap-1.5 flex-1"
+                              onClick={() =>
+                                nav(`/ielts/test/cambridge-ielts-${book}-academic-test-${testNum}-listening`)
+                              }
+                            >
+                              <Headphones className="h-4 w-4 shrink-0" />
+                              Listening
+                            </Button>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                ))
+              ) : (
+                <div className="flex flex-col items-center justify-center rounded-xl border border-dashed bg-muted/30 py-16 text-center text-muted-foreground">
+                  <GraduationCap className="h-10 w-10 mb-3 opacity-60" />
+                  <p className="max-w-md text-sm">
+                    Cambridge practice tests in this section are set up for Reading and Listening. Choose Reading or Listening above, then open Cambridge Tests again.
+                  </p>
+                </div>
+              )}
+            </div>
+          )}
+
+          {level === 3 && selectedType !== "cambridge" && (
             <div className="mt-4">
               {loading && (
                 <div className="flex flex-col items-center justify-center py-20 text-muted-foreground">
