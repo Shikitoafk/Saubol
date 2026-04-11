@@ -6,7 +6,7 @@
     <title>Cambridge IELTS 16 — Test 2 Listening</title>
     <style>
       *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
-      html, body { height: 100%; overflow: hidden; font-family: Arial, sans-serif; }
+      html, body { height: 100%; overflow: hidden; font-family: Arial, sans-serif; background: #f5f7fa; }
       .topbar {
         height: 48px;
         background: #fff;
@@ -15,42 +15,47 @@
         align-items: center;
         justify-content: space-between;
         padding: 0 16px;
-        flex-shrink: 0;
+        gap: 12px;
       }
       .back-btn {
         font-size: 13px; font-weight: 600; color: #1d4ed8;
         text-decoration: none; padding: 5px 12px;
-        border: 1px solid; border-radius: 6px;
-        background: #1d4ed818;
-        cursor: pointer;
+        border: 1px solid #1d4ed844; border-radius: 6px;
+        background: #1d4ed812; white-space: nowrap;
+        cursor: pointer; flex-shrink: 0;
       }
-      .back-btn:hover { opacity: 0.8; }
-      .title { font-size: 14px; font-weight: 700; color: #1e293b; }
-      .open-btn {
-        font-size: 12px; font-weight: 600; color: #6b7280;
-        text-decoration: none; padding: 4px 10px;
-        border: 1px solid #d1d5db; border-radius: 6px;
-        background: #f9fafb;
+      .back-btn:hover { opacity: .8; }
+      .title {
+        font-size: 14px; font-weight: 700; color: #1e293b;
+        text-align: center; flex: 1;
       }
-      .open-btn:hover { background: #f1f5f9; }
+      /* placeholder for symmetry */
+      .spacer { width: 80px; flex-shrink: 0; }
       .frame-wrap {
         position: absolute;
         top: 48px; left: 0; right: 0; bottom: 0;
       }
-      iframe {
-        width: 100%; height: 100%;
-        border: none;
+      iframe { width: 100%; height: 100%; border: none; }
+      .loading-msg {
+        position: absolute; top: 50%; left: 50%;
+        transform: translate(-50%, -50%);
+        font-size: 14px; color: #94a3b8; pointer-events: none;
       }
     </style>
   </head>
   <body>
     <div class="topbar">
-      <a href="javascript:history.back()" class="back-btn">← Back to IELTS</a>
+      <a href="javascript:history.back()" class="back-btn">← Back</a>
       <div class="title">🎧 Cambridge IELTS 16 · Test 2 — Listening</div>
-      <a href="https://engnovate.com/ielts-listening-tests/cambridge-ielts-16-academic-listening-test-2/" target="_blank" class="open-btn">Open ↗</a>
+      <div class="spacer"></div>
     </div>
     <div class="frame-wrap">
-      <iframe src="https://engnovate.com/ielts-listening-tests/cambridge-ielts-16-academic-listening-test-2/" allowfullscreen loading="lazy"></iframe>
+      <div class="loading-msg" id="loading">Loading test…</div>
+      <iframe
+        src="/api/test-proxy?url=https%3A%2F%2Fengnovate.com%2Fielts-listening-tests%2Fcambridge-ielts-16-academic-listening-test-2%2F"
+        onload="document.getElementById('loading').style.display='none'"
+        allowfullscreen
+      ></iframe>
     </div>
   </body>
   </html>
