@@ -1,54 +1,339 @@
 <!DOCTYPE html>
-<html lang="en">
-<head>
+  <html lang="en">
+  <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Cambridge IELTS 16 — Test 3 Reading</title>
   <style>
-    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
-    html, body { height: 100%; overflow: hidden; font-family: Arial, sans-serif; background: #0f172a; }
-    .topbar {
-      height: 48px;
-      background: #1e293b;
-      border-bottom: 1px solid #334155;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      padding: 0 16px;
-      gap: 12px;
-    }
-    .back-btn {
-      font-size: 13px; font-weight: 600; color: #94a3b8;
-      text-decoration: none; padding: 5px 12px;
-      border: 1px solid #334155; border-radius: 6px;
-      background: transparent; white-space: nowrap;
-      cursor: pointer; flex-shrink: 0;
-    }
-    .back-btn:hover { color: #f1f5f9; border-color: #64748b; }
-    .title { font-size: 14px; font-weight: 700; color: #f1f5f9; text-align: center; flex: 1; }
-    .spacer { width: 80px; flex-shrink: 0; }
-    .frame-wrap { position: absolute; top: 48px; left: 0; right: 0; bottom: 0; }
-    iframe { width: 100%; height: 100%; border: none; }
-    .loading-msg {
-      position: absolute; top: 50%; left: 50%;
-      transform: translate(-50%, -50%);
-      font-size: 14px; color: #475569; pointer-events: none;
-    }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: Arial, sans-serif; background: #0f172a; color: #e2e8f0; height: 100vh; overflow: hidden; display: flex; flex-direction: column; }
+  .timer-bar { background: #1e293b; border-bottom: 1px solid #334155; padding: 8px 20px; display: flex; align-items: center; justify-content: space-between; flex-shrink: 0; }
+  .timer-label { font-size: 12px; color: #64748b; }
+  .timer-value { font-size: 16px; font-weight: 700; color: #f87171; background: #2d1b1b; padding: 4px 12px; border-radius: 6px; border: 1px solid #7f1d1d; }
+  .timer-value.warning { animation: pulse 1s infinite; }
+  @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:.5} }
+  .tab-bar { background: #1e293b; border-bottom: 1px solid #334155; display: flex; flex-shrink: 0; }
+  .tab { padding: 10px 20px; font-size: 13px; font-weight: 600; color: #64748b; cursor: pointer; border-bottom: 3px solid transparent; transition: all 0.15s; white-space: nowrap; }
+  .tab:hover { color: #94a3b8; }
+  .tab.active { color: #60a5fa; border-bottom-color: #60a5fa; background: rgba(96,165,250,0.05); }
+  .split { display: flex; flex: 1; overflow: hidden; }
+  .passage-panel { width: 52%; border-right: 2px solid #334155; overflow-y: auto; padding: 24px 28px; flex-shrink: 0; }
+  .questions-panel { flex: 1; overflow-y: auto; padding: 24px 24px 60px; }
+  .passage-title { font-size: 18px; font-weight: 700; color: #f1f5f9; margin-bottom: 4px; line-height: 1.3; }
+  .passage-source { font-size: 12px; color: #475569; margin-bottom: 20px; font-style: italic; }
+  .passage-intro { font-size: 14px; color: #94a3b8; margin-bottom: 16px; font-style: italic; border-left: 3px solid #334155; padding-left: 12px; line-height: 1.7; }
+  .passage-para { margin-bottom: 16px; font-size: 14px; line-height: 1.8; color: #cbd5e1; }
+  .para-label { font-weight: 700; color: #60a5fa; margin-right: 6px; font-size: 13px; }
+  .section-header { background: #1e293b; border: 1px solid #334155; border-radius: 8px; padding: 12px 16px; margin-bottom: 16px; }
+  .section-header h3 { font-size: 14px; font-weight: 700; color: #60a5fa; margin-bottom: 4px; }
+  .section-header p { font-size: 13px; color: #94a3b8; line-height: 1.6; }
+  .section-divider { border: none; border-top: 1px solid #1e3a5f; margin: 24px 0; }
+  .q-block { margin-bottom: 18px; }
+  .q-num { display: inline-block; background: #1e3a5f; color: #60a5fa; font-size: 11px; font-weight: 700; padding: 2px 7px; border-radius: 4px; margin-bottom: 6px; }
+  .q-text { font-size: 13.5px; color: #e2e8f0; line-height: 1.6; margin-bottom: 8px; }
+  .ans-input { width: 100%; max-width: 340px; padding: 7px 12px; background: #1e293b; border: 1px solid #334155; border-radius: 6px; font-size: 13px; color: #e2e8f0; outline: none; transition: border-color 0.15s; }
+  .ans-input:focus { border-color: #60a5fa; }
+  .tfn-group { display: flex; gap: 8px; flex-wrap: wrap; }
+  .tfn-btn { padding: 6px 14px; border: 1px solid #334155; border-radius: 6px; background: #1e293b; color: #94a3b8; font-size: 13px; cursor: pointer; transition: all 0.15s; }
+  .tfn-btn:hover { border-color: #60a5fa; color: #60a5fa; }
+  .tfn-btn.selected { background: #1e3a5f; border-color: #60a5fa; color: #60a5fa; font-weight: 700; }
+  .mc-option { display: flex; align-items: flex-start; gap: 10px; padding: 8px 12px; border: 1px solid #334155; border-radius: 6px; margin-bottom: 6px; cursor: pointer; transition: all 0.15s; background: #1e293b; }
+  .mc-option:hover { border-color: #60a5fa; }
+  .mc-option.selected { border-color: #60a5fa; background: #1e3a5f; }
+  .mc-letter { font-size: 13px; font-weight: 700; color: #60a5fa; flex-shrink: 0; min-width: 16px; }
+  .mc-text { font-size: 13px; color: #cbd5e1; line-height: 1.5; }
+  .mc-option.selected .mc-text { color: #f1f5f9; }
+  .btn-row { margin-top: 24px; display: flex; gap: 12px; }
+  .btn-submit { padding: 10px 24px; background: #2563eb; color: #fff; border: none; border-radius: 8px; font-size: 14px; font-weight: 700; cursor: pointer; }
+  .btn-submit:hover { background: #1d4ed8; }
+  .btn-clear { padding: 10px 20px; background: transparent; color: #64748b; border: 1px solid #334155; border-radius: 8px; font-size: 14px; cursor: pointer; }
+  .btn-clear:hover { border-color: #64748b; color: #94a3b8; }
+  .score-box { display: none; background: #1e293b; border: 1px solid #334155; border-radius: 10px; padding: 16px 20px; margin-top: 16px; }
+  .score-box h4 { font-size: 16px; color: #60a5fa; margin-bottom: 6px; }
+  .score-box p { font-size: 13px; color: #94a3b8; }
+  ::-webkit-scrollbar { width: 6px; }
+  ::-webkit-scrollbar-track { background: #1e293b; }
+  ::-webkit-scrollbar-thumb { background: #334155; border-radius: 3px; }
+  ::-webkit-scrollbar-thumb:hover { background: #475569; }
   </style>
-</head>
-<body>
-  <div class="topbar">
-    <a href="javascript:history.back()" class="back-btn">← Back</a>
-    <div class="title">📖 Cambridge IELTS 16 · Test 3 — Reading</div>
-    <div class="spacer"></div>
+  </head>
+  <body>
+
+  <div class="timer-bar">
+    <span class="timer-label">&#128214; Cambridge IELTS 16 · Test 3 — Reading · 60 min</span>
+    <span class="timer-value" id="timer">60:00</span>
   </div>
-  <div class="frame-wrap">
-    <div class="loading-msg" id="loading">Loading test…</div>
-    <iframe
-      src="/api/test-proxy?url=https%3A%2F%2Fengnovate.com%2Fielts-reading-tests%2Fcambridge-ielts-16-academic-reading-test-3%2F"
-      onload="document.getElementById('loading').style.display='none'"
-      allowfullscreen
-    ></iframe>
+
+  <div class="tab-bar">
+    <div class="tab active" onclick="showPassage(1)" id="tab1">Passage 1</div>
+    <div class="tab" onclick="showPassage(2)" id="tab2">Passage 2</div>
+    <div class="tab" onclick="showPassage(3)" id="tab3">Passage 3</div>
   </div>
-</body>
-</html>
+
+  <div class="split">
+
+    <div class="passage-panel" id="passage-panel">
+
+      <div id="p1">
+        <div class="passage-title">PASSAGE 1 — [Replace with passage title]</div>
+        <div class="passage-source">Cambridge IELTS 16, Test 3, Reading Passage 1</div>
+        <div class="passage-intro">[Replace with the introductory sentence or subtitle from the Cambridge book, Test 3, Passage 1.]</div>
+        <div class="passage-para"><span class="para-label">A</span>[Replace with Paragraph A text from Cambridge IELTS 16, Test 3, Passage 1. Copy verbatim from your book.]</div>
+        <div class="passage-para"><span class="para-label">B</span>[Replace with Paragraph B.]</div>
+        <div class="passage-para"><span class="para-label">C</span>[Replace with Paragraph C.]</div>
+        <div class="passage-para"><span class="para-label">D</span>[Replace with Paragraph D.]</div>
+        <div class="passage-para"><span class="para-label">E</span>[Replace with Paragraph E.]</div>
+        <div class="passage-para"><span class="para-label">F</span>[Replace with Paragraph F. Add more by duplicating this block (G, H, etc.) as needed.]</div>
+      </div>
+
+      <div id="p2" style="display:none">
+        <div class="passage-title">PASSAGE 2 — [Replace with passage title]</div>
+        <div class="passage-source">Cambridge IELTS 16, Test 3, Reading Passage 2</div>
+        <div class="passage-intro">[Replace with the introduction from Cambridge IELTS 16, Test 3, Passage 2.]</div>
+        <div class="passage-para"><span class="para-label">A</span>[Replace with Paragraph A of Passage 2.]</div>
+        <div class="passage-para"><span class="para-label">B</span>[Replace with Paragraph B of Passage 2.]</div>
+        <div class="passage-para"><span class="para-label">C</span>[Replace with Paragraph C of Passage 2.]</div>
+        <div class="passage-para"><span class="para-label">D</span>[Replace with Paragraph D of Passage 2.]</div>
+        <div class="passage-para"><span class="para-label">E</span>[Replace with Paragraph E of Passage 2.]</div>
+        <div class="passage-para"><span class="para-label">F</span>[Replace with Paragraph F of Passage 2.]</div>
+        <div class="passage-para"><span class="para-label">G</span>[Replace with Paragraph G of Passage 2.]</div>
+      </div>
+
+      <div id="p3" style="display:none">
+        <div class="passage-title">PASSAGE 3 — [Replace with passage title]</div>
+        <div class="passage-source">Cambridge IELTS 16, Test 3, Reading Passage 3</div>
+        <div class="passage-intro">[Replace with the introduction from Cambridge IELTS 16, Test 3, Passage 3.]</div>
+        <div class="passage-para"><span class="para-label">A</span>[Replace with Paragraph A of Passage 3.]</div>
+        <div class="passage-para"><span class="para-label">B</span>[Replace with Paragraph B of Passage 3.]</div>
+        <div class="passage-para"><span class="para-label">C</span>[Replace with Paragraph C of Passage 3.]</div>
+        <div class="passage-para"><span class="para-label">D</span>[Replace with Paragraph D of Passage 3.]</div>
+        <div class="passage-para"><span class="para-label">E</span>[Replace with Paragraph E of Passage 3.]</div>
+        <div class="passage-para"><span class="para-label">F</span>[Replace with Paragraph F of Passage 3.]</div>
+        <div class="passage-para"><span class="para-label">G</span>[Replace with Paragraph G of Passage 3.]</div>
+        <div class="passage-para"><span class="para-label">H</span>[Replace with Paragraph H of Passage 3.]</div>
+      </div>
+    </div>
+
+    <div class="questions-panel" id="questions-panel">
+
+      <!-- PASSAGE 1 QUESTIONS -->
+      <div id="q1">
+        <div class="section-header">
+          <h3>Questions 1–6 &nbsp;·&nbsp; TRUE / FALSE / NOT GIVEN</h3>
+          <p>Do the following statements agree with the information in Reading Passage 1?<br>
+          <strong>TRUE</strong> — agrees with the information &nbsp; <strong>FALSE</strong> — contradicts the information &nbsp; <strong>NOT GIVEN</strong> — no information on this</p>
+        </div>
+        <div class="q-block"><span class="q-num">Q1</span><div class="q-text">[Replace with statement 1 from Cambridge IELTS 16, Test 3, question paper.]</div><div class="tfn-group" data-q="q1t"><button class="tfn-btn" onclick="selectTFN(this,'q1t')">TRUE</button><button class="tfn-btn" onclick="selectTFN(this,'q1t')">FALSE</button><button class="tfn-btn" onclick="selectTFN(this,'q1t')">NOT GIVEN</button></div></div>
+        <div class="q-block"><span class="q-num">Q2</span><div class="q-text">[Replace with statement 2.]</div><div class="tfn-group" data-q="q2t"><button class="tfn-btn" onclick="selectTFN(this,'q2t')">TRUE</button><button class="tfn-btn" onclick="selectTFN(this,'q2t')">FALSE</button><button class="tfn-btn" onclick="selectTFN(this,'q2t')">NOT GIVEN</button></div></div>
+        <div class="q-block"><span class="q-num">Q3</span><div class="q-text">[Replace with statement 3.]</div><div class="tfn-group" data-q="q3t"><button class="tfn-btn" onclick="selectTFN(this,'q3t')">TRUE</button><button class="tfn-btn" onclick="selectTFN(this,'q3t')">FALSE</button><button class="tfn-btn" onclick="selectTFN(this,'q3t')">NOT GIVEN</button></div></div>
+        <div class="q-block"><span class="q-num">Q4</span><div class="q-text">[Replace with statement 4.]</div><div class="tfn-group" data-q="q4t"><button class="tfn-btn" onclick="selectTFN(this,'q4t')">TRUE</button><button class="tfn-btn" onclick="selectTFN(this,'q4t')">FALSE</button><button class="tfn-btn" onclick="selectTFN(this,'q4t')">NOT GIVEN</button></div></div>
+        <div class="q-block"><span class="q-num">Q5</span><div class="q-text">[Replace with statement 5.]</div><div class="tfn-group" data-q="q5t"><button class="tfn-btn" onclick="selectTFN(this,'q5t')">TRUE</button><button class="tfn-btn" onclick="selectTFN(this,'q5t')">FALSE</button><button class="tfn-btn" onclick="selectTFN(this,'q5t')">NOT GIVEN</button></div></div>
+        <div class="q-block"><span class="q-num">Q6</span><div class="q-text">[Replace with statement 6.]</div><div class="tfn-group" data-q="q6t"><button class="tfn-btn" onclick="selectTFN(this,'q6t')">TRUE</button><button class="tfn-btn" onclick="selectTFN(this,'q6t')">FALSE</button><button class="tfn-btn" onclick="selectTFN(this,'q6t')">NOT GIVEN</button></div></div>
+
+        <hr class="section-divider">
+
+        <div class="section-header">
+          <h3>Questions 7–11 &nbsp;·&nbsp; MATCHING HEADINGS</h3>
+          <p>Match each paragraph (A–F) with the correct heading.<br>
+          Write the correct number <em>i–viii</em> in the box next to each paragraph.<br><br>
+          <strong>List of Headings</strong><br>
+          i &nbsp; [Replace with heading i from the Cambridge book]<br>
+          ii &nbsp;[Replace with heading ii]<br>
+          iii [Replace with heading iii]<br>
+          iv &nbsp;[Replace with heading iv]<br>
+          v &nbsp; [Replace with heading v]<br>
+          vi &nbsp;[Replace with heading vi]<br>
+          vii [Replace with heading vii]<br>
+          viii [Replace with heading viii]</p>
+        </div>
+        <div class="q-block"><span class="q-num">Q7</span><div class="q-text">Paragraph A</div><input class="ans-input" type="text" placeholder="e.g. iii" maxlength="5" data-key="q7" oninput="saveAnswer('q7',this.value)"></div>
+        <div class="q-block"><span class="q-num">Q8</span><div class="q-text">Paragraph B</div><input class="ans-input" type="text" placeholder="e.g. v" maxlength="5" data-key="q8" oninput="saveAnswer('q8',this.value)"></div>
+        <div class="q-block"><span class="q-num">Q9</span><div class="q-text">Paragraph C</div><input class="ans-input" type="text" placeholder="e.g. i" maxlength="5" data-key="q9" oninput="saveAnswer('q9',this.value)"></div>
+        <div class="q-block"><span class="q-num">Q10</span><div class="q-text">Paragraph D</div><input class="ans-input" type="text" placeholder="e.g. vii" maxlength="5" data-key="q10" oninput="saveAnswer('q10',this.value)"></div>
+        <div class="q-block"><span class="q-num">Q11</span><div class="q-text">Paragraph E</div><input class="ans-input" type="text" placeholder="e.g. ii" maxlength="5" data-key="q11" oninput="saveAnswer('q11',this.value)"></div>
+
+        <hr class="section-divider">
+
+        <div class="section-header">
+          <h3>Questions 12–14 &nbsp;·&nbsp; SENTENCE COMPLETION</h3>
+          <p>Complete the sentences below. Use <strong>NO MORE THAN TWO WORDS</strong> from the passage for each answer.</p>
+        </div>
+        <div class="q-block"><span class="q-num">Q12</span><div class="q-text">[Replace with sentence completion question 12 from the Cambridge book.]</div><input class="ans-input" type="text" placeholder="max 2 words" data-key="q12" oninput="saveAnswer('q12',this.value)"></div>
+        <div class="q-block"><span class="q-num">Q13</span><div class="q-text">[Replace with sentence completion question 13.]</div><input class="ans-input" type="text" placeholder="max 2 words" data-key="q13" oninput="saveAnswer('q13',this.value)"></div>
+        <div class="q-block"><span class="q-num">Q14</span><div class="q-text">[Replace with sentence completion question 14.]</div><input class="ans-input" type="text" placeholder="max 2 words" data-key="q14" oninput="saveAnswer('q14',this.value)"></div>
+      </div>
+
+      <!-- PASSAGE 2 QUESTIONS -->
+      <div id="q2" style="display:none">
+        <div class="section-header">
+          <h3>Questions 15–18 &nbsp;·&nbsp; MULTIPLE CHOICE</h3>
+          <p>Choose the correct letter, <strong>A, B, C</strong> or <strong>D</strong>.</p>
+        </div>
+        <div class="q-block"><span class="q-num">Q15</span><div class="q-text">[Replace with question 15 text from the Cambridge book.]</div>
+          <div class="mc-option" onclick="selectMC(this,'q15')" data-q="q15" data-val="A"><span class="mc-letter">A</span><span class="mc-text">[Replace with option A]</span></div>
+          <div class="mc-option" onclick="selectMC(this,'q15')" data-q="q15" data-val="B"><span class="mc-letter">B</span><span class="mc-text">[Replace with option B]</span></div>
+          <div class="mc-option" onclick="selectMC(this,'q15')" data-q="q15" data-val="C"><span class="mc-letter">C</span><span class="mc-text">[Replace with option C]</span></div>
+          <div class="mc-option" onclick="selectMC(this,'q15')" data-q="q15" data-val="D"><span class="mc-letter">D</span><span class="mc-text">[Replace with option D]</span></div>
+        </div>
+        <div class="q-block"><span class="q-num">Q16</span><div class="q-text">[Replace with question 16 text.]</div>
+          <div class="mc-option" onclick="selectMC(this,'q16')" data-q="q16" data-val="A"><span class="mc-letter">A</span><span class="mc-text">[Replace with option A]</span></div>
+          <div class="mc-option" onclick="selectMC(this,'q16')" data-q="q16" data-val="B"><span class="mc-letter">B</span><span class="mc-text">[Replace with option B]</span></div>
+          <div class="mc-option" onclick="selectMC(this,'q16')" data-q="q16" data-val="C"><span class="mc-letter">C</span><span class="mc-text">[Replace with option C]</span></div>
+          <div class="mc-option" onclick="selectMC(this,'q16')" data-q="q16" data-val="D"><span class="mc-letter">D</span><span class="mc-text">[Replace with option D]</span></div>
+        </div>
+        <div class="q-block"><span class="q-num">Q17</span><div class="q-text">[Replace with question 17 text.]</div>
+          <div class="mc-option" onclick="selectMC(this,'q17')" data-q="q17" data-val="A"><span class="mc-letter">A</span><span class="mc-text">[Replace with option A]</span></div>
+          <div class="mc-option" onclick="selectMC(this,'q17')" data-q="q17" data-val="B"><span class="mc-letter">B</span><span class="mc-text">[Replace with option B]</span></div>
+          <div class="mc-option" onclick="selectMC(this,'q17')" data-q="q17" data-val="C"><span class="mc-letter">C</span><span class="mc-text">[Replace with option C]</span></div>
+          <div class="mc-option" onclick="selectMC(this,'q17')" data-q="q17" data-val="D"><span class="mc-letter">D</span><span class="mc-text">[Replace with option D]</span></div>
+        </div>
+        <div class="q-block"><span class="q-num">Q18</span><div class="q-text">[Replace with question 18 text.]</div>
+          <div class="mc-option" onclick="selectMC(this,'q18')" data-q="q18" data-val="A"><span class="mc-letter">A</span><span class="mc-text">[Replace with option A]</span></div>
+          <div class="mc-option" onclick="selectMC(this,'q18')" data-q="q18" data-val="B"><span class="mc-letter">B</span><span class="mc-text">[Replace with option B]</span></div>
+          <div class="mc-option" onclick="selectMC(this,'q18')" data-q="q18" data-val="C"><span class="mc-letter">C</span><span class="mc-text">[Replace with option C]</span></div>
+          <div class="mc-option" onclick="selectMC(this,'q18')" data-q="q18" data-val="D"><span class="mc-letter">D</span><span class="mc-text">[Replace with option D]</span></div>
+        </div>
+
+        <hr class="section-divider">
+
+        <div class="section-header">
+          <h3>Questions 19–23 &nbsp;·&nbsp; MATCHING INFORMATION</h3>
+          <p>Which paragraph contains the following information?<br>
+          Write the correct letter <strong>A–G</strong> in the boxes. You may use any letter more than once.</p>
+        </div>
+        <div class="q-block"><span class="q-num">Q19</span><div class="q-text">[Replace with matching information question 19.]</div><input class="ans-input" type="text" placeholder="A–G" maxlength="2" data-key="q19" oninput="saveAnswer('q19',this.value)"></div>
+        <div class="q-block"><span class="q-num">Q20</span><div class="q-text">[Replace with matching information question 20.]</div><input class="ans-input" type="text" placeholder="A–G" maxlength="2" data-key="q20" oninput="saveAnswer('q20',this.value)"></div>
+        <div class="q-block"><span class="q-num">Q21</span><div class="q-text">[Replace with matching information question 21.]</div><input class="ans-input" type="text" placeholder="A–G" maxlength="2" data-key="q21" oninput="saveAnswer('q21',this.value)"></div>
+        <div class="q-block"><span class="q-num">Q22</span><div class="q-text">[Replace with matching information question 22.]</div><input class="ans-input" type="text" placeholder="A–G" maxlength="2" data-key="q22" oninput="saveAnswer('q22',this.value)"></div>
+        <div class="q-block"><span class="q-num">Q23</span><div class="q-text">[Replace with matching information question 23.]</div><input class="ans-input" type="text" placeholder="A–G" maxlength="2" data-key="q23" oninput="saveAnswer('q23',this.value)"></div>
+
+        <hr class="section-divider">
+
+        <div class="section-header">
+          <h3>Questions 24–26 &nbsp;·&nbsp; SUMMARY COMPLETION</h3>
+          <p>Complete the summary. Choose <strong>ONE WORD ONLY</strong> from the passage for each answer.<br><br>
+          <em>[Replace the word bank below with the actual words from the Cambridge question]</em><br>
+          <strong>[word1] &nbsp;&nbsp; [word2] &nbsp;&nbsp; [word3] &nbsp;&nbsp; [word4] &nbsp;&nbsp; [word5] &nbsp;&nbsp; [word6]</strong></p>
+        </div>
+        <div class="q-block"><span class="q-num">Q24</span><div class="q-text">[Replace with summary completion question 24.]</div><input class="ans-input" type="text" placeholder="one word" data-key="q24" oninput="saveAnswer('q24',this.value)"></div>
+        <div class="q-block"><span class="q-num">Q25</span><div class="q-text">[Replace with summary completion question 25.]</div><input class="ans-input" type="text" placeholder="one word" data-key="q25" oninput="saveAnswer('q25',this.value)"></div>
+        <div class="q-block"><span class="q-num">Q26</span><div class="q-text">[Replace with summary completion question 26.]</div><input class="ans-input" type="text" placeholder="one word" data-key="q26" oninput="saveAnswer('q26',this.value)"></div>
+      </div>
+
+      <!-- PASSAGE 3 QUESTIONS -->
+      <div id="q3" style="display:none">
+        <div class="section-header">
+          <h3>Questions 27–31 &nbsp;·&nbsp; MATCHING FEATURES</h3>
+          <p>Match each statement with the correct person or group listed below.<br>
+          Write the correct letter <strong>A–E</strong> in the boxes. You may use any letter more than once.<br><br>
+          <strong>A</strong> [Replace with person/group A] &nbsp; <strong>B</strong> [person/group B] &nbsp; <strong>C</strong> [person/group C] &nbsp; <strong>D</strong> [person/group D] &nbsp; <strong>E</strong> [person/group E]</p>
+        </div>
+        <div class="q-block"><span class="q-num">Q27</span><div class="q-text">[Replace with statement 27.]</div><input class="ans-input" type="text" placeholder="A–E" maxlength="2" data-key="q27" oninput="saveAnswer('q27',this.value)"></div>
+        <div class="q-block"><span class="q-num">Q28</span><div class="q-text">[Replace with statement 28.]</div><input class="ans-input" type="text" placeholder="A–E" maxlength="2" data-key="q28" oninput="saveAnswer('q28',this.value)"></div>
+        <div class="q-block"><span class="q-num">Q29</span><div class="q-text">[Replace with statement 29.]</div><input class="ans-input" type="text" placeholder="A–E" maxlength="2" data-key="q29" oninput="saveAnswer('q29',this.value)"></div>
+        <div class="q-block"><span class="q-num">Q30</span><div class="q-text">[Replace with statement 30.]</div><input class="ans-input" type="text" placeholder="A–E" maxlength="2" data-key="q30" oninput="saveAnswer('q30',this.value)"></div>
+        <div class="q-block"><span class="q-num">Q31</span><div class="q-text">[Replace with statement 31.]</div><input class="ans-input" type="text" placeholder="A–E" maxlength="2" data-key="q31" oninput="saveAnswer('q31',this.value)"></div>
+
+        <hr class="section-divider">
+
+        <div class="section-header">
+          <h3>Questions 32–36 &nbsp;·&nbsp; YES / NO / NOT GIVEN</h3>
+          <p>Do the following statements reflect the claims of the writer in Passage 3?<br>
+          <strong>YES</strong> — agrees with the claims &nbsp; <strong>NO</strong> — contradicts the claims &nbsp; <strong>NOT GIVEN</strong> — impossible to say</p>
+        </div>
+        <div class="q-block"><span class="q-num">Q32</span><div class="q-text">[Replace with statement 32.]</div><div class="tfn-group" data-q="q32t"><button class="tfn-btn" onclick="selectTFN(this,'q32t')">YES</button><button class="tfn-btn" onclick="selectTFN(this,'q32t')">NO</button><button class="tfn-btn" onclick="selectTFN(this,'q32t')">NOT GIVEN</button></div></div>
+        <div class="q-block"><span class="q-num">Q33</span><div class="q-text">[Replace with statement 33.]</div><div class="tfn-group" data-q="q33t"><button class="tfn-btn" onclick="selectTFN(this,'q33t')">YES</button><button class="tfn-btn" onclick="selectTFN(this,'q33t')">NO</button><button class="tfn-btn" onclick="selectTFN(this,'q33t')">NOT GIVEN</button></div></div>
+        <div class="q-block"><span class="q-num">Q34</span><div class="q-text">[Replace with statement 34.]</div><div class="tfn-group" data-q="q34t"><button class="tfn-btn" onclick="selectTFN(this,'q34t')">YES</button><button class="tfn-btn" onclick="selectTFN(this,'q34t')">NO</button><button class="tfn-btn" onclick="selectTFN(this,'q34t')">NOT GIVEN</button></div></div>
+        <div class="q-block"><span class="q-num">Q35</span><div class="q-text">[Replace with statement 35.]</div><div class="tfn-group" data-q="q35t"><button class="tfn-btn" onclick="selectTFN(this,'q35t')">YES</button><button class="tfn-btn" onclick="selectTFN(this,'q35t')">NO</button><button class="tfn-btn" onclick="selectTFN(this,'q35t')">NOT GIVEN</button></div></div>
+        <div class="q-block"><span class="q-num">Q36</span><div class="q-text">[Replace with statement 36.]</div><div class="tfn-group" data-q="q36t"><button class="tfn-btn" onclick="selectTFN(this,'q36t')">YES</button><button class="tfn-btn" onclick="selectTFN(this,'q36t')">NO</button><button class="tfn-btn" onclick="selectTFN(this,'q36t')">NOT GIVEN</button></div></div>
+
+        <hr class="section-divider">
+
+        <div class="section-header">
+          <h3>Questions 37–40 &nbsp;·&nbsp; SHORT ANSWER</h3>
+          <p>Answer the questions below. Use <strong>NO MORE THAN THREE WORDS</strong> from the passage for each answer.</p>
+        </div>
+        <div class="q-block"><span class="q-num">Q37</span><div class="q-text">[Replace with short answer question 37 from Cambridge IELTS 16, Test 3.]</div><input class="ans-input" type="text" placeholder="max 3 words" data-key="q37" oninput="saveAnswer('q37',this.value)"></div>
+        <div class="q-block"><span class="q-num">Q38</span><div class="q-text">[Replace with short answer question 38.]</div><input class="ans-input" type="text" placeholder="max 3 words" data-key="q38" oninput="saveAnswer('q38',this.value)"></div>
+        <div class="q-block"><span class="q-num">Q39</span><div class="q-text">[Replace with short answer question 39.]</div><input class="ans-input" type="text" placeholder="max 3 words" data-key="q39" oninput="saveAnswer('q39',this.value)"></div>
+        <div class="q-block"><span class="q-num">Q40</span><div class="q-text">[Replace with short answer question 40.]</div><input class="ans-input" type="text" placeholder="max 3 words" data-key="q40" oninput="saveAnswer('q40',this.value)"></div>
+
+        <div class="btn-row">
+          <button class="btn-submit" onclick="submitTest()">Submit Test</button>
+          <button class="btn-clear" onclick="clearAll()">Clear All Answers</button>
+        </div>
+        <div class="score-box" id="score-box">
+          <h4>&#10003; Answers Saved</h4>
+          <p>Your answers have been saved to this browser. Check the answer key in your Cambridge IELTS 16 book to review your score.</p>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <script>
+  const STORAGE_KEY = 'cambridge_16_test3_reading';
+  let answers = JSON.parse(localStorage.getItem(STORAGE_KEY) || '{}');
+
+  function saveAnswer(key, val) {
+    answers[key] = val;
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(answers));
+  }
+  function selectTFN(btn, group) {
+    document.querySelectorAll('[data-q="' + group + '"] .tfn-btn').forEach(b => b.classList.remove('selected'));
+    btn.classList.add('selected');
+    saveAnswer(group, btn.textContent);
+  }
+  function selectMC(el, group) {
+    document.querySelectorAll('[data-q="' + group + '"]').forEach(e => e.classList.remove('selected'));
+    el.classList.add('selected');
+    saveAnswer(group, el.dataset.val);
+  }
+  function showPassage(n) {
+    [1,2,3].forEach(i => {
+      document.getElementById('p'+i).style.display = i===n ? 'block' : 'none';
+      document.getElementById('q'+i).style.display = i===n ? 'block' : 'none';
+      document.getElementById('tab'+i).classList.toggle('active', i===n);
+    });
+    document.getElementById('passage-panel').scrollTop = 0;
+    document.getElementById('questions-panel').scrollTop = 0;
+  }
+  function restoreAnswers() {
+    document.querySelectorAll('.ans-input').forEach(inp => {
+      const key = inp.dataset.key;
+      if (key && answers[key]) inp.value = answers[key];
+    });
+    document.querySelectorAll('.tfn-group').forEach(group => {
+      const q = group.dataset.q;
+      if (answers[q]) group.querySelectorAll('.tfn-btn').forEach(btn => { btn.classList.toggle('selected', btn.textContent === answers[q]); });
+    });
+    document.querySelectorAll('.mc-option').forEach(opt => {
+      const q = opt.dataset.q;
+      if (q && answers[q] && opt.dataset.val === answers[q]) opt.classList.add('selected');
+    });
+  }
+  restoreAnswers();
+  function submitTest() {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(answers));
+    document.getElementById('score-box').style.display = 'block';
+    document.getElementById('score-box').scrollIntoView({ behavior: 'smooth' });
+  }
+  function clearAll() {
+    if (!confirm('Clear all answers for this test?')) return;
+    answers = {};
+    localStorage.removeItem(STORAGE_KEY);
+    document.querySelectorAll('.ans-input').forEach(i => i.value = '');
+    document.querySelectorAll('.tfn-btn, .mc-option').forEach(el => el.classList.remove('selected'));
+  }
+  let timeLeft = 60 * 60;
+  const timerEl = document.getElementById('timer');
+  const t = setInterval(() => {
+    timeLeft--;
+    const m = Math.floor(timeLeft / 60), s = timeLeft % 60;
+    timerEl.textContent = String(m).padStart(2,'0') + ':' + String(s).padStart(2,'0');
+    if (timeLeft <= 600) timerEl.classList.add('warning');
+    if (timeLeft <= 0) { clearInterval(t); timerEl.textContent = '00:00'; submitTest(); }
+  }, 1000);
+  </script>
+  </body>
+  </html>
