@@ -12,6 +12,7 @@ import SatPrep from "@/pages/sat";
 import SATTestViewer from "@/pages/sat-test-viewer";
 import SATPractice from "@/pages/sat-practice";
 import Admissions from "@/pages/admissions";
+import AdminEditor from "@/pages/admin-editor";
 
 const queryClient = new QueryClient();
 
@@ -29,6 +30,7 @@ function App() {
             <Route path="/sat/practice" element={<SATPractice />} />
             <Route path="/sat/test/:section/:slug" element={<SATTestViewer />} />
             <Route path="/admissions" element={<Admissions />} />
+            <Route path="/admin" element={<AdminEditor />} />
             <Route path="*" element={<NotFound />} />
           </Routes>
         </BrowserRouter>
