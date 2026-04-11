@@ -1,284 +1,659 @@
 <!DOCTYPE html>
-<html lang="en">
-<head>
+  <html lang="en">
+  <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Cambridge IELTS 16 — Test 2 Reading</title>
     <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-        body { font-family: Arial, sans-serif; background: #fff; line-height: 1.5; padding-bottom: 100px; }
-        .header {
-            background: #fff;
-            border-bottom: 2px solid #059669;
-            padding: 12px 24px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            position: fixed;
-            top: 0; left: 0; right: 0;
-            z-index: 100;
-            height: 60px;
-        }
-        .header-title { font-size: 16px; font-weight: 700; color: #059669; }
-        .timer { font-size: 18px; font-weight: 700; color: #dc2626; background: #fef2f2; padding: 6px 14px; border-radius: 8px; border: 1px solid #fca5a5; }
-        .timer.warning { animation: pulse 1s infinite; }
-        @keyframes pulse { 0%,100% { opacity:1; } 50% { opacity:0.6; } }
-        .main { max-width: 900px; margin: 80px auto 0; padding: 24px; }
-        .page-title { font-size: 22px; font-weight: 700; color: #111; margin-bottom: 6px; }
-        .page-subtitle { font-size: 14px; color: #6b7280; margin-bottom: 24px; }
-        .info-card { background: #ecfdf5; border: 1px solid #a7f3d0; border-radius: 12px; padding: 18px 20px; margin-bottom: 24px; }
-        .info-card h3 { font-size: 15px; font-weight: 700; color: #065f46; margin-bottom: 8px; }
-        .info-card ul { margin-left: 18px; color: #374151; font-size: 13px; line-height: 1.8; }
-        .answer-sheet { background: #fff; border: 1px solid #e5e7eb; border-radius: 12px; overflow: hidden; margin-bottom: 16px; }
-        .section-header { background: #059669; color: #fff; padding: 10px 18px; font-weight: 700; font-size: 14px; display: flex; justify-content: space-between; }
-        .answers-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 10px; padding: 16px; }
-        .answer-row { display: flex; align-items: center; gap: 8px; }
-        .q-num { width: 28px; height: 28px; background: #059669; color: #fff; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 700; flex-shrink: 0; }
-        .answer-input { flex: 1; border: 1.5px solid #d1d5db; border-radius: 6px; padding: 6px 10px; font-size: 13px; outline: none; transition: border-color 0.2s; }
-        .answer-input:focus { border-color: #059669; }
-        .btn-submit { display: block; width: 100%; padding: 14px; background: #059669; color: #fff; border: none; border-radius: 10px; font-size: 16px; font-weight: 700; cursor: pointer; transition: background 0.2s; margin-top: 8px; }
-        .btn-submit:hover { background: #047857; }
-        .result-box { display: none; background: #f0fdf4; border: 1px solid #86efac; border-radius: 10px; padding: 20px; text-align: center; margin-top: 16px; }
-        .result-box h3 { font-size: 18px; color: #166534; margin-bottom: 8px; }
+      *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+      body { font-family: Arial, sans-serif; background: #f5f7fa; color: #1a1a1a; height: 100vh; display: flex; flex-direction: column; overflow: hidden; }
+
+      /* ─── Header ─── */
+      .top-bar {
+        background: #fff;
+        border-bottom: 2px solid #2563eb;
+        padding: 0 20px;
+        height: 52px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        flex-shrink: 0;
+        z-index: 100;
+      }
+      .back-btn {
+        display: flex; align-items: center; gap: 6px;
+        font-size: 13px; color: #2563eb; text-decoration: none;
+        font-weight: 600; padding: 5px 12px; border-radius: 6px;
+        border: 1px solid #93c5fd; background: #eff6ff;
+        cursor: pointer; transition: background 0.2s;
+      }
+      .back-btn:hover { background: #dbeafe; }
+      .test-title { font-size: 15px; font-weight: 700; color: #1e3a8a; }
+      .timer-box {
+        font-size: 17px; font-weight: 700; color: #dc2626;
+        background: #fef2f2; padding: 5px 14px; border-radius: 8px;
+        border: 1.5px solid #fca5a5; font-variant-numeric: tabular-nums;
+      }
+      .timer-box.warning { animation: pulse 1s infinite; }
+      @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:.5} }
+
+      /* ─── Part tabs ─── */
+      .part-tabs {
+        background: #fff;
+        border-bottom: 1px solid #e5e7eb;
+        padding: 0 20px;
+        display: flex;
+        align-items: center;
+        gap: 4px;
+        height: 44px;
+        flex-shrink: 0;
+      }
+      .part-tab {
+        padding: 8px 18px; border-radius: 8px 8px 0 0;
+        font-size: 13px; font-weight: 600;
+        border: 1px solid #e5e7eb; border-bottom: none;
+        cursor: pointer; background: #f9fafb; color: #6b7280;
+        transition: background 0.15s, color 0.15s;
+      }
+      .part-tab.active { background: #2563eb; color: #fff; border-color: #2563eb; }
+      .part-tab:hover:not(.active) { background: #eff6ff; color: #2563eb; }
+      .part-tab .q-badge { font-size: 11px; color: inherit; opacity: 0.8; margin-left: 4px; }
+
+      /* ─── Main split layout ─── */
+      .split-layout {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        flex: 1;
+        overflow: hidden;
+      }
+
+      /* ─── Left panel: Passage ─── */
+      .left-panel {
+        overflow-y: auto;
+        background: #fff;
+        border-right: 2px solid #e5e7eb;
+        padding: 24px;
+      }
+      .left-panel::-webkit-scrollbar { width: 6px; }
+      .left-panel::-webkit-scrollbar-thumb { background: #d1d5db; border-radius: 3px; }
+
+      .passage-panel { display: none; }
+      .passage-panel.active { display: block; }
+
+      .passage-title {
+        display: flex; align-items: center; gap: 10px;
+        margin-bottom: 18px; padding-bottom: 12px;
+        border-bottom: 2px solid #e5e7eb;
+      }
+      .part-badge {
+        background: #2563eb; color: #fff;
+        font-size: 12px; font-weight: 700;
+        padding: 3px 10px; border-radius: 20px;
+      }
+      .q-range { font-size: 13px; color: #6b7280; font-weight: 600; }
+
+      .passage-body h2 {
+        font-size: 18px; font-weight: 700; color: #111827;
+        margin-bottom: 14px; line-height: 1.4;
+      }
+      .passage-body p {
+        font-size: 14px; line-height: 1.8; color: #374151;
+        margin-bottom: 12px;
+      }
+      .passage-body strong { font-weight: 700; }
+
+      /* ─── Right panel: Questions ─── */
+      .right-panel {
+        overflow-y: auto;
+        background: #fafafa;
+        padding: 24px;
+      }
+      .right-panel::-webkit-scrollbar { width: 6px; }
+      .right-panel::-webkit-scrollbar-thumb { background: #d1d5db; border-radius: 3px; }
+
+      .questions-panel { display: none; }
+      .questions-panel.active { display: block; }
+
+      .questions-header {
+        margin-bottom: 18px; padding-bottom: 12px;
+        border-bottom: 2px solid #e5e7eb;
+      }
+      .questions-header h3 {
+        font-size: 16px; font-weight: 700; color: #1e3a8a;
+        margin-bottom: 8px;
+      }
+      .q-instruction {
+        font-size: 13px; color: #4b5563; line-height: 1.6;
+        background: #fffbeb; border: 1px solid #fcd34d;
+        border-radius: 6px; padding: 10px 12px;
+        font-style: italic;
+      }
+
+      .questions-list { display: flex; flex-direction: column; gap: 14px; }
+
+      .q-item {
+        background: #fff; border: 1.5px solid #e5e7eb;
+        border-radius: 8px; padding: 12px 14px;
+        transition: border-color 0.15s;
+      }
+      .q-item:focus-within { border-color: #2563eb; }
+      .q-header {
+        display: flex; gap: 10px; align-items: flex-start;
+        margin-bottom: 8px;
+      }
+      .q-num {
+        width: 26px; height: 26px;
+        background: #2563eb; color: #fff;
+        border-radius: 50%; display: flex;
+        align-items: center; justify-content: center;
+        font-size: 11px; font-weight: 700;
+        flex-shrink: 0; margin-top: 1px;
+      }
+      .q-text { font-size: 13px; color: #374151; line-height: 1.5; }
+      .answer-input {
+        width: 100%; border: 1.5px solid #d1d5db;
+        border-radius: 6px; padding: 7px 10px;
+        font-size: 13px; outline: none;
+        transition: border-color 0.2s;
+        background: #f9fafb;
+      }
+      .answer-input:focus { border-color: #2563eb; background: #fff; }
+
+      /* ─── Submit bar ─── */
+      .submit-bar {
+        background: #fff; border-top: 1px solid #e5e7eb;
+        padding: 12px 24px; display: flex;
+        align-items: center; justify-content: space-between;
+        flex-shrink: 0;
+      }
+      .progress-info { font-size: 13px; color: #6b7280; }
+      .progress-info span { font-weight: 700; color: #2563eb; }
+      .btn-submit {
+        padding: 10px 28px; background: #2563eb; color: #fff;
+        border: none; border-radius: 8px;
+        font-size: 15px; font-weight: 700; cursor: pointer;
+        transition: background 0.2s;
+      }
+      .btn-submit:hover { background: #1d4ed8; }
+      .result-toast {
+        display: none; position: fixed; top: 20px; left: 50%; transform: translateX(-50%);
+        background: #065f46; color: #fff; padding: 12px 28px; border-radius: 10px;
+        font-weight: 700; font-size: 15px; z-index: 999;
+        box-shadow: 0 4px 20px rgba(0,0,0,.2);
+      }
     </style>
-</head>
-<body>
-<div class="header">
-    <div class="header-title">📖 Cambridge IELTS 16 · Test 2 — Reading</div>
-    <div style="display:flex;align-items:center;gap:20px">
-        <div class="timer" id="timer">60:00</div>
-    </div>
-</div>
+  </head>
+  <body>
 
-<div class="main">
-    <div class="page-title">Cambridge IELTS 16 — Test 2</div>
-    <div class="page-subtitle">IELTS Academic Reading Test · 40 Questions · 60 Minutes</div>
+  <div class="top-bar">
+    <a href="javascript:history.back()" class="back-btn">← Back</a>
+    <div class="test-title">📖 Cambridge IELTS 16 · Test 2 — Reading</div>
+    <div class="timer-box" id="timer">60:00</div>
+  </div>
 
-    <div class="info-card">
-        <h3>📋 Reading Test Instructions</h3>
-        <ul>
-            <li>Use your Cambridge IELTS 16 book — Test 2, Reading passages 1, 2 and 3</li>
-            <li>Answer all 40 questions in 60 minutes</li>
-            <li>Read each passage carefully before answering the questions</li>
-            <li>Spell all words correctly — spelling matters in IELTS Reading</li>
-        </ul>
-    </div>
+  <div class="part-tabs">
+    <button class="part-tab active" data-part="1">
+      Passage 1 <span class="q-badge">Q1–13</span>
+    </button>
+  <button class="part-tab" data-part="2">
+      Passage 2 <span class="q-badge">Q14–26</span>
+    </button>
+  <button class="part-tab" data-part="3">
+      Passage 3 <span class="q-badge">Q27–40</span>
+    </button>
+  </div>
 
-    
-    <div class="answer-sheet">
-        <div class="section-header">
-            <span>Passage 1 — Questions 1–13</span>
+  <div class="split-layout">
+    <div class="left-panel">
+      
+      <div id="passage-1" class="passage-panel active" data-part="1">
+        <div class="passage-title">
+          <span class="part-badge">Passage 1</span>
+          <span class="q-range">Questions 1–13</span>
         </div>
-        <div class="answers-grid">
-            <div class="answer-row">
-                <div class="q-num">1</div>
-                <input class="answer-input" type="text" id="ans-1" placeholder="Answer 1" autocomplete="off">
-            </div>
-            <div class="answer-row">
-                <div class="q-num">2</div>
-                <input class="answer-input" type="text" id="ans-2" placeholder="Answer 2" autocomplete="off">
-            </div>
-            <div class="answer-row">
-                <div class="q-num">3</div>
-                <input class="answer-input" type="text" id="ans-3" placeholder="Answer 3" autocomplete="off">
-            </div>
-            <div class="answer-row">
-                <div class="q-num">4</div>
-                <input class="answer-input" type="text" id="ans-4" placeholder="Answer 4" autocomplete="off">
-            </div>
-            <div class="answer-row">
-                <div class="q-num">5</div>
-                <input class="answer-input" type="text" id="ans-5" placeholder="Answer 5" autocomplete="off">
-            </div>
-            <div class="answer-row">
-                <div class="q-num">6</div>
-                <input class="answer-input" type="text" id="ans-6" placeholder="Answer 6" autocomplete="off">
-            </div>
-            <div class="answer-row">
-                <div class="q-num">7</div>
-                <input class="answer-input" type="text" id="ans-7" placeholder="Answer 7" autocomplete="off">
-            </div>
-            <div class="answer-row">
-                <div class="q-num">8</div>
-                <input class="answer-input" type="text" id="ans-8" placeholder="Answer 8" autocomplete="off">
-            </div>
-            <div class="answer-row">
-                <div class="q-num">9</div>
-                <input class="answer-input" type="text" id="ans-9" placeholder="Answer 9" autocomplete="off">
-            </div>
-            <div class="answer-row">
-                <div class="q-num">10</div>
-                <input class="answer-input" type="text" id="ans-10" placeholder="Answer 10" autocomplete="off">
-            </div>
-            <div class="answer-row">
-                <div class="q-num">11</div>
-                <input class="answer-input" type="text" id="ans-11" placeholder="Answer 11" autocomplete="off">
-            </div>
-            <div class="answer-row">
-                <div class="q-num">12</div>
-                <input class="answer-input" type="text" id="ans-12" placeholder="Answer 12" autocomplete="off">
-            </div>
-            <div class="answer-row">
-                <div class="q-num">13</div>
-                <input class="answer-input" type="text" id="ans-13" placeholder="Answer 13" autocomplete="off">
-            </div>
+        <div class="passage-body">
+          <h2>[Passage 1 Title — Cambridge IELTS 16 Test 2]</h2>
+          <p>[Replace this placeholder with the full text of Reading Passage 1 from Cambridge IELTS 16, Test 2. The passage typically contains 700–900 words and is divided into paragraphs A–G or numbered paragraphs. Copy the exact text from your Cambridge IELTS 16 book here.]</p>
+          <p><strong>A.</strong></p>
+          <p>[Paragraph A text goes here. This is where you paste the first paragraph of the reading passage. It should be the exact text as it appears in the Cambridge IELTS 16 book for Test 2, Passage 1.]</p>
+          <p><strong>B.</strong></p>
+          <p>[Paragraph B text goes here. Continue pasting paragraphs from the original passage. Each paragraph label A, B, C, D, E, F, G should match what appears in the original test book.]</p>
+          <p><strong>C.</strong></p>
+          <p>[Paragraph C text goes here. This is the third paragraph of the reading passage. Replace with actual content from Cambridge IELTS 16 Test 2 Passage 1.]</p>
+          <p><strong>D.</strong></p>
+          <p>[Paragraph D text goes here. Continue adding paragraphs as needed to match the original passage length.]</p>
+          <p><strong>E.</strong></p>
+          <p>[Paragraph E text goes here. IELTS Academic Reading passages typically run 650–900 words total across all paragraphs.]</p>
+          <p><strong>F.</strong></p>
+          <p>[Paragraph F text goes here. Add or remove paragraph sections as needed to match the actual passage structure.]</p>
+          <p><strong>G.</strong></p>
+          <p>[Paragraph G text goes here. This is the final paragraph of the passage. Remove this section if the passage has fewer paragraphs.]</p>
         </div>
-    </div>
-    
-    <div class="answer-sheet">
-        <div class="section-header">
-            <span>Passage 2 — Questions 14–26</span>
-        </div>
-        <div class="answers-grid">
-            <div class="answer-row">
-                <div class="q-num">14</div>
-                <input class="answer-input" type="text" id="ans-14" placeholder="Answer 14" autocomplete="off">
-            </div>
-            <div class="answer-row">
-                <div class="q-num">15</div>
-                <input class="answer-input" type="text" id="ans-15" placeholder="Answer 15" autocomplete="off">
-            </div>
-            <div class="answer-row">
-                <div class="q-num">16</div>
-                <input class="answer-input" type="text" id="ans-16" placeholder="Answer 16" autocomplete="off">
-            </div>
-            <div class="answer-row">
-                <div class="q-num">17</div>
-                <input class="answer-input" type="text" id="ans-17" placeholder="Answer 17" autocomplete="off">
-            </div>
-            <div class="answer-row">
-                <div class="q-num">18</div>
-                <input class="answer-input" type="text" id="ans-18" placeholder="Answer 18" autocomplete="off">
-            </div>
-            <div class="answer-row">
-                <div class="q-num">19</div>
-                <input class="answer-input" type="text" id="ans-19" placeholder="Answer 19" autocomplete="off">
-            </div>
-            <div class="answer-row">
-                <div class="q-num">20</div>
-                <input class="answer-input" type="text" id="ans-20" placeholder="Answer 20" autocomplete="off">
-            </div>
-            <div class="answer-row">
-                <div class="q-num">21</div>
-                <input class="answer-input" type="text" id="ans-21" placeholder="Answer 21" autocomplete="off">
-            </div>
-            <div class="answer-row">
-                <div class="q-num">22</div>
-                <input class="answer-input" type="text" id="ans-22" placeholder="Answer 22" autocomplete="off">
-            </div>
-            <div class="answer-row">
-                <div class="q-num">23</div>
-                <input class="answer-input" type="text" id="ans-23" placeholder="Answer 23" autocomplete="off">
-            </div>
-            <div class="answer-row">
-                <div class="q-num">24</div>
-                <input class="answer-input" type="text" id="ans-24" placeholder="Answer 24" autocomplete="off">
-            </div>
-            <div class="answer-row">
-                <div class="q-num">25</div>
-                <input class="answer-input" type="text" id="ans-25" placeholder="Answer 25" autocomplete="off">
-            </div>
-            <div class="answer-row">
-                <div class="q-num">26</div>
-                <input class="answer-input" type="text" id="ans-26" placeholder="Answer 26" autocomplete="off">
-            </div>
-        </div>
-    </div>
-    
-    <div class="answer-sheet">
-        <div class="section-header">
-            <span>Passage 3 — Questions 27–40</span>
-        </div>
-        <div class="answers-grid">
-            <div class="answer-row">
-                <div class="q-num">27</div>
-                <input class="answer-input" type="text" id="ans-27" placeholder="Answer 27" autocomplete="off">
-            </div>
-            <div class="answer-row">
-                <div class="q-num">28</div>
-                <input class="answer-input" type="text" id="ans-28" placeholder="Answer 28" autocomplete="off">
-            </div>
-            <div class="answer-row">
-                <div class="q-num">29</div>
-                <input class="answer-input" type="text" id="ans-29" placeholder="Answer 29" autocomplete="off">
-            </div>
-            <div class="answer-row">
-                <div class="q-num">30</div>
-                <input class="answer-input" type="text" id="ans-30" placeholder="Answer 30" autocomplete="off">
-            </div>
-            <div class="answer-row">
-                <div class="q-num">31</div>
-                <input class="answer-input" type="text" id="ans-31" placeholder="Answer 31" autocomplete="off">
-            </div>
-            <div class="answer-row">
-                <div class="q-num">32</div>
-                <input class="answer-input" type="text" id="ans-32" placeholder="Answer 32" autocomplete="off">
-            </div>
-            <div class="answer-row">
-                <div class="q-num">33</div>
-                <input class="answer-input" type="text" id="ans-33" placeholder="Answer 33" autocomplete="off">
-            </div>
-            <div class="answer-row">
-                <div class="q-num">34</div>
-                <input class="answer-input" type="text" id="ans-34" placeholder="Answer 34" autocomplete="off">
-            </div>
-            <div class="answer-row">
-                <div class="q-num">35</div>
-                <input class="answer-input" type="text" id="ans-35" placeholder="Answer 35" autocomplete="off">
-            </div>
-            <div class="answer-row">
-                <div class="q-num">36</div>
-                <input class="answer-input" type="text" id="ans-36" placeholder="Answer 36" autocomplete="off">
-            </div>
-            <div class="answer-row">
-                <div class="q-num">37</div>
-                <input class="answer-input" type="text" id="ans-37" placeholder="Answer 37" autocomplete="off">
-            </div>
-            <div class="answer-row">
-                <div class="q-num">38</div>
-                <input class="answer-input" type="text" id="ans-38" placeholder="Answer 38" autocomplete="off">
-            </div>
-            <div class="answer-row">
-                <div class="q-num">39</div>
-                <input class="answer-input" type="text" id="ans-39" placeholder="Answer 39" autocomplete="off">
-            </div>
-            <div class="answer-row">
-                <div class="q-num">40</div>
-                <input class="answer-input" type="text" id="ans-40" placeholder="Answer 40" autocomplete="off">
-            </div>
-        </div>
-    </div>
+      </div>
 
-    <button class="btn-submit" onclick="submitAnswers()">Submit Answers</button>
-    <div class="result-box" id="result-box">
-        <h3>✅ Answers Recorded</h3>
-        <p>Your answers have been saved. Check the answer key in Cambridge IELTS 16 to score your test.</p>
-    </div>
-</div>
+      <div id="passage-2" class="passage-panel" data-part="2">
+        <div class="passage-title">
+          <span class="part-badge">Passage 2</span>
+          <span class="q-range">Questions 14–26</span>
+        </div>
+        <div class="passage-body">
+          <h2>[Passage 2 Title — Cambridge IELTS 16 Test 2]</h2>
+          <p>[Replace this placeholder with the full text of Reading Passage 2 from Cambridge IELTS 16, Test 2. The passage typically contains 700–900 words and is divided into paragraphs A–G or numbered paragraphs. Copy the exact text from your Cambridge IELTS 16 book here.]</p>
+          <p><strong>A.</strong></p>
+          <p>[Paragraph A text goes here. This is where you paste the first paragraph of the reading passage. It should be the exact text as it appears in the Cambridge IELTS 16 book for Test 2, Passage 2.]</p>
+          <p><strong>B.</strong></p>
+          <p>[Paragraph B text goes here. Continue pasting paragraphs from the original passage. Each paragraph label A, B, C, D, E, F, G should match what appears in the original test book.]</p>
+          <p><strong>C.</strong></p>
+          <p>[Paragraph C text goes here. This is the third paragraph of the reading passage. Replace with actual content from Cambridge IELTS 16 Test 2 Passage 2.]</p>
+          <p><strong>D.</strong></p>
+          <p>[Paragraph D text goes here. Continue adding paragraphs as needed to match the original passage length.]</p>
+          <p><strong>E.</strong></p>
+          <p>[Paragraph E text goes here. IELTS Academic Reading passages typically run 650–900 words total across all paragraphs.]</p>
+          <p><strong>F.</strong></p>
+          <p>[Paragraph F text goes here. Add or remove paragraph sections as needed to match the actual passage structure.]</p>
+          <p><strong>G.</strong></p>
+          <p>[Paragraph G text goes here. This is the final paragraph of the passage. Remove this section if the passage has fewer paragraphs.]</p>
+        </div>
+      </div>
 
-<script>
-    let timeLeft = 60 * 60;
-    let timerInterval = setInterval(() => {
-        timeLeft--;
-        const m = Math.floor(timeLeft / 60), s = timeLeft % 60;
-        document.getElementById('timer').textContent = String(m).padStart(2,'0') + ':' + String(s).padStart(2,'0');
-        if (timeLeft <= 600) document.getElementById('timer').classList.add('warning');
-        if (timeLeft <= 0) { clearInterval(timerInterval); submitAnswers(); }
+      <div id="passage-3" class="passage-panel" data-part="3">
+        <div class="passage-title">
+          <span class="part-badge">Passage 3</span>
+          <span class="q-range">Questions 27–40</span>
+        </div>
+        <div class="passage-body">
+          <h2>[Passage 3 Title — Cambridge IELTS 16 Test 2]</h2>
+          <p>[Replace this placeholder with the full text of Reading Passage 3 from Cambridge IELTS 16, Test 2. The passage typically contains 700–900 words and is divided into paragraphs A–G or numbered paragraphs. Copy the exact text from your Cambridge IELTS 16 book here.]</p>
+          <p><strong>A.</strong></p>
+          <p>[Paragraph A text goes here. This is where you paste the first paragraph of the reading passage. It should be the exact text as it appears in the Cambridge IELTS 16 book for Test 2, Passage 3.]</p>
+          <p><strong>B.</strong></p>
+          <p>[Paragraph B text goes here. Continue pasting paragraphs from the original passage. Each paragraph label A, B, C, D, E, F, G should match what appears in the original test book.]</p>
+          <p><strong>C.</strong></p>
+          <p>[Paragraph C text goes here. This is the third paragraph of the reading passage. Replace with actual content from Cambridge IELTS 16 Test 2 Passage 3.]</p>
+          <p><strong>D.</strong></p>
+          <p>[Paragraph D text goes here. Continue adding paragraphs as needed to match the original passage length.]</p>
+          <p><strong>E.</strong></p>
+          <p>[Paragraph E text goes here. IELTS Academic Reading passages typically run 650–900 words total across all paragraphs.]</p>
+          <p><strong>F.</strong></p>
+          <p>[Paragraph F text goes here. Add or remove paragraph sections as needed to match the actual passage structure.]</p>
+          <p><strong>G.</strong></p>
+          <p>[Paragraph G text goes here. This is the final paragraph of the passage. Remove this section if the passage has fewer paragraphs.]</p>
+        </div>
+      </div>
+    </div>
+    <div class="right-panel">
+      
+      <div id="questions-1" class="questions-panel active" data-part="1">
+        <div class="questions-header">
+          <h3>Questions 1–13</h3>
+          <p class="q-instruction">[Replace with the question type instruction, e.g.: "Do the following statements agree with the information given in the Reading Passage? Write TRUE, FALSE or NOT GIVEN."]</p>
+        </div>
+        <div class="questions-list">
+            <div class="q-item">
+              <div class="q-header">
+                <span class="q-num">1</span>
+                <span class="q-text">[Question 1 text — replace with actual question from Cambridge IELTS 16 Test 2 Passage 1]</span>
+              </div>
+              <input type="text" class="answer-input" id="q1" placeholder="Your answer" data-q="1" />
+            </div>
+            <div class="q-item">
+              <div class="q-header">
+                <span class="q-num">2</span>
+                <span class="q-text">[Question 2 text — replace with actual question from Cambridge IELTS 16 Test 2 Passage 1]</span>
+              </div>
+              <input type="text" class="answer-input" id="q2" placeholder="Your answer" data-q="2" />
+            </div>
+            <div class="q-item">
+              <div class="q-header">
+                <span class="q-num">3</span>
+                <span class="q-text">[Question 3 text — replace with actual question from Cambridge IELTS 16 Test 2 Passage 1]</span>
+              </div>
+              <input type="text" class="answer-input" id="q3" placeholder="Your answer" data-q="3" />
+            </div>
+            <div class="q-item">
+              <div class="q-header">
+                <span class="q-num">4</span>
+                <span class="q-text">[Question 4 text — replace with actual question from Cambridge IELTS 16 Test 2 Passage 1]</span>
+              </div>
+              <input type="text" class="answer-input" id="q4" placeholder="Your answer" data-q="4" />
+            </div>
+            <div class="q-item">
+              <div class="q-header">
+                <span class="q-num">5</span>
+                <span class="q-text">[Question 5 text — replace with actual question from Cambridge IELTS 16 Test 2 Passage 1]</span>
+              </div>
+              <input type="text" class="answer-input" id="q5" placeholder="Your answer" data-q="5" />
+            </div>
+            <div class="q-item">
+              <div class="q-header">
+                <span class="q-num">6</span>
+                <span class="q-text">[Question 6 text — replace with actual question from Cambridge IELTS 16 Test 2 Passage 1]</span>
+              </div>
+              <input type="text" class="answer-input" id="q6" placeholder="Your answer" data-q="6" />
+            </div>
+            <div class="q-item">
+              <div class="q-header">
+                <span class="q-num">7</span>
+                <span class="q-text">[Question 7 text — replace with actual question from Cambridge IELTS 16 Test 2 Passage 1]</span>
+              </div>
+              <input type="text" class="answer-input" id="q7" placeholder="Your answer" data-q="7" />
+            </div>
+            <div class="q-item">
+              <div class="q-header">
+                <span class="q-num">8</span>
+                <span class="q-text">[Question 8 text — replace with actual question from Cambridge IELTS 16 Test 2 Passage 1]</span>
+              </div>
+              <input type="text" class="answer-input" id="q8" placeholder="Your answer" data-q="8" />
+            </div>
+            <div class="q-item">
+              <div class="q-header">
+                <span class="q-num">9</span>
+                <span class="q-text">[Question 9 text — replace with actual question from Cambridge IELTS 16 Test 2 Passage 1]</span>
+              </div>
+              <input type="text" class="answer-input" id="q9" placeholder="Your answer" data-q="9" />
+            </div>
+            <div class="q-item">
+              <div class="q-header">
+                <span class="q-num">10</span>
+                <span class="q-text">[Question 10 text — replace with actual question from Cambridge IELTS 16 Test 2 Passage 1]</span>
+              </div>
+              <input type="text" class="answer-input" id="q10" placeholder="Your answer" data-q="10" />
+            </div>
+            <div class="q-item">
+              <div class="q-header">
+                <span class="q-num">11</span>
+                <span class="q-text">[Question 11 text — replace with actual question from Cambridge IELTS 16 Test 2 Passage 1]</span>
+              </div>
+              <input type="text" class="answer-input" id="q11" placeholder="Your answer" data-q="11" />
+            </div>
+            <div class="q-item">
+              <div class="q-header">
+                <span class="q-num">12</span>
+                <span class="q-text">[Question 12 text — replace with actual question from Cambridge IELTS 16 Test 2 Passage 1]</span>
+              </div>
+              <input type="text" class="answer-input" id="q12" placeholder="Your answer" data-q="12" />
+            </div>
+            <div class="q-item">
+              <div class="q-header">
+                <span class="q-num">13</span>
+                <span class="q-text">[Question 13 text — replace with actual question from Cambridge IELTS 16 Test 2 Passage 1]</span>
+              </div>
+              <input type="text" class="answer-input" id="q13" placeholder="Your answer" data-q="13" />
+            </div>
+        </div>
+      </div>
+
+      <div id="questions-2" class="questions-panel" data-part="2">
+        <div class="questions-header">
+          <h3>Questions 14–26</h3>
+          <p class="q-instruction">[Replace with the question type instruction, e.g.: "Do the following statements agree with the information given in the Reading Passage? Write TRUE, FALSE or NOT GIVEN."]</p>
+        </div>
+        <div class="questions-list">
+            <div class="q-item">
+              <div class="q-header">
+                <span class="q-num">14</span>
+                <span class="q-text">[Question 14 text — replace with actual question from Cambridge IELTS 16 Test 2 Passage 2]</span>
+              </div>
+              <input type="text" class="answer-input" id="q14" placeholder="Your answer" data-q="14" />
+            </div>
+            <div class="q-item">
+              <div class="q-header">
+                <span class="q-num">15</span>
+                <span class="q-text">[Question 15 text — replace with actual question from Cambridge IELTS 16 Test 2 Passage 2]</span>
+              </div>
+              <input type="text" class="answer-input" id="q15" placeholder="Your answer" data-q="15" />
+            </div>
+            <div class="q-item">
+              <div class="q-header">
+                <span class="q-num">16</span>
+                <span class="q-text">[Question 16 text — replace with actual question from Cambridge IELTS 16 Test 2 Passage 2]</span>
+              </div>
+              <input type="text" class="answer-input" id="q16" placeholder="Your answer" data-q="16" />
+            </div>
+            <div class="q-item">
+              <div class="q-header">
+                <span class="q-num">17</span>
+                <span class="q-text">[Question 17 text — replace with actual question from Cambridge IELTS 16 Test 2 Passage 2]</span>
+              </div>
+              <input type="text" class="answer-input" id="q17" placeholder="Your answer" data-q="17" />
+            </div>
+            <div class="q-item">
+              <div class="q-header">
+                <span class="q-num">18</span>
+                <span class="q-text">[Question 18 text — replace with actual question from Cambridge IELTS 16 Test 2 Passage 2]</span>
+              </div>
+              <input type="text" class="answer-input" id="q18" placeholder="Your answer" data-q="18" />
+            </div>
+            <div class="q-item">
+              <div class="q-header">
+                <span class="q-num">19</span>
+                <span class="q-text">[Question 19 text — replace with actual question from Cambridge IELTS 16 Test 2 Passage 2]</span>
+              </div>
+              <input type="text" class="answer-input" id="q19" placeholder="Your answer" data-q="19" />
+            </div>
+            <div class="q-item">
+              <div class="q-header">
+                <span class="q-num">20</span>
+                <span class="q-text">[Question 20 text — replace with actual question from Cambridge IELTS 16 Test 2 Passage 2]</span>
+              </div>
+              <input type="text" class="answer-input" id="q20" placeholder="Your answer" data-q="20" />
+            </div>
+            <div class="q-item">
+              <div class="q-header">
+                <span class="q-num">21</span>
+                <span class="q-text">[Question 21 text — replace with actual question from Cambridge IELTS 16 Test 2 Passage 2]</span>
+              </div>
+              <input type="text" class="answer-input" id="q21" placeholder="Your answer" data-q="21" />
+            </div>
+            <div class="q-item">
+              <div class="q-header">
+                <span class="q-num">22</span>
+                <span class="q-text">[Question 22 text — replace with actual question from Cambridge IELTS 16 Test 2 Passage 2]</span>
+              </div>
+              <input type="text" class="answer-input" id="q22" placeholder="Your answer" data-q="22" />
+            </div>
+            <div class="q-item">
+              <div class="q-header">
+                <span class="q-num">23</span>
+                <span class="q-text">[Question 23 text — replace with actual question from Cambridge IELTS 16 Test 2 Passage 2]</span>
+              </div>
+              <input type="text" class="answer-input" id="q23" placeholder="Your answer" data-q="23" />
+            </div>
+            <div class="q-item">
+              <div class="q-header">
+                <span class="q-num">24</span>
+                <span class="q-text">[Question 24 text — replace with actual question from Cambridge IELTS 16 Test 2 Passage 2]</span>
+              </div>
+              <input type="text" class="answer-input" id="q24" placeholder="Your answer" data-q="24" />
+            </div>
+            <div class="q-item">
+              <div class="q-header">
+                <span class="q-num">25</span>
+                <span class="q-text">[Question 25 text — replace with actual question from Cambridge IELTS 16 Test 2 Passage 2]</span>
+              </div>
+              <input type="text" class="answer-input" id="q25" placeholder="Your answer" data-q="25" />
+            </div>
+            <div class="q-item">
+              <div class="q-header">
+                <span class="q-num">26</span>
+                <span class="q-text">[Question 26 text — replace with actual question from Cambridge IELTS 16 Test 2 Passage 2]</span>
+              </div>
+              <input type="text" class="answer-input" id="q26" placeholder="Your answer" data-q="26" />
+            </div>
+        </div>
+      </div>
+
+      <div id="questions-3" class="questions-panel" data-part="3">
+        <div class="questions-header">
+          <h3>Questions 27–40</h3>
+          <p class="q-instruction">[Replace with the question type instruction, e.g.: "Do the following statements agree with the information given in the Reading Passage? Write TRUE, FALSE or NOT GIVEN."]</p>
+        </div>
+        <div class="questions-list">
+            <div class="q-item">
+              <div class="q-header">
+                <span class="q-num">27</span>
+                <span class="q-text">[Question 27 text — replace with actual question from Cambridge IELTS 16 Test 2 Passage 3]</span>
+              </div>
+              <input type="text" class="answer-input" id="q27" placeholder="Your answer" data-q="27" />
+            </div>
+            <div class="q-item">
+              <div class="q-header">
+                <span class="q-num">28</span>
+                <span class="q-text">[Question 28 text — replace with actual question from Cambridge IELTS 16 Test 2 Passage 3]</span>
+              </div>
+              <input type="text" class="answer-input" id="q28" placeholder="Your answer" data-q="28" />
+            </div>
+            <div class="q-item">
+              <div class="q-header">
+                <span class="q-num">29</span>
+                <span class="q-text">[Question 29 text — replace with actual question from Cambridge IELTS 16 Test 2 Passage 3]</span>
+              </div>
+              <input type="text" class="answer-input" id="q29" placeholder="Your answer" data-q="29" />
+            </div>
+            <div class="q-item">
+              <div class="q-header">
+                <span class="q-num">30</span>
+                <span class="q-text">[Question 30 text — replace with actual question from Cambridge IELTS 16 Test 2 Passage 3]</span>
+              </div>
+              <input type="text" class="answer-input" id="q30" placeholder="Your answer" data-q="30" />
+            </div>
+            <div class="q-item">
+              <div class="q-header">
+                <span class="q-num">31</span>
+                <span class="q-text">[Question 31 text — replace with actual question from Cambridge IELTS 16 Test 2 Passage 3]</span>
+              </div>
+              <input type="text" class="answer-input" id="q31" placeholder="Your answer" data-q="31" />
+            </div>
+            <div class="q-item">
+              <div class="q-header">
+                <span class="q-num">32</span>
+                <span class="q-text">[Question 32 text — replace with actual question from Cambridge IELTS 16 Test 2 Passage 3]</span>
+              </div>
+              <input type="text" class="answer-input" id="q32" placeholder="Your answer" data-q="32" />
+            </div>
+            <div class="q-item">
+              <div class="q-header">
+                <span class="q-num">33</span>
+                <span class="q-text">[Question 33 text — replace with actual question from Cambridge IELTS 16 Test 2 Passage 3]</span>
+              </div>
+              <input type="text" class="answer-input" id="q33" placeholder="Your answer" data-q="33" />
+            </div>
+            <div class="q-item">
+              <div class="q-header">
+                <span class="q-num">34</span>
+                <span class="q-text">[Question 34 text — replace with actual question from Cambridge IELTS 16 Test 2 Passage 3]</span>
+              </div>
+              <input type="text" class="answer-input" id="q34" placeholder="Your answer" data-q="34" />
+            </div>
+            <div class="q-item">
+              <div class="q-header">
+                <span class="q-num">35</span>
+                <span class="q-text">[Question 35 text — replace with actual question from Cambridge IELTS 16 Test 2 Passage 3]</span>
+              </div>
+              <input type="text" class="answer-input" id="q35" placeholder="Your answer" data-q="35" />
+            </div>
+            <div class="q-item">
+              <div class="q-header">
+                <span class="q-num">36</span>
+                <span class="q-text">[Question 36 text — replace with actual question from Cambridge IELTS 16 Test 2 Passage 3]</span>
+              </div>
+              <input type="text" class="answer-input" id="q36" placeholder="Your answer" data-q="36" />
+            </div>
+            <div class="q-item">
+              <div class="q-header">
+                <span class="q-num">37</span>
+                <span class="q-text">[Question 37 text — replace with actual question from Cambridge IELTS 16 Test 2 Passage 3]</span>
+              </div>
+              <input type="text" class="answer-input" id="q37" placeholder="Your answer" data-q="37" />
+            </div>
+            <div class="q-item">
+              <div class="q-header">
+                <span class="q-num">38</span>
+                <span class="q-text">[Question 38 text — replace with actual question from Cambridge IELTS 16 Test 2 Passage 3]</span>
+              </div>
+              <input type="text" class="answer-input" id="q38" placeholder="Your answer" data-q="38" />
+            </div>
+            <div class="q-item">
+              <div class="q-header">
+                <span class="q-num">39</span>
+                <span class="q-text">[Question 39 text — replace with actual question from Cambridge IELTS 16 Test 2 Passage 3]</span>
+              </div>
+              <input type="text" class="answer-input" id="q39" placeholder="Your answer" data-q="39" />
+            </div>
+            <div class="q-item">
+              <div class="q-header">
+                <span class="q-num">40</span>
+                <span class="q-text">[Question 40 text — replace with actual question from Cambridge IELTS 16 Test 2 Passage 3]</span>
+              </div>
+              <input type="text" class="answer-input" id="q40" placeholder="Your answer" data-q="40" />
+            </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="submit-bar">
+    <div class="progress-info">Answered: <span id="answered-count">0</span> / 40</div>
+    <button class="btn-submit" onclick="submitTest()">Submit Answers</button>
+  </div>
+
+  <div class="result-toast" id="result-toast"></div>
+
+  <script>
+    // ─── Timer ───
+    let seconds = 60 * 60, timerInterval;
+    const timerEl = document.getElementById('timer');
+    function fmt(s) {
+      const m = Math.floor(s / 60), ss = s % 60;
+      return String(m).padStart(2,'0') + ':' + String(ss).padStart(2,'0');
+    }
+    timerEl.textContent = fmt(seconds);
+    timerInterval = setInterval(() => {
+      seconds--;
+      timerEl.textContent = fmt(seconds);
+      if (seconds <= 300) timerEl.classList.add('warning');
+      if (seconds <= 0) { clearInterval(timerInterval); submitTest(); }
     }, 1000);
 
-    function submitAnswers() {
-        const answers = {};
-        for (let i = 1; i <= 40; i++) answers[i] = document.getElementById('ans-' + i)?.value || '';
-        localStorage.setItem('cambridge_16_test2_reading', JSON.stringify(answers));
-        document.getElementById('result-box').style.display = 'block';
-        window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
-    }
+    // ─── Part tabs ───
+    document.querySelectorAll('.part-tab').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const part = btn.dataset.part;
+        document.querySelectorAll('.part-tab').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        document.querySelectorAll('.passage-panel').forEach(p => {
+          p.classList.toggle('active', p.dataset.part === part);
+        });
+        document.querySelectorAll('.questions-panel').forEach(p => {
+          p.classList.toggle('active', p.dataset.part === part);
+        });
+        // scroll both panels back to top
+        document.querySelector('.left-panel').scrollTop = 0;
+        document.querySelector('.right-panel').scrollTop = 0;
+      });
+    });
 
-    const saved = localStorage.getItem('cambridge_16_test2_reading');
-    if (saved) {
-        const ans = JSON.parse(saved);
-        for (const [k,v] of Object.entries(ans)) { const el = document.getElementById('ans-'+k); if(el) el.value=v; }
+    // ─── Answer progress counter ───
+    const allInputs = document.querySelectorAll('.answer-input');
+    function updateCount() {
+      let filled = 0;
+      allInputs.forEach(i => { if (i.value.trim()) filled++; });
+      document.getElementById('answered-count').textContent = filled;
     }
-</script>
-</body>
-</html>
+    allInputs.forEach(i => i.addEventListener('input', updateCount));
+
+    // ─── Submit ───
+    function submitTest() {
+      clearInterval(timerInterval);
+      const answers = {};
+      allInputs.forEach(i => { answers['Q' + i.dataset.q] = i.value.trim(); });
+      const filled = Object.values(answers).filter(v => v).length;
+      const toast = document.getElementById('result-toast');
+      toast.textContent = `✓ Submitted! ${filled}/40 answers filled.`;
+      toast.style.display = 'block';
+      setTimeout(() => toast.style.display = 'none', 4000);
+      console.log('Answers:', JSON.stringify(answers));
+    }
+  </script>
+  </body>
+  </html>
