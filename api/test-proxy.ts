@@ -8,7 +8,6 @@ const ALLOWED_PREFIXES = [
 const HIDE_CSS = `
 <base href="https://engnovate.com/">
 <style>
-  /* Remove branding */
   .announcement-bar,
   #masthead,
   .site-header,
@@ -25,17 +24,23 @@ const HIDE_CSS = `
   .sidebar,
   #secondary,
   .widget-area,
+  [class*="upsell"],
+  [class*="promo-"],
+  [class*="upgrade-"],
+  [class*="premium-cta"],
+  [class*="cta-box"],
+  [class*="tip-bar"],
+  [class*="-tip-bar"],
+  [class*="shortcut-tip"],
+  [class*="fullscreen-tip"],
   .ast-pagination-section,
   .wp-block-group.is-layout-constrained > .alignfull:first-child { display: none !important; }
 
-  /* Remove top spacing left by hidden header */
   html { scroll-padding-top: 0 !important; }
   body { margin-top: 0 !important; padding-top: 0 !important; }
   #page, .hfeed { padding-top: 0 !important; margin-top: 0 !important; }
   #content, .ast-container, .site-content { padding-top: 0 !important; margin-top: 0 !important; }
   .ast-article-single, .single-post, .entry-content-wrap { margin-top: 0 !important; }
-
-  /* Widen the content since sidebar is gone */
   #primary, .content-area { width: 100% !important; max-width: 100% !important; flex: none !important; }
 </style>`;
 
@@ -43,7 +48,6 @@ const CLEAN_SCRIPT = `
 <script>
 (function() {
   function clean() {
-    // Remove header, footer, banners
     ['.announcement-bar','#masthead','header.site-header',
      '.site-footer','footer','#wpadminbar','.entry-header',
      '.ast-breadcrumbs-wrapper'].forEach(function(sel) {
@@ -51,7 +55,6 @@ const CLEAN_SCRIPT = `
       if (el) el.remove();
     });
 
-    // Remove "Engnovate" text nodes (not inside script/style)
     var walker = document.createTreeWalker(document.body, NodeFilter.SHOW_TEXT);
     var nodes = [];
     while (walker.nextNode()) nodes.push(walker.currentNode);
@@ -64,7 +67,6 @@ const CLEAN_SCRIPT = `
       }
     });
 
-    // Remove engnovate links (keep resource links intact)
     document.querySelectorAll('a[href*="engnovate.com"]').forEach(function(a) {
       if (!a.href.match(/\\.(css|js|png|jpg|svg|woff|gif)/)) {
         a.removeAttribute('href');
@@ -73,22 +75,28 @@ const CLEAN_SCRIPT = `
       }
     });
 
-    // Remove the logo image
     document.querySelectorAll('img[alt*="ngnovate"], img[src*="engnovate-text-logo"]').forEach(function(img) {
       img.remove();
     });
 
-    // Fix page title
     if (document.title && /engnovate/i.test(document.title)) {
       document.title = document.title.replace(/[\\s\\-–|]*Engnovate[^)"]*/gi, '').trim();
     }
+
+    document.querySelectorAll('div, p, section, aside, article').forEach(function(el) {
+      var text = (el.textContent || '').trim();
+      if ((text.startsWith('Tip:') && text.includes('F11')) ||
+          text.includes('Skyrocket your IELTS') ||
+          text.includes('Check it out')) {
+        if (el.tagName !== 'BODY' && el.tagName !== 'HTML') el.remove();
+      }
+    });
   }
   if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', clean);
   } else {
     clean();
   }
-  // Run again after a short delay in case of dynamic content
   setTimeout(clean, 800);
 })();
 </script>`;
@@ -121,13 +129,8 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 
     let html = await upstream.text();
 
-    // Inject base tag + hide CSS right after <head>
     html = html.replace(/<head([^>]*)>/i, `<head$1>${HIDE_CSS}`);
-
-    // Inject clean script right before </body>
     html = html.replace(/<\/body>/i, `${CLEAN_SCRIPT}</body>`);
-
-    // Remove the announcement bar from raw HTML too (server-side)
     html = html.replace(
       /<div[^>]+class="[^"]*announcement-bar[^"]*"[^>]*>[\s\S]*?<\/div>/gi,
       ""

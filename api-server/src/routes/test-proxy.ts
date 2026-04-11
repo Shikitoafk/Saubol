@@ -25,7 +25,16 @@ const HIDE_CSS = `
   .related-posts,
   .sidebar,
   #secondary,
-  .widget-area { display: none !important; }
+  .widget-area,
+  [class*="upsell"],
+  [class*="promo-"],
+  [class*="upgrade-"],
+  [class*="premium-cta"],
+  [class*="cta-box"],
+  [class*="tip-bar"],
+  [class*="-tip-bar"],
+  [class*="shortcut-tip"],
+  [class*="fullscreen-tip"] { display: none !important; }
 
   html { scroll-padding-top: 0 !important; }
   body { margin-top: 0 !important; padding-top: 0 !important; }
@@ -68,6 +77,14 @@ const CLEAN_SCRIPT = `
     if (document.title && /engnovate/i.test(document.title)) {
       document.title = document.title.replace(/[\\s\\-\\u2013|]*Engnovate[^)"\\s]*/gi, '').trim();
     }
+    document.querySelectorAll('div, p, section, aside, article').forEach(function(el) {
+      var text = (el.textContent || '').trim();
+      if ((text.startsWith('Tip:') && text.includes('F11')) ||
+          text.includes('Skyrocket your IELTS') ||
+          text.includes('Check it out')) {
+        if (el.tagName !== 'BODY' && el.tagName !== 'HTML') el.remove();
+      }
+    });
   }
   if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', clean);

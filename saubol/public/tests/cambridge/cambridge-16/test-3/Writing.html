@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cambridge IELTS 16 — Test 3 Writing</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: Arial, sans-serif; background: #0f172a; color: #e2e8f0; line-height: 1.5; padding-bottom: 100px; }
+        .header {
+            background: #1e293b;
+            border-bottom: 2px solid #7c3aed;
+            padding: 12px 24px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: fixed;
+            top: 0; left: 0; right: 0;
+            z-index: 100;
+            height: 60px;
+        }
+        .header-title { font-size: 16px; font-weight: 700; color: #a78bfa; }
+        .timer { font-size: 18px; font-weight: 700; color: #f87171; background: #2d1b1b; padding: 6px 14px; border-radius: 8px; border: 1px solid #7f1d1d; }
+        .timer.warning { animation: pulse 1s infinite; }
+        @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:.6} }
+        .main { max-width: 860px; margin: 80px auto 0; padding: 24px; }
+        .page-title { font-size: 22px; font-weight: 700; color: #f1f5f9; margin-bottom: 6px; }
+        .page-subtitle { font-size: 14px; color: #64748b; margin-bottom: 24px; }
+        .task-card { background: #1e293b; border: 1px solid #334155; border-radius: 12px; overflow: hidden; margin-bottom: 24px; }
+        .task-header { background: #7c3aed; color: #fff; padding: 12px 18px; display: flex; justify-content: space-between; align-items: center; }
+        .task-title { font-weight: 700; font-size: 15px; }
+        .task-meta { font-size: 12px; opacity: 0.85; }
+        .task-body { padding: 18px; }
+        .task-prompt { background: #2d1f48; border-left: 4px solid #7c3aed; padding: 14px; border-radius: 0 8px 8px 0; margin-bottom: 14px; font-size: 14px; color: #c4b5fd; }
+        .task-prompt strong { display: block; font-size: 13px; color: #a78bfa; margin-bottom: 6px; }
+        .writing-area { width: 100%; min-height: 220px; padding: 14px; border: 1.5px solid #334155; border-radius: 8px; font-size: 14px; font-family: inherit; resize: vertical; outline: none; line-height: 1.7; background: #0f172a; color: #e2e8f0; }
+        .writing-area:focus { border-color: #7c3aed; }
+        .word-count { font-size: 12px; color: #475569; text-align: right; margin-top: 6px; }
+        .word-count span { font-weight: 700; color: #a78bfa; }
+        .btn-submit { display: block; width: 100%; padding: 14px; background: #7c3aed; color: #fff; border: none; border-radius: 10px; font-size: 16px; font-weight: 700; cursor: pointer; transition: background 0.2s; }
+        .btn-submit:hover { background: #6d28d9; }
+        .result-box { display: none; background: #1e1b36; border: 1px solid #6d28d9; border-radius: 10px; padding: 20px; text-align: center; margin-top: 16px; }
+        .result-box h3 { font-size: 18px; color: #a78bfa; margin-bottom: 8px; }
+        .result-box p { color: #94a3b8; }
+    </style>
+</head>
+<body>
+<div class="header">
+    <div class="header-title">✍️ Cambridge IELTS 16 · Test 3 — Writing</div>
+    <div style="display:flex;align-items:center;gap:20px">
+        <div class="timer" id="timer">60:00</div>
+    </div>
+</div>
+
+<div class="main">
+    <div class="page-title">Cambridge IELTS 16 — Test 3</div>
+    <div class="page-subtitle">IELTS Academic Writing Test · 2 Tasks · 60 Minutes</div>
+
+    <div class="task-card">
+        <div class="task-header">
+            <span class="task-title">Task 1</span>
+            <span class="task-meta">Minimum 150 words · Suggested: 20 minutes</span>
+        </div>
+        <div class="task-body">
+            <div class="task-prompt">
+                <strong>📌 Instructions from Cambridge IELTS 16 — Test 3:</strong>
+                Open your Cambridge IELTS 16 book, go to Test 3 Writing Task 1 and read the question carefully. Write your response below (at least 150 words).
+            </div>
+            <textarea class="writing-area" id="task1" placeholder="Write your Task 1 response here..." oninput="countWords('task1', 'wc1')"></textarea>
+            <div class="word-count">Word count: <span id="wc1">0</span></div>
+        </div>
+    </div>
+
+    <div class="task-card">
+        <div class="task-header">
+            <span class="task-title">Task 2</span>
+            <span class="task-meta">Minimum 250 words · Suggested: 40 minutes</span>
+        </div>
+        <div class="task-body">
+            <div class="task-prompt">
+                <strong>📌 Instructions from Cambridge IELTS 16 — Test 3:</strong>
+                Open your Cambridge IELTS 16 book, go to Test 3 Writing Task 2 and read the essay question carefully. Write your response below (at least 250 words).
+            </div>
+            <textarea class="writing-area" id="task2" placeholder="Write your Task 2 essay here..." oninput="countWords('task2', 'wc2')"></textarea>
+            <div class="word-count">Word count: <span id="wc2">0</span></div>
+        </div>
+    </div>
+
+    <button class="btn-submit" onclick="submitWriting()">Submit Writing</button>
+    <div class="result-box" id="result-box">
+        <h3>✅ Writing Saved</h3>
+        <p>Your writing tasks have been saved. Review model answers in Cambridge IELTS 16 for self-assessment.</p>
+    </div>
+</div>
+
+<script>
+    let timeLeft = 60 * 60;
+    const timerEl = document.getElementById('timer');
+    setInterval(() => {
+        timeLeft--;
+        const m = Math.floor(timeLeft/60), s = timeLeft%60;
+        timerEl.textContent = String(m).padStart(2,'0')+':'+String(s).padStart(2,'0');
+        if (timeLeft <= 600) timerEl.classList.add('warning');
+    }, 1000);
+
+    function countWords(id, countId) {
+        const text = document.getElementById(id).value.trim();
+        const words = text ? text.split(/\s+/).length : 0;
+        document.getElementById(countId).textContent = words;
+    }
+
+    function submitWriting() {
+        const data = { task1: document.getElementById('task1').value, task2: document.getElementById('task2').value };
+        localStorage.setItem('cambridge_16_test3_writing', JSON.stringify(data));
+        document.getElementById('result-box').style.display = 'block';
+        window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
+    }
+
+    const saved = localStorage.getItem('cambridge_16_test3_writing');
+    if (saved) {
+        const d = JSON.parse(saved);
+        if (d.task1) { document.getElementById('task1').value = d.task1; countWords('task1','wc1'); }
+        if (d.task2) { document.getElementById('task2').value = d.task2; countWords('task2','wc2'); }
+    }
+</script>
+</body>
+</html>
