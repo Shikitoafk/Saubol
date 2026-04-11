@@ -22,13 +22,18 @@ const IELTSTestViewer = () => {
 
   let testUrl: string;
 
-  const cambridgeMatch = /^cambridge-ielts-(\d+)-academic-test-([1-4])-(reading|listening)$/.exec(slug);
-  if (cambridgeMatch) {
-    const book = cambridgeMatch[1];
-    const testNum = cambridgeMatch[2];
-    const skill = cambridgeMatch[3];
-    const file = skill === "reading" ? "Reading.html" : "Listening.html";
-    testUrl = `/tests/cambridge/cambridge-ielts-${book}-academic/test-${testNum}/${file}`;
+  if (slug.startsWith("cambridge-")) {
+    // e.g. "cambridge-16-test-1-listening" → /tests/cambridge/cambridge-16/test-1/Listening.html
+    const parts = slug.split("-"); // ["cambridge","16","test","1","listening"]
+    const bookNum = parts[1];
+    const testNum = parts[3];
+    const skill = parts[4]; // "reading" | "listening" | "writing"
+    const fileMap: Record<string, string> = {
+      reading: "Reading.html",
+      listening: "Listening.html",
+      writing: "Writing.html",
+    };
+    testUrl = `/tests/cambridge/cambridge-${bookNum}/test-${testNum}/${fileMap[skill] ?? "Listening.html"}`;
   } else if (slug.startsWith("mock-")) {
     // e.g. "mock-25-reading" → /tests/mock-tests/mock-25/Reading.html
     const parts = slug.split("-"); // ["mock","25","reading"]

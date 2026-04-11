@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import {
   BookOpen,
   Headphones,
@@ -23,7 +24,6 @@ import {
   BreadcrumbPage,
   BreadcrumbSeparator,
 } from "@/components/ui/breadcrumb";
-import { useNavigate } from "react-router-dom";
 
 type Skill = "reading" | "listening" | "writing" | "speaking";
 type TestType = "predictions" | "cambridge";
@@ -50,9 +50,6 @@ const testTypes: { id: TestType; icon: typeof ClipboardList; title: string; desc
   { id: "predictions", icon: ClipboardList, title: "Prediction Tests", description: "Based on recent exam patterns" },
   { id: "cambridge", icon: GraduationCap, title: "Cambridge Tests", description: "Official Cambridge IELTS books 1–19" },
 ];
-
-/** Cambridge IELTS Academic — books with full Reading + Listening shells */
-const CAMBRIDGE_ACADEMIC_BOOKS = [19, 18, 17, 16, 15, 14, 13, 12, 11, 10] as const;
 
 const listeningPredictionTests: TestItem[] = [
   { id: "L1",    name: "Full Listening Test 1",         topic: "Full Listening Practice", difficulty: "Hard", questions: 40, time: "40 min", slug: "full-listening-1" },
@@ -419,22 +416,11 @@ const IELTSPrep = () => {
 
     if (selectedSkill === "reading" && selectedType === "predictions") {
       setTests(readingPredictionTests);
-      setLoading(false);
-      setError(null);
       return;
     }
 
     if (selectedSkill === "listening" && selectedType === "predictions") {
       setTests(listeningPredictionTests);
-      setLoading(false);
-      setError(null);
-      return;
-    }
-
-    if (selectedType === "cambridge") {
-      setTests([]);
-      setLoading(false);
-      setError(null);
       return;
     }
 
@@ -537,6 +523,70 @@ const IELTSPrep = () => {
                   </button>
                 ))}
               </div>
+
+              <div className="mt-12">
+                <h2 className="text-2xl font-bold text-foreground mb-1">Mock Tests</h2>
+                <p className="text-sm text-muted-foreground mb-6">Full simulation tests covering Reading, Listening and Writing</p>
+                <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
+                  {[25, 26, 27, 28].map((num) => (
+                    <div key={num} className="flex flex-col rounded-xl border bg-card p-6 shadow-sm">
+                      <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-lg bg-primary/10">
+                        <GraduationCap className="h-6 w-6 text-primary" />
+                      </div>
+                      <h3 className="text-lg font-semibold text-card-foreground">Mock Test {num}</h3>
+                      <p className="mt-1 text-sm text-muted-foreground flex-1">Full simulation — Reading, Listening & Writing</p>
+                      <div className="mt-5 flex flex-col gap-2">
+                        <Button size="sm" variant="outline" className="justify-start gap-2" onClick={() => nav(`/ielts/test/mock-${num}-reading`)}>
+                          <BookOpen className="h-4 w-4" /> Reading
+                        </Button>
+                        <Button size="sm" variant="outline" className="justify-start gap-2" onClick={() => nav(`/ielts/test/mock-${num}-listening`)}>
+                          <Headphones className="h-4 w-4" /> Listening
+                        </Button>
+                        <Button size="sm" variant="outline" className="justify-start gap-2" onClick={() => nav(`/ielts/test/mock-${num}-writing`)}>
+                          <PenTool className="h-4 w-4" /> Writing
+                        </Button>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              {/* Cambridge Tests Section */}
+              <div className="mt-12">
+                <h2 className="text-2xl font-bold text-foreground mb-1">Cambridge Tests</h2>
+                <p className="text-sm text-muted-foreground mb-6">Official Cambridge IELTS books — full Reading, Listening & Writing tests</p>
+
+                <div className="mb-6">
+                  <div className="flex items-center gap-3 mb-4">
+                    <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-blue-100">
+                      <BookOpen className="h-4 w-4 text-blue-600" />
+                    </div>
+                    <h3 className="text-lg font-semibold text-foreground">Cambridge IELTS 16</h3>
+                  </div>
+                  <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
+                    {[1, 2, 3, 4].map((testNum) => (
+                      <div key={testNum} className="flex flex-col rounded-xl border bg-card p-6 shadow-sm hover:shadow-md transition-shadow">
+                        <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-lg bg-blue-50">
+                          <GraduationCap className="h-6 w-6 text-blue-600" />
+                        </div>
+                        <h3 className="text-lg font-semibold text-card-foreground">Test {testNum}</h3>
+                        <p className="mt-1 text-sm text-muted-foreground flex-1">Cambridge IELTS 16 · Academic</p>
+                        <div className="mt-5 flex flex-col gap-2">
+                          <Button size="sm" variant="outline" className="justify-start gap-2" onClick={() => nav(`/ielts/test/cambridge-16-test-${testNum}-reading`)}>
+                            <BookOpen className="h-4 w-4" /> Reading
+                          </Button>
+                          <Button size="sm" variant="outline" className="justify-start gap-2" onClick={() => nav(`/ielts/test/cambridge-16-test-${testNum}-listening`)}>
+                            <Headphones className="h-4 w-4" /> Listening
+                          </Button>
+                          <Button size="sm" variant="outline" className="justify-start gap-2" onClick={() => nav(`/ielts/test/cambridge-16-test-${testNum}-writing`)}>
+                            <PenTool className="h-4 w-4" /> Writing
+                          </Button>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              </div>
             </>
           )}
 
@@ -561,63 +611,7 @@ const IELTSPrep = () => {
             </div>
           )}
 
-          {level === 3 && selectedType === "cambridge" && (
-            <div className="mt-6 space-y-10">
-              {selectedSkill === "reading" || selectedSkill === "listening" ? (
-                CAMBRIDGE_ACADEMIC_BOOKS.map((book) => (
-                  <div key={book}>
-                    <h2 className="mb-4 text-lg font-semibold text-foreground border-b border-border pb-2">
-                      Cambridge IELTS {book} Academic
-                    </h2>
-                    <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-                      {([1, 2, 3, 4] as const).map((testNum) => (
-                        <div
-                          key={testNum}
-                          className="flex flex-col rounded-xl border bg-card p-5 shadow-sm transition-all hover:border-primary/30 hover:shadow-md"
-                        >
-                          <div className="text-sm font-medium text-muted-foreground">Full test</div>
-                          <h3 className="mt-1 text-base font-semibold text-card-foreground">Test {testNum}</h3>
-                          <p className="mt-1 text-xs text-muted-foreground">40 questions each paper</p>
-                          <div className="mt-4 flex flex-col gap-2 sm:flex-row">
-                            <Button
-                              size="sm"
-                              className="gap-1.5 flex-1"
-                              onClick={() =>
-                                nav(`/ielts/test/cambridge-ielts-${book}-academic-test-${testNum}-reading`)
-                              }
-                            >
-                              <BookOpen className="h-4 w-4 shrink-0" />
-                              Reading
-                            </Button>
-                            <Button
-                              size="sm"
-                              variant="outline"
-                              className="gap-1.5 flex-1"
-                              onClick={() =>
-                                nav(`/ielts/test/cambridge-ielts-${book}-academic-test-${testNum}-listening`)
-                              }
-                            >
-                              <Headphones className="h-4 w-4 shrink-0" />
-                              Listening
-                            </Button>
-                          </div>
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-                ))
-              ) : (
-                <div className="flex flex-col items-center justify-center rounded-xl border border-dashed bg-muted/30 py-16 text-center text-muted-foreground">
-                  <GraduationCap className="h-10 w-10 mb-3 opacity-60" />
-                  <p className="max-w-md text-sm">
-                    Cambridge practice tests in this section are set up for Reading and Listening. Choose Reading or Listening above, then open Cambridge Tests again.
-                  </p>
-                </div>
-              )}
-            </div>
-          )}
-
-          {level === 3 && selectedType !== "cambridge" && (
+          {level === 3 && (
             <div className="mt-4">
               {loading && (
                 <div className="flex flex-col items-center justify-center py-20 text-muted-foreground">

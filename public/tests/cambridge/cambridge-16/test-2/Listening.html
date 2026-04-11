@@ -1,0 +1,436 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cambridge IELTS 16 — Test 2 Listening</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: Arial, sans-serif; background: #fff; line-height: 1.5; padding-bottom: 100px; }
+
+        .header {
+            background: #fff;
+            border-bottom: 2px solid #1a56db;
+            padding: 12px 24px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: fixed;
+            top: 0; left: 0; right: 0;
+            z-index: 100;
+            height: 60px;
+        }
+        .header-title { font-size: 16px; font-weight: 700; color: #1a56db; }
+        .header-right { display: flex; align-items: center; gap: 20px; }
+        .timer { font-size: 18px; font-weight: 700; color: #dc2626; background: #fef2f2; padding: 6px 14px; border-radius: 8px; border: 1px solid #fca5a5; }
+        .timer.warning { animation: pulse 1s infinite; }
+        @keyframes pulse { 0%,100% { opacity: 1; } 50% { opacity: 0.6; } }
+
+        .main { margin-top: 70px; max-width: 900px; margin-left: auto; margin-right: auto; padding: 24px; }
+
+        .page-title { font-size: 22px; font-weight: 700; color: #111; margin-bottom: 6px; }
+        .page-subtitle { font-size: 14px; color: #6b7280; margin-bottom: 24px; }
+
+        /* Audio Player */
+        .audio-section { background: #f0f9ff; border: 1px solid #bae6fd; border-radius: 12px; padding: 20px; margin-bottom: 28px; }
+        .audio-section h2 { font-size: 15px; font-weight: 700; color: #0369a1; margin-bottom: 14px; display: flex; align-items: center; gap: 8px; }
+        .parts-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; }
+        @media (max-width: 600px) { .parts-grid { grid-template-columns: 1fr; } }
+        .part-card {
+            background: #fff;
+            border: 2px solid #e0e7ff;
+            border-radius: 10px;
+            padding: 12px 14px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .part-card:hover { border-color: #1a56db; }
+        .part-card.active { border-color: #1a56db; background: #eff6ff; }
+        .part-card.done { border-color: #16a34a; background: #f0fdf4; }
+        .part-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
+        .part-label { font-weight: 700; font-size: 13px; color: #374151; }
+        .part-qs { font-size: 12px; color: #6b7280; background: #f3f4f6; padding: 2px 8px; border-radius: 20px; }
+        .part-status { font-size: 11px; color: #6b7280; }
+        .part-card.active .part-status { color: #1d4ed8; }
+        .part-card.done .part-status { color: #16a34a; }
+        audio { width: 100%; margin-top: 6px; height: 36px; }
+        .instructions { font-size: 13px; color: #374151; background: #fef3c7; border: 1px solid #fde68a; border-radius: 8px; padding: 10px 14px; margin-top: 12px; }
+
+        /* Answer Sheet */
+        .answer-sheet { background: #fff; border: 1px solid #e5e7eb; border-radius: 12px; overflow: hidden; margin-bottom: 24px; }
+        .section-header {
+            background: #1a56db;
+            color: #fff;
+            padding: 10px 18px;
+            font-weight: 700;
+            font-size: 14px;
+            display: flex;
+            justify-content: space-between;
+        }
+        .answers-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 10px; padding: 16px; }
+        .answer-row { display: flex; align-items: center; gap: 8px; }
+        .q-num { width: 28px; height: 28px; background: #1a56db; color: #fff; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 700; flex-shrink: 0; }
+        .answer-input {
+            flex: 1;
+            border: 1.5px solid #d1d5db;
+            border-radius: 6px;
+            padding: 6px 10px;
+            font-size: 13px;
+            outline: none;
+            transition: border-color 0.2s;
+        }
+        .answer-input:focus { border-color: #1a56db; }
+
+        .btn-submit {
+            display: block;
+            width: 100%;
+            padding: 14px;
+            background: #1a56db;
+            color: #fff;
+            border: none;
+            border-radius: 10px;
+            font-size: 16px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: background 0.2s;
+            margin-top: 8px;
+        }
+        .btn-submit:hover { background: #1e40af; }
+
+        .result-box { display: none; background: #f0fdf4; border: 1px solid #86efac; border-radius: 10px; padding: 20px; text-align: center; margin-top: 16px; }
+        .result-box h3 { font-size: 18px; color: #166534; margin-bottom: 8px; }
+        .result-box p { color: #374151; font-size: 14px; }
+    </style>
+    <style>
+        #login-screen { display: none !important; }
+        .candidate-screen { display: none !important; }
+        .start-screen { display: flex !important; }
+    </style>
+</head>
+<body>
+
+<div class="header">
+    <div class="header-title">📚 Cambridge IELTS 16 · Test 2 — Listening</div>
+    <div class="header-right">
+        <div class="timer" id="timer">40:00</div>
+    </div>
+</div>
+
+<div class="main" style="margin-top:80px">
+    <div class="page-title">Cambridge IELTS 16 — Test 2</div>
+    <div class="page-subtitle">IELTS Listening Test · 40 Questions · 40 Minutes</div>
+
+    <!-- Audio Player -->
+    <div class="audio-section">
+        <h2>🎧 Audio Sections</h2>
+        <div class="instructions">Listen to each section and answer Questions 1–40. You will hear each section ONCE. Play sections in order.</div>
+        <div class="parts-grid" style="margin-top:14px">
+            <div class="part-card" id="part-card-1" onclick="selectPart(1)">
+                <div class="part-header">
+                    <span class="part-label">Section 1</span>
+                    <span class="part-qs">Q1–10</span>
+                </div>
+                <div class="part-status" id="part-status-1">Click to load audio</div>
+                <audio id="audio-1" src="audio-part-1.mp3" onended="onPartEnd(1)" onplay="onPartPlay(1)"></audio>
+            </div>
+            <div class="part-card" id="part-card-2" onclick="selectPart(2)">
+                <div class="part-header">
+                    <span class="part-label">Section 2</span>
+                    <span class="part-qs">Q11–20</span>
+                </div>
+                <div class="part-status" id="part-status-2">Click to load audio</div>
+                <audio id="audio-2" src="audio-part-2.mp3" onended="onPartEnd(2)" onplay="onPartPlay(2)"></audio>
+            </div>
+            <div class="part-card" id="part-card-3" onclick="selectPart(3)">
+                <div class="part-header">
+                    <span class="part-label">Section 3</span>
+                    <span class="part-qs">Q21–30</span>
+                </div>
+                <div class="part-status" id="part-status-3">Click to load audio</div>
+                <audio id="audio-3" src="audio-part-3.mp3" onended="onPartEnd(3)" onplay="onPartPlay(3)"></audio>
+            </div>
+            <div class="part-card" id="part-card-4" onclick="selectPart(4)">
+                <div class="part-header">
+                    <span class="part-label">Section 4</span>
+                    <span class="part-qs">Q31–40</span>
+                </div>
+                <div class="part-status" id="part-status-4">Click to load audio</div>
+                <audio id="audio-4" src="audio-part-4.mp3" onended="onPartEnd(4)" onplay="onPartPlay(4)"></audio>
+            </div>
+        </div>
+    </div>
+
+    <!-- Answer Sheet -->
+    
+    <div class="answer-sheet">
+        <div class="section-header">
+            <span>Section 1 — Questions 1–10</span>
+        </div>
+        <div class="answers-grid">
+            <div class="answer-row">
+                <div class="q-num">1</div>
+                <input class="answer-input" type="text" id="ans-1" placeholder="Answer 1" autocomplete="off">
+            </div>
+            <div class="answer-row">
+                <div class="q-num">2</div>
+                <input class="answer-input" type="text" id="ans-2" placeholder="Answer 2" autocomplete="off">
+            </div>
+            <div class="answer-row">
+                <div class="q-num">3</div>
+                <input class="answer-input" type="text" id="ans-3" placeholder="Answer 3" autocomplete="off">
+            </div>
+            <div class="answer-row">
+                <div class="q-num">4</div>
+                <input class="answer-input" type="text" id="ans-4" placeholder="Answer 4" autocomplete="off">
+            </div>
+            <div class="answer-row">
+                <div class="q-num">5</div>
+                <input class="answer-input" type="text" id="ans-5" placeholder="Answer 5" autocomplete="off">
+            </div>
+            <div class="answer-row">
+                <div class="q-num">6</div>
+                <input class="answer-input" type="text" id="ans-6" placeholder="Answer 6" autocomplete="off">
+            </div>
+            <div class="answer-row">
+                <div class="q-num">7</div>
+                <input class="answer-input" type="text" id="ans-7" placeholder="Answer 7" autocomplete="off">
+            </div>
+            <div class="answer-row">
+                <div class="q-num">8</div>
+                <input class="answer-input" type="text" id="ans-8" placeholder="Answer 8" autocomplete="off">
+            </div>
+            <div class="answer-row">
+                <div class="q-num">9</div>
+                <input class="answer-input" type="text" id="ans-9" placeholder="Answer 9" autocomplete="off">
+            </div>
+            <div class="answer-row">
+                <div class="q-num">10</div>
+                <input class="answer-input" type="text" id="ans-10" placeholder="Answer 10" autocomplete="off">
+            </div>
+        </div>
+    </div>
+    
+    <div class="answer-sheet">
+        <div class="section-header">
+            <span>Section 2 — Questions 11–20</span>
+        </div>
+        <div class="answers-grid">
+            <div class="answer-row">
+                <div class="q-num">11</div>
+                <input class="answer-input" type="text" id="ans-11" placeholder="Answer 11" autocomplete="off">
+            </div>
+            <div class="answer-row">
+                <div class="q-num">12</div>
+                <input class="answer-input" type="text" id="ans-12" placeholder="Answer 12" autocomplete="off">
+            </div>
+            <div class="answer-row">
+                <div class="q-num">13</div>
+                <input class="answer-input" type="text" id="ans-13" placeholder="Answer 13" autocomplete="off">
+            </div>
+            <div class="answer-row">
+                <div class="q-num">14</div>
+                <input class="answer-input" type="text" id="ans-14" placeholder="Answer 14" autocomplete="off">
+            </div>
+            <div class="answer-row">
+                <div class="q-num">15</div>
+                <input class="answer-input" type="text" id="ans-15" placeholder="Answer 15" autocomplete="off">
+            </div>
+            <div class="answer-row">
+                <div class="q-num">16</div>
+                <input class="answer-input" type="text" id="ans-16" placeholder="Answer 16" autocomplete="off">
+            </div>
+            <div class="answer-row">
+                <div class="q-num">17</div>
+                <input class="answer-input" type="text" id="ans-17" placeholder="Answer 17" autocomplete="off">
+            </div>
+            <div class="answer-row">
+                <div class="q-num">18</div>
+                <input class="answer-input" type="text" id="ans-18" placeholder="Answer 18" autocomplete="off">
+            </div>
+            <div class="answer-row">
+                <div class="q-num">19</div>
+                <input class="answer-input" type="text" id="ans-19" placeholder="Answer 19" autocomplete="off">
+            </div>
+            <div class="answer-row">
+                <div class="q-num">20</div>
+                <input class="answer-input" type="text" id="ans-20" placeholder="Answer 20" autocomplete="off">
+            </div>
+        </div>
+    </div>
+    
+    <div class="answer-sheet">
+        <div class="section-header">
+            <span>Section 3 — Questions 21–30</span>
+        </div>
+        <div class="answers-grid">
+            <div class="answer-row">
+                <div class="q-num">21</div>
+                <input class="answer-input" type="text" id="ans-21" placeholder="Answer 21" autocomplete="off">
+            </div>
+            <div class="answer-row">
+                <div class="q-num">22</div>
+                <input class="answer-input" type="text" id="ans-22" placeholder="Answer 22" autocomplete="off">
+            </div>
+            <div class="answer-row">
+                <div class="q-num">23</div>
+                <input class="answer-input" type="text" id="ans-23" placeholder="Answer 23" autocomplete="off">
+            </div>
+            <div class="answer-row">
+                <div class="q-num">24</div>
+                <input class="answer-input" type="text" id="ans-24" placeholder="Answer 24" autocomplete="off">
+            </div>
+            <div class="answer-row">
+                <div class="q-num">25</div>
+                <input class="answer-input" type="text" id="ans-25" placeholder="Answer 25" autocomplete="off">
+            </div>
+            <div class="answer-row">
+                <div class="q-num">26</div>
+                <input class="answer-input" type="text" id="ans-26" placeholder="Answer 26" autocomplete="off">
+            </div>
+            <div class="answer-row">
+                <div class="q-num">27</div>
+                <input class="answer-input" type="text" id="ans-27" placeholder="Answer 27" autocomplete="off">
+            </div>
+            <div class="answer-row">
+                <div class="q-num">28</div>
+                <input class="answer-input" type="text" id="ans-28" placeholder="Answer 28" autocomplete="off">
+            </div>
+            <div class="answer-row">
+                <div class="q-num">29</div>
+                <input class="answer-input" type="text" id="ans-29" placeholder="Answer 29" autocomplete="off">
+            </div>
+            <div class="answer-row">
+                <div class="q-num">30</div>
+                <input class="answer-input" type="text" id="ans-30" placeholder="Answer 30" autocomplete="off">
+            </div>
+        </div>
+    </div>
+    
+    <div class="answer-sheet">
+        <div class="section-header">
+            <span>Section 4 — Questions 31–40</span>
+        </div>
+        <div class="answers-grid">
+            <div class="answer-row">
+                <div class="q-num">31</div>
+                <input class="answer-input" type="text" id="ans-31" placeholder="Answer 31" autocomplete="off">
+            </div>
+            <div class="answer-row">
+                <div class="q-num">32</div>
+                <input class="answer-input" type="text" id="ans-32" placeholder="Answer 32" autocomplete="off">
+            </div>
+            <div class="answer-row">
+                <div class="q-num">33</div>
+                <input class="answer-input" type="text" id="ans-33" placeholder="Answer 33" autocomplete="off">
+            </div>
+            <div class="answer-row">
+                <div class="q-num">34</div>
+                <input class="answer-input" type="text" id="ans-34" placeholder="Answer 34" autocomplete="off">
+            </div>
+            <div class="answer-row">
+                <div class="q-num">35</div>
+                <input class="answer-input" type="text" id="ans-35" placeholder="Answer 35" autocomplete="off">
+            </div>
+            <div class="answer-row">
+                <div class="q-num">36</div>
+                <input class="answer-input" type="text" id="ans-36" placeholder="Answer 36" autocomplete="off">
+            </div>
+            <div class="answer-row">
+                <div class="q-num">37</div>
+                <input class="answer-input" type="text" id="ans-37" placeholder="Answer 37" autocomplete="off">
+            </div>
+            <div class="answer-row">
+                <div class="q-num">38</div>
+                <input class="answer-input" type="text" id="ans-38" placeholder="Answer 38" autocomplete="off">
+            </div>
+            <div class="answer-row">
+                <div class="q-num">39</div>
+                <input class="answer-input" type="text" id="ans-39" placeholder="Answer 39" autocomplete="off">
+            </div>
+            <div class="answer-row">
+                <div class="q-num">40</div>
+                <input class="answer-input" type="text" id="ans-40" placeholder="Answer 40" autocomplete="off">
+            </div>
+        </div>
+    </div>
+
+    <button class="btn-submit" onclick="submitAnswers()">Submit Answers</button>
+    <div class="result-box" id="result-box">
+        <h3>✅ Answers Recorded</h3>
+        <p>Your answers have been saved. Refer to the Cambridge IELTS 16 answer key to check your score.</p>
+    </div>
+</div>
+
+<script>
+    let timeLeft = 40 * 60;
+    let timerInterval = null;
+    let currentPart = null;
+    let timerStarted = false;
+
+    function formatTime(s) {
+        const m = Math.floor(s / 60);
+        const sec = s % 60;
+        return String(m).padStart(2,'0') + ':' + String(sec).padStart(2,'0');
+    }
+
+    function startTimer() {
+        if (timerStarted) return;
+        timerStarted = true;
+        timerInterval = setInterval(() => {
+            timeLeft--;
+            document.getElementById('timer').textContent = formatTime(timeLeft);
+            if (timeLeft <= 300) document.getElementById('timer').classList.add('warning');
+            if (timeLeft <= 0) {
+                clearInterval(timerInterval);
+                submitAnswers();
+            }
+        }, 1000);
+    }
+
+    function selectPart(p) {
+        if (currentPart && currentPart !== p) {
+            const prevAudio = document.getElementById('audio-' + currentPart);
+            prevAudio.pause();
+        }
+        currentPart = p;
+        document.querySelectorAll('.part-card').forEach(c => c.classList.remove('active'));
+        document.getElementById('part-card-' + p).classList.add('active');
+        const audio = document.getElementById('audio-' + p);
+        audio.play();
+        startTimer();
+    }
+
+    function onPartPlay(p) {
+        document.getElementById('part-status-' + p).textContent = '▶ Playing...';
+    }
+
+    function onPartEnd(p) {
+        document.getElementById('part-card-' + p).classList.add('done');
+        document.getElementById('part-status-' + p).textContent = '✓ Completed';
+        if (p < 4) {
+            setTimeout(() => selectPart(p + 1), 1500);
+        }
+    }
+
+    function submitAnswers() {
+        const answers = {};
+        for (let i = 1; i <= 40; i++) {
+            answers[i] = document.getElementById('ans-' + i)?.value || '';
+        }
+        localStorage.setItem('cambridge_16_test2_listening', JSON.stringify(answers));
+        document.getElementById('result-box').style.display = 'block';
+        window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
+    }
+
+    // Restore saved answers
+    const saved = localStorage.getItem('cambridge_16_test2_listening');
+    if (saved) {
+        const ans = JSON.parse(saved);
+        for (const [k, v] of Object.entries(ans)) {
+            const el = document.getElementById('ans-' + k);
+            if (el) el.value = v;
+        }
+    }
+</script>
+</body>
+</html>
