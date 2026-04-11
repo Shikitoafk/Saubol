@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+  <html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cambridge IELTS 16 — Test 1 Listening</title>
+    <style>
+      *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+      html, body { height: 100%; overflow: hidden; font-family: Arial, sans-serif; background: #f5f7fa; }
+      .topbar {
+        height: 48px;
+        background: #fff;
+        border-bottom: 2px solid #1d4ed8;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 0 16px;
+        gap: 12px;
+      }
+      .back-btn {
+        font-size: 13px; font-weight: 600; color: #1d4ed8;
+        text-decoration: none; padding: 5px 12px;
+        border: 1px solid #1d4ed844; border-radius: 6px;
+        background: #1d4ed812; white-space: nowrap;
+        cursor: pointer; flex-shrink: 0;
+      }
+      .back-btn:hover { opacity: .8; }
+      .title {
+        font-size: 14px; font-weight: 700; color: #1e293b;
+        text-align: center; flex: 1;
+      }
+      /* placeholder for symmetry */
+      .spacer { width: 80px; flex-shrink: 0; }
+      .frame-wrap {
+        position: absolute;
+        top: 48px; left: 0; right: 0; bottom: 0;
+      }
+      iframe { width: 100%; height: 100%; border: none; }
+      .loading-msg {
+        position: absolute; top: 50%; left: 50%;
+        transform: translate(-50%, -50%);
+        font-size: 14px; color: #94a3b8; pointer-events: none;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="topbar">
+      <a href="javascript:history.back()" class="back-btn">← Back</a>
+      <div class="title">🎧 Cambridge IELTS 16 · Test 1 — Listening</div>
+      <div class="spacer"></div>
+    </div>
+    <div class="frame-wrap">
+      <div class="loading-msg" id="loading">Loading test…</div>
+      <iframe
+        src="/api/test-proxy?url=https%3A%2F%2Fengnovate.com%2Fielts-listening-tests%2Fcambridge-ielts-16-academic-listening-test-1%2F"
+        onload="document.getElementById('loading').style.display='none'"
+        allowfullscreen
+      ></iframe>
+    </div>
+  </body>
+  </html>
