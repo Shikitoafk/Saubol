@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Reading Passage 1 – Research using twins</title>
+<style>
+  :root{--brand:#2563eb;--ink:#111827;--bg:#f7f7fb;--ok:#16a34a;--bad:#dc2626;--muted:#6b7280}
+  *{box-sizing:border-box}
+  body{margin:0;font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;background:var(--bg);color:#111}
+  .container{display:flex;gap:20px;max-width:1200px;margin:0 auto;padding:20px 20px 96px}
+  .card{background:#fff;border-radius:12px;box-shadow:0 4px 14px rgba(0,0,0,.08);padding:20px;overflow:auto;max-height:90vh}
+  .passage{flex:1}
+  .questions{flex:1}
+  h1{color:var(--ink);border-bottom:2px solid var(--brand);padding-bottom:10px;margin:0 0 14px}
+  h2{color:var(--brand);margin:22px 0 10px}
+  h3{margin:8px 0 0}
+  .muted{color:var(--muted)}
+
+  /* Timer */
+  .timerWrap{position:fixed;top:16px;right:16px;display:flex;align-items:center;gap:8px;z-index:10}
+  .timer{background:var(--brand);color:#fff;padding:10px 14px;border-radius:8px;font-weight:700}
+  .tbtn{border:1px solid #e5e7eb;background:#fff;color:#111;padding:8px 10px;border-radius:8px;cursor:pointer}
+
+  /* Questions */
+  .qsection{margin:14px 0 6px}
+  .qblock{padding:14px;border:1px solid #e5e7eb;border-radius:12px;margin:12px 0}
+  .qhead{font-weight:600;margin-bottom:8px}
+  .options{margin-top:8px}
+  .options label{display:block;margin:6px 0}
+  select,input[type="text"]{padding:8px;border-radius:8px;border:1px solid #e5e7eb;width:100%;max-width:520px}
+  .submit{background:var(--brand);color:#fff;border:0;padding:12px 18px;border-radius:8px;cursor:pointer;font-size:16px;margin-top:16px}
+  .submit:hover{filter:brightness(.95)}
+
+  /* Results */
+  .results{display:none;margin-top:18px;background:#f8f9fa;border-radius:10px;padding:16px}
+  .results ul{list-style:none;padding:0;margin:8px 0 0}
+  .results li{margin:6px 0;padding:8px;border-radius:8px}
+  .results li.ok{background:#ecfdf5;color:#065f46}
+  .results li.bad{background:#fef2f2;color:#991b1b}
+  .results .meta{font-size:13px;color:var(--muted)}
+
+  /* Footer chips */
+  .footerNav{position:fixed;left:0;right:0;bottom:0;background:#fff;border-top:1px solid #e5e7eb;padding:10px 12px;display:flex;flex-wrap:wrap;gap:8px;align-items:center;z-index:9}
+  .chip{border:1px solid #d1d5db;background:#fff;color:#111;padding:6px 10px;border-radius:999px;cursor:pointer;font-size:14px}
+  .chip.answered{border-color:#9ca3af;background:#f3f4f6}
+
+  /* Highlights */
+  .palette{position:fixed;background:#fff;padding:8px;border-radius:8px;box-shadow:0 2px 10px rgba(0,0,0,.12);display:none;z-index:9}
+  .hbtn{background:var(--brand);color:#fff;border:0;padding:6px 10px;border-radius:6px;margin:4px 4px 0 0;cursor:pointer}
+  .highlight{background:yellow}
+
+  .tg{position:fixed;bottom:96px;right:16px;background:#0088cc;color:#fff;border:0;padding:12px 16px;border-radius:9999px;display:flex;align-items:center;gap:8px;cursor:pointer;box-shadow:0 8px 20px rgba(0,136,204,.35)}
+
+  .word-bank{background:#f8f9fa;padding:12px;border-radius:8px;margin:10px 0}
+  .word-bank .words{display:flex;flex-wrap:wrap;gap:8px}
+  .word-bank .word{background:#e5e7eb;padding:4px 8px;border-radius:4px;font-size:14px}
+</style>
+</head>
+<body>
+  <div class="timerWrap">
+    <div class="timer" id="timer">20:00</div>
+    <button class="tbtn" id="pauseBtn">⏸️ Pause</button>
+    <button class="tbtn" id="resumeBtn" disabled>▶️ Resume</button>
+  </div>
+
+  <!-- Highlight palettes -->
+  <div class="palette" id="pPalette">
+    <button class="hbtn" data-color="yellow">Yellow</button>
+    <button class="hbtn" data-color="lightgreen">Green</button>
+    <button class="hbtn" data-color="lightblue">Blue</button>
+    <button class="hbtn" data-color="pink">Pink</button>
+    <button class="hbtn" data-color="orange">Orange</button>
+    <button class="hbtn" id="clearPMarks">Clear</button>
+  </div>
+  <div class="palette" id="qPalette">
+    <button class="hbtn" data-color="yellow">Yellow</button>
+    <button class="hbtn" data-color="lightgreen">Green</button>
+    <button class="hbtn" data-color="lightblue">Blue</button>
+    <button class="hbtn" data-color="pink">Pink</button>
+    <button class="hbtn" data-color="orange">Orange</button>
+    <button class="hbtn" id="clearQMarks">Clear</button>
+  </div>
+
+  <div class="container">
+    <div class="card passage" id="passageCard">
+      <h1 id="title">Reading Passage 1</h1>
+      <div id="subtitle" class="muted">You should spend about 20 minutes on Questions 1–13, which are based on Reading Passage 1 below.</div>
+
+      <div id="passage">
+        <h2>Research using twins</h2>
+
+        <p>To biomedical researchers all over the world, twins offer a precious opportunity to untangle the influence of genes and the environment - of nature and nurture. Because identical twins come from a single fertilized egg that splits into two, they share virtually the same genetic code. Any differences between them - one twin having younger looking skin, for example - must be due to environmental factors such as less time spent in the sun.</p>
+
+        <p>Alternatively, by comparing the experiences of identical twins with those of fraternal twins, who come from separate eggs and share on average half their DNA, researchers can quantify the extent to which our genes affect our lives. If identical twins are more similar to each other with respect to an ailment than fraternal twins are, then vulnerability to the disease must be rooted at least in part in heredity.</p>
+
+        <p>These two lines of research - studying the differences between identical twins to pinpoint the influence of environment, and comparing identical twins with fraternal ones to measure the role of inheritance - have been crucial to understanding the interplay of nature and nurture in determining our personalities, behavior, and vulnerability to disease.</p>
+
+        <p>The idea of using twins to measure the influence of heredity dates back to 1875, when the English scientist Francis Galton first suggested the approach (and coined the phrase 'nature and nurture'). But twin studies took a surprising twist in the 1980s, with the arrival of studies into identical twins who had been separated at birth and reunited as adults. Over two decades 137 sets of twins eventually visited Thomas Bouchard's lab in what became known as the Minnesota Study of Twins Reared Apart. Numerous tests were carried out on the twins, and they were each asked more than 15,000 questions.</p>
+
+        <p>Bouchard and his colleagues used this mountain of data to identify how far twins were affected by their genetic makeup. The key to their approach was a statistical concept called heritability. In broad terms, the heritability of a trait measures the extent to which differences among members of a population can be explained by differences in their genetics. And wherever Bouchard and other scientists looked, it seemed, they found the invisible hand of genetic influence helping to shape our lives.</p>
+
+        <p>Lately, however, twin studies have helped lead scientists to a radical new conclusion: that nature and nurture are not the only elemental forces at work. According to a recent field called epigenetics, there is a third factor also in play, one that in some cases serves as a bridge between the environment and our genes, and in others operates on its own to shape who we are.</p>
+
+        <p>Epigenetic processes are chemical reactions tied to neither nature nor nurture but representing what researchers have called a 'third component'. These reactions influence how our genetic code is expressed: how each gene is strengthened or weakened, even turned on or off, to build our bones, brains and all the other parts of our bodies.</p>
+
+        <p>If you think of our DNA as an immense piano keyboard and our genes as the keys - each key symbolizing a segment of DNA responsible for a particular note, or trait, and all the keys combining to make us who we are - then epigenetic processes determine when and how each key can be struck, changing the tune being played.</p>
+
+        <p>One way the study of epigenetics is revolutionizing our understanding of biology is by revealing a mechanism by which the environment directly impacts on genes. Studies of animals, for example, have shown that when a rat experiences stress during pregnancy, it can cause epigenetic changes in a fetus that lead to behavioral problems as the rodent grows up. Other epigenetic processes appear to occur randomly, while others are normal, such as those that guide embryonic cells as they become heart, brain, or liver cells, for example.</p>
+
+        <p>Geneticist Danielle Reed has worked with many twins over the years and thought deeply about what twin studies have taught us. 'It's very clear when you look at twins that much of what they share is hardwired,' she says. 'Many things about them are absolutely the same and unalterable. But it's also clear, when you get to know them, that other things about them are different. Epigenetics is the origin of a lot of those differences, in my view.'</p>
+
+        <p>Reed credits Thomas Bouchard's work for today's surge in twin studies. 'He was the trailblazer,' she says. 'We forget that 50 years ago things like heart disease were thought to be caused entirely by lifestyle. Schizophrenia was thought to be due to poor mothering. Twin studies have allowed us to be more reflective about what people are actually born with and what's caused by experience.'</p>
+
+        <p>Having said that, Reed adds, the latest work in epigenetics promises to take our understanding even further. 'What I like to say is that nature writes some things in pencil and some things in pen,' she says. 'Things written in pen you can't change. That's DNA. But things written in pencil you can. That's epigenetics. Now that we're actually able to look at the DNA and see where the pencil writings are, it's sort of a whole new world.'</p>
+      </div>
+    </div>
+
+    <div class="card questions">
+      <h1>Questions</h1>
+      <div id="qroot"></div>
+      <button class="submit" id="submitBtn">Submit Answers</button>
+      <div class="results" id="results">
+        <h2>Your Results</h2>
+        <div id="score" class="meta"></div>
+        <ul id="answers"></ul>
+      </div>
+    </div>
+  </div>
+
+  <div class="footerNav" id="footerNav"></div>
+  
+
+
+</body>
+</html>

@@ -1,0 +1,1615 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>IELTS Reading Practice - Passage 3</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #ffffff;
+            line-height: 1.4;
+            font-size: 16px;
+        }
+        .header {
+            background-color: #ffffff;
+            padding: 12px 20px;
+            border-bottom: 1px solid #e0e0e0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 100;
+            height: 60px;
+        }
+        .test-info {
+            display: flex;
+            align-items: center;
+            gap: 30px;
+            font-size: 14px;
+            color: #333;
+        }
+        .header-icons {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+        .telegram-link {
+            color: #0088cc;
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 16px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .telegram-link:hover {
+            text-decoration: underline;
+        }
+        .main-container {
+            margin-top: 60px;
+            display: flex;
+            flex-direction: column;
+            background: #ffffff;
+            height: calc(100vh - 60px);
+        }
+        .panels-container {
+            display: flex;
+            flex: 1;
+            overflow: hidden;
+        }
+        .passage-panel {
+            flex: 1;
+            padding: 20px 20px 100px;
+            overflow-y: auto;
+            min-width: 200px;
+        }
+        .text-center {
+            text-align: center;
+        }
+        .reading-passage h4.text-center {
+            font-size: 24px;
+            font-weight: bold;
+            margin-bottom: 15px;
+        }
+      
+        .reading-passage p {
+            margin-bottom: 1.2em;
+        }
+        .questions-panel {
+            flex: 1;
+            padding: 20px 20px 100px;
+            overflow-y: auto;
+            min-width: 200px;
+            border-left: 1px solid #e0e0e0;
+        }
+        .resizer {
+            width: 10px;
+            cursor: col-resize;
+            background-color: #f0f0f0;
+            background-image: url('data:image/svg+xml;charset=UTF-8,<svg xmlns="http://www.w3.org/2000/svg" width="10" height="30" viewBox="0 0 10 30"><path d="M4 11h2v2H4zM4 15h2v2H4zM4 19h2v2H4z" fill="%23888"/></svg>');
+            background-repeat: no-repeat;
+            background-position: center;
+            flex-shrink: 0;
+            flex-grow: 0;
+        }
+        .question {
+            margin-bottom: 40px;
+        }
+        .question p {
+            margin-bottom: 10px;
+        }
+        .question-prompt {
+            margin-bottom: 20px;
+        }
+        .question ul {
+            list-style: none;
+            padding-left: 0;
+        }
+        .question ul li {
+            margin-bottom: 5px;
+        }
+        /* Bottom Navigation */
+        .nav-row {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: #ffffff;
+            padding: 0;
+            display: flex;
+            align-items: center;
+            height: 80px;
+            z-index: 100;
+            border-top: 1px solid #e0e0e0;
+        }
+        .footer__questionWrapper___1tZ46 {
+            display: flex;
+            align-items: center;
+            margin-right: 20px;
+        }
+        .footer__questionNo___3WNct {
+            background: none;
+            border: none;
+            padding: 10px 15px;
+            font-size: 16px;
+            font-weight: 600;
+            color: #333;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            transition: background-color 0.2s;
+        }
+        .footer__questionNo___3WNct:hover {
+            background-color: #f8f9fa;
+        }
+        .section-prefix {
+            font-size: 16px;
+        }
+        .sectionNr {
+            font-size: 16px;
+            font-weight: bold;
+        }
+        .attemptedCount {
+            font-size: 14px;
+            color: #666;
+            margin-left: 5px;
+            font-weight: 400;
+        }
+        .footer__questionWrapper___1tZ46.selected .attemptedCount {
+            display: none;
+        }
+        .footer__subquestionWrapper___9GgoP {
+            display: none;
+            gap: 2px;
+            margin-left: 10px;
+        }
+        .footer__questionWrapper___1tZ46.selected .footer__subquestionWrapper___9GgoP {
+            display: flex;
+        }
+        .subQuestion {
+            width: 32px;
+            height: 32px;
+            border: 1px solid #ccc;
+            background: white;
+            color: #333;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s;
+            border-radius: 2px;
+        }
+        .subQuestion.answered {
+            background-color: #e9ecef;
+            border-color: #ddd;
+        }
+        .subQuestion.correct {
+            background-color: #28a745;
+            color: white;
+            border-color: #28a745;
+        }
+        .subQuestion.incorrect {
+            background-color: #dc3545;
+            color: white;
+            border-color: #dc3545;
+        }
+        .subQuestion:hover {
+            background-color: #f0f0f0;
+            border-color: #999;
+        }
+        .subQuestion.active {
+            background-color: #4a90e2;
+            color: white;
+            border-color: #4a90e2;
+        }
+        .footer__deliverButton___3FM07 {
+            margin-left: auto;
+            margin-right: 20px;
+            background-color: #f0f0f0;
+            color: #333;
+            border: 1px solid #ccc;
+            padding: 12px 20px;
+            border-radius: 4px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: background-color 0.2s, border-color 0.2s;
+            min-width: 170px;
+            justify-content: center;
+        }
+        .footer__deliverButton___3FM07:hover {
+            background-color: #e0e0e0;
+            border-color: #bbb;
+        }
+        .fa-check::before {
+            content: "✓";
+        }
+        .hidden {
+            display: none !important;
+        }
+        /* YES/NO/NOT GIVEN Questions */
+        .tf-question {
+            margin-bottom: 25px;
+            padding: 10px 0px;
+            border-radius: 4px;
+            transition: border-color 0.3s, background-color 0.3s;
+        }
+        .tf-question-line {
+            display: flex;
+            align-items: flex-start;
+            margin-bottom: 15px;
+            padding: 5px 0px;
+            border-radius: 4px;
+        }
+        .tf-question-number {
+            border: 2px solid #ccc;
+            padding: 2px 8px;
+            margin-right: 10px;
+            border-radius: 3px;
+            font-weight: bold;
+            transition: border-color 0.3s;
+            display: inline-block;
+        }
+        .tf-question-text {
+            padding-top: 3px;
+        }
+        .tf-options {
+            padding-left: 5px;
+        }
+        .tf-option {
+            display: block;
+            margin-bottom: 12px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+        }
+        .tf-option input[type="radio"] {
+            margin-right: 10px;
+            transform: scale(1.2);
+        }
+        .tf-question.correct .tf-question-line {
+            background-color: #e9f7ef;
+        }
+        .tf-question.incorrect .tf-question-line {
+            background-color: #f8d7da;
+        }
+        /* Matching Questions */
+        .matching-question-container {
+            display: flex;
+            gap: 20px;
+            margin-top: 15px;
+        }
+        .matching-options-bank {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+        .matching-questions {
+            flex: 1.5;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+        .matching-question-item {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            border: 2px solid transparent;
+            border-radius: 4px;
+            transition: border-color 0.3s;
+        }
+        .matching-question-item > span {
+            flex: 1;
+        }
+        .matching-question-item.correct {
+            background-color: #e9f7ef;
+            border-color: #28a745 !important;
+        }
+        .matching-question-item.incorrect {
+            background-color: #f8d7da;
+            border-color: #dc3545 !important;
+        }
+        .matching-question-item .drop-zone {
+            width: 200px;
+            height: 40px;
+            flex-shrink: 0;
+            margin: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            color: #aaa;
+            border: 2px dashed #aaa;
+            border-radius: 4px;
+            transition: background-color 0.2s, border-color 0.2s;
+        }
+        .matching-question-item .drop-zone.filled {
+            border-color: #4a90e2;
+        }
+        .drop-zone.drag-over {
+            background-color: #e6f4ff;
+            border-color: #4a90e2;
+        }
+        .matching-options-bank .drag-item {
+            font-size: 15px;
+            text-align: center;
+            border: 1px solid #ccc;
+            background: #f9f9f9;
+            padding: 8px 12px;
+            border-radius: 4px;
+            cursor: move;
+            transition: all 0.2s;
+            user-select: none;
+        }
+        .drag-item:hover {
+            background: #e9ecef;
+        }
+        .drag-item.dragging {
+            opacity: 0.5;
+        }
+        .drop-zone .drag-item {
+            font-size: 15px;
+            font-weight: bold;
+            background-color: transparent;
+            border: none;
+            padding: 0;
+            text-align: center;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        /* Multiple Choice Questions */
+        .multi-choice-question {
+            margin-bottom: 20px;
+            padding: 10px;
+            border-radius: 4px;
+            border: 3px solid transparent;
+            transition: border-color 0.3s, background-color 0.3s;
+        }
+        .multi-choice-option {
+            margin-bottom: 10px;
+            padding: 8px;
+            border-radius: 4px;
+            transition: background-color 0.3s;
+        }
+        .multi-choice-option label {
+            display: flex;
+            align-items: center;
+            cursor: pointer;
+            font-size: 16px;
+        }
+        .multi-choice-option input[type="radio"] {
+            margin-right: 12px;
+            transform: scale(1.3);
+            accent-color: #4a90e2;
+        }
+        .multi-choice-option.correct {
+            background-color: #e9f7ef;
+        }
+        .multi-choice-option.incorrect {
+            background-color: #f8d7da;
+        }
+        /* Timer */
+        .timer-container {
+            display: flex;
+            position: relative;
+            cursor: default;
+            color: #333;
+            font-size: 16px;
+            font-weight: 500;
+            align-items: center;
+        }
+        .timer-controls {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-left: 15px;
+        }
+        .timer-controls button {
+            background: #f0f0f0;
+            border: 1px solid #ccc;
+            border-radius: 50%;
+            padding: 0;
+            cursor: pointer;
+            width: 32px;
+            height: 32px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: background-color 0.2s;
+        }
+        .timer-controls button:hover {
+            background: #e0e0e0;
+        }
+        .timer-controls button svg {
+            width: 20px;
+            height: 20px;
+            fill: #333;
+        }
+        #goto-widget {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+        #goto-input {
+            width: 80px;
+            padding: 4px 8px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+        #goto-btn {
+            padding: 4px 10px;
+            border: 1px solid #ccc;
+            background-color: #f0f0f0;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        /* Results Modal */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.7);
+            z-index: 2000;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        .modal-overlay.hidden {
+            display: none;
+        }
+        .modal-content {
+            background: white;
+            padding: 25px;
+            border-radius: 8px;
+            width: 90%;
+            max-width: 600px;
+            max-height: 80vh;
+            overflow-y: auto;
+        }
+        .modal-content h2 {
+            margin-bottom: 20px;
+            color: #333;
+        }
+        .results-summary {
+            margin-bottom: 20px;
+            padding: 15px;
+            background-color: #f8f9fa;
+            border-radius: 5px;
+        }
+        .results-summary p {
+            margin-bottom: 10px;
+            font-size: 16px;
+            font-weight: 600;
+        }
+        .results-details-container {
+            margin-bottom: 20px;
+        }
+        .result-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 8px 12px;
+            margin-bottom: 5px;
+            border-radius: 4px;
+            background-color: #e9f7ef;
+        }
+        .result-row.incorrect {
+            background-color: #f8d7da;
+        }
+        .result-row .q-num {
+            font-weight: bold;
+            min-width: 40px;
+        }
+        .result-row .user-ans {
+            flex: 1;
+            margin: 0 10px;
+        }
+        .result-row .correct-ans {
+            font-weight: bold;
+        }
+        .modal-close-btn {
+            background-color: #4a90e2;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+        .modal-close-btn:hover {
+            background-color: #357abd;
+        }
+        /* Context Menu */
+        .context-menu {
+            position: absolute;
+            background: white;
+            border: 1px solid #ccc;
+            border-radius: 6px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            z-index: 1000;
+            display: none;
+            min-width: 140px;
+        }
+        .context-menu-item {
+            padding: 12px 16px;
+            cursor: pointer;
+            font-size: 16px;
+            border-bottom: 1px solid #f0f0f0;
+            transition: background-color 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .context-menu-item:hover {
+            background-color: #f8f9fa;
+        }
+        .context-menu-item:last-child {
+            border-bottom: none;
+        }
+        .highlight {
+            background-color: #ffff00;
+            padding: 1px 2px;
+            border-radius: 2px;
+            cursor: pointer;
+            position: relative;
+        }
+        .highlight:hover {
+            background-color: #ffeb3b;
+        }
+        .comment-highlight {
+            background-color: #90EE90;
+            padding: 1px 2px;
+            border-radius: 2px;
+            position: relative;
+            cursor: help;
+        }
+        .comment-tooltip {
+            position: absolute;
+            bottom: 100%;
+            left: 50%;
+            transform: translateX(-50%);
+            background: #333;
+            color: white;
+            padding: 8px 12px;
+            border-radius: 4px;
+            font-size: 14px;
+            white-space: nowrap;
+            z-index: 1000;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s;
+            margin-bottom: 5px;
+        }
+        .comment-highlight:hover .comment-tooltip {
+            opacity: 1;
+        }
+        .highlight-toolbar {
+            position: fixed;
+            background: white;
+            border: 1px solid #ccc;
+            border-radius: 6px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            z-index: 1001;
+            display: none;
+            padding: 8px;
+            gap: 8px;
+        }
+        .highlight-toolbar button {
+            background: #4a90e2;
+            color: white;
+            border: none;
+            padding: 6px 12px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: background-color 0.2s;
+        }
+        .highlight-toolbar button:hover {
+            background: #357abd;
+        }
+        .highlight-toolbar button.remove {
+            background: #dc3545;
+        }
+        .highlight-toolbar button.remove:hover {
+            background: #c82333;
+        }
+        
+        /* Three-column options layout */
+        .options-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+            margin-top: 20px;
+            margin-bottom: 20px;
+        }
+        
+        .option-item {
+            border: 1px solid #ccc;
+            background: #f9f9f9;
+            padding: 8px 12px;
+            border-radius: 4px;
+            cursor: move;
+            transition: all 0.2s;
+            user-select: none;
+            text-align: center;
+            font-size: 14px;
+        }
+        
+        .option-item:hover {
+            background: #e9ecef;
+        }
+        
+        .option-item.dragging {
+            opacity: 0.5;
+        }
+        
+        /* Summary text styling */
+        .summary-text {
+            background-color: #f8f9fa;
+            padding: 20px;
+            border-radius: 6px;
+            border-left: 4px solid #4a90e2;
+            margin-bottom: 20px;
+            line-height: 1.6;
+        }
+        
+        .summary-text h4 {
+            margin-bottom: 15px;
+            color: #333;
+            font-weight: bold;
+            text-align: center;
+        }
+        
+        .inline-drop-zone {
+            display: inline-block;
+            min-width: 120px;
+            height: 25px;
+            border: 2px dashed #aaa;
+            background-color: #fff;
+            border-radius: 4px;
+            margin: 0 3px;
+            vertical-align: baseline;
+            position: relative;
+            transition: all 0.2s;
+        }
+        
+        .inline-drop-zone.filled {
+            border-color: #4a90e2;
+            background-color: #e6f4ff;
+        }
+        
+        .inline-drop-zone.drag-over {
+            background-color: #e6f4ff;
+            border-color: #4a90e2;
+        }
+        
+        .inline-drop-zone .dropped-answer {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-weight: bold;
+            color: #4a90e2;
+            font-size: 14px;
+            cursor: pointer;
+            padding: 2px 6px;
+            border-radius: 3px;
+            transition: background-color 0.2s;
+        }
+        
+        .inline-drop-zone .dropped-answer:hover {
+            background-color: rgba(220, 53, 69, 0.1);
+            color: #dc3545;
+        }
+        
+        .options-grid.drag-target {
+            background-color: #e6f4ff !important;
+            border: 2px dashed #4a90e2;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <div class="test-info">
+            <span class="timer-container">
+                <span id="timer">20:00</span>
+                <div class="timer-controls">
+                    <button id="pause-btn" type="button" aria-label="Pause timer">
+                        <svg viewBox="0 0 24 24">
+                            <rect x="6" y="4" width="4" height="16"></rect>
+                            <rect x="14" y="4" width="4" height="16"></rect>
+                        </svg>
+                    </button>
+                    <button id="reset-btn" type="button" aria-label="Reset timer">
+                        <svg viewBox="0 0 24 24">
+                            <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm5 11h-6V8h2v3h4v2z"></path>
+                        </svg>
+                    </button>
+                </div>
+            </span>
+            <div id="goto-widget">
+                <span>Go to Q:</span>
+                <input type="number" id="goto-input" min="27" max="40" placeholder="27">
+                <button id="goto-btn">Go</button>
+            </div>
+        </div>
+        <div class="header-icons">
+            
+        </div>
+    </div>
+    <div class="main-container">
+        <div class="panels-container">
+            <div class="passage-panel">
+                <div class="reading-passage">
+                    <h4 class>READING PASSAGE 3</h4>
+                    <h4 class="text-center">The peopling of Patagonia</h4>
+                    <p style="text-align: center; font-style: italic;">Anthropologists continue to investigate human migration to Patagonia at the southern tip of South America.</p>
+                    <p>The human settlement of the southern extremity of the Americas has always fascinated pre-historians. Viewed from a global perspective, this was the last major continental land mass to be reached by human beings. The earliest occupation of Patagonia carries obvious implications for understanding when the North and South American continents were peopled, because it gives a baseline that all calculations regarding the rate of dispersion of humans throughout both continents must take into account.</p>
+                    <p>For many years the human settlement of North and South America has been conceived of as beginning in the far north and travelling progressively southwards to Patagonia. However, fundamental disagreements developed concerning the length of time involved. Some scholars accepted a human presence in the Americas as early as 20,000 years ago, while others proposed that it could date no earlier than 8,000 years ago, and the debate is still with us today.</p>
+                    <p>The idea of a relatively ‘late’ settlement of the Americas (around 8,000 years ago) implies that a rapid process of migration took place. Herein lies a second debate which revolves around the question of how migration is to be understood. The ‘late’ model demands a hypothetical migration conceived of as a single, continually advancing wave of settlement. This has always been difficult to take seriously and many scholars now support the idea of an ‘early’ model that sees the migration as a less ordered migration, and this is surely the most realistic scenario as migrants slowly adapted to the diverse natural habitats they would have met while travelling through the continent.</p>
+                    <p>Those who argue for an earlier settlement, however, must contend with the lack of unequivocal evidence for archaeological sites older than around 14,000 years. Nevertheless, evidence for human occupation of the centre of South America is now securely dated to around 12,500 years ago at the Monte Verde site, which casts doubt on the ‘late model’. The lack of archaeological evidence further south for this time period may be explained by the obstacle to humans on foot posed by the huge glacial streams that were present at that time.</p>
+                    <p>We can speculate then that the retreat of the Patagonian glaciers around 14,000 years ago allowed the initial human intrusion into a pristine environment, which was similar to that of early post-glacial Europe. Human settlement of the vast horizontal expanse of treeless high country must have been tenuous at best, and the evidence for this occupation remains relatively scant, most of it coming from rock shelters in Argentina and Chile. There is, however, reliable evidence from these sites to confirm the presence of humans by around 11,000 years ago in different habitats, and some hints of an even older occupation. However, some other sites where evidence for even earlier human occupation was initially posited, have recently come under fresh scrutiny. This is because anthropologists have come to recognise that bones or other evidence may be deposited in caves by natural agency, in other words by other forces such as floods or predators, and not necessarily by humans.</p>
+                    <p>We shall turn now to a more detailed discussion of the archaeological evidence found in various parts of Patagonia. At the site located beside Chinchihuapi Creek, excavations have produced convincing evidence of human occupation, including hut foundations and wooden artefacts. They were buried in layers of peat, which has the property of preserving wood remarkably well, and as a result radiocarbon dating tests have shown these artefacts to date from around 12,500 years ago. One of the most famous Patagonian sites is a cave known as Los Toldos. However, the evidence from this site has recently been called into question, because dispersed flecks of carbon used in the test process were taken unsystematically from many different places in the site. As a result, the association of this material with the artefacts is not at all clear. About 150 kilometres south is the site called El Ceibo, where a similar collection of artefacts to that found at Los Toldos has been discovered from the lowest levels of the dig, but as yet no radiocarbon dates are available and this sort of analysis of the existing evidence is required before the site’s value can be confirmed.</p>
+                    <p>The Arroyo Eeo site is located very close to the high plateau. The artefacts from the earliest occupations were found at the same depth and have the same origins as those from Los Toldos, and have been securely dated to around 9,000 years ago. Another site that is mentioned in the debate is at Las Buitreras, where a number of stone flakes associated with bone remains of various animals have been discovered. However, anthropologists now believe that presumed cut marks on the bones are somewhat dubious, and despite detailed testing there is no way of securely relating any of these remains with human occupation. Finally some 50 kilometers to the south is the site at Cueva Fell, which was the first Patagonian site to be systematically studied by modern archaeological methods. However, it is now recognised that the utility of this site must be restricted to its direct vicinity, given changes to the nearby area caused by flooding, and findings cannot be freely extrapolated further afield.</p>
+                    <p>In conclusion, based on the evidence from a number of reliable sites, it seems probable that human populations reached Patagonia around 11,000 years ago.</p>
+                </div>
+            </div>
+            <div class="resizer"></div>
+            <div class="questions-panel">
+                <div class="questions-container">
+                    <!-- Questions 27-31: Multiple choice -->
+                    <div class="question" id="question-27">
+                        <div class="question-prompt">
+                            <p><strong>Questions 27-31</strong></p>
+                            <p>Choose the correct letter, A, B, C or D.</p>
+                            <p>Write the correct letter in boxes 27-31 on your answer sheet.</p>
+                        </div>
+                        <div class="multi-choice-question" id="multi-choice-question-27">
+                            <p><strong>27.</strong> In the first paragraph, what is the writer's main point about migration to Patagonia?</p>
+                            <div class="multi-choice-option">
+                                <label>
+                                    <input type="radio" name="q27" value="A">
+                                    A. It started earlier than previously thought.
+                                </label>
+                            </div>
+                            <div class="multi-choice-option">
+                                <label>
+                                    <input type="radio" name="q27" value="B">
+                                    B. Historians have overlooked its importance.
+                                </label>
+                            </div>
+                            <div class="multi-choice-option">
+                                <label>
+                                    <input type="radio" name="q27" value="C">
+                                    C. It impacts on research into the wider region.
+                                </label>
+                            </div>
+                            <div class="multi-choice-option">
+                                <label>
+                                    <input type="radio" name="q27" value="D">
+                                    D. Researchers have calculated its effects on the environment.
+                                </label>
+                            </div>
+                        </div>
+                        <div class="multi-choice-question" id="multi-choice-question-28">
+                            <p><strong>28.</strong> In the second paragraph, what is the writer's purpose?</p>
+                            <div class="multi-choice-option">
+                                <label>
+                                    <input type="radio" name="q28" value="A">
+                                    A. to challenge previous research
+                                </label>
+                            </div>
+                            <div class="multi-choice-option">
+                                <label>
+                                    <input type="radio" name="q28" value="B">
+                                    B. to propose new areas to investigate
+                                </label>
+                            </div>
+                            <div class="multi-choice-option">
+                                <label>
+                                    <input type="radio" name="q28" value="C">
+                                    C. to summarise a scholarly debate
+                                </label>
+                            </div>
+                            <div class="multi-choice-option">
+                                <label>
+                                    <input type="radio" name="q28" value="D">
+                                    D. to suggest reasons for human migration
+                                </label>
+                            </div>
+                        </div>
+                        <div class="multi-choice-question" id="multi-choice-question-29">
+                            <p><strong>29.</strong> The writer refers to "the Late model" in order to</p>
+                            <div class="multi-choice-option">
+                                <label>
+                                    <input type="radio" name="q29" value="A">
+                                    A. compare it with another theory of migration.
+                                </label>
+                            </div>
+                            <div class="multi-choice-option">
+                                <label>
+                                    <input type="radio" name="q29" value="B">
+                                    B. evaluate the success of American migration.
+                                </label>
+                            </div>
+                            <div class="multi-choice-option">
+                                <label>
+                                    <input type="radio" name="q29" value="C">
+                                    C. criticise the speed of research into migration.
+                                </label>
+                            </div>
+                            <div class="multi-choice-option">
+                                <label>
+                                    <input type="radio" name="q29" value="D">
+                                    D. compare migration in different parts of the world.
+                                </label>
+                            </div>
+                        </div>
+                        <div class="multi-choice-question" id="multi-choice-question-30">
+                            <p><strong>30.</strong> What is the writer's main point about the 'early' model?</p>
+                            <div class="multi-choice-option">
+                                <label>
+                                    <input type="radio" name="q30" value="A">
+                                    A. Scholars support the idea of fast migrations.
+                                </label>
+                            </div>
+                            <div class="multi-choice-option">
+                                <label>
+                                    <input type="radio" name="q30" value="B">
+                                    B. It is too random to be a convincing theory.
+                                </label>
+                            </div>
+                            <div class="multi-choice-option">
+                                <label>
+                                    <input type="radio" name="q30" value="C">
+                                    C. South America was more habitable at an earlier time.
+                                </label>
+                            </div>
+                            <div class="multi-choice-option">
+                                <label>
+                                    <input type="radio" name="q30" value="D">
+                                    D. It is more consistent with the physical conditions of the land.
+                                </label>
+                            </div>
+                        </div>
+                        <div class="multi-choice-question" id="multi-choice-question-31">
+                            <p><strong>31.</strong> What does the writer suggest about the Monte Verde site?</p>
+                            <div class="multi-choice-option">
+                                <label>
+                                    <input type="radio" name="q31" value="A">
+                                    A. It is much younger than researchers once estimated.
+                                </label>
+                            </div>
+                            <div class="multi-choice-option">
+                                <label>
+                                    <input type="radio" name="q31" value="B">
+                                    B. It provides supporting evidence for relatively early settlement.
+                                </label>
+                            </div>
+                            <div class="multi-choice-option">
+                                <label>
+                                    <input type="radio" name="q31" value="C">
+                                    C. Archaeologists believe the site is of questionable value.
+                                </label>
+                            </div>
+                            <div class="multi-choice-option">
+                                <label>
+                                    <input type="radio" name="q31" value="D">
+                                    D. Streams exposed the site, making new research possible.
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Questions 32-35: YES/NO/NOT GIVEN -->
+                    <div class="question" id="question-32">
+                        <div class="question-prompt">
+                            <p><strong>Questions 32-35</strong></p>
+                            <p>Do the following statements agree with the claims of the writer in Reading Passage 3?</p>
+                            <p>In boxes 32-35 on your answer sheet, write</p>
+                            <p><strong>YES</strong> if the statement agrees with the claims of the writer<br>
+                            <strong>NO</strong> if the statement contradicts the claims of the writer<br>
+                            <strong>NOT GIVEN</strong> if it is impossible to say what the writer thinks about this</p>
+                        </div>
+                        <div class="tf-question" id="tf-question-32">
+                            <div class="tf-question-line">
+                                <span class="tf-question-number">32</span>
+                                <span class="tf-question-text">The conditions encountered by the first migrants to Patagonia were unique.</span>
+                            </div>
+                            <div class="tf-options">
+                                <label class="tf-option">
+                                    <input type="radio" name="q32" value="YES">
+                                    <span>YES</span>
+                                </label>
+                                <label class="tf-option">
+                                    <input type="radio" name="q32" value="NO">
+                                    <span>NO</span>
+                                </label>
+                                <label class="tf-option">
+                                    <input type="radio" name="q32" value="NOT GIVEN">
+                                    <span>NOT GIVEN</span>
+                                </label>
+                            </div>
+                        </div>
+                        <div class="tf-question" id="tf-question-33">
+                            <div class="tf-question-line">
+                                <span class="tf-question-number">33</span>
+                                <span class="tf-question-text">In the high country the first migrants hunted wild animals for food.</span>
+                            </div>
+                            <div class="tf-options">
+                                <label class="tf-option">
+                                    <input type="radio" name="q33" value="YES">
+                                    <span>YES</span>
+                                </label>
+                                <label class="tf-option">
+                                    <input type="radio" name="q33" value="NO">
+                                    <span>NO</span>
+                                </label>
+                                <label class="tf-option">
+                                    <input type="radio" name="q33" value="NOT GIVEN">
+                                    <span>NOT GIVEN</span>
+                                </label>
+                            </div>
+                        </div>
+                        <div class="tf-question" id="tf-question-34">
+                            <div class="tf-question-line">
+                                <span class="tf-question-number">34</span>
+                                <span class="tf-question-text">Archaeologist have failed to draw conclusions from the evidence found at rock shelters in Argentina and Chile.</span>
+                            </div>
+                            <div class="tf-options">
+                                <label class="tf-option">
+                                    <input type="radio" name="q34" value="YES">
+                                    <span>YES</span>
+                                </label>
+                                <label class="tf-option">
+                                    <input type="radio" name="q34" value="NO">
+                                    <span>NO</span>
+                                </label>
+                                <label class="tf-option">
+                                    <input type="radio" name="q34" value="NOT GIVEN">
+                                    <span>NOT GIVEN</span>
+                                </label>
+                            </div>
+                        </div>
+                        <div class="tf-question" id="tf-question-35">
+                            <div class="tf-question-line">
+                                <span class="tf-question-number">35</span>
+                                <span class="tf-question-text">Archaeological evidence can be moved from place to place in a variety of ways.</span>
+                            </div>
+                            <div class="tf-options">
+                                <label class="tf-option">
+                                    <input type="radio" name="q35" value="YES">
+                                    <span>YES</span>
+                                </label>
+                                <label class="tf-option">
+                                    <input type="radio" name="q35" value="NO">
+                                    <span>NO</span>
+                                </label>
+                                <label class="tf-option">
+                                    <input type="radio" name="q35" value="NOT GIVEN">
+                                    <span>NOT GIVEN</span>
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Questions 36-40: Sentence completion -->
+                    <div class="question" id="question-36">
+                        <div class="question-prompt">
+                            <p><strong>Questions 36-40</strong></p>
+                            <p>Complete the summary using the list of words and phrases, A-J, below.</p>
+                            <p>Write the correct letter, A-J, in boxes 36-40 on your answer sheet.</p>
+                        </div>
+                        
+                        <div class="summary-text">
+                            <h4>The archaeological evidence from Patagonia</h4>
+                            <p>Building remains and other evidence have been found in <span class="inline-drop-zone" data-question="36"></span> at the Chinchihuapi Creek site, and because of this it has been possible to date them to around 12,500 years ago. However, the <span class="inline-drop-zone" data-question="37"></span> of the samples taken from Los Toldos means that this site is of doubtful value. El Ceibo is a more promising dig, where the examination of artefacts would be beneficial in order to confirm the usefulness of discoveries there. The remains found at the Arroyo Feo site show <span class="inline-drop-zone" data-question="38"></span> and date from around 9,000 years ago. Unfortunately, no <span class="inline-drop-zone" data-question="39"></span> can be made between the samples taken from Las Buitreras and human presence. The findings of the work carried out at Cueva Fell cannot provide useful information beyond the <span class="inline-drop-zone" data-question="40"></span>. In conclusion, though the evidence is mixed, it is believed that human population of Patagonia began about 11,000 years ago.</p>
+                        </div>
+                        
+                        <div class="options-grid">
+                            <div class="option-item drag-item" draggable="true" data-value="A">A. fixed date</div>
+                            <div class="option-item drag-item" draggable="true" data-value="B">B. random collection</div>
+                            <div class="option-item drag-item" draggable="true" data-value="C">C. similar properties</div>
+                            <div class="option-item drag-item" draggable="true" data-value="D">D. good condition</div>
+                            <div class="option-item drag-item" draggable="true" data-value="E">E. scientific evaluation</div>
+                            <div class="option-item drag-item" draggable="true" data-value="F">F. huge quantities</div>
+                            <div class="option-item drag-item" draggable="true" data-value="G">G. new samples</div>
+                            <div class="option-item drag-item" draggable="true" data-value="H">H. reliable connection</div>
+                            <div class="option-item drag-item" draggable="true" data-value="I">I. skilled preservation</div>
+                            <div class="option-item drag-item" draggable="true" data-value="J">J. immediate surroundings</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- Bottom Navigation -->
+        <div class="nav-row">
+            <div class="footer__questionWrapper___1tZ46 selected">
+                <button class="footer__questionNo___3WNct" onclick="toggleSubQuestions()">
+                    <span class="section-prefix">Reading Passage 3:</span>
+                    <span class="sectionNr">27-40</span>
+                    <span class="attemptedCount">(0/14)</span>
+                </button>
+                <div class="footer__subquestionWrapper___9GgoP">
+                    <button class="subQuestion" data-question="27" onclick="goToQuestion(27)">27</button>
+                    <button class="subQuestion" data-question="28" onclick="goToQuestion(28)">28</button>
+                    <button class="subQuestion" data-question="29" onclick="goToQuestion(29)">29</button>
+                    <button class="subQuestion" data-question="30" onclick="goToQuestion(30)">30</button>
+                    <button class="subQuestion" data-question="31" onclick="goToQuestion(31)">31</button>
+                    <button class="subQuestion" data-question="32" onclick="goToQuestion(32)">32</button>
+                    <button class="subQuestion" data-question="33" onclick="goToQuestion(33)">33</button>
+                    <button class="subQuestion" data-question="34" onclick="goToQuestion(34)">34</button>
+                    <button class="subQuestion" data-question="35" onclick="goToQuestion(35)">35</button>
+                    <button class="subQuestion" data-question="36" onclick="goToQuestion(36)">36</button>
+                    <button class="subQuestion" data-question="37" onclick="goToQuestion(37)">37</button>
+                    <button class="subQuestion" data-question="38" onclick="goToQuestion(38)">38</button>
+                    <button class="subQuestion" data-question="39" onclick="goToQuestion(39)">39</button>
+                    <button class="subQuestion" data-question="40" onclick="goToQuestion(40)">40</button>
+                </div>
+            </div>
+            <button class="footer__deliverButton___3FM07" onclick="showResults()">
+                <i class="fa fa-check"></i>
+                <span>Submit Test</span>
+            </button>
+        </div>
+    </div>
+    <!-- Highlight Toolbar -->
+    <div id="highlight-toolbar" class="highlight-toolbar">
+        <button onclick="applyHighlight()">Highlight</button>
+        <button onclick="addCommentToSelection()">Add Note</button>
+        <button onclick="hideHighlightToolbar()">Cancel</button>
+    </div>
+    <!-- Remove Highlight Toolbar -->
+    <div id="remove-highlight-toolbar" class="highlight-toolbar">
+        <button class="remove" onclick="removeHighlight()">Remove Highlight</button>
+        <button onclick="hideRemoveToolbar()">Cancel</button>
+    </div>
+    <!-- Results Modal -->
+    <div id="results-modal" class="modal-overlay hidden">
+        <div class="modal-content">
+            <h2>Test Results</h2>
+            <div class="results-summary">
+                <p>Score: <span id="final-score">0</span>/14</p>
+                <p>Percentage: <span id="final-percentage">0</span>%</p>
+            </div>
+            <div class="results-details-container">
+                <h3>Detailed Results:</h3>
+                <div id="results-details"></div>
+            </div>
+            <button class="modal-close-btn" onclick="closeResults()">Close</button>
+        </div>
+    </div>
+    <script>
+        // Correct answers for the new questions
+        const correctAnswers = {
+            '27': 'C',
+            '28': 'C',
+            '29': 'A',
+            '30': 'D',
+            '31': 'B',
+            '32': 'NO',
+            '33': 'NOT GIVEN',
+            '34': 'NO',
+            '35': 'YES',
+            '36': 'D',
+            '37': 'B',
+            '38': 'C',
+            '39': 'H',
+            '40': 'J'
+        };
+        let currentQuestion = 27;
+        let totalQuestions = 14;
+        let answeredQuestions = 0;
+        let isTimerRunning = true;
+        let timeRemaining = 20 * 60; // 20 minutes
+        // Initialize the test
+        document.addEventListener('DOMContentLoaded', function() {
+            updateTimer();
+            startTimer();
+            setupEventListeners();
+            setupDragAndDrop();
+            goToQuestion(27);
+        });
+        function updateTimer() {
+            const minutes = Math.floor(timeRemaining / 60);
+            const seconds = timeRemaining % 60;
+            document.getElementById('timer').textContent =
+                `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+        }
+        function startTimer() {
+            const timerInterval = setInterval(() => {
+                if (isTimerRunning && timeRemaining > 0) {
+                    timeRemaining--;
+                    updateTimer();
+                }
+                if (timeRemaining === 0) {
+                    clearInterval(timerInterval);
+                    showResults();
+                }
+            }, 1000);
+        }
+        function toggleSubQuestions() {
+            const wrapper = document.querySelector('.footer__questionWrapper___1tZ46');
+            wrapper.classList.toggle('selected');
+        }
+        function goToQuestion(questionNum) {
+            if (questionNum < 27 || questionNum > 40) return;
+           
+            currentQuestion = questionNum;
+           
+            // Update active question in navigation
+            document.querySelectorAll('.subQuestion').forEach(btn => {
+                btn.classList.remove('active');
+                if (parseInt(btn.dataset.question) === questionNum) {
+                    btn.classList.add('active');
+                }
+            });
+            // Scroll to question
+            const questionElement = document.getElementById(`question-${questionNum}`) ||
+                                   document.getElementById(`tf-question-${questionNum}`) ||
+                                   document.getElementById(`matching-question-${questionNum}`) ||
+                                   document.getElementById(`multi-choice-question-${questionNum}`);
+           
+            if (questionElement) {
+                questionElement.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            }
+        }
+        function setupEventListeners() {
+            // Timer controls
+            document.getElementById('pause-btn').addEventListener('click', () => {
+                isTimerRunning = !isTimerRunning;
+            });
+            document.getElementById('reset-btn').addEventListener('click', () => {
+                if (confirm('Are you sure you want to reset the timer?')) {
+                    timeRemaining = 20 * 60;
+                    updateTimer();
+                }
+            });
+            // Go to question
+            document.getElementById('goto-btn').addEventListener('click', () => {
+                const questionNum = parseInt(document.getElementById('goto-input').value);
+                goToQuestion(questionNum);
+            });
+            document.getElementById('goto-input').addEventListener('keypress', (e) => {
+                if (e.key === 'Enter') {
+                    const questionNum = parseInt(e.target.value);
+                    goToQuestion(questionNum);
+                }
+            });
+            // Radio button listeners
+            document.querySelectorAll('input[type="radio"]').forEach(radio => {
+                radio.addEventListener('change', updateAnsweredCount);
+            });
+            // Resizer functionality
+            const resizer = document.querySelector('.resizer');
+            const leftPanel = document.querySelector('.passage-panel');
+            const rightPanel = document.querySelector('.questions-panel');
+            let isResizing = false;
+            resizer.addEventListener('mousedown', (e) => {
+                isResizing = true;
+                document.addEventListener('mousemove', handleResize);
+                document.addEventListener('mouseup', stopResize);
+            });
+            function handleResize(e) {
+                if (!isResizing) return;
+               
+                const container = document.querySelector('.panels-container');
+                const containerRect = container.getBoundingClientRect();
+                const offsetX = e.clientX - containerRect.left;
+                const containerWidth = containerRect.width;
+               
+                const leftWidth = (offsetX / containerWidth) * 100;
+                const rightWidth = 100 - leftWidth;
+               
+                if (leftWidth > 20 && leftWidth < 80) {
+                    leftPanel.style.flex = `0 0 ${leftWidth}%`;
+                    rightPanel.style.flex = `0 0 ${rightWidth}%`;
+                }
+            }
+            function stopResize() {
+                isResizing = false;
+                document.removeEventListener('mousemove', handleResize);
+                document.removeEventListener('mouseup', stopResize);
+            }
+        }
+        function setupDragAndDrop() {
+            const dragItems = document.querySelectorAll('.drag-item');
+            const dropZones = document.querySelectorAll('.drop-zone, .inline-drop-zone');
+            const optionsGrid = document.querySelector('.options-grid');
+            
+            let draggedElement = null;
+            
+            dragItems.forEach(item => {
+                item.addEventListener('dragstart', (e) => {
+                    draggedElement = e.target;
+                    e.target.classList.add('dragging');
+                    e.dataTransfer.setData('text/plain', e.target.dataset.value);
+                    e.dataTransfer.setData('text/html', e.target.outerHTML);
+                });
+                item.addEventListener('dragend', (e) => {
+                    e.target.classList.remove('dragging');
+                });
+            });
+            
+            dropZones.forEach(zone => {
+                zone.addEventListener('dragover', (e) => {
+                    e.preventDefault();
+                    zone.classList.add('drag-over');
+                });
+                zone.addEventListener('dragleave', () => {
+                    zone.classList.remove('drag-over');
+                });
+                zone.addEventListener('drop', (e) => {
+                    e.preventDefault();
+                    zone.classList.remove('drag-over');
+                    
+                    if (draggedElement && zone.classList.contains('inline-drop-zone')) {
+                        const value = e.dataTransfer.getData('text/plain');
+                        const questionNum = zone.dataset.question;
+                        
+                        // If there's already an answer in this drop zone, move it back to options
+                        const existingAnswer = zone.querySelector('.dropped-answer');
+                        if (existingAnswer) {
+                            const existingValue = existingAnswer.dataset.value;
+                            returnToOptions(existingValue);
+                            existingAnswer.remove();
+                        }
+                        
+                        // Hide the dragged item from options grid
+                        draggedElement.style.display = 'none';
+                        
+                        // Add the dropped answer to the zone
+                        const droppedAnswer = document.createElement('span');
+                        droppedAnswer.className = 'dropped-answer';
+                        droppedAnswer.textContent = value;
+                        droppedAnswer.dataset.value = value;
+                        droppedAnswer.style.cursor = 'pointer';
+                        droppedAnswer.title = 'Click to remove';
+                        zone.appendChild(droppedAnswer);
+                        zone.classList.add('filled');
+                        
+                        // Make the dropped answer clickable to remove
+                        droppedAnswer.addEventListener('click', function() {
+                            returnToOptions(value);
+                            zone.innerHTML = '';
+                            zone.classList.remove('filled');
+                            updateAnsweredCount();
+                        });
+                        
+                        updateAnsweredCount();
+                    }
+                });
+            });
+            
+            // Make options grid also a drop zone to allow returning items
+            if (optionsGrid) {
+                optionsGrid.addEventListener('dragover', (e) => {
+                    e.preventDefault();
+                    optionsGrid.style.backgroundColor = '#e6f4ff';
+                });
+                
+                optionsGrid.addEventListener('dragleave', () => {
+                    optionsGrid.style.backgroundColor = '';
+                });
+                
+                optionsGrid.addEventListener('drop', (e) => {
+                    e.preventDefault();
+                    optionsGrid.style.backgroundColor = '';
+                    
+                    // This would handle if we made dropped answers draggable
+                    // For now, we'll use click to remove
+                });
+            }
+            
+            function returnToOptions(value) {
+                const hiddenOption = optionsGrid.querySelector(`.drag-item[data-value="${value}"][style*="display: none"]`);
+                if (hiddenOption) {
+                    hiddenOption.style.display = 'block';
+                }
+            }
+        }
+        function updateAnsweredCount() {
+            let answered = 0;
+           
+            // Count radio button answers (questions 27-31, 32-35)
+            for (let i = 27; i <= 31; i++) {
+                if (document.querySelector(`input[name="q${i}"]:checked`)) answered++;
+            }
+            for (let i = 32; i <= 35; i++) {
+                if (document.querySelector(`input[name="q${i}"]:checked`)) answered++;
+            }
+           
+            // Count drop zone answers (questions 36-40)
+            for (let i = 36; i <= 40; i++) {
+                const dropZone = document.querySelector(`[data-question="${i}"]`);
+                if (dropZone && dropZone.classList.contains('filled')) answered++;
+            }
+           
+            answeredQuestions = answered;
+            document.querySelector('.attemptedCount').textContent = `(${answered}/${totalQuestions})`;
+           
+            // Update sub-question indicators
+            document.querySelectorAll('.subQuestion').forEach(btn => {
+                const qNum = parseInt(btn.dataset.question);
+                btn.classList.remove('answered', 'correct', 'incorrect');
+               
+                let hasAnswer = false;
+                if (qNum >= 27 && qNum <= 31) {
+                    hasAnswer = document.querySelector(`input[name="q${qNum}"]:checked`) !== null;
+                } else if (qNum >= 32 && qNum <= 35) {
+                    hasAnswer = document.querySelector(`input[name="q${qNum}"]:checked`) !== null;
+                } else if (qNum >= 36 && qNum <= 40) {
+                    const dropZone = document.querySelector(`[data-question="${qNum}"]`);
+                    hasAnswer = dropZone && dropZone.classList.contains('filled');
+                }
+               
+                if (hasAnswer) {
+                    btn.classList.add('answered');
+                }
+            });
+        }
+        function showResults() {
+            let correctCount = 0;
+            const resultsDetails = [];
+            // Check answers for questions 27-31 (Multiple choice)
+            for (let i = 27; i <= 31; i++) {
+                const selected = document.querySelector(`input[name="q${i}"]:checked`);
+                const userAnswer = selected ? selected.value : '';
+                const correct = userAnswer === correctAnswers[i.toString()];
+               
+                if (correct) correctCount++;
+               
+                resultsDetails.push({
+                    question: i,
+                    userAnswer: userAnswer || 'No answer',
+                    correctAnswer: correctAnswers[i.toString()],
+                    correct: correct
+                });
+            }
+            // Check answers for questions 32-35 (YES/NO/NOT GIVEN)
+            for (let i = 32; i <= 35; i++) {
+                const selected = document.querySelector(`input[name="q${i}"]:checked`);
+                const userAnswer = selected ? selected.value : '';
+                const correct = userAnswer === correctAnswers[i.toString()];
+               
+                if (correct) correctCount++;
+               
+                resultsDetails.push({
+                    question: i,
+                    userAnswer: userAnswer || 'No answer',
+                    correctAnswer: correctAnswers[i.toString()],
+                    correct: correct
+                });
+            }
+            // Check answers for questions 36-40 (Sentence completion)
+            for (let i = 36; i <= 40; i++) {
+                const dropZone = document.querySelector(`[data-question="${i}"]`);
+                let userAnswer = '';
+                if (dropZone && dropZone.classList.contains('filled')) {
+                    // Check for both old drag-item format and new dropped-answer format
+                    const dragItem = dropZone.querySelector('.drag-item');
+                    const droppedAnswer = dropZone.querySelector('.dropped-answer');
+                    if (dragItem) {
+                        userAnswer = dragItem.dataset.value || dragItem.textContent.charAt(0);
+                    } else if (droppedAnswer) {
+                        userAnswer = droppedAnswer.dataset.value || droppedAnswer.textContent.charAt(0);
+                    }
+                }
+                const correct = userAnswer === correctAnswers[i.toString()];
+               
+                if (correct) correctCount++;
+               
+                resultsDetails.push({
+                    question: i,
+                    userAnswer: userAnswer || 'No answer',
+                    correctAnswer: correctAnswers[i.toString()],
+                    correct: correct
+                });
+            }
+            // Display results
+            const percentage = Math.round((correctCount / totalQuestions) * 100);
+            document.getElementById('final-score').textContent = correctCount;
+            document.getElementById('final-percentage').textContent = percentage;
+            const detailsContainer = document.getElementById('results-details');
+            detailsContainer.innerHTML = resultsDetails.map(result => `
+                <div class="result-row ${result.correct ? '' : 'incorrect'}">
+                    <span class="q-num">Q${result.question}:</span>
+                    <span class="user-ans">Your answer: ${result.userAnswer}</span>
+                    <span class="correct-ans">Correct: ${result.correctAnswer}</span>
+                </div>
+            `).join('');
+            document.getElementById('results-modal').classList.remove('hidden');
+        }
+        function closeResults() {
+            document.getElementById('results-modal').classList.add('hidden');
+        }
+        // Highlighting functionality
+        let selectedText = '';
+        let selectedRange = null;
+        let currentHighlightElement = null;
+        let isSelectingText = false;
+        let selectionTimeout = null;
+        document.addEventListener('mousedown', function(e) {
+            // Clear any existing timeouts
+            if (selectionTimeout) {
+                clearTimeout(selectionTimeout);
+                selectionTimeout = null;
+            }
+           
+            // Check if clicking on a highlight
+            if (e.target.classList.contains('highlight') || e.target.classList.contains('comment-highlight')) {
+                currentHighlightElement = e.target;
+                hideHighlightToolbar();
+                showRemoveToolbar(e.pageX, e.pageY);
+                return;
+            }
+           
+            // Hide toolbars when starting new selection
+            if (!e.target.closest('#highlight-toolbar') && !e.target.closest('#remove-highlight-toolbar')) {
+                hideHighlightToolbar();
+                hideRemoveToolbar();
+            }
+           
+            isSelectingText = true;
+        });
+        document.addEventListener('mouseup', function(e) {
+            // Don't interfere with drag and drop
+            if (e.target.closest('.drag-item') || e.target.closest('.drop-zone')) {
+                return;
+            }
+           
+            // Small delay to allow selection to complete
+            selectionTimeout = setTimeout(() => {
+                const selection = window.getSelection();
+                const selectedTextContent = selection.toString().trim();
+               
+                // Only process if we have a real text selection and we're in the passage
+                if (selectedTextContent.length > 0 && isSelectingText) {
+                    selectedText = selectedTextContent;
+                    selectedRange = selection.getRangeAt(0).cloneRange(); // Clone to preserve
+                   
+                    // Only show toolbar if selection is within the passage
+                    const passagePanel = document.querySelector('.passage-panel');
+                    if (passagePanel && passagePanel.contains(selectedRange.commonAncestorContainer)) {
+                        showHighlightToolbar(e.pageX, e.pageY);
+                    }
+                }
+               
+                isSelectingText = false;
+            }, 10);
+        });
+        document.addEventListener('click', function(e) {
+            // Don't hide toolbars if clicking on them
+            if (e.target.closest('#highlight-toolbar') || e.target.closest('#remove-highlight-toolbar')) {
+                return;
+            }
+           
+            // Hide toolbars when clicking elsewhere
+            setTimeout(() => {
+                const selection = window.getSelection();
+                if (selection.toString().trim().length === 0) {
+                    hideHighlightToolbar();
+                    hideRemoveToolbar();
+                }
+            }, 50);
+        });
+        function showHighlightToolbar(x, y) {
+            const toolbar = document.getElementById('highlight-toolbar');
+            toolbar.style.display = 'flex';
+            toolbar.style.left = Math.min(x, window.innerWidth - 250) + 'px';
+            toolbar.style.top = Math.max(y - 60, 10) + 'px';
+        }
+        function showRemoveToolbar(x, y) {
+            const toolbar = document.getElementById('remove-highlight-toolbar');
+            toolbar.style.display = 'flex';
+            toolbar.style.left = Math.min(x, window.innerWidth - 200) + 'px';
+            toolbar.style.top = Math.max(y - 60, 10) + 'px';
+        }
+        function hideHighlightToolbar() {
+            document.getElementById('highlight-toolbar').style.display = 'none';
+        }
+        function hideRemoveToolbar() {
+            document.getElementById('remove-highlight-toolbar').style.display = 'none';
+            currentHighlightElement = null;
+        }
+        function applyHighlight() {
+            if (selectedRange) {
+                try {
+                    // Restore the selection first
+                    const selection = window.getSelection();
+                    selection.removeAllRanges();
+                    selection.addRange(selectedRange);
+                   
+                    const span = document.createElement('span');
+                    span.className = 'highlight';
+                    span.title = 'Click to remove highlight';
+                   
+                    // Extract and wrap the content
+                    const contents = selectedRange.extractContents();
+                    span.appendChild(contents);
+                    selectedRange.insertNode(span);
+                   
+                    // Clear selection and hide toolbar
+                    selection.removeAllRanges();
+                    hideHighlightToolbar();
+                    selectedRange = null;
+                } catch (error) {
+                    console.error('Error applying highlight:', error);
+                    hideHighlightToolbar();
+                }
+            }
+        }
+        function addCommentToSelection() {
+            const comment = prompt('Add a note:');
+            if (comment && selectedRange) {
+                try {
+                    // Restore the selection first
+                    const selection = window.getSelection();
+                    selection.removeAllRanges();
+                    selection.addRange(selectedRange);
+                   
+                    const span = document.createElement('span');
+                    span.className = 'comment-highlight';
+                   
+                    // Create tooltip
+                    const tooltip = document.createElement('span');
+                    tooltip.className = 'comment-tooltip';
+                    tooltip.textContent = comment;
+                   
+                    // Extract and wrap the content
+                    const contents = selectedRange.extractContents();
+                    span.appendChild(contents);
+                    span.appendChild(tooltip);
+                    selectedRange.insertNode(span);
+                   
+                    // Clear selection and hide toolbar
+                    selection.removeAllRanges();
+                    hideHighlightToolbar();
+                    selectedRange = null;
+                } catch (error) {
+                    console.error('Error adding comment:', error);
+                    hideHighlightToolbar();
+                }
+            } else {
+                hideHighlightToolbar();
+            }
+        }
+        function removeHighlight() {
+            if (currentHighlightElement) {
+                const parent = currentHighlightElement.parentNode;
+               
+                // Move all child nodes to replace the highlight element
+                while (currentHighlightElement.firstChild) {
+                    parent.insertBefore(currentHighlightElement.firstChild, currentHighlightElement);
+                }
+               
+                // Remove the highlight element
+                parent.removeChild(currentHighlightElement);
+               
+                // Normalize the parent to merge adjacent text nodes
+                parent.normalize();
+               
+                hideRemoveToolbar();
+            }
+        }
+    </script>
+</body>
+</html>

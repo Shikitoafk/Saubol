@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>READING PASSAGE 3 – The Future of the World’s Languages</title>
+<style>
+:root{--brand:#2563eb;--ink:#111827;--bg:#f7f7fb;--ok:#16a34a;--bad:#dc2626;--muted:#6b7280}
+*{box-sizing:border-box}body{margin:0;font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;background:var(--bg);color:#111}
+.container{display:flex;gap:20px;max-width:1200px;margin:0 auto;padding:20px 20px 96px}
+.card{background:#fff;border-radius:12px;box-shadow:0 4px 14px rgba(0,0,0,.08);padding:20px;overflow:auto;max-height:90vh}
+.passage{flex:1}.questions{flex:1}
+h1{color:var(--ink);border-bottom:2px solid #2563eb;padding-bottom:10px;margin:0 0 14px}
+h2{color:#2563eb;margin:22px 0 10px}
+.muted{color:var(--muted)}
+.timerWrap{position:fixed;top:16px;right:16px;display:flex;align-items:center;gap:8px;z-index:10}
+.timer{background:#2563eb;color:#fff;padding:10px 14px;border-radius:8px;font-weight:700}
+.tbtn{border:1px solid #e5e7eb;background:#fff;color:#111;padding:8px 10px;border-radius:8px;cursor:pointer}
+.qsection{margin:14px 0 6px}.qblock{padding:14px;border:1px solid #e5e7eb;border-radius:12px;margin:12px 0}
+.qhead{font-weight:600;margin-bottom:8px}.options{margin-top:8px}
+.options label{display:block;margin:6px 0}
+select{padding:8px;border-radius:8px;border:1px solid #e5e7eb;width:100%;max-width:520px}
+.submit{background:#2563eb;color:#fff;border:0;padding:12px 18px;border-radius:8px;cursor:pointer;font-size:16px;margin-top:16px}
+.results{display:none;margin-top:18px;background:#f8f9fa;border-radius:10px;padding:16px}
+.results ul{list-style:none;padding:0;margin:8px 0 0}.results li{margin:6px 0;padding:8px;border-radius:8px}
+.results li.ok{background:#ecfdf5;color:#065f46}.results li.bad{background:#fef2f2;color:#991b1b}
+.results .meta{font-size:13px;color:var(--muted)}
+.footerNav{position:fixed;left:0;right:0;bottom:0;background:#fff;border-top:1px solid #e5e7eb;padding:10px 12px;display:flex;flex-wrap:wrap;gap:8px;align-items:center;z-index:9}
+.chip{border:1px solid #d1d5db;background:#fff;color:#111;padding:6px 10px;border-radius:999px;cursor:pointer;font-size:14px}
+.chip.answered{border-color:#9ca3af;background:#f3f4f6}
+.palette{position:fixed;background:#fff;padding:8px;border-radius:8px;box-shadow:0 2px 10px rgba(0,0,0,.12);display:none;z-index:9}
+.hbtn{background:#2563eb;color:#fff;border:0;padding:6px 10px;border-radius:6px;margin:4px 4px 0 0;cursor:pointer}
+.highlight{background:yellow}
+</style>
+</head>
+<body>
+<div class="timerWrap">
+  <div class="timer" id="timer">20:00</div>
+  <button class="tbtn" id="pauseBtn">⏸️ Pause</button>
+  <button class="tbtn" id="resumeBtn" disabled>▶️ Resume</button>
+</div>
+
+<div class="palette" id="pPalette">
+  <button class="hbtn" data-color="yellow">Yellow</button>
+  <button class="hbtn" data-color="lightgreen">Green</button>
+  <button class="hbtn" data-color="lightblue">Blue</button>
+  <button class="hbtn" data-color="pink">Pink</button>
+  <button class="hbtn" data-color="orange">Orange</button>
+  <button class="hbtn" id="clearPMarks">Clear</button>
+</div>
+<div class="palette" id="qPalette">
+  <button class="hbtn" data-color="yellow">Yellow</button>
+  <button class="hbtn" data-color="lightgreen">Green</button>
+  <button class="hbtn" data-color="lightblue">Blue</button>
+  <button class="hbtn" data-color="pink">Pink</button>
+  <button class="hbtn" data-color="orange">Orange</button>
+  <button class="hbtn" id="clearQMarks">Clear</button>
+</div>
+
+<div class="container">
+  <div class="card passage" id="passageCard">
+    <h1>READING PASSAGE 3 – The Future of the World’s Languages</h1>
+    <div class="muted">You should spend about 20 minutes on Questions 27–40.</div>
+
+    <div id="passage">
+      <h2>Reading Passage 3</h2>
+      <h3>The Future of the World’s Languages</h3>
+
+      <p><strong>A.</strong> Of the world’s 6,500 living languages, around half are expected to the out by the end of this century,
+according to UNESCO. Just 11 are spoken by more than half of the earth’s population, so it is little
+wonder that those used by only a few are being left behind as we become a more homogenous, global
+society. In short, 95 percent of the world’s languages are spoken by only five percent of its population—
+a remarkable level of linguistic diversity stored in tiny pockets of speakers around the world. Mark Turin,
+a university professor, has launched WOLP (World Oral Language Project) to prevent the language from
+the brink of extinction.</p>
+
+      <p><strong>B.</strong> He is trying to encourage indigenous communities to collaborate with anthropologists around the
+world to record what he calls “oral literature” through video cameras, voice recorders and other
+multimedia tools by awarding grants from a £30,000 pot that the project has secured this year. The idea
+is to collate this literature in a digital archive that can be accessed on-demand and will make the nuts
+and bolts of lost cultures readily available. For many of these communities, the oral tradition is at the
+heart of their culture. The stories they tell are creative as well as communicative. Unlike the languages
+with celebrated written traditions, such as Sanskrit, Hebrew and Ancient Greek, few indigenous
+communities have recorded their own languages or ever had them recorded until now.</p>
+
+      <p><strong>C.</strong> The project suggested itself when Turin was teaching in Nepal. He wanted to study for a PhD in
+endangered languages and, while discussing it with his professor at Leiden University in the
+Netherlands, was drawn to a map on his tutor’s wall. The map was full of pins of a variety of colours
+which represented all the world’s languages that were completely undocumented. At random, Turin
+chose a “pin” to document. It happened to belong to the Thangmi tribe, an indigenous community in the
+hills east of Kathmandu, the capital of Nepal. “Many of the choices anthropologists and linguists who
+work on these traditional field-work projects are quite random,” he admits.</p>
+
+      <p><strong>D.</strong> Continuing his work with the Thangmi community in the 1990s, Turin began to record the language
+he was hearing, realising that not only was this language and its culture entirely undocumented, it was
+known to few outside the tiny community. He set about trying to record their language and myth of
+origins. “I wrote 1,000 pages of grammar in English that nobody could use—but I realised that wasn’t
+enough. It wasn’t enough for me, it wasn’t enough for them. It simply wasn’t going to work as
+something for the community. So then I produced this trilingual word list in Thangmi, Nepali and
+English.”</p>
+
+      <p><strong>E.</strong> In short, it was the first-ever publication of that language. That small dictionary is still sold in local
+schools for a modest 20 rupees, and used as part of a wider cultural regeneration process to educate
+children about their heritage and language. The task is no small undertaking: Nepal itself is a country of
+massive ethnic and linguistic diversity, home to 100 languages from four different language families.
+What’s more, even fewer ethnic Thangmi speak the Thangmi language. Many of the community
+members have taken to speaking Nepali, the national language taught in schools and spread through the
+media, and community elders are dying without passing on their knowledge.</p>
+
+      <p><strong>F.</strong> Despite Turin’s enthusiasm for his subject, he is baffled by many linguists’ refusal to engage in the
+issue he is working on. “Of the 6,500 languages spoken on Earth, many do not have written traditions
+and many of these spoken forms are endangered,” he says. “There are more linguists in universities
+around the world than there are spoken languages—but most of them aren’t working on this issue. To
+me it’s amazing that in this day and age, we still have an entirely incomplete image of the world’s
+linguistic diversity. People do PhDs on the apostrophe in French, yet we still don’t know how many
+languages are spoken.” “When a language becomes endangered, so too does a cultural world view. We
+want to engage with indigenous people to document their myths and folklore, which can be harder to
+find funding for if you are based outside Western universities.”</p>
+
+      <p><strong>G.</strong> Yet, despite the struggles facing initiatives such as the World Oral Literature Project, there are
+historical examples that point to the possibility that language restoration is no mere academic pipe
+dream. The revival of a modern form of Hebrew in the 19th century is often cited as one of the best
+proofs that languages long dead, belonging to small communities, can be resurrected and embraced by
+a large number of people. By the 20th century, Hebrew was well on its way to becoming the main
+language of the Jewish population of both Ottoman and British Palestine. It is now spoken by more than
+seven million people in Israel.</p>
+
+      <p><strong>H.</strong> Yet, despite the difficulties these communities face in saving their languages, Dr Turin believes that
+the fate of the world’s endangered languages is not sealed, and globalisation is not necessarily the
+nefarious perpetrator of evil it is often presented to be. “I call it the globalisation paradox: on the one
+hand globalisation and rapid socio-economic change are the things that are eroding and challenging
+diversity But on the other, globalisation is providing us with new and very exciting tools and facilities to
+get to places to document those things that globalisation is eroding. Also, the communities at the coalface of change are excited by what globalisation has to offer.</p>
+
+      <p><strong>I.</strong> In the meantime, the race is on to collect and protect as many of the languages as possible, so that
+the Rai Shaman in eastern Nepal and those in the generations that follow him can continue their
+traditions and have a sense of identity. And it certainly is a race: Turin knows his project’s limits and
+believes it is inevitable that a large number of those languages will disappear. “We have to be wholly
+realistic. A project like ours is in no position, and was not designed, to keep languages alive. The only
+people who can help languages survive are the people in those communities themselves. They need to
+be reminded that it’s good to speak their own language and I think we can help them do that—
+becoming modem doesn’t mean you have to lose your language.”</p>
+    </div>
+  </div>
+
+  <div class="card questions">
+    <h1>Questions</h1>
+    <div id="qroot"></div>
+    <button class="submit" id="submitBtn">Submit Answers</button>
+    <div class="results" id="results">
+      <h2>Your Results</h2>
+      <div id="score" class="meta"></div>
+      <ul id="answers"></ul>
+    </div>
+  </div>
+</div>
+
+<div class="footerNav" id="footerNav"></div>
+
+<script>
+const CONFIG={
+  durationMinutes:20, showFooterNavigator:true,
+  sections:[
+    { type:"pickAJ", heading:"Questions 27–31", instructions:[
+        "Complete the summary using the list of words, A–J, below.",
+        "Write the correct letter, A–J."
+      ],
+      legend:["A similarity","B significance","C funding","D minority","E education","F difference","G education","H diversity","I majority","J disappearance"],
+      items:[
+        {id:27,prompt:"Most of the world’s languages are spoken by a ______ of people.",correct:"D"},
+        {id:28,prompt:"Turin set up WOLP to prevent ______ of the languages.",correct:"J"},
+        {id:29,prompt:"The project provides ______ to enable people to record their endangered languages.",correct:"C"},
+        {id:30,prompt:"The oral tradition has great cultural ______.",correct:"B"},
+        {id:31,prompt:"An important ______ existed between languages with few speakers and those with celebrated written documents.",correct:"F"}
+      ]
+    },
+    { type:"tfn", heading:"Questions 32–35", instructions:["Do the following statements agree with Reading Passage 3?"],
+      items:[
+        {id:32,text:"Turin argued that anthropologists and linguists usually think carefully before selecting an area to research.",correct:"FALSE"},
+        {id:33,text:"Turin concluded that the Thangmi language had few similarities with other languages.",correct:"NOT GIVEN"},
+        {id:34,text:"Turin has written that the 1,000-page grammar was not useful for the community.",correct:"TRUE"},
+        {id:35,text:"Some Nepalese schools lack resources to devote to language teaching.",correct:"NOT GIVEN"}
+      ]
+    },
+    { type:"mcq", heading:"Questions 36–40", instructions:["Choose the correct letter, A, B, C or D."],
+      items:[
+        {id:36,text:"Why does Turin say people do PhDs on the apostrophe in French?",options:{
+          A:"He thinks research should result in a diverse cultural outlook.",
+          B:"He holds that research into French should focus on more general aspects.",
+          C:"He believes researchers have limited role in the research of languages.",
+          D:"He compares research priorities, contrasting niche studies with the lack of documentation of many languages."
+        },correct:"D"},
+        {id:37,text:"What is discussed in the ninth paragraph?",options:{
+          A:"Initiatives the WOLP is bringing to Israel.",
+          B:"Historical examples, like Hebrew, showing that endangered languages can survive.",
+          C:"A community where people distrust language revival.",
+          D:"Methods of research that have improved language restoration."
+        },correct:"B"},
+        {id:38,text:"How is the WOLP’s prospect?",options:{
+          A:"There’s a chance to help protect endangered languages, though many will still disappear.",
+          B:"It will be embraced by a large number of people.",
+          C:"It will keep languages alive.",
+          D:"It would not raise enough funds to achieve its aims."
+        },correct:"A"},
+        {id:39,text:"What is Turin’s main point about globalisation?",options:{
+          A:"We should have a more critical view of globalisation.",
+          B:"We should foremost protect our identity in face of globalisation.",
+          C:"Globalisation is the main reason for endangered language.",
+          D:"Globalisation has both advantages and disadvantages."
+        },correct:"D"},
+        {id:40,text:"What does Turin suggest that community people should do?",options:{
+          A:"Modernise without losing their language.",
+          B:"Join the race but be realistic.",
+          C:"Learn other languages.",
+          D:"Only have a sense of identity."
+        },correct:"A"}
+      ]
+    }
+  ]
+};
+
+/* ---- RENDER ENGINE (same as template) ---- */
+const qroot=document.getElementById('qroot');const navIds=[];const answersMap={};const typesMap={};
+function sectionHeader(t){const h=document.createElement('h2');h.className='qsection';h.textContent=t;return h;}
+function renderPickAJ(sec){qroot.appendChild(sectionHeader(sec.heading));(sec.instructions||[]).forEach(tx=>{const p=document.createElement('p');p.className='muted';p.textContent=tx;qroot.appendChild(p);});const legend=document.createElement('div');legend.className='qblock';legend.innerHTML=`<div class="qhead"><strong>List of words</strong></div><div class="options">${sec.legend.map((t,i)=>`<div><b>${String.fromCharCode(65+i)}</b> — ${t}</div>`).join('')}</div>`;qroot.appendChild(legend);sec.items.forEach(it=>{const b=document.createElement('div');b.className='qblock';b.id=`anchor-${it.id}`;const sel=`<select id="q${it.id}" name="q${it.id}"><option value="">—</option>${Array.from({length:10},(_,i)=>String.fromCharCode(65+i)).map(k=>`<option value="${k}">${k}</option>`).join('')}</select>`;b.innerHTML=`<div class="qhead"><strong>${it.id}.</strong> ${it.prompt}</div><div class="options">${sel}</div>`;qroot.appendChild(b);navIds.push(it.id);answersMap[it.id]=it.correct;typesMap[it.id]='pickAJ';});}
+function renderTFN(sec){qroot.appendChild(sectionHeader(sec.heading));(sec.instructions||[]).forEach(tx=>{const p=document.createElement('p');p.className='muted';p.textContent=tx;qroot.appendChild(p);});sec.items.forEach(it=>{const b=document.createElement('div');b.className='qblock';b.id=`anchor-${it.id}`;const opts=['TRUE','FALSE','NOT GIVEN'].map(v=>`<label><input type="radio" name="q${it.id}" value="${v}"> ${v}</label>`).join('');b.innerHTML=`<div class="qhead"><strong>${it.id}.</strong> ${it.text}</div><div class="options">${opts}</div>`;qroot.appendChild(b);navIds.push(it.id);answersMap[it.id]=it.correct;typesMap[it.id]='tfn';});}
+function renderMCQ(sec){qroot.appendChild(sectionHeader(sec.heading));(sec.instructions||[]).forEach(tx=>{const p=document.createElement('p');p.className='muted';p.textContent=tx;qroot.appendChild(p);});sec.items.forEach(it=>{const b=document.createElement('div');b.className='qblock';b.id=`anchor-${it.id}`;const opts=Object.entries(it.options).map(([k,v])=>`<label><input type="radio" name="q${it.id}" value="${k}"> ${k}. ${v}</label>`).join('');b.innerHTML=`<div class="qhead"><strong>${it.id}.</strong> ${it.text}</div><div class="options">${opts}</div>`;qroot.appendChild(b);navIds.push(it.id);answersMap[it.id]=it.correct;typesMap[it.id]='mcq';});}
+CONFIG.sections.forEach(sec=>{if(sec.type==='pickAJ')renderPickAJ(sec);if(sec.type==='tfn')renderTFN(sec);if(sec.type==='mcq')renderMCQ(sec);});
+const footerNav=document.getElementById('footerNav');footerNav.innerHTML='<strong class="muted">Questions:</strong>';[...new Set(navIds)].sort((a,b)=>a-b).forEach(id=>{const chip=document.createElement('button');chip.className='chip';chip.id=`chip-${id}`;chip.textContent=id;chip.addEventListener('click',()=>{document.getElementById(`anchor-${id}`).scrollIntoView({behavior:'smooth',block:'center'});});footerNav.appendChild(chip);});
+let timeLeft=20*60;const timer=document.getElementById('timer'),pauseBtn=document.getElementById('pauseBtn'),resumeBtn=document.getElementById('resumeBtn');let paused=false,iv;
+const fmt=s=>`${String(Math.floor(s/60)).padStart(2,'0')}:${String(s%60).padStart(2,'0')}`;
+function start(){if(iv)clearInterval(iv);iv=setInterval(()=>{if(paused)return;timer.textContent=fmt(timeLeft);if(timeLeft<=0){clearInterval(iv);alert("Time's up! Submitting.");submit();}timeLeft--;},1000);}timer.textContent=fmt(timeLeft);start();
+pauseBtn?.addEventListener('click',()=>{paused=true;pauseBtn.disabled=true;resumeBtn.disabled=false;});
+resumeBtn?.addEventListener('click',()=>{paused=false;pauseBtn.disabled=false;resumeBtn.disabled=true;});
+document.getElementById('submitBtn').addEventListener('click',submit);
+function norm(s){return (s||'').trim().toUpperCase();}
+function submit(){paused=true;pauseBtn.disabled=true;resumeBtn.disabled=false;let total=0,graded=0,okc=0;const out=[];Object.keys(answersMap).map(Number).sort((a,b)=>a-b).forEach(id=>{total++;const type=typesMap[id];let user='',ok=false;if(type==='mcq'||type==='tfn'){const p=document.querySelector(`input[name="q${id}"]:checked`);user=p?p.value:'';ok=norm(user)===norm(answersMap[id]);}else if(type==='pickAJ'){const el=document.getElementById('q'+id);user=el?el.value:'';ok=norm(user)===norm(answersMap[id]);}if(user)graded++;if(ok)okc++;out.push({id,status:ok?'✓ Correct':'✗ Incorrect',user:user||'No answer',corr:String(answersMap[id])});});
+document.getElementById('results').style.display='block';
+document.getElementById('score').innerHTML=`Graded ${graded} of ${total} • Score: ${okc}/${graded||total}`;
+document.getElementById('answers').innerHTML=out.map(it=>`<li class="${/Correct/.test(it.status)?'ok':'bad'}">Q${it.id}: ${it.status} — Your: <b>${it.user}</b> | Correct: <b>${it.corr}</b></li>`).join('');
+document.getElementById('results').scrollIntoView({behavior:'smooth'});}
+const passageCard=document.getElementById('passageCard');const qCard=document.querySelector('.card.questions');
+['p','q'].forEach(kind=>{const scope=kind==='p'?passageCard:qCard;const pal=document.getElementById(kind==='p'?'pPalette':'qPalette');scope.addEventListener('mouseup',e=>{const sel=window.getSelection();if(!sel||sel.toString().trim().length===0)return;if(!scope.contains(sel.getRangeAt(0).commonAncestorContainer))return;const r=scope.getBoundingClientRect(),x=Math.min(e.clientX-r.left,r.width-10),y=Math.max(0,e.clientY-r.top-40);pal.style.left=(r.left+x)+'px';pal.style.top=(r.top+y)+'px';pal.style.display='block';});document.addEventListener('mousedown',e=>{if(!pal.contains(e.target))pal.style.display='none';});pal.querySelectorAll('.hbtn[data-color]').forEach(btn=>btn.addEventListener('click',()=>{markSelection(btn.dataset.color,scope);pal.style.display='none';}));pal.querySelector('#clear'+(kind==='p'?'P':'Q')+'Marks')?.addEventListener('click',()=>{scope.querySelectorAll('span.highlight').forEach(n=>{const p=n.parentNode;while(n.firstChild)p.insertBefore(n.firstChild,n);p.removeChild(n);p.normalize();});pal.style.display='none';});});
+function markSelection(color,scope){const sel=window.getSelection();if(!sel||!sel.rangeCount)return;const range=sel.getRangeAt(0);if(!scope.contains(range.commonAncestorContainer))return;const r=range.extractContents();const s=document.createElement('span');s.className='highlight';s.style.backgroundColor=color;s.appendChild(r);range.insertNode(s);sel.removeAllRanges();}
+</script>
+</body>
+</html>

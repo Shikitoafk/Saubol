@@ -1,0 +1,774 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>IELTS Reading Test: Developmental Tasks of Normal Adolescence</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --day-bg: #f8f9fa;
+            --day-text: #212529;
+            --day-primary: #6f42c1;
+            --day-secondary: #e9ecef;
+            --day-highlight-yellow: rgba(255, 255, 0, 0.3);
+            --day-highlight-blue: rgba(0, 191, 255, 0.3);
+            
+            --night-bg: #1a1a2e;
+            --night-text: #e6e6e6;
+            --night-primary: #8a2be2;
+            --night-secondary: #16213e;
+            --night-highlight-yellow: rgba(255, 215, 0, 0.4);
+            --night-highlight-blue: rgba(30, 144, 255, 0.4);
+            
+            --sepia-bg: #f4ecd8;
+            --sepia-text: #5c4b37;
+            --sepia-primary: #8b4513;
+            --sepia-secondary: #e3d5b8;
+            --sepia-highlight-yellow: rgba(210, 180, 140, 0.4);
+            --sepia-highlight-blue: rgba(101, 139, 165, 0.4);
+            
+            --transition: all 0.3s ease;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: var(--bg);
+            color: var(--text);
+            transition: var(--transition);
+            overflow: hidden;
+        }
+
+        body.day-mode {
+            --bg: var(--day-bg);
+            --text: var(--day-text);
+            --primary: var(--day-primary);
+            --secondary: var(--day-secondary);
+            --highlight-yellow: var(--day-highlight-yellow);
+            --highlight-blue: var(--day-highlight-blue);
+        }
+
+        body.night-mode {
+            --bg: var(--night-bg);
+            --text: var(--night-text);
+            --primary: var(--night-primary);
+            --secondary: var(--night-secondary);
+            --highlight-yellow: var(--night-highlight-yellow);
+            --highlight-blue: var(--night-highlight-blue);
+        }
+
+        body.sepia-mode {
+            --bg: var(--sepia-bg);
+            --text: var(--sepia-text);
+            --primary: var(--sepia-primary);
+            --secondary: var(--sepia-secondary);
+            --highlight-yellow: var(--sepia-highlight-yellow);
+            --highlight-blue: var(--sepia-highlight-blue);
+        }
+
+        .container {
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+        }
+
+        header {
+            background-color: var(--primary);
+            color: white;
+            padding: 1rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            flex-shrink: 0;
+        }
+
+        .theme-selector {
+            display: flex;
+            gap: 10px;
+        }
+
+        .theme-btn {
+            background: rgba(255, 255, 255, 0.2);
+            border: none;
+            border-radius: 50%;
+            width: 30px;
+            height: 30px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: var(--transition);
+        }
+
+        .theme-btn:hover {
+            transform: scale(1.1);
+        }
+
+        
+
+        
+
+        .timer {
+            font-size: 1.2rem;
+            font-weight: bold;
+            background: rgba(255, 255, 255, 0.2);
+            padding: 5px 15px;
+            border-radius: 20px;
+        }
+
+        .timer.warning {
+            color: #ff6b6b;
+            animation: pulse 1s infinite;
+        }
+
+         pulse {
+            0% { opacity: 1; }
+            50% { opacity: 0.6; }
+            100% { opacity: 1; }
+        }
+
+        .content {
+            display: flex;
+            flex: 1;
+            overflow: hidden;
+        }
+
+         (max-width: 768px) {
+            .content {
+                flex-direction: column;
+            }
+        }
+
+        .passage-container {
+            flex: 1;
+            overflow-y: auto;
+            padding: 20px;
+            border-right: 1px solid var(--secondary);
+        }
+
+        .questions-container {
+            flex: 1;
+            overflow-y: auto;
+            padding: 20px;
+            background-color: var(--secondary);
+        }
+
+        .passage {
+            line-height: 1.6;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .passage h1 {
+            color: var(--primary);
+            border-bottom: 2px solid var(--primary);
+            padding-bottom: 10px;
+        }
+
+        .passage p {
+            margin-bottom: 16px;
+        }
+
+        .highlight-yellow {
+            background-color: var(--highlight-yellow);
+        }
+
+        .highlight-blue {
+            background-color: var(--highlight-blue);
+        }
+
+        .highlight-menu {
+            position: absolute;
+            background: white;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            padding: 5px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            z-index: 1000;
+            display: flex;
+            gap: 5px;
+        }
+
+        .highlight-menu button {
+            background: none;
+            border: none;
+            cursor: pointer;
+            padding: 5px;
+            border-radius: 3px;
+            transition: var(--transition);
+        }
+
+        .highlight-menu button:hover {
+            background: #f0f0f0;
+        }
+
+        .question {
+            margin-bottom: 20px;
+            padding: 15px;
+            background-color: var(--bg);
+            border-radius: 8px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+        }
+
+        .question h3 {
+            margin-top: 0;
+            color: var(--primary);
+        }
+
+        .options {
+            display: flex;
+            gap: 15px;
+            margin-top: 10px;
+            flex-wrap: wrap;
+        }
+
+        .option {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        input[type="text"] {
+            padding: 8px;
+            border: 1px solid var(--secondary);
+            border-radius: 4px;
+            background-color: var(--bg);
+            color: var(--text);
+            width: 200px;
+        }
+
+        .submit-btn {
+            display: block;
+            margin: 20px auto;
+            padding: 12px 30px;
+            background-color: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 30px;
+            font-size: 1.1rem;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .submit-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .results {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: var(--bg);
+            z-index: 2000;
+            overflow-y: auto;
+            padding: 20px;
+            display: none;
+        }
+
+        .results.visible {
+            display: block;
+        }
+
+        .results-content {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .score {
+            text-align: center;
+            font-size: 2rem;
+            margin: 20px 0;
+            color: var(--primary);
+        }
+
+        .answer {
+            margin-bottom: 15px;
+            padding: 15px;
+            border-radius: 8px;
+            background-color: var(--secondary);
+        }
+
+        .correct {
+            border-left: 5px solid #4caf50;
+        }
+
+        .incorrect {
+            border-left: 5px solid #f44336;
+        }
+
+        .close-btn {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            font-size: 1.2rem;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .reference {
+            font-style: italic;
+            color: var(--primary);
+            margin-top: 5px;
+        }
+
+        select {
+            padding: 8px;
+            border: 1px solid var(--secondary);
+            border-radius: 4px;
+            background-color: var(--bg);
+            color: var(--text);
+            width: 100%;
+            max-width: 300px;
+        }
+    </style>
+</head>
+<body class="day-mode">
+    <div class="container">
+        <header>
+            <div class="theme-selector">
+                <button class="theme-btn" title="Day Mode" onclick="setTheme('day')"><i class="fas fa-sun"></i></button>
+                <button class="theme-btn" title="Night Mode" onclick="setTheme('night')"><i class="fas fa-moon"></i></button>
+                <button class="theme-btn" title="Sepia Mode" onclick="setTheme('sepia')"><i class="fas fa-seedling"></i></button>
+            </div>
+            
+            <div class="timer" id="timer">20:00</div>
+        </header>
+
+        <div class="content">
+            <div class="passage-container">
+                <div class="passage" id="reading-passage">
+                    <h1>Developmental Tasks of Normal Adolescence</h1>
+
+                    <p>Some years ago, Professor Robert Havighurst of the University of Chicago, USA, proposed that stages in human development can best be thought of in terms of the developmental 'tasks' that are part of the normal transition. He identified ten developmental tasks associated with the adolescent transition. Each of the Havighurst tasks can also be seen as elements of the overall sense of self that adolescents carry with them as they move towards and into young adulthood. Adolescents do not progress through these multiple developmental tasks separately; at any given time they may be dealing with several.</p>
+
+                    <p>The adolescent must adjust to a new physical sense of self. At no other time since birth does an individual undergo such profound physical changes as during early adolescence. Puberty is marked by sudden rapid growth in height and weight. Also, the young person experiences the emergence and accentuation of those physical traits that make the person a boy or a girl. The young person looks less like a child and more like a physically mature adult. The effect of this rapid change is that mid-adolescents are body-conscious, and their concerns are directed towards their opposite-sexed peers.</p>
+
+                    <p>The adolescent must adjust to new intellectual abilities. In addition to a sudden spurt in physical growth, adolescents experience a sudden increase in their ability to think about their world. As a normal part of maturity, they are able to think more things. However, they are also able to conceive of their world with awareness. Before adolescence, children's thinking is dominated by a concrete example for any problem that they solve; their thinking is constrained to what is real and physical. During adolescence, young people begin to recognise and understand abstractions. The growth in ability to deal with abstractions accelerates during the middle stages of adolescence.</p>
+
+                    <p>The adolescent must adjust to increased cognitive demands at school. Adults see high school in part as a place where adolescents prepare for adult roles and responsibilities and in part as preparatory for further education. School curricula are frequently dominated by the inclusion of more abstract, demanding material, regardless of whether the adolescents have achieved formal thought. Since not all adolescents make the intellectual transition at the same rate, demands for abstract thinking prior to the achievement of that ability may be frustrating.</p>
+
+                    <p>The adolescent must adopt a personal value system. During adolescence, as teens develop increasingly complex knowledge systems, they also adopt an integrated set of values and morals. During the early stages of moral development, parents provide their child with a structured set of rules of what is right and wrong, what is acceptable and unacceptable. Eventually the adolescent must assess the parent's values as they come into conflict with values expressed by peers and other segments of society. To reconcile differences, the adolescent restructures those beliefs into a personal ideology.</p>
+
+                    <p>The adolescent must develop expanded verbal skills to accommodate more complex concepts and tasks. Their limited language of childhood is no longer adequate. As their conceptual development may outstrip their verbal development, adolescents may appear less competent than they really are.</p>
+
+                    <p>The adolescent must establish adult vocational goals. As part of the process of establishing a personal identity, the adolescent must also begin the process of focusing on the question, 'What do you plan to be when you grow up?' Mid-adolescents must identify, at least at a preliminary level, what their adult vocational goals are and how they intend to achieve them.</p>
+
+                    <p>The adolescent must develop a personal sense of identity. Prior to adolescence, one's identity is an extension of one's parents' identity. During the early adolescent years a young person begins to recognise their uniqueness and to establish themselves as separate individuals, independent of their parents. As such, one must reconsider the answer to the question, 'what does it mean to be me?' or "who am I?"</p>
+
+                    <p>The adolescent must establish emotional and psychological independence from his or her parents, childhood is marked by strong dependence on one's parents. Adolescents may yearn to keep that safe, secure, supportive, dependent relationship. Yet, to be an adult implies a sense of independence, of autonomy, of being one's own person. In an attempt to assert their need for independence and individuality, adolescents may respond with what appears to be hostility and lack of cooperation.</p>
+
+                    <p>The adolescent must develop stable and productive peer relationships. Although peer interaction is not unique to adolescence, it seems to hit a peak of importance during early adolescence. Certainly by late adolescence or early adulthood the need for peer approval has diminished. This degree to which an adolescent is able to make friends and have an accepting peer group, though, is a major indicator of how well the adolescent will adjust in other areas of social and psychological development. Early adolescence is also a period of intense conformity to peers. "Fitting in' not being different, and being accepted seem somehow pressing to this age group. The worst possibility, from the view of the young teen, is to be seen by peers as different.</p>
+
+                    <p>The adolescent must develop increased impulse control and behavioural maturity. In their shift to adulthood, most young people engage in one or more behaviours that place them at physical, social, or educational risk. Risky behaviours are sufficiently pervasive among adolescents to suggest that risk-taking may be a normal developmental process of middle adolescence. Gradually adolescents develop a set of behavioural self-controls through which they assess which behaviours are acceptable and adult-like.</p>
+                </div>
+            </div>
+
+            <div class="questions-container">
+                <h2>Questions 1-6</h2>
+                <p>Classify the following developments as characterising</p>
+                <p>A early adolescence</p>
+                <p>B middle adolescence</p>
+                <p>C late adolescence</p>
+                <p>Write the correct letter, <strong>A, B or C</strong>, in boxes <strong>1-6</strong> on your answer sheet</p>
+
+                <div class="question">
+                    <h3>1. becoming interested in people of the other gender</h3>
+                    <div class="options">
+                        <label class="option"><input type="radio" name="q1" value="A"> A</label>
+                        <label class="option"><input type="radio" name="q1" value="B"> B</label>
+                        <label class="option"><input type="radio" name="q1" value="C"> C</label>
+                    </div>
+                </div>
+
+                <div class="question">
+                    <h3>2. beginning to choose a future career</h3>
+                    <div class="options">
+                        <label class="option"><input type="radio" name="q2" value="A"> A</label>
+                        <label class="option"><input type="radio" name="q2" value="B"> B</label>
+                        <label class="option"><input type="radio" name="q2" value="C"> C</label>
+                    </div>
+                </div>
+
+                <div class="question">
+                    <h3>3. needing to feel the same as one's friends</h3>
+                    <div class="options">
+                        <label class="option"><input type="radio" name="q3" value="A"> A</label>
+                        <label class="option"><input type="radio" name="q3" value="B"> B</label>
+                        <label class="option"><input type="radio" name="q3" value="C"> C</label>
+                    </div>
+                </div>
+
+                <div class="question">
+                    <h3>4. beginning to form a self-image separate from the family context</h3>
+                    <div class="options">
+                        <label class="option"><input type="radio" name="q4" value="A"> A</label>
+                        <label class="option"><input type="radio" name="q4" value="B"> B</label>
+                        <label class="option"><input type="radio" name="q4" value="C"> C</label>
+                    </div>
+                </div>
+
+                <div class="question">
+                    <h3>5. having less need for the good opinion of friends</h3>
+                    <div class="options">
+                        <label class="option"><input type="radio" name="q5" value="A"> A</label>
+                        <label class="option"><input type="radio" name="q5" value="B"> B</label>
+                        <label class="option"><input type="radio" name="q5" value="C"> C</label>
+                    </div>
+                </div>
+
+                <div class="question">
+                    <h3>6. exposing oneself to dangers</h3>
+                    <div class="options">
+                        <label class="option"><input type="radio" name="q6" value="A"> A</label>
+                        <label class="option"><input type="radio" name="q6" value="B"> B</label>
+                        <label class="option"><input type="radio" name="q6" value="C"> C</label>
+                    </div>
+                </div>
+
+                <h2>Questions 7-10</h2>
+                <p>Complete each sentence with the correct ending, <strong>A-E</strong>, below.</p>
+                <p>Write the correct letter, <strong>A-E</strong> in boxes <strong>7-10</strong> on your answer sheet.</p>
+
+                <div style="background: var(--bg); padding: 15px; border-radius: 8px; margin-bottom: 20px;">
+                    <p><strong>A</strong> reflects an adolescent's emerging self-perception.</p>
+                    <p><strong>B</strong> cannot solve a problem without an example.</p>
+                    <p><strong>C</strong> is designed to become more challenging.</p>
+                    <p><strong>D</strong> formulates a personal set of moral beliefs and values.</p>
+                    <p><strong>E</strong> varies according to the individual.</p>
+                </div>
+
+                <div class="question">
+                    <h3>7. Havighurst proposed a set of tasks which</h3>
+                    <select id="q7">
+                        <option value="">Select ending</option>
+                        <option value="A">A</option>
+                        <option value="B">B</option>
+                        <option value="C">C</option>
+                        <option value="D">D</option>
+                        <option value="E">E</option>
+                    </select>
+                </div>
+
+                <div class="question">
+                    <h3>8. A course of study at high school</h3>
+                    <select id="q8">
+                        <option value="">Select ending</option>
+                        <option value="A">A</option>
+                        <option value="B">B</option>
+                        <option value="C">C</option>
+                        <option value="D">D</option>
+                        <option value="E">E</option>
+                    </select>
+                </div>
+
+                <div class="question">
+                    <h3>9. The speed of development of thinking ability during adolescence</h3>
+                    <select id="q9">
+                        <option value="">Select ending</option>
+                        <option value="A">A</option>
+                        <option value="B">B</option>
+                        <option value="C">C</option>
+                        <option value="D">D</option>
+                        <option value="E">E</option>
+                    </select>
+                </div>
+
+                <div class="question">
+                    <h3>10. Adolescence is a time when the young person</h3>
+                    <select id="q10">
+                        <option value="">Select ending</option>
+                        <option value="A">A</option>
+                        <option value="B">B</option>
+                        <option value="C">C</option>
+                        <option value="D">D</option>
+                        <option value="E">E</option>
+                    </select>
+                </div>
+
+                <h2>Questions 11-13</h2>
+                <p>Do the following statements agree with the information given in Reading Passage?</p>
+                <p>In boxes <strong>11-13</strong> on your answer sheet, write</p>
+                <p><strong>TRUE</strong> if the statement agrees with the information</p>
+                <p><strong>FALSE</strong> if the statement contradicts the information</p>
+                <p><strong>NOT GIVEN</strong> if there is no information on this</p>
+
+                <div class="question">
+                    <h3>11. Most pre-adolescent children are capable of abstract thought.</h3>
+                    <div class="options">
+                        <label class="option"><input type="radio" name="q11" value="true"> TRUE</label>
+                        <label class="option"><input type="radio" name="q11" value="false"> FALSE</label>
+                        <label class="option"><input type="radio" name="q11" value="not-given"> NOT GIVEN</label>
+                    </div>
+                </div>
+
+                <div class="question">
+                    <h3>12. Adolescents' limited skills with words may give a false impression of their ability.</h3>
+                    <div class="options">
+                        <label class="option"><input type="radio" name="q12" value="true"> TRUE</label>
+                        <label class="option"><input type="radio" name="q12" value="false"> FALSE</label>
+                        <label class="option"><input type="radio" name="q12" value="not-given"> NOT GIVEN</label>
+                    </div>
+                </div>
+
+                <div class="question">
+                    <h3>13. Whether or not an adolescent is accepted by their age-group is an important clue to other aspects of their social adjustment.</h3>
+                    <div class="options">
+                        <label class="option"><input type="radio" name="q13" value="true"> TRUE</label>
+                        <label class="option"><input type="radio" name="q13" value="false"> FALSE</label>
+                        <label class="option"><input type="radio" name="q13" value="not-given"> NOT GIVEN</label>
+                    </div>
+                </div>
+
+                <button class="submit-btn" onclick="submitAnswers()">Submit Answers</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="results" id="results">
+        <div class="results-content">
+            <h2>Your Results</h2>
+            <div class="score" id="score"></div>
+            
+            <div id="answers-review"></div>
+            
+            <button class="close-btn" onclick="closeResults()">&times;</button>
+        </div>
+    </div>
+
+    <script>
+        // Таймер
+        let timeLeft = 20 * 60; // 20 минут в секундах
+        const timerElement = document.getElementById('timer');
+        let timerInterval;
+
+        function startTimer() {
+            clearInterval(timerInterval);
+            timerInterval = setInterval(updateTimer, 1000);
+        }
+
+        function updateTimer() {
+            const minutes = Math.floor(timeLeft / 60);
+            let seconds = timeLeft % 60;
+            seconds = seconds < 10 ? '0' + seconds : seconds;
+            timerElement.textContent = `${minutes}:${seconds}`;
+            
+            if (timeLeft === 5 * 60) {
+                timerElement.classList.add('warning');
+            }
+            
+            if (timeLeft <= 0) {
+                clearInterval(timerInterval);
+                submitAnswers();
+            } else {
+                timeLeft--;
+            }
+        }
+
+        // Система выделения текста
+        let highlightMenu = null;
+
+        document.getElementById('reading-passage').addEventListener('mouseup', function(e) {
+            const selection = window.getSelection();
+            if (selection.toString().length > 0) {
+                showHighlightMenu(e, selection);
+            }
+        });
+
+        document.addEventListener('mousedown', function(e) {
+            if (highlightMenu && !highlightMenu.contains(e.target)) {
+                document.body.removeChild(highlightMenu);
+                highlightMenu = null;
+            }
+        });
+
+        function showHighlightMenu(e, selection) {
+            if (highlightMenu) {
+                document.body.removeChild(highlightMenu);
+            }
+            
+            highlightMenu = document.createElement('div');
+            highlightMenu.className = 'highlight-menu';
+            
+            const yellowBtn = document.createElement('button');
+            yellowBtn.title = 'Yellow Highlight';
+            yellowBtn.innerHTML = '<i class="fas fa-highlighter" style="color: #ffeb3b;"></i>';
+            yellowBtn.onclick = function() {
+                highlightSelection(selection, 'yellow');
+                document.body.removeChild(highlightMenu);
+                highlightMenu = null;
+            };
+            
+            const blueBtn = document.createElement('button');
+            blueBtn.title = 'Blue Highlight';
+            blueBtn.innerHTML = '<i class="fas fa-highlighter" style="color: #00b0ff;"></i>';
+            blueBtn.onclick = function() {
+                highlightSelection(selection, 'blue');
+                document.body.removeChild(highlightMenu);
+                highlightMenu = null;
+            };
+            
+            const clearBtn = document.createElement('button');
+            clearBtn.title = 'Clear Highlight';
+            clearBtn.innerHTML = '<i class="fas fa-eraser"></i>';
+            clearBtn.onclick = function() {
+                removeHighlight(selection);
+                document.body.removeChild(highlightMenu);
+                highlightMenu = null;
+            };
+            
+            highlightMenu.appendChild(yellowBtn);
+            highlightMenu.appendChild(blueBtn);
+            highlightMenu.appendChild(clearBtn);
+            
+            document.body.appendChild(highlightMenu);
+            
+            const rect = selection.getRangeAt(0).getBoundingClientRect();
+            highlightMenu.style.top = (rect.bottom + window.scrollY - 40) + 'px';
+            highlightMenu.style.left = (rect.left + window.scrollX) + 'px';
+        }
+
+        function highlightSelection(selection, color) {
+            const range = selection.getRangeAt(0);
+            const selectedText = range.extractContents();
+            const span = document.createElement('span');
+            
+            span.appendChild(selectedText);
+            span.className = `highlight-${color}`;
+            
+            range.insertNode(span);
+            selection.removeAllRanges();
+        }
+
+        function removeHighlight(selection) {
+            const range = selection.getRangeAt(0);
+            const parentElement = range.startContainer.parentElement;
+            
+            if (parentElement.classList.contains('highlight-yellow') || 
+                parentElement.classList.contains('highlight-blue')) {
+                
+                const text = parentElement.textContent;
+                const textNode = document.createTextNode(text);
+                
+                parentElement.parentNode.replaceChild(textNode, parentElement);
+            }
+            
+            selection.removeAllRanges();
+        }
+
+        // Смена темы
+        function setTheme(theme) {
+            document.body.className = `${theme}-mode`;
+            localStorage.setItem('theme', theme);
+        }
+
+        // Проверка ответов
+        function submitAnswers() {
+            clearInterval(timerInterval);
+            
+            const answers = {
+                q1: getRadioValue('q1'),
+                q2: getRadioValue('q2'),
+                q3: getRadioValue('q3'),
+                q4: getRadioValue('q4'),
+                q5: getRadioValue('q5'),
+                q6: getRadioValue('q6'),
+                q7: document.getElementById('q7').value,
+                q8: document.getElementById('q8').value,
+                q9: document.getElementById('q9').value,
+                q10: document.getElementById('q10').value,
+                q11: getRadioValue('q11'),
+                q12: getRadioValue('q12'),
+                q13: getRadioValue('q13')
+            };
+            
+            const correctAnswers = {
+                q1: 'B',
+                q2: 'B',
+                q3: 'A',
+                q4: 'A',
+                q5: 'C',
+                q6: 'B',
+                q7: 'A',
+                q8: 'C',
+                q9: 'E',
+                q10: 'D',
+                q11: 'false',
+                q12: 'true',
+                q13: 'true'
+            };
+            
+            const references = {
+                q1: 'Paragraph 2: "The effect of this rapid change is that mid-adolescents are body-conscious, and their concerns are directed towards their opposite-sexed peers."',
+                q2: 'Paragraph 7: "Mid-adolescents must identify, at least at a preliminary level, what their adult vocational goals are"',
+                q3: 'Paragraph 10: "Early adolescence is also a period of intense conformity to peers."',
+                q4: 'Paragraph 8: "During the early adolescent years a young person begins to recognise their uniqueness and to establish themselves as separate individuals"',
+                q5: 'Paragraph 10: "Certainly by late adolescence or early adulthood the need for peer approval has diminished."',
+                q6: 'Paragraph 11: "Risky behaviours are sufficiently pervasive among adolescents to suggest that risk-taking may be a normal developmental process of middle adolescence."',
+                q7: 'Paragraph 1: "Each of the Havighurst tasks can also be seen as elements of the overall sense of self that adolescents carry with them"',
+                q8: 'Paragraph 4: "School curricula are frequently dominated by the inclusion of more abstract, demanding material"',
+                q9: 'Paragraph 4: "Since not all adolescents make the intellectual transition at the same rate"',
+                q10: 'Paragraph 5: "During adolescence, as teens develop increasingly complex knowledge systems, they also adopt an integrated set of values and morals."',
+                q11: 'Paragraph 3: "Before adolescence, children\'s thinking is dominated by a concrete example for any problem that they solve"',
+                q12: 'Paragraph 6: "As their conceptual development may outstrip their verbal development, adolescents may appear less competent than they really are."',
+                q13: 'Paragraph 10: "This degree to which an adolescent is able to make friends and have an accepting peer group, though, is a major indicator of how well the adolescent will adjust in other areas of social and psychological development."'
+            };
+            
+            let score = 0;
+            let resultsHTML = '';
+            
+            for (let i = 1; i <= 13; i++) {
+                const q = 'q' + i;
+                const userAnswer = answers[q];
+                const correctAnswer = correctAnswers[q];
+                const isCorrect = userAnswer === correctAnswer;
+                
+                if (isCorrect) score++;
+                
+                resultsHTML += `
+                    <div class="answer ${isCorrect ? 'correct' : 'incorrect'}">
+                        <p><strong>Question ${i}:</strong> ${isCorrect ? 'Correct' : 'Incorrect'}</p>
+                        <p>Your answer: ${userAnswer || 'No answer'}</p>
+                        <p>Correct answer: ${correctAnswer}</p>
+                        <p class="reference">${references[q]}</p>
+                    </div>
+                `;
+            }
+            
+            const percentage = Math.round((score / 13) * 100);
+            document.getElementById('score').textContent = `Score: ${score}/13 (${percentage}%)`;
+            document.getElementById('answers-review').innerHTML = resultsHTML;
+            document.getElementById('results').classList.add('visible');
+        }
+
+        function getRadioValue(name) {
+            const selected = document.querySelector(`input[name="${name}"]:checked`);
+            return selected ? selected.value : '';
+        }
+
+        function closeResults() {
+            document.getElementById('results').classList.remove('visible');
+        }
+
+        // Инициализация
+        window.onload = function() {
+            const savedTheme = localStorage.getItem('theme') || 'day';
+            setTheme(savedTheme);
+            startTimer();
+        };
+    </script>
+</body>
+</html>

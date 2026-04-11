@@ -1,0 +1,461 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SAT Practice Test 1 — Math Module 1</title>
+<style>
+:root {
+  --bg: #f5f6fa; --surface: #ffffff; --text: #1a1a2e; --muted: #6b7280;
+  --primary: #2563eb; --primary-light: #dbeafe; --border: #e5e7eb;
+  --correct: #16a34a; --wrong: #dc2626; --option-hover: #f0f7ff;
+  --nav-active: #2563eb; --nav-done: #d1fae5; --nav-done-text: #065f46;
+  --timer-warn: #f59e0b; --timer-danger: #ef4444;
+}
+body.night { --bg: #0f172a; --surface: #1e293b; --text: #e2e8f0; --muted: #94a3b8; --border: #334155; --primary-light: #1e3a5f; --option-hover: #1e3a5f; }
+body.sepia { --bg: #f5efe0; --surface: #fdf6e3; --text: #5c4b37; --muted: #8a7560; --border: #d6c9b0; --option-hover: #ece3d0; }
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: 'Segoe UI', system-ui, sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; }
+
+.top-bar { position: fixed; top: 0; left: 0; right: 0; z-index: 100; background: var(--surface); border-bottom: 1px solid var(--border); padding: 12px 24px; display: flex; align-items: center; justify-content: space-between; box-shadow: 0 1px 4px rgba(0,0,0,0.08); }
+.top-bar-title { font-weight: 700; font-size: 1rem; color: var(--primary); }
+.top-bar-right { display: flex; align-items: center; gap: 16px; }
+.timer { font-size: 1.3rem; font-weight: 700; font-variant-numeric: tabular-nums; color: var(--text); }
+.timer.warn { color: var(--timer-warn); }
+.timer.danger { color: var(--timer-danger); animation: pulse 1s infinite; }
+@keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.5} }
+.theme-btns { display: flex; gap: 6px; }
+.theme-btn { width: 28px; height: 28px; border-radius: 50%; border: 2px solid var(--border); cursor: pointer; }
+.theme-btn:hover, .theme-btn.active { border-color: var(--primary); }
+.theme-btn.day { background: #f5f6fa; }
+.theme-btn.night { background: #0f172a; }
+.theme-btn.sepia { background: #f5efe0; }
+
+.layout { display: flex; height: 100vh; padding-top: 61px; }
+.left-pane { width: 44%; min-width: 300px; overflow-y: auto; padding: 32px 28px; border-right: 1px solid var(--border); background: var(--surface); display: flex; flex-direction: column; align-items: center; justify-content: flex-start; }
+.right-pane { flex: 1; overflow-y: auto; padding: 32px 28px; background: var(--bg); }
+
+.math-graphic { background: var(--surface); border: 1.5px solid var(--border); border-radius: 12px; padding: 24px; margin-bottom: 16px; width: 100%; font-family: 'Courier New', monospace; font-size: 1rem; color: var(--text); white-space: pre; line-height: 1.6; }
+.math-formula { font-size: 1.4rem; text-align: center; padding: 20px; font-family: 'Courier New', monospace; color: var(--text); }
+.formula-note { font-size: 0.85rem; color: var(--muted); text-align: center; margin-top: 8px; }
+.reference-box { background: var(--primary-light); border-radius: 10px; padding: 16px; margin-bottom: 16px; width: 100%; }
+.reference-box h4 { font-size: 0.8rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em; color: var(--primary); margin-bottom: 10px; }
+.ref-formula { font-family: 'Courier New', monospace; font-size: 0.9rem; margin: 4px 0; color: var(--text); }
+
+.question-card { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 24px; margin-bottom: 20px; }
+.q-num { font-size: 0.75rem; font-weight: 600; color: var(--muted); text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 8px; }
+.q-domain { display: inline-block; background: var(--primary-light); color: var(--primary); font-size: 0.7rem; font-weight: 600; padding: 2px 8px; border-radius: 99px; margin-bottom: 12px; }
+.q-text { font-size: 0.97rem; line-height: 1.7; color: var(--text); margin-bottom: 18px; }
+.q-text .eq { font-family: 'Courier New', monospace; font-size: 1.05rem; display: block; text-align: center; margin: 12px 0; background: var(--bg); padding: 10px; border-radius: 8px; border: 1px solid var(--border); }
+.q-choices { display: flex; flex-direction: column; gap: 10px; }
+.choice { display: flex; align-items: flex-start; gap: 12px; padding: 12px 16px; border-radius: 10px; border: 1.5px solid var(--border); cursor: pointer; transition: all 0.15s; background: var(--surface); }
+.choice:hover:not(.selected):not(.correct):not(.wrong) { background: var(--option-hover); border-color: var(--primary); }
+.choice.selected { border-color: var(--primary); background: var(--primary-light); }
+.choice.correct { border-color: var(--correct); background: #f0fdf4; }
+.choice.wrong { border-color: var(--wrong); background: #fef2f2; }
+body.night .choice.correct { background: #052e16; }
+body.night .choice.wrong { background: #2d0b0b; }
+.choice-letter { width: 26px; height: 26px; border-radius: 50%; border: 1.5px solid currentColor; display: flex; align-items: center; justify-content: center; font-size: 0.8rem; font-weight: 700; flex-shrink: 0; color: var(--muted); }
+.choice.selected .choice-letter { background: var(--primary); border-color: var(--primary); color: white; }
+.choice.correct .choice-letter { background: var(--correct); border-color: var(--correct); color: white; }
+.choice.wrong .choice-letter { background: var(--wrong); border-color: var(--wrong); color: white; }
+.choice-text { font-size: 0.93rem; line-height: 1.5; font-family: 'Courier New', monospace; }
+.spr-input { width: 100%; max-width: 200px; padding: 10px 14px; border: 1.5px solid var(--border); border-radius: 10px; font-size: 1.1rem; font-family: 'Courier New', monospace; background: var(--surface); color: var(--text); margin-top: 8px; }
+.spr-input:focus { outline: none; border-color: var(--primary); }
+.explanation { margin-top: 16px; padding: 14px 16px; background: var(--primary-light); border-left: 3px solid var(--primary); border-radius: 0 8px 8px 0; font-size: 0.88rem; line-height: 1.6; color: var(--text); display: none; }
+.explanation.show { display: block; }
+
+.nav-panel { position: fixed; bottom: 0; left: 0; right: 0; background: var(--surface); border-top: 1px solid var(--border); padding: 12px 24px; display: flex; align-items: center; gap: 16px; flex-wrap: wrap; z-index: 100; }
+.nav-dots { display: flex; flex-wrap: wrap; gap: 6px; flex: 1; }
+.nav-dot { width: 32px; height: 32px; border-radius: 8px; border: 1.5px solid var(--border); background: var(--surface); cursor: pointer; font-size: 0.78rem; font-weight: 600; color: var(--muted); display: flex; align-items: center; justify-content: center; }
+.nav-dot.current { border-color: var(--primary); color: var(--primary); background: var(--primary-light); }
+.nav-dot.answered { background: var(--nav-done); border-color: #6ee7b7; color: var(--nav-done-text); }
+.submit-btn { background: var(--primary); color: white; border: none; border-radius: 10px; padding: 10px 24px; font-weight: 700; font-size: 0.95rem; cursor: pointer; }
+
+.result-overlay { display: none; position: fixed; inset: 0; z-index: 200; background: var(--bg); overflow-y: auto; padding: 40px 20px; }
+.result-overlay.show { display: block; }
+.result-card { max-width: 600px; margin: 0 auto; background: var(--surface); border-radius: 20px; padding: 48px; box-shadow: 0 8px 40px rgba(0,0,0,0.12); text-align: center; }
+.result-score { font-size: 5rem; font-weight: 900; color: var(--primary); }
+.result-total { font-size: 1.5rem; color: var(--muted); margin-bottom: 8px; }
+.result-label { font-size: 1.2rem; font-weight: 600; margin-bottom: 32px; }
+.result-bars { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 32px; }
+.result-bar-item { background: var(--bg); border-radius: 12px; padding: 16px; }
+.result-bar-label { font-size: 0.78rem; font-weight: 600; color: var(--muted); margin-bottom: 8px; text-align: left; }
+.result-bar-track { height: 8px; background: var(--border); border-radius: 4px; overflow: hidden; }
+.result-bar-fill { height: 100%; border-radius: 4px; }
+.result-bar-pct { font-size: 1.1rem; font-weight: 700; margin-top: 6px; text-align: right; }
+.result-actions { display: flex; gap: 12px; justify-content: center; }
+.btn-review { background: var(--surface); border: 1.5px solid var(--border); border-radius: 10px; padding: 12px 24px; font-weight: 600; cursor: pointer; color: var(--text); }
+.btn-back { background: var(--primary); color: white; border: none; border-radius: 10px; padding: 12px 24px; font-weight: 700; cursor: pointer; }
+
+@media (max-width: 768px) {
+  .layout { flex-direction: column; height: auto; }
+  .left-pane { width: 100%; border-right: none; border-bottom: 1px solid var(--border); min-width: 0; }
+  .nav-panel { position: relative; }
+}
+</style>
+</head>
+<body class="day">
+
+<div class="top-bar">
+  <div class="top-bar-title">SAT — Math · Module 1</div>
+  <div class="top-bar-right">
+    <div class="timer" id="timer">35:00</div>
+    <div class="theme-btns">
+      <div class="theme-btn day active" onclick="setTheme('day')" title="Day"></div>
+      <div class="theme-btn night" onclick="setTheme('night')" title="Night"></div>
+      <div class="theme-btn sepia" onclick="setTheme('sepia')" title="Sepia"></div>
+    </div>
+  </div>
+</div>
+
+<div class="layout">
+  <div class="left-pane" id="left-pane"></div>
+  <div class="right-pane" id="right-pane"></div>
+</div>
+
+<div class="nav-panel">
+  <div class="nav-dots" id="nav-dots"></div>
+  <button class="submit-btn" onclick="submitTest()">Submit</button>
+</div>
+
+<div class="result-overlay" id="result-overlay">
+  <div class="result-card">
+    <div class="result-score" id="r-score"></div>
+    <div class="result-total" id="r-total"></div>
+    <div class="result-label" id="r-label"></div>
+    <div class="result-bars" id="r-bars"></div>
+    <div class="result-actions">
+      <button class="btn-review" onclick="reviewAnswers()">Review Answers</button>
+      <button class="btn-back" onclick="goBack()">Back to SAT</button>
+    </div>
+  </div>
+</div>
+
+<script>
+const QUESTIONS = [
+  {
+    id:1, domain:"Algebra", subdomain:"Linear Equations in One Variable", spr:false,
+    graphic: null,
+    question: `If 3x + 7 = 22, what is the value of x?`,
+    choices: ["3","5","7","15"], answer: 1,
+    explanation: `3x = 22 − 7 = 15, so x = 5. Answer: B`
+  },
+  {
+    id:2, domain:"Algebra", subdomain:"Linear Functions",
+    question: `A line passes through the points (0, 4) and (3, 10). Which equation represents this line?`,
+    choices: ["y = 2x + 4","y = 3x + 4","y = 2x + 3","y = 6x + 4"], answer: 0,
+    explanation: `Slope = (10−4)/(3−0) = 6/3 = 2. y-intercept = 4. Equation: y = 2x + 4. Answer: A`
+  },
+  {
+    id:3, domain:"Algebra", subdomain:"Systems of Linear Equations",
+    question: `If 2x + y = 10 and x − y = 2, what is the value of x?`,
+    choices: ["2","3","4","6"], answer: 2,
+    explanation: `Add the equations: 3x = 12, so x = 4. Answer: C`
+  },
+  {
+    id:4, domain:"Problem-Solving & Data Analysis", subdomain:"Ratios, Rates, and Proportional Relationships",
+    question: `A car travels 150 miles in 3 hours. At this rate, how many miles will it travel in 5 hours?`,
+    choices: ["200","250","275","300"], answer: 1,
+    explanation: `Rate = 150/3 = 50 miles/hr. In 5 hours: 50 × 5 = 250 miles. Answer: B`
+  },
+  {
+    id:5, domain:"Advanced Math", subdomain:"Nonlinear Functions",
+    question: `Which of the following is equivalent to (x + 3)² − 9?`,
+    choices: ["x² + 6","x² + 6x","x² + 6x + 9","x² − 9"], answer: 1,
+    explanation: `(x+3)² − 9 = x² + 6x + 9 − 9 = x² + 6x. Answer: B`
+  },
+  {
+    id:6, domain:"Algebra", subdomain:"Linear Inequalities",
+    question: `Which values of x satisfy 2x − 5 > 7?`,
+    choices: ["x > 1","x > 6","x < 6","x > −6"], answer: 1,
+    explanation: `2x > 12 → x > 6. Answer: B`
+  },
+  {
+    id:7, domain:"Problem-Solving & Data Analysis", subdomain:"Percentages",
+    question: `A jacket originally costs $80. It is on sale for 25% off. What is the sale price?`,
+    choices: ["$55","$60","$65","$70"], answer: 1,
+    explanation: `25% of $80 = $20. Sale price = $80 − $20 = $60. Answer: B`
+  },
+  {
+    id:8, domain:"Advanced Math", subdomain:"Polynomial Operations",
+    question: `What is the product of (2x − 3)(x + 5)?`,
+    choices: ["2x² + 7x − 15","2x² − 7x − 15","2x² + 7x + 15","2x² + 10x − 15"], answer: 0,
+    explanation: `(2x)(x) + (2x)(5) + (−3)(x) + (−3)(5) = 2x² + 10x − 3x − 15 = 2x² + 7x − 15. Answer: A`
+  },
+  {
+    id:9, domain:"Problem-Solving & Data Analysis", subdomain:"Statistics — Mean, Median",
+    question: `The heights (in inches) of 5 students are: 60, 62, 65, 67, 71. What is the mean height?`,
+    choices: ["64","65","65.5","66"], answer: 1,
+    explanation: `Sum = 325. Mean = 325/5 = 65 inches. Answer: B`
+  },
+  {
+    id:10, domain:"Geometry & Trigonometry", subdomain:"Area and Volume",
+    question: `A rectangle has a length of 12 cm and a width of 7 cm. What is its area?`,
+    choices: ["38 cm²","76 cm²","84 cm²","96 cm²"], answer: 2,
+    explanation: `Area = length × width = 12 × 7 = 84 cm². Answer: C`
+  },
+  {
+    id:11, domain:"Algebra", subdomain:"Linear Equations in Two Variables",
+    question: `The equation 4x + 2y = 20 can be rewritten as y = ?`,
+    choices: ["y = −2x + 10","y = 2x − 10","y = −2x + 5","y = 2x + 10"], answer: 0,
+    explanation: `2y = 20 − 4x → y = 10 − 2x = −2x + 10. Answer: A`
+  },
+  {
+    id:12, domain:"Advanced Math", subdomain:"Quadratic Equations",
+    question: `What are the solutions to x² − 5x + 6 = 0?`,
+    choices: ["x = 2 and x = 3","x = −2 and x = −3","x = 1 and x = 6","x = −1 and x = 6"], answer: 0,
+    explanation: `Factor: (x − 2)(x − 3) = 0 → x = 2 or x = 3. Answer: A`
+  },
+  {
+    id:13, domain:"Problem-Solving & Data Analysis", subdomain:"Probability",
+    question: `A bag contains 4 red marbles, 3 blue marbles, and 5 green marbles. If one marble is selected at random, what is the probability of selecting a blue marble?`,
+    choices: ["1/4","3/12","1/3","3/7"], answer: 1,
+    explanation: `P(blue) = 3/(4+3+5) = 3/12 = 1/4. Answer: B (3/12 = 1/4). Note: B simplifies to 1/4.`
+  },
+  {
+    id:14, domain:"Algebra", subdomain:"Linear Functions",
+    question: `A function f(x) = 3x − 2. What is f(−1)?`,
+    choices: ["−5","−4","1","5"], answer: 0,
+    explanation: `f(−1) = 3(−1) − 2 = −3 − 2 = −5. Answer: A`
+  },
+  {
+    id:15, domain:"Advanced Math", subdomain:"Equivalent Expressions",
+    question: `Which expression is equivalent to 12x³y² ÷ 4xy?`,
+    choices: ["3x²y","3xy","8x²y","3x³y"], answer: 0,
+    explanation: `12x³y² ÷ 4xy = (12/4) × x^(3−1) × y^(2−1) = 3x²y. Answer: A`
+  },
+  {
+    id:16, domain:"Geometry & Trigonometry", subdomain:"Right Triangles",
+    question: `In a right triangle, the two legs have lengths 3 and 4. What is the length of the hypotenuse?`,
+    choices: ["5","6","7","√25"], answer: 0,
+    explanation: `c = √(3² + 4²) = √(9 + 16) = √25 = 5. Answer: A`
+  },
+  {
+    id:17, domain:"Problem-Solving & Data Analysis", subdomain:"Unit Conversion",
+    question: `A recipe requires 2.5 liters of water. How many milliliters is this?`,
+    choices: ["25","250","2,500","25,000"], answer: 2,
+    explanation: `1 liter = 1,000 ml. 2.5 × 1,000 = 2,500 ml. Answer: C`
+  },
+  {
+    id:18, domain:"Algebra", subdomain:"Systems of Linear Equations",
+    question: `In the system below, what is the value of y?\n3x + y = 11\n x = 3`,
+    choices: ["2","4","6","8"], answer: 0,
+    explanation: `Substitute x = 3: 3(3) + y = 11 → 9 + y = 11 → y = 2. Answer: A`
+  },
+  {
+    id:19, domain:"Advanced Math", subdomain:"Nonlinear Functions",
+    question: `Which of the following is the graph of a quadratic function that opens downward with a maximum at x = 2?`,
+    choices: ["f(x) = (x − 2)² + 3","f(x) = −(x − 2)² + 3","f(x) = (x + 2)² − 3","f(x) = −(x + 2)² + 3"], answer: 1,
+    explanation: `A downward-opening parabola has a negative leading coefficient. Maximum at x = 2 means vertex form: −(x − 2)². So f(x) = −(x − 2)² + 3. Answer: B`
+  },
+  {
+    id:20, domain:"Geometry & Trigonometry", subdomain:"Circles",
+    question: `What is the circumference of a circle with radius 7? (Use π ≈ 3.14)`,
+    choices: ["21.98","43.96","44.0","153.86"], answer: 1,
+    explanation: `C = 2πr = 2 × 3.14 × 7 = 43.96. Answer: B`
+  },
+  {
+    id:21, domain:"Problem-Solving & Data Analysis", subdomain:"Data Interpretation",
+    question: `A survey of 200 students found that 45% prefer math, 35% prefer English, and 20% prefer science. How many students prefer science?`,
+    choices: ["20","35","40","45"], answer: 2,
+    explanation: `20% of 200 = 0.20 × 200 = 40. Answer: C`
+  },
+  {
+    id:22, domain:"Algebra", subdomain:"Linear Equations in One Variable", spr:true,
+    question: `If 5(x − 2) = 3(x + 4), what is the value of x?`,
+    answer_spr: "11",
+    explanation: `5x − 10 = 3x + 12 → 2x = 22 → x = 11.`
+  },
+  {
+    id:23, domain:"Advanced Math", subdomain:"Quadratic Equations", spr:true,
+    question: `What is the positive solution to x² = 144?`,
+    answer_spr: "12",
+    explanation: `x = ±12. The positive solution is 12.`
+  },
+  {
+    id:24, domain:"Problem-Solving & Data Analysis", subdomain:"Ratios", spr:true,
+    question: `If the ratio of boys to girls in a class is 3:5 and there are 24 boys, how many girls are there?`,
+    answer_spr: "40",
+    explanation: `If 3 parts = 24, then 1 part = 8. Girls = 5 × 8 = 40.`
+  },
+  {
+    id:25, domain:"Geometry & Trigonometry", subdomain:"Area", spr:true,
+    question: `A triangle has a base of 10 cm and a height of 6 cm. What is its area in cm²?`,
+    answer_spr: "30",
+    explanation: `Area = ½ × base × height = ½ × 10 × 6 = 30 cm².`
+  },
+  {
+    id:26, domain:"Algebra", subdomain:"Linear Functions", spr:true,
+    question: `A function g(x) = 4x + k. If g(3) = 14, what is the value of k?`,
+    answer_spr: "2",
+    explanation: `g(3) = 4(3) + k = 12 + k = 14 → k = 2.`
+  },
+  {
+    id:27, domain:"Advanced Math", subdomain:"Polynomials", spr:true,
+    question: `What is the value of 2x² − 3x + 1 when x = 3?`,
+    answer_spr: "10",
+    explanation: `2(9) − 3(3) + 1 = 18 − 9 + 1 = 10.`
+  }
+];
+
+let currentQ = 0;
+let answers = new Array(QUESTIONS.length).fill(null);
+let submitted = false;
+let timeLeft = 35 * 60;
+
+function setTheme(t) {
+  document.body.className = t;
+  document.querySelectorAll('.theme-btn').forEach(b => b.classList.remove('active'));
+  document.querySelector('.theme-btn.' + t).classList.add('active');
+}
+
+function renderQuestion(idx) {
+  const q = QUESTIONS[idx];
+  const lp = document.getElementById('left-pane');
+  const rp = document.getElementById('right-pane');
+
+  // Left pane: reference or visual
+  lp.innerHTML = `<div class="reference-box">
+    <h4>Reference</h4>
+    <div class="ref-formula">Area of circle: A = πr²</div>
+    <div class="ref-formula">Circumference: C = 2πr</div>
+    <div class="ref-formula">Pythagorean: a² + b² = c²</div>
+    <div class="ref-formula">Area of triangle: A = ½bh</div>
+    <div class="ref-formula">Area of rectangle: A = lw</div>
+    <div class="ref-formula">Volume of box: V = lwh</div>
+    <div class="ref-formula">Volume of cylinder: V = πr²h</div>
+    <div class="ref-formula">Quadratic formula:</div>
+    <div class="ref-formula">x = (−b ± √(b²−4ac)) / 2a</div>
+  </div>
+  <div class="formula-note">Note: Calculator not allowed on Module 1</div>`;
+
+  // Right pane: question
+  let questionHtml = '';
+  const qText = q.question.replace(/\n/g, '<br>');
+
+  if (q.spr) {
+    const inputVal = answers[idx] !== null ? answers[idx] : '';
+    const sprClass = submitted ? (answers[idx]?.toString().trim() === q.answer_spr ? 'correct' : 'wrong') : '';
+    questionHtml = `<div class="question-card">
+      <div class="q-num">Question ${idx + 1} of ${QUESTIONS.length} · Student-Produced Response</div>
+      <div class="q-domain">${q.domain} · ${q.subdomain}</div>
+      <div class="q-text">${qText}</div>
+      <input type="text" class="spr-input ${sprClass}" id="spr-input" placeholder="Enter your answer" value="${inputVal}" ${submitted ? 'readonly' : ''} oninput="setSPR(this.value)">
+      <div class="${submitted ? 'explanation show' : 'explanation'}" id="explanation">💡 ${q.explanation}</div>
+    </div>`;
+  } else {
+    const choicesHtml = q.choices.map((c, ci) => {
+      let cls = 'choice';
+      if (submitted) {
+        if (ci === q.answer) cls += ' correct';
+        else if (ci === answers[idx]) cls += ' wrong';
+      } else if (answers[idx] === ci) cls += ' selected';
+      return `<div class="${cls}" onclick="selectChoice(${ci})">
+        <div class="choice-letter">${['A','B','C','D'][ci]}</div>
+        <div class="choice-text">${c}</div>
+      </div>`;
+    }).join('');
+    questionHtml = `<div class="question-card">
+      <div class="q-num">Question ${idx + 1} of ${QUESTIONS.length}</div>
+      <div class="q-domain">${q.domain} · ${q.subdomain}</div>
+      <div class="q-text">${qText}</div>
+      <div class="q-choices">${choicesHtml}</div>
+      <div class="${submitted ? 'explanation show' : 'explanation'}" id="explanation">💡 ${q.explanation}</div>
+    </div>`;
+  }
+  rp.innerHTML = questionHtml;
+  updateNav();
+}
+
+function selectChoice(ci) {
+  if (submitted) return;
+  answers[currentQ] = ci;
+  document.querySelectorAll('.choice').forEach((el, i) => {
+    el.className = 'choice' + (i === ci ? ' selected' : '');
+  });
+  updateNav();
+}
+
+function setSPR(val) {
+  answers[currentQ] = val;
+  updateNav();
+}
+
+function updateNav() {
+  const dots = document.getElementById('nav-dots');
+  dots.innerHTML = QUESTIONS.map((_, i) => {
+    let cls = 'nav-dot';
+    if (i === currentQ) cls += ' current';
+    else if (answers[i] !== null && answers[i] !== '') cls += ' answered';
+    return `<div class="${cls}" onclick="goToQ(${i})">${i+1}</div>`;
+  }).join('');
+}
+
+function goToQ(i) {
+  currentQ = i;
+  renderQuestion(i);
+}
+
+function submitTest() {
+  if (!submitted) {
+    const unanswered = answers.filter(a=>a===null||a==='').length;
+    if (unanswered > 0 && !confirm(`${unanswered} question(s) unanswered. Submit anyway?`)) return;
+  }
+  submitted = true;
+  clearInterval(timerInterval);
+  showResults();
+}
+
+function showResults() {
+  let correct = 0;
+  const domains = {};
+  QUESTIONS.forEach((q, i) => {
+    if (!domains[q.domain]) domains[q.domain] = {correct:0,total:0};
+    domains[q.domain].total++;
+    const isCorrect = q.spr
+      ? (answers[i]?.toString().trim() === q.answer_spr)
+      : (answers[i] === q.answer);
+    if (isCorrect) { correct++; domains[q.domain].correct++; }
+  });
+  const total = QUESTIONS.length;
+  const pct = Math.round(correct/total*100);
+  document.getElementById('r-score').textContent = correct;
+  document.getElementById('r-total').textContent = `out of ${total}`;
+  document.getElementById('r-label').textContent = pct >= 80 ? '🎉 Great Score!' : pct >= 60 ? '📚 Keep Practicing!' : '💪 Study & Retry!';
+  const colors = {'Algebra':'#3b82f6','Advanced Math':'#8b5cf6','Problem-Solving & Data Analysis':'#f59e0b','Geometry & Trigonometry':'#10b981'};
+  document.getElementById('r-bars').innerHTML = Object.entries(domains).map(([d,s]) => {
+    const dp = Math.round(s.correct/s.total*100);
+    return `<div class="result-bar-item">
+      <div class="result-bar-label">${d}</div>
+      <div class="result-bar-track"><div class="result-bar-fill" style="width:${dp}%;background:${colors[d]||'#6b7280'}"></div></div>
+      <div class="result-bar-pct">${s.correct}/${s.total}</div>
+    </div>`;
+  }).join('');
+  document.getElementById('result-overlay').classList.add('show');
+}
+
+function reviewAnswers() {
+  document.getElementById('result-overlay').classList.remove('show');
+  renderQuestion(0);
+}
+
+function goBack() {
+  window.parent.postMessage('sat-test-back', '*');
+  window.history.back();
+}
+
+let timerInterval = setInterval(() => {
+  if (timeLeft <= 0) { clearInterval(timerInterval); submitTest(); return; }
+  timeLeft--;
+  const m = Math.floor(timeLeft/60);
+  const s = timeLeft % 60;
+  const el = document.getElementById('timer');
+  el.textContent = `${m}:${s.toString().padStart(2,'0')}`;
+  el.className = 'timer' + (timeLeft <= 60 ? ' danger' : timeLeft <= 300 ? ' warn' : '');
+}, 1000);
+
+renderQuestion(0);
+</script>
+</body>
+</html>

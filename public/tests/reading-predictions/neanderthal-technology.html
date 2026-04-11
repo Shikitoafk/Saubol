@@ -1,0 +1,1517 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>IELTS Reading Test - Neanderthal Technology</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        /* Main styles */
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: Arial, sans-serif;
+            overflow: hidden;
+            background-color: #f0f8ff;
+        }
+        .test-wrapper {
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+        }
+        .test-container {
+            display: flex;
+            flex: 1;
+            overflow: hidden;
+        }
+        /* Header styles */
+        .header {
+            background-color: #fff;
+            border-bottom: 1px solid #ddd;
+            padding: 10px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .header__logo img {
+            height: 40px;
+        }
+        .header__timer {
+            font-size: 1.2rem;
+            font-weight: bold;
+            color: #333;
+            background-color: #e6f2ff;
+            padding: 5px 15px;
+            border-radius: 20px;
+            border: 1px solid #ddd;
+            transition: all 0.3s ease;
+        }
+        .header__icons {
+            display: flex;
+            gap: 15px;
+        }
+        .header__icon {
+            font-size: 1.2rem;
+            color: #666;
+            cursor: pointer;
+        }
+        /* Settings Modal */
+        .settings-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: rgba(0,0,0,0.7);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+        }
+        .settings-content {
+            background-color: white;
+            width: 90%;
+            max-width: 500px;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+        }
+        .settings-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 20px;
+            border-bottom: 1px solid #ddd;
+            background-color: #f0f8ff;
+        }
+        .settings-header h2 {
+            margin: 0;
+            font-size: 1.2rem;
+        }
+        .settings-close {
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: #666;
+        }
+        .settings-body {
+            padding: 20px;
+        }
+        .settings-option {
+            display: flex;
+            align-items: center;
+            padding: 10px 0;
+            border-bottom: 1px solid #eee;
+            cursor: pointer;
+        }
+        .settings-option:last-child {
+            border-bottom: none;
+        }
+        .settings-option i {
+            margin-right: 15px;
+            width: 20px;
+            text-align: center;
+            color: #2a6c96;
+        }
+        .settings-option span {
+            flex: 1;
+        }
+        .sectionRubric {
+            margin: 1em;
+            width: calc(100% - 4em - 3px);
+            border-radius: 4px;
+            padding: 0.75em 1em;
+            background: white;
+            border: 1px solid #d5d5d5;
+        }
+        .sectionRubric h2, .sectionRubric p {
+            margin: 0;
+        }
+        .sectionRubric h2 {
+            font-size: 1rem;
+            margin-bottom: 0.25em;
+        }
+        /* Passage container */
+        .passage-container {
+            width: 45%;
+            height: 100%;
+            overflow-y: auto;
+            padding: 20px;
+            box-sizing: border-box;
+            background-color: #f0f8ff;
+            position: relative;
+            -webkit-user-select: text;
+            user-select: text;
+        }
+        /* Questions container */
+        .questions-container {
+            flex: 1;
+            overflow-y: auto;
+            padding: 20px;
+            box-sizing: border-box;
+            background-color: #f0f8ff;
+            -webkit-user-select: text;
+            user-select: text;
+        }
+        /* Highlight styles */
+        .highlight {
+            position: relative;
+            border-radius: 2px;
+            padding: 0 1px;
+            margin: 0 -1px;
+        }
+        .highlight.yellow {
+            background-color: rgba(255, 255, 0, 0.3);
+        }
+        .highlight.green {
+            background-color: rgba(0, 255, 0, 0.3);
+        }
+        .highlight.pink {
+            background-color: rgba(255, 105, 180, 0.3);
+        }
+        .highlight.blue {
+            background-color: rgba(0, 191, 255, 0.3);
+        }
+        .highlight-toolbar {
+            position: fixed;
+            background: white;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+            display: none;
+            z-index: 1000;
+            padding: 5px;
+            transform: translate(-50%, -100%);
+            margin-top: -5px;
+        }
+        .highlight-toolbar button {
+            background: none;
+            border: none;
+            width: 24px;
+            height: 24px;
+            cursor: pointer;
+            margin: 0 2px;
+            border-radius: 3px;
+        }
+        .highlight-toolbar button:hover {
+            background: #f0f0f0;
+        }
+        .highlight-toolbar button.remove {
+            color: #ff0000;
+        }
+        /* Divider styling */
+        .divider {
+            width: 10px;
+            background: #ddd;
+            cursor: col-resize;
+            position: relative;
+        }
+        .divider-handle {
+            width: 4px;
+            height: 40px;
+            background: #999;
+            border-radius: 2px;
+            position: absolute;
+            top: 50%;
+            left: 3px;
+            transform: translateY(-50%);
+        }
+        /* Question styling */
+        .question {
+            margin-bottom: 30px;
+        }
+        .question-rubric {
+            margin-bottom: 15px;
+            font-weight: bold;
+        }
+        .question-options {
+            list-style-type: none;
+            padding: 0;
+        }
+        .question-options li {
+            margin: 10px 0;
+            display: flex;
+            align-items: center;
+        }
+        .question-options li input[type="radio"] {
+            margin-right: 10px;
+        }
+        /* Matching headings */
+        .matching-heading-option {
+            display: flex;
+            align-items: center;
+            margin: 5px 0;
+        }
+        .matching-heading-option select {
+            min-width: 120px;
+            padding: 5px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            margin-left: 10px;
+        }
+        /* Matching features */
+        .matching-feature-option {
+            display: flex;
+            align-items: center;
+            margin: 5px 0;
+        }
+        .matching-feature-option select {
+            min-width: 120px;
+            padding: 5px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            margin-left: 10px;
+        }
+        /* Sentence completion styles */
+        .sentence-completion-container {
+            margin-top: 20px;
+        }
+        .sentence-text p {
+            line-height: 2.5;
+            font-size: 16px;
+        }
+        .sentence-input {
+            width: 150px;
+            padding: 5px;
+            border: 2px dashed #999;
+            border-radius: 4px;
+            margin: 0 5px;
+            font-size: 15px;
+            font-weight: bold;
+            background-color: #e3f2fd;
+        }
+        .sentence-input.correct {
+            border-color: #28a745;
+            background-color: #e9f7ef;
+            border-style: solid;
+        }
+        .sentence-input.incorrect {
+            border-color: #dc3545;
+            background-color: #f8d7da;
+            border-style: solid;
+        }
+        .sentence-feedback {
+            display: inline-block;
+            margin-left: 10px;
+            font-size: 14px;
+        }
+        .sentence-feedback.correct {
+            color: #28a745;
+        }
+        .sentence-feedback.incorrect {
+            color: #dc3545;
+        }
+        /* Multiple choice */
+        .multiple-choice-option {
+            margin: 10px 0;
+        }
+        /* Footer styles */
+        .footer {
+            background: #f5f5f5;
+            border-top: 1px solid #ddd;
+            padding: 10px;
+        }
+        .nav-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        .footer__questionWrapper {
+            display: flex;
+            align-items: center;
+        }
+        .footer__questionNo {
+            background: none;
+            border: none;
+            padding: 5px 10px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+        .footer__subquestionWrapper {
+            display: flex;
+            flex-wrap: wrap;
+            margin-left: 10px;
+        }
+        .subQuestion {
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            border: 1px solid #ccc;
+            background: #f0f0f0;
+            margin: 2px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #666;
+        }
+        .subQuestion.active {
+            background: #0066cc;
+            color: white;
+            border-color: #0066cc;
+        }
+        .subQuestion.attempted {
+            background: #0066cc;
+            color: white;
+        }
+        .footer__deliverButton {
+            background: #0066cc;
+            color: white;
+            border: none;
+            padding: 8px 15px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+        .footer__deliverButton:disabled {
+            background: #cccccc;
+            cursor: not-allowed;
+        }
+        .sr-only {
+            position: absolute;
+            width: 1px;
+            height: 1px;
+            padding: 0;
+            margin: -1px;
+            overflow: hidden;
+            clip: rect(0, 0, 0, 0);
+            white-space: nowrap;
+            border-width: 0;
+        }
+        /* Highlight color buttons */
+        .highlight-color {
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            display: inline-block;
+            margin: 0 2px;
+            cursor: pointer;
+            border: 1px solid #ccc;
+        }
+        .highlight-color.yellow {
+            background-color: #ffff00;
+        }
+        .highlight-color.green {
+            background-color: #00ff00;
+        }
+        .highlight-color.pink {
+            background-color: #ff69b4;
+        }
+        .highlight-color.blue {
+            background-color: #00bfff;
+        }
+        /* Time warning styles */
+        .timer-warning {
+            color: #ff0000;
+            animation: blink 1s infinite;
+        }
+        @keyframes blink {
+            0% { opacity: 1; }
+            50% { opacity: 0.5; }
+            100% { opacity: 1; }
+        }
+        /* Submission modal styles */
+        .submission-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: rgba(0,0,0,0.8);
+            z-index: 2000;
+            justify-content: center;
+            align-items: center;
+        }
+        .submission-content {
+            background-color: white;
+            width: 80%;
+            max-width: 800px;
+            border-radius: 10px;
+            padding: 30px;
+            box-shadow: 0 5px 30px rgba(0,0,0,0.5);
+            max-height: 80vh;
+            overflow-y: auto;
+        }
+        .submission-content h2 {
+            margin-top: 0;
+            color: #0066cc;
+            border-bottom: 2px solid #0066cc;
+            padding-bottom: 10px;
+        }
+        .submission-content p {
+            margin-bottom: 20px;
+            color: #333;
+        }
+        .answers-section {
+            margin-top: 20px;
+        }
+        .answers-section h3 {
+            color: #0066cc;
+            margin-bottom: 15px;
+        }
+        .answer-item {
+            padding: 10px;
+            margin-bottom: 8px;
+            border-radius: 4px;
+            border-left: 4px solid #ddd;
+            background-color: #f9f9f9;
+        }
+        .answer-item.correct {
+            border-left-color: #4CAF50;
+            background-color: #f0fff0;
+        }
+        .answer-item.incorrect {
+            border-left-color: #f44336;
+            background-color: #fff0f0;
+        }
+        .answer-text {
+            font-weight: bold;
+        }
+        .correct-answer {
+            color: #4CAF50;
+            margin-left: 10px;
+        }
+        .incorrect-answer {
+            color: #f44336;
+            margin-left: 10px;
+        }
+        .answer-status {
+            float: right;
+            margin-left: 15px;
+        }
+        .correct-status {
+            color: #4CAF50;
+        }
+        .incorrect-status {
+            color: #f44336;
+        }
+        .submission-buttons {
+            margin-top: 25px;
+            text-align: right;
+            clear: both;
+        }
+        .submission-buttons button {
+            padding: 8px 15px;
+            margin-left: 10px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+        .submission-buttons .confirm {
+            background: #0066cc;
+            color: white;
+            border: none;
+        }
+        /* Disabled state */
+        input:disabled, select:disabled {
+            background-color: #f5f5f5;
+            cursor: not-allowed;
+        }
+        /* Score display styles */
+        .score-display {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        .score-number {
+            font-size: 3rem;
+            font-weight: bold;
+            color: #0066cc;
+            margin: 10px 0;
+        }
+        .score-total {
+            font-size: 1.5rem;
+            color: #666;
+        }
+        .performance-rating {
+            font-size: 1.5rem;
+            font-weight: bold;
+            margin: 15px 0;
+            padding: 10px;
+            border-radius: 5px;
+        }
+        .excellent {
+            color: #2E7D32;
+            background-color: #E8F5E9;
+        }
+        .very-good {
+            color: #388E3C;
+            background-color: #E8F5E9;
+        }
+        .good {
+            color: #689F38;
+            background-color: #F1F8E9;
+        }
+        .fair {
+            color: #F57C00;
+            background-color: #FFF3E0;
+        }
+        .poor {
+            color: #D32F2F;
+            background-color: #FFEBEE;
+        }
+        /* IELTS Band Score */
+        .band-score {
+            font-size: 2rem;
+            font-weight: bold;
+            color: #0066cc;
+            margin: 10px 0;
+        }
+        /* Correct answer highlight */
+        .correct-highlight {
+            background-color: rgba(76, 175, 80, 0.3);
+            padding: 2px;
+            border-radius: 2px;
+        }
+        /* Incorrect answer highlight */
+        .incorrect-highlight {
+            background-color: rgba(244, 67, 54, 0.3);
+            padding: 2px;
+            border-radius: 2px;
+        }
+        /* Answer comparison section */
+        .answer-comparison {
+            margin-top: 20px;
+            padding: 15px;
+            background-color: #f5f5f5;
+            border-radius: 5px;
+            display: none;
+        }
+        .answer-comparison h3 {
+            margin-top: 0;
+            color: #0066cc;
+        }
+        /* Time spent indicator */
+        .time-spent {
+            font-size: 1rem;
+            color: #666;
+            margin-bottom: 15px;
+            text-align: center;
+        }
+        /* Dropdown answer display */
+        .dropdown-answer {
+            display: inline-block;
+            margin-left: 10px;
+            font-weight: normal;
+        }
+        .dropdown-answer.correct {
+            color: #4CAF50;
+        }
+        .dropdown-answer.incorrect {
+            color: #f44336;
+        }
+    </style>
+</head>
+<body>
+    <div class="test-wrapper">
+        <!-- Header with Timer -->
+        <header class="header">
+            <div class="header__logo">
+                <img src="https://d2snzxottmona5.cloudfront.net/releases/3.46.0/images/logo/ielts.svg" alt="IELTS Logo">
+                
+            </div>
+            <div class="header__timer" id="testTimer">00:00</div>
+            <div class="header__icons">
+                <i class="fas fa-wifi header__icon"></i>
+                <i class="fas fa-bell header__icon"></i>
+                <i class="fas fa-cog header__icon" id="settingsButton"></i>
+            </div>
+        </header>
+        <!-- Settings Modal -->
+        <div class="settings-modal" id="settingsModal">
+            <div class="settings-content">
+                <div class="settings-header">
+                    <h2>Options</h2>
+                    <button class="settings-close" id="settingsClose">&times;</button>
+                </div>
+                <div class="settings-body">
+                    <div class="settings-option">
+                        <i class="fas fa-paper-plane"></i>
+                        <span>Go to submission page</span>
+                    </div>
+                    <div class="settings-option" id="contrastOption">
+                        <i class="fas fa-adjust"></i>
+                        <span>Contrast</span>
+                    </div>
+                    <div class="settings-option" id="textSizeOption">
+                        <i class="fas fa-search-plus"></i>
+                        <span>Text size</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- Section Rubric -->
+        <div class="sectionRubric" id="sectionRubric">
+            <h2>Part 3</h2>
+            <p>You should spend about 20 minutes on Questions 27-40, which are based on Reading Passage 3 below.</p>
+        </div>
+        <div class="test-container">
+            <!-- Passage Section -->
+            <div class="passage-container" id="passage-container">
+                <div class="highlight-toolbar" id="highlightToolbar">
+                    <button class="highlight-color yellow" data-color="yellow" title="Yellow highlight"></button>
+                    <button class="highlight-color green" data-color="green" title="Green highlight"></button>
+                    <button class="highlight-color pink" data-color="pink" title="Pink highlight"></button>
+                    <button class="highlight-color blue" data-color="blue" title="Blue highlight"></button>
+                    <button class="remove" title="Remove highlight"><i class="fas fa-times"></i></button>
+                </div>
+                <div id="passageContent">
+                    <h2 style="text-align: center;">Neanderthal Technology</h2>
+                    
+                    <p><strong>A.</strong> We think of our prehistoric ancestors as people of the ice and snow, living in caves, and for many of the west European Neanderthalers that is a just picture of their life. But where there were no caves, further to the east on the Russian steppe, for example, open-air sites with some sort of constructed shelter were the only option.</p>
+                    <p>We now know much more about the cave sites than the open-air ones because, historically, it was the cave sites of Western Europe that were first explored by archaeologists and also because open-air sites are harder to find – many of them have disappeared under deep mud deposits or under the rising postglacial seas. Caves, moreover, aid the survival of archaeological material and can preserve the records of remote millennia.</p>
+                    
+                    <p><strong>B.</strong> In south-west France, the limestone caves of the Périgord region made ideal homes for the Neanderthal people. There were good supplies of flint to hand for axes and the like, and the caves were often sited in small river valleys that offered protection against the worst of the weather. The Neanderthalers liked south-facing caves, for obvious reasons of sunshine and wind avoidance, and caves at some height above the valley floor offered refuge from floods and good game-watching vantage points.</p>
+                    <p>The Périgord region during the last ice age was, in fact, an exceptionally benign habitat for humans. It enjoyed a rather maritime climate with cooler summers that permitted the extension of tundra and steppe over its higher plateaux, and its year-round high levels of sunshine favoured the growth of the ground plants needed by reindeer, bison and horse. Winters were mildish for the ice age, animals never needed to migrate far from summer to winter, and men never needed to travel far from home to find abundant supplies of meat.</p>
+                    
+                    <p><strong>C.</strong> In Central and Eastern Europe, where caves were unavailable, such open-air sites as have been discovered were mostly located near water – both because this was a good area to be for people and animals, and also because the sedimentation potential of lakes and stream courses has aided archaeological preservation – whereas erosion has presumably blown away sites which were out in the open. Some of the open-air sites in Germany, Central Europe and Russia have provided valuable information about Neanderthal man and his way of life. From Moldova, for example, comes evidence that has been interpreted as the remains of wind-break structures, or even a large tent: a ring up to about 8 x 5m in size, of mainly mammoth bones enclosing a dense concentration of stone tools, animal bones and ash.</p>
+                    
+                    <p><strong>D.</strong> From the west European caves more evidence of built structures is available, and some of it goes back a long way in time. In the Grotte du Lazaret, near Nice, at a date during the last ice age but one, claims for some sort of skin tent within the cave have been advanced, on the basis of arrangements of large stones out from the cave wall that might have supported timber struts for a covering of skins up to the rock face above.</p>
+                    <p>At Lazaret, what might be openings in the hypothesised tents seem to point away from the cave mouth, and finds of wolf and fox foot bones, without the rest of the skeletons, inside these 'tents' have been thought to indicate the use of animal pelts as bed coverings. The two patches of ash at Lazaret that mark ancient fires, with stone tools around them evidently made and used on the spot, are edged with small marine mollusc shells, prompting the excavator to suggest that seaweed had been used as bedding around the fires. The cave of Baume-Bonne in the Basses-Alpes region of France, another early site, boasts ten square metres of cobbles brought up from the local river and laid down, as though to take care of a puddle area in the cave, with the smoothest and roundest surfaces of the stones uppermost, and there are other similar cases.</p>
+                    
+                    <p><strong>E.</strong> The ash encountered in concentrations at some sites testifies to the Neanderthal people's use of fire: not surprising, since use of fire was, by Neanderthal times, an already ancient accomplishment of evolving humanity, and survival in the sub-arctic conditions faced by the Neanderthalers is inconceivable without control of fire. Fire gave warmth, light, heat for cooking and defence against predatory animals. A charred piece of birch from Krapina in Croatia, is thought to be the remains of a fire-making twirl stick. But Neanderthal hearths, in the sense of specially constructed places for fire, are fewer and harder to identify with certainty than the mere ash piles that are a regular feature of their sites. They seem often to have just lit a small fire (40-50cm across) on the existing ground surface of the cave, without preparation. Judging from the shallow penetration of heat effects under the ash, this fire was only of a short duration. Sometimes the fires were larger in size, up to one metre across, and quite irregular in shape. It is not always easy to decide how much additional structure some fires possessed: claims of stone circles to contain the fire run up against the fact that stones tend to litter the cave floors everywhere and those around a fire can quite accidentally look as though they were arranged in a circle.</p>
+                </div>
+            </div>
+            <!-- Draggable Divider -->
+            <div class="divider" id="divider">
+                <div class="divider-handle"></div>
+            </div>
+            <!-- Questions Section -->
+            <div class="questions-container" id="questions-container">
+                <!-- Questions 27-31 - Matching Headings -->
+                <div class="question">
+                    <div class="question-rubric">
+                        <h3>Questions 27-31</h3>
+                        <p>Reading Passage 3 has five sections, <strong>A-E</strong>.</p>
+                        <p>Choose the correct heading for each section from the list of headings below.</p>
+                        <p>Write the correct number, <strong>i-vi</strong>, in boxes <strong>27-31</strong> on your answer sheet.</p>
+                    </div>
+                    <div class="question-content">
+                        <p><strong>List of Headings</strong></p>
+                        <p><strong>i</strong> Evidence of outdoor dwellings<br>
+                        <strong>ii</strong> Learning to make fire<br>
+                        <strong>iii</strong> A perfect place to live<br>
+                        <strong>iv</strong> Examining the cave contents<br>
+                        <strong>v</strong> Contrasting two types of home<br>
+                        <strong>vi</strong> A vital source of power</p>
+                        
+                        <div class="question-item">
+                            <p><span class="question-number">27</span> Section A</p>
+                            <div class="matching-heading-option">
+                                <select name="q27" id="q27">
+                                    <option value="">--</option>
+                                    <option value="i">i</option>
+                                    <option value="ii">ii</option>
+                                    <option value="iii">iii</option>
+                                    <option value="iv">iv</option>
+                                    <option value="v">v</option>
+                                    <option value="vi">vi</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="question-item">
+                            <p><span class="question-number">28</span> Section B</p>
+                            <div class="matching-heading-option">
+                                <select name="q28" id="q28">
+                                    <option value="">--</option>
+                                    <option value="i">i</option>
+                                    <option value="ii">ii</option>
+                                    <option value="iii">iii</option>
+                                    <option value="iv">iv</option>
+                                    <option value="v">v</option>
+                                    <option value="vi">vi</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="question-item">
+                            <p><span class="question-number">29</span> Section C</p>
+                            <div class="matching-heading-option">
+                                <select name="q29" id="q29">
+                                    <option value="">--</option>
+                                    <option value="i">i</option>
+                                    <option value="ii">ii</option>
+                                    <option value="iii">iii</option>
+                                    <option value="iv">iv</option>
+                                    <option value="v">v</option>
+                                    <option value="vi">vi</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="question-item">
+                            <p><span class="question-number">30</span> Section D</p>
+                            <div class="matching-heading-option">
+                                <select name="q30" id="q30">
+                                    <option value="">--</option>
+                                    <option value="i">i</option>
+                                    <option value="ii">ii</option>
+                                    <option value="iii">iii</option>
+                                    <option value="iv">iv</option>
+                                    <option value="v">v</option>
+                                    <option value="vi">vi</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="question-item">
+                            <p><span class="question-number">31</span> Section E</p>
+                            <div class="matching-heading-option">
+                                <select name="q31" id="q31">
+                                    <option value="">--</option>
+                                    <option value="i">i</option>
+                                    <option value="ii">ii</option>
+                                    <option value="iii">iii</option>
+                                    <option value="iv">iv</option>
+                                    <option value="v">v</option>
+                                    <option value="vi">vi</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Questions 32-36 - Matching Features -->
+                <div class="question">
+                    <div class="question-rubric">
+                        <h3>Questions 32-36</h3>
+                        <p>Look at the following findings (Questions 32-36) and the list of places below.</p>
+                        <p>Match each finding with the correct place <strong>A-E</strong>.</p>
+                        <p>Write the correct letter, <strong>A-E</strong>, in boxes <strong>32-36</strong> on your answer sheet.</p>
+                        <p><strong>NB</strong> You may use any letter more than once.</p>
+                    </div>
+                    <div class="question-content">
+                        <p><strong>List of Places</strong></p>
+                        <p><strong>A</strong> The Périgord region<br>
+                        <strong>B</strong> Moldova<br>
+                        <strong>C</strong> The Grotte du Lazaret<br>
+                        <strong>D</strong> The cave of Baume-Bonne<br>
+                        <strong>E</strong> Krapina</p>
+                        
+                        <div class="question-item">
+                            <p><span class="question-number">32</span> a burnt piece of wood</p>
+                            <div class="matching-feature-option">
+                                <select name="q32" id="q32">
+                                    <option value="">--</option>
+                                    <option value="A">A</option>
+                                    <option value="B">B</option>
+                                    <option value="C">C</option>
+                                    <option value="D">D</option>
+                                    <option value="E">E</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="question-item">
+                            <p><span class="question-number">33</span> evidence of efforts to prevent pools of water forming</p>
+                            <div class="matching-feature-option">
+                                <select name="q33" id="q33">
+                                    <option value="">--</option>
+                                    <option value="A">A</option>
+                                    <option value="B">B</option>
+                                    <option value="C">C</option>
+                                    <option value="D">D</option>
+                                    <option value="E">E</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="question-item">
+                            <p><span class="question-number">34</span> the remains of sea creatures</p>
+                            <div class="matching-feature-option">
+                                <select name="q34" id="q34">
+                                    <option value="">--</option>
+                                    <option value="A">A</option>
+                                    <option value="B">B</option>
+                                    <option value="C">C</option>
+                                    <option value="D">D</option>
+                                    <option value="E">E</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="question-item">
+                            <p><span class="question-number">35</span> a circular arrangement of animal bones</p>
+                            <div class="matching-feature-option">
+                                <select name="q35" id="q35">
+                                    <option value="">--</option>
+                                    <option value="A">A</option>
+                                    <option value="B">B</option>
+                                    <option value="C">C</option>
+                                    <option value="D">D</option>
+                                    <option value="E">E</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="question-item">
+                            <p><span class="question-number">36</span> evidence suggesting the use of animal fur for warmth</p>
+                            <div class="matching-feature-option">
+                                <select name="q36" id="q36">
+                                    <option value="">--</option>
+                                    <option value="A">A</option>
+                                    <option value="B">B</option>
+                                    <option value="C">C</option>
+                                    <option value="D">D</option>
+                                    <option value="E">E</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Questions 37-39 - Summary Completion -->
+                <div class="question">
+                    <div class="question-rubric">
+                        <h3>Questions 37-39</h3>
+                        <p>Complete the summary below.</p>
+                        <p>Choose <strong>NO MORE THAN TWO WORDS</strong> from the passage for each answer.</p>
+                        <p>Write your answers in boxes <strong>37-39</strong> on your answer sheet.</p>
+                    </div>
+                    <div class="question-content">
+                        <div class="sentence-completion-container">
+                            <div class="sentence-text">
+                                <h4>The use of fire</h4>
+                                <p>Neanderthalers could not have survived without fire because the conditions they lived in were <input type="text" class="sentence-input" id="q37" name="q37">. Most evidence of purpose-built fires takes the form of ash piles, features of which suggest that the fires lasted a <input type="text" class="sentence-input" id="q38" name="q38"> time. It is hard to be certain about the size and structure of the fires, though they were certainly needed to protect the occupants from dangerous <input type="text" class="sentence-input" id="q39" name="q39">, among other things.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Question 40 - Multiple Choice -->
+                <div class="question">
+                    <div class="question-rubric">
+                        <h3>Question 40</h3>
+                        <p>Choose the correct letter, <strong>A, B, C or D</strong>.</p>
+                        <p>Write the correct letter in box <strong>40</strong> on your answer sheet.</p>
+                    </div>
+                    <div class="question-content">
+                        <p>The purpose of the writer of this article is to</p>
+                        <div class="multiple-choice-option">
+                            <input type="radio" name="q40" id="q40_A" value="A">
+                            <label for="q40_A">A argue that Neanderthal homes were bigger than originally thought.</label>
+                        </div>
+                        <div class="multiple-choice-option">
+                            <input type="radio" name="q40" id="q40_B" value="B">
+                            <label for="q40_B">B explain why Neanderthal people migrated to Western Europe.</label>
+                        </div>
+                        <div class="multiple-choice-option">
+                            <input type="radio" name="q40" id="q40_C" value="C">
+                            <label for="q40_C">C discuss what is known about Neanderthal settlements.</label>
+                        </div>
+                        <div class="multiple-choice-option">
+                            <input type="radio" name="q40" id="q40_D" value="D">
+                            <label for="q40_D">D track the progress of early Neanderthal development.</label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- Footer -->
+        <footer class="footer">
+            <nav class="nav-row perScorableItem" aria-label="Questions">
+                <div class="footer__questionWrapper selected multiple" role="tablist">
+                    <button role="tab" class="footer__questionNo" data-sectionid="128121930" tabindex="-1">
+                        <span>
+                            <span aria-hidden="true" class="section-prefix">Part </span>
+                            <span class="sectionNr" aria-hidden="true">3</span>
+                        </span>
+                    </button>
+                    <div class="footer__subquestionWrapper">
+                        <button class="subQuestion" data-contentrevisionid="128121896" data-ordernumber="27" data-sectionid="128121930" tabindex="0">
+                            <span class="sr-only">Question 27</span>
+                            <span aria-hidden="true">27</span>
+                            <span class="sr-only">Not attempted</span>
+                        </button>
+                        <button class="subQuestion" data-contentrevisionid="128121896" data-ordernumber="28" data-sectionid="128121930" tabindex="0">
+                            <span class="sr-only">Question 28</span>
+                            <span aria-hidden="true">28</span>
+                            <span class="sr-only">Not attempted</span>
+                        </button>
+                        <button class="subQuestion" data-contentrevisionid="128121896" data-ordernumber="29" data-sectionid="128121930" tabindex="0">
+                            <span class="sr-only">Question 29</span>
+                            <span aria-hidden="true">29</span>
+                            <span class="sr-only">Not attempted</span>
+                        </button>
+                        <button class="subQuestion" data-contentrevisionid="128121896" data-ordernumber="30" data-sectionid="128121930" tabindex="0">
+                            <span class="sr-only">Question 30</span>
+                            <span aria-hidden="true">30</span>
+                            <span class="sr-only">Not attempted</span>
+                        </button>
+                        <button class="subQuestion" data-contentrevisionid="128121896" data-ordernumber="31" data-sectionid="128121930" tabindex="0">
+                            <span class="sr-only">Question 31</span>
+                            <span aria-hidden="true">31</span>
+                            <span class="sr-only">Not attempted</span>
+                        </button>
+                        <button class="subQuestion" data-contentrevisionid="128121896" data-ordernumber="32" data-sectionid="128121930" tabindex="0">
+                            <span class="sr-only">Question 32</span>
+                            <span aria-hidden="true">32</span>
+                            <span class="sr-only">Not attempted</span>
+                        </button>
+                        <button class="subQuestion" data-contentrevisionid="128121896" data-ordernumber="33" data-sectionid="128121930" tabindex="0">
+                            <span class="sr-only">Question 33</span>
+                            <span aria-hidden="true">33</span>
+                            <span class="sr-only">Not attempted</span>
+                        </button>
+                        <button class="subQuestion" data-contentrevisionid="128121896" data-ordernumber="34" data-sectionid="128121930" tabindex="0">
+                            <span class="sr-only">Question 34</span>
+                            <span aria-hidden="true">34</span>
+                            <span class="sr-only">Not attempted</span>
+                        </button>
+                        <button class="subQuestion" data-contentrevisionid="128121896" data-ordernumber="35" data-sectionid="128121930" tabindex="0">
+                            <span class="sr-only">Question 35</span>
+                            <span aria-hidden="true">35</span>
+                            <span class="sr-only">Not attempted</span>
+                        </button>
+                        <button class="subQuestion" data-contentrevisionid="128121896" data-ordernumber="36" data-sectionid="128121930" tabindex="0">
+                            <span class="sr-only">Question 36</span>
+                            <span aria-hidden="true">36</span>
+                            <span class="sr-only">Not attempted</span>
+                        </button>
+                        <button class="subQuestion" data-contentrevisionid="128121896" data-ordernumber="37" data-sectionid="128121930" tabindex="0">
+                            <span class="sr-only">Question 37</span>
+                            <span aria-hidden="true">37</span>
+                            <span class="sr-only">Not attempted</span>
+                        </button>
+                        <button class="subQuestion" data-contentrevisionid="128121896" data-ordernumber="38" data-sectionid="128121930" tabindex="0">
+                            <span class="sr-only">Question 38</span>
+                            <span aria-hidden="true">38</span>
+                            <span class="sr-only">Not attempted</span>
+                        </button>
+                        <button class="subQuestion" data-contentrevisionid="128121896" data-ordernumber="39" data-sectionid="128121930" tabindex="0">
+                            <span class="sr-only">Question 39</span>
+                            <span aria-hidden="true">39</span>
+                            <span class="sr-only">Not attempted</span>
+                        </button>
+                        <button class="subQuestion" data-contentrevisionid="128121896" data-ordernumber="40" data-sectionid="128121930" tabindex="0">
+                            <span class="sr-only">Question 40</span>
+                            <span aria-hidden="true">40</span>
+                            <span class="sr-only">Not attempted</span>
+                        </button>
+                    </div>
+                </div>
+                <button id="deliver-button" aria-label="Review your answers" class="footer__deliverButton">
+                    <i class="fas fa-check"></i> Submit
+                </button>
+            </nav>
+        </footer>
+    </div>
+    <!-- Submission Modal -->
+    <div class="submission-modal" id="submissionModal">
+        <div class="submission-content">
+            <h2 id="submissionTitle">Test Results</h2>
+            <div class="score-display">
+                <div>Your Score:</div>
+                <div class="score-number" id="userScore">0</div>
+                <div class="score-total">out of <span id="totalQuestions">14</span></div>
+                <div class="band-score" id="bandScore">Band: 0.0</div>
+                <div class="performance-rating" id="performanceRating">Poor - Needs Improvement</div>
+            </div>
+            <div class="time-spent" id="timeSpent"></div>
+            <p id="submissionMessage">Here are your answers with the correct solutions:</p>
+            <div class="answers-section">
+                <h3>Your Answers:</h3>
+                <div id="answersList"></div>
+            </div>
+            <div class="submission-buttons">
+                <button class="confirm" id="closeSubmission">Close</button>
+            </div>
+        </div>
+    </div>
+    <!-- Answer Comparison Section -->
+    <div class="answer-comparison" id="answerComparison">
+        <h3>Answer Comparison</h3>
+        <p>Your answers are highlighted below. Correct answers are marked in <span class="correct-highlight">green</span>, incorrect answers in <span class="incorrect-highlight">red</span>.</p>
+    </div>
+    <script>
+        // Correct answers
+        const correctAnswers = {
+            27: "v",
+            28: "iii",
+            29: "i",
+            30: "iv",
+            31: "vi",
+            32: "E",
+            33: "D",
+            34: "C",
+            35: "B",
+            36: "C",
+            37: "sub-arctic",
+            38: "short duration",
+            39: "predatory animals",
+            40: "C"
+        };
+
+        // Timer functionality - stopwatch (count up from zero)
+        let totalSeconds = 0;
+        const timerElement = document.getElementById('testTimer');
+        let testSubmitted = false;
+        let userAnswers = {};
+        let startTime = new Date();
+        let resultsShown = false;
+
+        function updateTimer() {
+            if (testSubmitted) return;
+            const minutes = Math.floor(totalSeconds / 60);
+            const seconds = totalSeconds % 60;
+            const formattedTime = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+            timerElement.textContent = formattedTime;
+            totalSeconds++;
+        }
+
+        function disableAllInputs() {
+            document.querySelectorAll('input[type="text"], input[type="radio"], select').forEach(input => {
+                input.disabled = true;
+            });
+            document.getElementById('deliver-button').disabled = true;
+            document.removeEventListener('mouseup', handleTextSelection);
+        }
+
+        function showSubmissionModal(title, message) {
+            const modal = document.getElementById('submissionModal');
+            document.getElementById('submissionTitle').textContent = title;
+            document.getElementById('submissionMessage').textContent = message;
+
+            // Calculate time spent
+            const endTime = new Date();
+            const timeDiff = endTime - startTime;
+            const minutes = Math.floor(timeDiff / 60000);
+            const seconds = Math.floor((timeDiff % 60000) / 1000);
+            document.getElementById('timeSpent').textContent = `Time spent: ${minutes}m ${seconds}s`;
+
+            const answersList = document.getElementById('answersList');
+            answersList.innerHTML = '';
+            let score = 0;
+            userAnswers = {};
+
+            // Process Matching Headings questions (27-31)
+            for (let i = 27; i <= 31; i++) {
+                const select = document.querySelector(`select[name="q${i}"]`);
+                const userAnswer = select.value || 'Not answered';
+                userAnswers[i] = userAnswer;
+                const correctAnswer = correctAnswers[i];
+                const isCorrect = userAnswer === correctAnswer;
+                if (isCorrect) score++;
+                const answerItem = document.createElement('div');
+                answerItem.className = `answer-item ${isCorrect ? 'correct' : 'incorrect'}`;
+                answerItem.innerHTML = `
+                    <div class="answer-text">Question ${i}: ${userAnswer}</div>
+                    <span class="${isCorrect ? 'correct-answer' : 'incorrect-answer'}">(Correct answer: ${correctAnswer})</span>
+                    <span class="answer-status ${isCorrect ? 'correct-status' : 'incorrect-status'}">
+                        ${isCorrect ? '✓' : '✗'}
+                    </span>
+                `;
+                answersList.appendChild(answerItem);
+            }
+
+            // Process Matching Features questions (32-36)
+            for (let i = 32; i <= 36; i++) {
+                const select = document.querySelector(`select[name="q${i}"]`);
+                const userAnswer = select.value || 'Not answered';
+                userAnswers[i] = userAnswer;
+                const correctAnswer = correctAnswers[i];
+                const isCorrect = userAnswer === correctAnswer;
+                if (isCorrect) score++;
+                const answerItem = document.createElement('div');
+                answerItem.className = `answer-item ${isCorrect ? 'correct' : 'incorrect'}`;
+                answerItem.innerHTML = `
+                    <div class="answer-text">Question ${i}: ${userAnswer}</div>
+                    <span class="${isCorrect ? 'correct-answer' : 'incorrect-answer'}">(Correct answer: ${correctAnswer})</span>
+                    <span class="answer-status ${isCorrect ? 'correct-status' : 'incorrect-status'}">
+                        ${isCorrect ? '✓' : '✗'}
+                    </span>
+                `;
+                answersList.appendChild(answerItem);
+            }
+
+            // Process Sentence Completion questions (37-39)
+            for (let i = 37; i <= 39; i++) {
+                const input = document.querySelector(`input[name="q${i}"]`);
+                const userAnswer = input.value.trim().toLowerCase() || 'Not answered';
+                userAnswers[i] = userAnswer;
+                const correctAnswer = correctAnswers[i].toLowerCase();
+                const isCorrect = userAnswer === correctAnswer;
+                if (isCorrect) score++;
+                const answerItem = document.createElement('div');
+                answerItem.className = `answer-item ${isCorrect ? 'correct' : 'incorrect'}`;
+                answerItem.innerHTML = `
+                    <div class="answer-text">Question ${i}: ${userAnswer}</div>
+                    <span class="${isCorrect ? 'correct-answer' : 'incorrect-answer'}">(Correct answer: ${correctAnswers[i]})</span>
+                    <span class="answer-status ${isCorrect ? 'correct-status' : 'incorrect-status'}">
+                        ${isCorrect ? '✓' : '✗'}
+                    </span>
+                `;
+                answersList.appendChild(answerItem);
+            }
+
+            // Process Multiple Choice question (40)
+            const radio40 = document.querySelector('input[name="q40"]:checked');
+            const userAnswer40 = radio40 ? radio40.value : 'Not answered';
+            userAnswers[40] = userAnswer40;
+            const correctAnswer40 = correctAnswers[40];
+            const isCorrect40 = userAnswer40 === correctAnswer40;
+            if (isCorrect40) score++;
+            const answerItem40 = document.createElement('div');
+            answerItem40.className = `answer-item ${isCorrect40 ? 'correct' : 'incorrect'}`;
+            answerItem40.innerHTML = `
+                <div class="answer-text">Question 40: ${userAnswer40}</div>
+                <span class="${isCorrect40 ? 'correct-answer' : 'incorrect-answer'}">(Correct answer: ${correctAnswer40})</span>
+                <span class="answer-status ${isCorrect40 ? 'correct-status' : 'incorrect-status'}">
+                    ${isCorrect40 ? '✓' : '✗'}
+                </span>
+            `;
+            answersList.appendChild(answerItem40);
+
+            // Update score display
+            document.getElementById('userScore').textContent = score;
+            document.getElementById('totalQuestions').textContent = "14";
+
+            // Calculate IELTS band score
+            const bandScore = calculateBandScore(score);
+            document.getElementById('bandScore').textContent = `Band: ${bandScore.toFixed(1)}`;
+
+            // Calculate performance rating
+            const percentage = (score / 14) * 100;
+            let rating, ratingClass;
+            if (score >= 13) {
+                rating = "Excellent!";
+                ratingClass = "excellent";
+            } else if (score >= 11) {
+                rating = "Very Good";
+                ratingClass = "very-good";
+            } else if (score >= 9) {
+                rating = "Good";
+                ratingClass = "good";
+            } else if (score >= 7) {
+                rating = "Fair";
+                ratingClass = "fair";
+            } else {
+                rating = "Poor - Needs Improvement";
+                ratingClass = "poor";
+            }
+            const ratingElement = document.getElementById('performanceRating');
+            ratingElement.textContent = rating;
+            ratingElement.className = `performance-rating ${ratingClass}`;
+
+            // Highlight answers if submitted
+            if (testSubmitted) {
+                highlightAnswers(correctAnswers);
+            }
+
+            modal.style.display = 'flex';
+            resultsShown = true;
+            const submitButton = document.getElementById('deliver-button');
+            submitButton.innerHTML = '<i class="fas fa-eye"></i> Show My Results';
+            submitButton.disabled = false;
+        }
+
+        function calculateBandScore(score) {
+            if (score >= 13) return 9.0;
+            if (score >= 12) return 8.5;
+            if (score >= 11) return 8.0;
+            if (score >= 10) return 7.5;
+            if (score >= 9) return 7.0;
+            if (score >= 8) return 6.5;
+            if (score >= 7) return 6.0;
+            if (score >= 6) return 5.5;
+            if (score >= 5) return 5.0;
+            return 0.0;
+        }
+
+        function highlightAnswers(correctAnswers) {
+            // Highlight Matching Headings questions (27-31)
+            for (let i = 27; i <= 31; i++) {
+                const select = document.querySelector(`select[name="q${i}"]`);
+                const userAnswer = userAnswers[i];
+                const correctAnswer = correctAnswers[i];
+                select.classList.remove('correct', 'incorrect');
+                if (userAnswer && userAnswer !== 'Not answered') {
+                    select.classList.add(userAnswer === correctAnswer ? 'correct' : 'incorrect');
+                    const feedback = document.createElement('span');
+                    feedback.className = `dropdown-answer ${userAnswer === correctAnswer ? 'correct' : 'incorrect'}`;
+                    feedback.textContent = userAnswer === correctAnswer ? '✓ Correct' : `✗ Correct: ${correctAnswer}`;
+                    if (!select.nextElementSibling || !select.nextElementSibling.classList.contains('dropdown-answer')) {
+                        select.parentNode.appendChild(feedback);
+                    }
+                }
+            }
+
+            // Highlight Matching Features questions (32-36)
+            for (let i = 32; i <= 36; i++) {
+                const select = document.querySelector(`select[name="q${i}"]`);
+                const userAnswer = userAnswers[i];
+                const correctAnswer = correctAnswers[i];
+                select.classList.remove('correct', 'incorrect');
+                if (userAnswer && userAnswer !== 'Not answered') {
+                    select.classList.add(userAnswer === correctAnswer ? 'correct' : 'incorrect');
+                    const feedback = document.createElement('span');
+                    feedback.className = `dropdown-answer ${userAnswer === correctAnswer ? 'correct' : 'incorrect'}`;
+                    feedback.textContent = userAnswer === correctAnswer ? '✓ Correct' : `✗ Correct: ${correctAnswer}`;
+                    if (!select.nextElementSibling || !select.nextElementSibling.classList.contains('dropdown-answer')) {
+                        select.parentNode.appendChild(feedback);
+                    }
+                }
+            }
+
+            // Highlight Sentence Completion questions (37-39)
+            for (let i = 37; i <= 39; i++) {
+                const input = document.querySelector(`input[name="q${i}"]`);
+                const userAnswer = userAnswers[i];
+                const correctAnswer = correctAnswers[i].toLowerCase();
+                input.classList.remove('correct', 'incorrect');
+                if (userAnswer && userAnswer !== 'Not answered') {
+                    input.classList.add(userAnswer === correctAnswer ? 'correct' : 'incorrect');
+                    const feedback = document.createElement('span');
+                    feedback.className = `sentence-feedback ${userAnswer === correctAnswer ? 'correct' : 'incorrect'}`;
+                    feedback.textContent = userAnswer === correctAnswer ? '✓ Correct' : `✗ Correct: ${correctAnswers[i]}`;
+                    if (!input.nextElementSibling || !input.nextElementSibling.classList.contains('sentence-feedback')) {
+                        input.parentNode.insertBefore(feedback, input.nextSibling);
+                    }
+                }
+            }
+
+            // Highlight Multiple Choice question (40)
+            document.querySelectorAll('input[name="q40"]').forEach(radio => {
+                radio.classList.remove('correct', 'incorrect');
+                const label = radio.nextElementSibling;
+                if (radio.checked) {
+                    radio.classList.add(radio.value === correctAnswers[40] ? 'correct' : 'incorrect');
+                    const feedback = document.createElement('span');
+                    feedback.className = `dropdown-answer ${radio.value === correctAnswers[40] ? 'correct' : 'incorrect'}`;
+                    feedback.textContent = radio.value === correctAnswers[40] ? '✓ Correct' : `✗`;
+                    if (!label.nextElementSibling || !label.nextElementSibling.classList.contains('dropdown-answer')) {
+                        label.parentNode.appendChild(feedback);
+                    }
+                }
+            });
+
+            document.getElementById('answerComparison').style.display = 'block';
+        }
+
+        // Handle manual submission
+        document.getElementById('deliver-button').addEventListener('click', function() {
+            if (resultsShown) {
+                document.getElementById('submissionModal').style.display = 'flex';
+                return;
+            }
+            if (testSubmitted) return;
+            if (confirm('Are you sure you want to submit your test? You won\'t be able to make changes after submission.')) {
+                clearInterval(timerInterval);
+                testSubmitted = true;
+                disableAllInputs();
+                showSubmissionModal('Test Submitted', 'Thank you for completing the test.');
+            }
+        });
+
+        // Close submission modal and show answer comparison
+        document.getElementById('closeSubmission').addEventListener('click', function() {
+            document.getElementById('submissionModal').style.display = 'none';
+            highlightAnswers(correctAnswers);
+        });
+
+        // Start the timer
+        const timerInterval = setInterval(updateTimer, 1000);
+
+        // Settings Modal functionality
+        const settingsButton = document.getElementById('settingsButton');
+        const settingsModal = document.getElementById('settingsModal');
+        const settingsClose = document.getElementById('settingsClose');
+
+        settingsButton.addEventListener('click', function() {
+            settingsModal.style.display = 'flex';
+        });
+
+        settingsClose.addEventListener('click', function() {
+            settingsModal.style.display = 'none';
+        });
+
+        window.addEventListener('click', function(event) {
+            if (event.target === settingsModal) {
+                settingsModal.style.display = 'none';
+            }
+            if (event.target === document.getElementById('submissionModal')) {
+                document.getElementById('submissionModal').style.display = 'none';
+            }
+        });
+
+        // Draggable Divider Functionality
+        const divider = document.getElementById('divider');
+        const passageContainer = document.getElementById('passage-container');
+        const questionsContainer = document.getElementById('questions-container');
+        let isDragging = false;
+        let startX, startPassageWidth;
+
+        divider.addEventListener('mousedown', (e) => {
+            isDragging = true;
+            startX = e.clientX;
+            startPassageWidth = parseInt(document.defaultView.getComputedStyle(passageContainer).width, 10);
+            document.body.style.cursor = 'col-resize';
+            document.addEventListener('mousemove', onMouseMove);
+            document.addEventListener('mouseup', onMouseUp);
+            e.preventDefault();
+        });
+
+        function onMouseMove(e) {
+            if (!isDragging) return;
+            const containerWidth = document.querySelector('.test-container').offsetWidth;
+            const newPassageWidth = startPassageWidth + e.clientX - startX;
+            const minWidth = containerWidth * 0.3;
+            const maxWidth = containerWidth * 0.7;
+            if (newPassageWidth >= minWidth && newPassageWidth <= maxWidth) {
+                passageContainer.style.width = `${newPassageWidth}px`;
+            }
+        }
+
+        function onMouseUp() {
+            isDragging = false;
+            document.body.style.cursor = '';
+            document.removeEventListener('mousemove', onMouseMove);
+            document.removeEventListener('mouseup', onMouseUp);
+        }
+
+        divider.addEventListener('selectstart', (e) => {
+            if (isDragging) e.preventDefault();
+        });
+
+        // Question navigation functionality
+        document.querySelectorAll('.subQuestion').forEach(button => {
+            button.addEventListener('click', function() {
+                document.querySelectorAll('.subQuestion').forEach(btn => {
+                    btn.classList.remove('active');
+                });
+                this.classList.add('active');
+                const questionNumber = parseInt(this.textContent.trim());
+                if (questionNumber >= 27 && questionNumber <= 31) {
+                    document.querySelector('.question:nth-of-type(1)').scrollIntoView({ behavior: 'smooth' });
+                } else if (questionNumber >= 32 && questionNumber <= 36) {
+                    document.querySelector('.question:nth-of-type(2)').scrollIntoView({ behavior: 'smooth' });
+                } else if (questionNumber >= 37 && questionNumber <= 39) {
+                    document.querySelector('.question:nth-of-type(3)').scrollIntoView({ behavior: 'smooth' });
+                } else if (questionNumber === 40) {
+                    document.querySelector('.question:nth-of-type(4)').scrollIntoView({ behavior: 'smooth' });
+                }
+            });
+        });
+
+        // Enhanced Highlighting functionality
+        const highlightToolbar = document.getElementById('highlightToolbar');
+        let selectedText = '';
+        let selectedRange = null;
+        let currentHighlightColor = null;
+
+        document.querySelectorAll('#passageContent, .questions-container').forEach(element => {
+            element.style.userSelect = 'text';
+            element.style.webkitUserSelect = 'text';
+        });
+
+        function handleTextSelection() {
+            const selection = window.getSelection();
+            selectedText = selection.toString().trim();
+            if (selectedText.length > 0 && isTextInContent(selection)) {
+                selectedRange = selection.getRangeAt(0);
+                const rangeRect = selectedRange.getBoundingClientRect();
+                highlightToolbar.style.display = 'block';
+                highlightToolbar.style.top = `${rangeRect.top + window.scrollY - 35}px`;
+                highlightToolbar.style.left = `${rangeRect.left + window.scrollX + (rangeRect.width / 2)}px`;
+            } else {
+                highlightToolbar.style.display = 'none';
+            }
+        }
+
+        function isTextInContent(selection) {
+            if (!selection.rangeCount) return false;
+            const range = selection.getRangeAt(0);
+            const contentAreas = document.querySelectorAll('#passageContent, .question-content');
+            return Array.from(contentAreas).some(area => area.contains(range.commonAncestorContainer));
+        }
+
+        document.addEventListener('mouseup', handleTextSelection);
+
+        document.addEventListener('mousedown', function(e) {
+            if (!highlightToolbar.contains(e.target)) {
+                highlightToolbar.style.display = 'none';
+            }
+        });
+
+        document.querySelectorAll('.highlight-color').forEach(button => {
+            button.addEventListener('click', function() {
+                currentHighlightColor = this.dataset.color;
+                applyHighlight();
+            });
+        });
+
+        function applyHighlight() {
+            if (selectedText.length > 0 && selectedRange) {
+                const hasHighlights = checkForHighlightsInRange(selectedRange);
+                if (hasHighlights) {
+                    removeHighlightsInRange(selectedRange);
+                } else if (currentHighlightColor) {
+                    const span = document.createElement('span');
+                    span.className = `highlight ${currentHighlightColor}`;
+                    selectedRange.surroundContents(span);
+                }
+                window.getSelection().removeAllRanges();
+                highlightToolbar.style.display = 'none';
+            }
+        }
+
+        function checkForHighlightsInRange(range) {
+            const documentFragment = range.cloneContents();
+            const tempDiv = document.createElement('div');
+            tempDiv.appendChild(documentFragment);
+            return tempDiv.querySelector('.highlight') !== null;
+        }
+
+        function removeHighlightsInRange(range) {
+            const documentFragment = range.cloneContents();
+            const tempDiv = document.createElement('div');
+            tempDiv.appendChild(documentFragment);
+            const highlights = tempDiv.querySelectorAll('.highlight');
+            if (highlights.length > 0) {
+                const newRange = range.cloneRange();
+                const fragment = newRange.extractContents();
+                const textFragment = document.createDocumentFragment();
+                extractTextNodes(fragment, textFragment);
+                newRange.insertNode(textFragment);
+            }
+        }
+
+        function extractTextNodes(source, destination) {
+            const walker = document.createTreeWalker(
+                source,
+                NodeFilter.SHOW_TEXT | NodeFilter.SHOW_ELEMENT,
+                null,
+                false
+            );
+            let node;
+            while (node = walker.nextNode()) {
+                if (node.nodeType === Node.TEXT_NODE) {
+                    destination.appendChild(document.createTextNode(node.nodeValue));
+                } else if (!node.classList.contains('highlight')) {
+                    const container = node.cloneNode(false);
+                    extractTextNodes(node, container);
+                    destination.appendChild(container);
+                }
+            }
+        }
+
+        document.querySelector('.highlight-toolbar .remove').addEventListener('click', function() {
+            if (selectedText.length > 0 && selectedRange) {
+                removeHighlightsInRange(selectedRange);
+                window.getSelection().removeAllRanges();
+                highlightToolbar.style.display = 'none';
+            }
+        });
+
+        // Mark questions as attempted when answered
+        document.querySelectorAll('select, input[type="text"], input[type="radio"]').forEach(input => {
+            input.addEventListener('change', function() {
+                let questionNumber;
+                if (this.name.startsWith('q')) {
+                    questionNumber = parseInt(this.name.replace('q', ''));
+                } else {
+                    return;
+                }
+                const questionButton = document.querySelector(`.subQuestion[data-ordernumber="${questionNumber}"]`);
+                if (questionButton && (this.value || this.value.trim() || this.checked)) {
+                    questionButton.classList.add('attempted');
+                }
+            });
+        });
+    </script>
+</body>
+</html>

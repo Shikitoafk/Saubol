@@ -1,0 +1,1274 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>IELTS Reading Comprehension - Tidal Power</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --bg-color: #ffffff;
+            --text-color: #333333;
+            --passage-bg: #f8f9fa;
+            --questions-bg: #ffffff;
+            --border-color: #e0e0e0;
+            --highlight-color: #ffff00;
+            --header-bg: #F8F8F8;
+            --header-text: #333333;
+            --button-bg: #CC0000;
+            --button-hover: #A30000;
+            --correct-color: #28a745;
+            --incorrect-color: #dc3545;
+            --progress-complete: #28a745;
+            --progress-incomplete: #bdbdbd;
+            --timer-bg: #ffebee;
+            --timer-text: #d32f2f;
+            --footer-bg: #f5f5f5;
+            --telegram-color: #0088cc;
+        }
+
+        .night-mode {
+            --bg-color: #121212;
+            --text-color: #e0e0e0;
+            --passage-bg: #1e1e1e;
+            --questions-bg: #1e1e1e;
+            --border-color: #424242;
+            --highlight-color: #cccc00;
+            --header-bg: #1a1a1a;
+            --header-text: #ffffff;
+            --button-bg: #990000;
+            --button-hover: #7a0000;
+            --correct-color: #218838;
+            --incorrect-color: #c82333;
+            --progress-complete: #218838;
+            --progress-incomplete: #616161;
+            --timer-bg: #420000;
+            --timer-text: #ffcdd2;
+            --footer-bg: #121212;
+            --telegram-color: #33a8e0;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            transition: background-color 0.3s, color 0.3s;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            line-height: 1.6;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        header {
+            background-color: var(--header-bg);
+            color: var(--header-text);
+            padding: 12px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            z-index: 100;
+        }
+
+        .header-left {
+            display: flex;
+            align-items: center;
+        }
+
+        .telegram-btn {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            background-color: var(--telegram-color);
+            color: white;
+            text-decoration: none;
+            padding: 8px 15px;
+            border-radius: 50px;
+            font-weight: 600;
+            font-size: 14px;
+            transition: background-color 0.3s, transform 0.2s;
+        }
+
+        .telegram-btn:hover {
+            background-color: #0077b5;
+            transform: translateY(-2px);
+        }
+
+        .header-controls {
+            display: flex;
+            gap: 15px;
+            align-items: center;
+        }
+
+        .timer-container {
+            background-color: var(--timer-bg);
+            color: var(--timer-text);
+            padding: 8px 15px;
+            border-radius: 50px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .timer-controls {
+            display: flex;
+            gap: 8px;
+        }
+
+        .timer-controls button {
+            background: none;
+            border: none;
+            color: var(--timer-text);
+            cursor: pointer;
+            font-size: 16px;
+            padding: 4px;
+            border-radius: 50%;
+            width: 28px;
+            height: 28px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .timer-controls button:hover {
+            background-color: rgba(0,0,0,0.1);
+        }
+        .night-mode .timer-controls button:hover {
+            background-color: rgba(255,255,255,0.2);
+        }
+
+        .mode-toggle {
+            background: none;
+            border: none;
+            color: var(--header-text);
+            cursor: pointer;
+            font-size: 20px;
+            padding: 6px;
+            border-radius: 50%;
+            width: 36px;
+            height: 36px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .mode-toggle:hover {
+            background-color: rgba(0,0,0,0.1);
+        }
+        .night-mode .mode-toggle:hover {
+            background-color: rgba(255,255,255,0.2);
+        }
+
+        main {
+            display: flex;
+            flex: 1;
+            overflow: hidden;
+        }
+
+        .passage-container, .questions-container {
+            height: 100%;
+            overflow-y: auto;
+            padding: 20px;
+        }
+
+        .passage-container {
+            width: 50%;
+            background-color: var(--passage-bg);
+            border-right: 1px solid var(--border-color);
+            position: relative;
+        }
+
+        .questions-container {
+            width: 50%;
+            background-color: var(--questions-bg);
+        }
+
+        .passage-content {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .passage-title {
+            font-size: 24px;
+            font-weight: 700;
+            margin-bottom: 20px;
+            color: var(--text-color);
+            padding-bottom: 10px;
+            border-bottom: 2px solid var(--border-color);
+        }
+
+        .passage-text {
+            font-size: 17px;
+        }
+
+        .question-text {
+            font-size: 17px;
+            line-height: 1.8;
+        }
+
+        .passage-text p {
+            margin-bottom: 20px;
+            text-align: justify;
+        }
+
+        .passage-text .paragraph-label {
+            font-weight: bold;
+            margin-right: 5px;
+        }
+
+        .highlight {
+            background-color: var(--highlight-color);
+            cursor: pointer;
+            position: relative;
+        }
+
+        .highlight-tooltip {
+            position: absolute;
+            background-color: #333;
+            color: white;
+            padding: 5px 10px;
+            border-radius: 4px;
+            font-size: 14px;
+            z-index: 1000;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            top: -30px;
+            left: 50%;
+            transform: translateX(-50%);
+        }
+
+        .section-title {
+            font-size: 18px;
+            font-weight: 600;
+            margin: 25px 0 15px;
+            color: var(--text-color);
+            padding-bottom: 8px;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .question-group {
+            margin-bottom: 30px;
+        }
+
+        .question {
+            margin-bottom: 25px;
+            padding: 15px;
+            border-radius: 8px;
+            background-color: var(--passage-bg);
+            border-left: 4px solid var(--border-color);
+        }
+
+        .question-title {
+            font-weight: 600;
+            margin-bottom: 12px;
+            display: flex;
+            align-items: baseline;
+        }
+
+        .question-number {
+            display: inline-block;
+            width: 28px;
+            height: 28px;
+            background-color: var(--progress-incomplete);
+            color: white;
+            border-radius: 50%;
+            text-align: center;
+            line-height: 28px;
+            margin-right: 10px;
+            font-size: 14px;
+            flex-shrink: 0;
+        }
+
+        .question.answered .question-number {
+            background-color: var(--progress-complete);
+        }
+
+        .options {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            margin-top: 8px;
+        }
+
+        .option {
+            display: flex;
+            align-items: flex-start;
+            cursor: pointer;
+            padding: 5px 0;
+        }
+
+        .option input {
+            margin-right: 10px;
+            margin-top: 3px;
+        }
+
+        .fill-in-the-blank, .question select {
+            background: transparent;
+            border: none;
+            border-bottom: 2px solid var(--text-color);
+            width: 150px;
+            font-family: inherit;
+            font-size: 1em;
+            color: inherit;
+            padding: 0 4px 2px 4px;
+            margin: 0 3px;
+            vertical-align: baseline;
+            text-align: center;
+            outline: none;
+            transition: border-color 0.3s;
+        }
+
+        .fill-in-the-blank:focus, .question select:focus {
+            border-bottom-color: var(--button-bg);
+        }
+
+        .instructions {
+            font-size: 14px;
+            color: #757575;
+            margin-top: 5px;
+            font-style: italic;
+        }
+
+        .diagram-container {
+            margin: 20px 0;
+            padding: 20px;
+            background-color: var(--passage-bg);
+            border-radius: 8px;
+            text-align: center;
+        }
+
+        .diagram {
+            max-width: 100%;
+            height: auto;
+            margin-bottom: 20px;
+        }
+
+        .diagram-labels {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            max-width: 500px;
+            margin: 0 auto;
+        }
+
+        .diagram-label {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .label-number {
+            width: 30px;
+            height: 30px;
+            background-color: var(--button-bg);
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+        }
+
+        footer {
+            background-color: var(--footer-bg);
+            padding: 15px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-top: 1px solid var(--border-color);
+            box-shadow: 0 -2px 5px rgba(0,0,0,0.05);
+        }
+
+        .progress-container {
+            display: flex;
+            gap: 8px;
+        }
+
+        .progress-item {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            background-color: var(--progress-incomplete);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+
+        .progress-item:hover {
+            transform: scale(1.1);
+        }
+
+        .progress-item.completed {
+            background-color: var(--progress-complete);
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 12px;
+        }
+
+        button {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: background-color 0.3s, border-color 0.3s, color 0.3s;
+        }
+
+        .btn-primary {
+            background-color: var(--button-bg);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background-color: var(--button-hover);
+        }
+
+        .btn-secondary {
+            background-color: transparent;
+            border: 1px solid var(--button-bg);
+            color: var(--button-bg);
+        }
+
+        .btn-secondary:hover {
+            background-color: rgba(204, 0, 0, 0.1);
+        }
+        .night-mode .btn-secondary:hover {
+            background-color: rgba(153, 0, 0, 0.2);
+        }
+
+        .feedback-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.7);
+            z-index: 1000;
+            display: none;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .feedback-container {
+            background-color: var(--passage-bg);
+            width: 90%;
+            max-width: 900px;
+            height: 90%;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+            display: flex;
+            flex-direction: column;
+        }
+
+        .feedback-header {
+            padding: 20px;
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .feedback-title {
+            font-size: 22px;
+            font-weight: 700;
+            color: var(--text-color);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        #close-feedback {
+            font-size: 24px;
+            background: none;
+            border: none;
+            color: var(--text-color);
+            cursor: pointer;
+        }
+
+        .score-display {
+            font-size: 24px;
+            font-weight: 700;
+            margin-left: 10px;
+        }
+
+        .feedback-body {
+            padding: 20px;
+            overflow-y: auto;
+        }
+
+        .feedback-item {
+            margin-bottom: 25px;
+            padding: 15px;
+            border-radius: 8px;
+            background-color: var(--questions-bg);
+        }
+
+        .feedback-question {
+            font-weight: 600;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+        }
+
+        .feedback-answer {
+            margin-bottom: 10px;
+            padding: 8px 12px;
+            border-radius: 4px;
+            background-color: rgba(0,0,0,0.05);
+        }
+
+        .correct {
+            color: var(--correct-color);
+        }
+
+        .incorrect {
+            color: var(--incorrect-color);
+        }
+
+        .feedback-explanation {
+            margin-top: 10px;
+            padding: 10px;
+            border-left: 3px solid var(--button-bg);
+            background-color: rgba(0,0,0,0.03);
+        }
+
+        .feedback-passage {
+            margin-top: 8px;
+            font-style: italic;
+            color: #757575;
+        }
+
+        @media (max-width: 900px) {
+            main {
+                flex-direction: column;
+            }
+            
+            .passage-container, .questions-container {
+                width: 100%;
+                height: 50%;
+            }
+            
+            .passage-container {
+                border-right: none;
+                border-bottom: 1px solid var(--border-color);
+            }
+            
+            .progress-container {
+                flex-wrap: wrap;
+                max-width: 60%;
+            }
+        }
+
+        @media (max-width: 600px) {
+            header {
+                flex-direction: column;
+                gap: 10px;
+                padding: 10px;
+            }
+            .header-left, .header-controls {
+                width: 100%;
+                justify-content: center;
+            }
+            .progress-container {
+                max-width: 50%;
+            }
+            .progress-item {
+                width: 26px;
+                height: 26px;
+                font-size: 12px;
+            }
+            footer {
+                flex-direction: column;
+                gap: 15px;
+            }
+            .action-buttons {
+                width: 100%;
+                justify-content: center;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="header-left">
+            
+        </div>
+        <div class="header-controls">
+            <div class="timer-container">
+                <i class="fas fa-clock"></i>
+                <span id="timer">20:00</span>
+                <div class="timer-controls">
+                    <button id="start-timer" title="Start"><i class="fas fa-play"></i></button>
+                    <button id="pause-timer" title="Pause"><i class="fas fa-pause"></i></button>
+                    <button id="reset-timer" title="Reset"><i class="fas fa-redo"></i></button>
+                </div>
+            </div>
+            <button class="mode-toggle" id="night-mode-toggle" title="Toggle Night Mode">
+                <i class="fas fa-moon"></i>
+            </button>
+        </div>
+    </header>
+
+    <main>
+        <div class="passage-container" id="passage-container">
+            <div class="passage-content">
+                <div class="passage-title">Reading Passage: Tidal Power</div>
+                <div class="passage-text" id="passage-text">
+                    <p><span class="paragraph-label">A</span> Operating on the same principle as wind turbines, the power in sea turbines comes from tidal currents which turn blades similar to ships' propellers, but, unlike wind, the tides are predictable and the power input is constant. The technology raises the prospect of Britain becoming self-sufficient in renewable energy and drastically reducing its carbon dioxide emissions. If tide, wind and wave power are all developed, Britain would be able to close gas, coal and nuclear power plants and export renewable power to other parts of Europe. Unlike wind power, which Britain originally developed and then abandoned for 20 years allowing the Dutch to make it a major industry, undersea turbines could become a big export earner to island nations such as Japan and New Zealand.</p>
+                    
+                    <p><span class="paragraph-label">B</span> Tidal sites have already been identified that will produce one sixth or more of the UK's power - and at prices competitive with modern gas turbines and undercutting those of the already ailing nuclear industry. One site alone, the Pentland Firth, between Orkney and mainland Scotland, could produce 10% of the country's electricity with banks of turbines under the sea, and another at Alderney in the Channel Islands three times the 1,200 megawatts of Britain's largest and newest nuclear plant, Sizewell B, in Suffolk. Other sites identified include the Bristol Channel and the west coast of Scotland, particularly the channel between Campbeltown and Northern Ireland.</p>
+                    
+                    <p><span class="paragraph-label">C</span> Work on designs for the new turbine blades and sites are well advanced at the University of Southampton's sustainable energy research group. The first station is expected to be installed off Lymnouth in Devon shortly to test the technology in a venture jointly funded by the department of Trade and Industry and the European Union. AbuBakr Bahaj, in charge of the Southampton research, said: The prospects for energy from tidal currents are far better than from wind because the flows of water are predictable and constant. The technology for dealing with the hostile saline environment under the sea has been developed in the North Sea oil industry and much is already known about turbine blade design, because of wind power and ship propellers. There are a few technical difficulties, but I believe in the next five to ten years we will be installing commercial marine turbine farms.' Southampton has been awarded £215,000 over three years to develop the turbines and is working with Marine Current Turbines, a subsidiary of IT power, on the Lymnouth project. EU research has now identified 106 potential sites for tidal power, 80% round the coasts of Britain. The best sites are between islands or around heavily indented coasts where there are strong tidal currents.</p>
+                    
+                    <p><span class="paragraph-label">D</span> A marine turbine blade needs to be only one third of the size of a wind generator to produce three times as much power. The blades will be about 20 metres in diameter, so around 30 metres of water is required. Unlike wind power, there are unlikely to be environmental objections. Fish and other creatures are thought unlikely to be at risk from the relatively slow-turning blades. Each turbine will be mounted on a tower which will connect to the national power supply grid via underwater cables. The towers will stick out of the water and be lit, to warn shipping, and also be designed to be lifted out of the water for maintenance and to clean seaweed from the blades.</p>
+                    
+                    <p><span class="paragraph-label">E</span> Dr Bahaj has done most work on the Alderney site, where there are powerful currents. The single undersea turbine farm would produce far more power than needed for the Channel Islands and most would be fed into the French Grid and be re-imported into Britain via the cable under the Channel.</p>
+                    
+                    <p><span class="paragraph-label">F</span> One technical difficulty is cavitation, where low pressure behind a turning blade causes air bubbles. These can cause vibration and damage the blades of the turbines. Dr Bahaj said: 'We have to test a number of blade types to avoid this happening or at least make sure it does not damage the turbines or reduce performance. Another slight concern is submerged debris floating into the blades. So far we do not know how much of a problem it might be. We will have to make the turbines robust because the sea is a hostile environment, but all the signs that we can do it are good.'</p>
+                </div>
+            </div>
+        </div>
+        
+        <div class="questions-container" id="questions-container">
+            <div class="section-title">Questions 1-4</div>
+            <div class="instructions">Reading Passage has six paragraphs, A-F. Which paragraph contains the following information? Write the correct letter, A-F, in boxes 1-4 on your answer sheet.<br><strong>NB</strong> You may use any letter more than once.</div>
+            <div class="question-group">
+                <div class="question" id="q1">
+                    <div class="question-title">
+                        <div class="question-number">1</div>
+                        <div class="question-text">the location of the first test site</div>
+                    </div>
+                    <select name="q1">
+                        <option value="">Select Paragraph...</option>
+                        <option value="A">A</option>
+                        <option value="B">B</option>
+                        <option value="C">C</option>
+                        <option value="D">D</option>
+                        <option value="E">E</option>
+                        <option value="F">F</option>
+                    </select>
+                </div>
+                <div class="question" id="q2">
+                    <div class="question-title">
+                        <div class="question-number">2</div>
+                        <div class="question-text">a way of bringing the power produced on one site back into Britain</div>
+                    </div>
+                    <select name="q2">
+                        <option value="">Select Paragraph...</option>
+                        <option value="A">A</option>
+                        <option value="B">B</option>
+                        <option value="C">C</option>
+                        <option value="D">D</option>
+                        <option value="E">E</option>
+                        <option value="F">F</option>
+                    </select>
+                </div>
+                <div class="question" id="q3">
+                    <div class="question-title">
+                        <div class="question-number">3</div>
+                        <div class="question-text">a reference to a previous attempt by Britain to find an alternative source of energy</div>
+                    </div>
+                    <select name="q3">
+                        <option value="">Select Paragraph...</option>
+                        <option value="A">A</option>
+                        <option value="B">B</option>
+                        <option value="C">C</option>
+                        <option value="D">D</option>
+                        <option value="E">E</option>
+                        <option value="F">F</option>
+                    </select>
+                </div>
+                <div class="question" id="q4">
+                    <div class="question-title">
+                        <div class="question-number">4</div>
+                        <div class="question-text">mention of the possibility of applying technology from another industry</div>
+                    </div>
+                    <select name="q4">
+                        <option value="">Select Paragraph...</option>
+                        <option value="A">A</option>
+                        <option value="B">B</option>
+                        <option value="C">C</option>
+                        <option value="D">D</option>
+                        <option value="E">E</option>
+                        <option value="F">F</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="section-title">Questions 5-9</div>
+            <div class="instructions">Choose <strong>FIVE</strong> letters, A-J. Write the correct letters in boxes 5-9 on your answer sheet.<br>Which <strong>FIVE</strong> of the following claims about tidal power are made by the writer?</div>
+            <div class="question-group">
+                <div class="question" id="q5">
+                    <div class="question-title">
+                        <div class="question-number">5-9</div>
+                        <div class="question-text">Select FIVE correct options:</div>
+                    </div>
+                    <div class="options">
+                        <label class="option"><input type="checkbox" name="q5" value="A"> A It is a more reliable source of energy than wind power.</label>
+                        <label class="option"><input type="checkbox" name="q5" value="B"> B It would replace all other forms of energy in Britain.</label>
+                        <label class="option"><input type="checkbox" name="q5" value="C"> C Its introduction has come as a result of public pressure.</label>
+                        <label class="option"><input type="checkbox" name="q5" value="D"> D It would cut down on air pollution.</label>
+                        <label class="option"><input type="checkbox" name="q5" value="E"> E It could contribute to the closure of many existing power stations in Britain.</label>
+                        <label class="option"><input type="checkbox" name="q5" value="F"> F It could be a means of increasing national income.</label>
+                        <label class="option"><input type="checkbox" name="q5" value="G"> G It could face a lot of resistance from other fuel industries.</label>
+                        <label class="option"><input type="checkbox" name="q5" value="H"> H It could be sold more cheaply than any other type of fuel.</label>
+                        <label class="option"><input type="checkbox" name="q5" value="I"> I It could compensate for the shortage of inland sites for energy production.</label>
+                        <label class="option"><input type="checkbox" name="q5" value="J"> J It is best produced in the vicinity of coastlines with particular features.</label>
+                    </div>
+                </div>
+            </div>
+
+            <div class="section-title">Questions 10-13</div>
+            <div class="instructions">Label the diagram below. Choose <strong>NO MORE THAN TWO WORDS</strong> from the passage for each answer. Write your answers in boxes 10-13 on your answer sheet.</div>
+            <div class="diagram-container">
+                <div class="diagram-labels">
+                    <div class="diagram-label">
+                        <div class="label-number">10</div>
+                        <div class="question-text">Whole tower can be raised for <input type="text" name="q10" class="fill-in-the-blank"> and the extraction of seaweed from the blades</div>
+                    </div>
+                    <div class="diagram-label">
+                        <div class="label-number">11</div>
+                        <div class="question-text">Sea life not in danger due to the fact that blades are comparatively <input type="text" name="q11" class="fill-in-the-blank"></div>
+                    </div>
+                    <div class="diagram-label">
+                        <div class="label-number">12</div>
+                        <div class="question-text">Air bubbles result from the <input type="text" name="q12" class="fill-in-the-blank"> behind blades.</div>
+                    </div>
+                    <div class="diagram-label">
+                        <div class="label-number">13</div>
+                        <div class="question-text">This is known as <input type="text" name="q13" class="fill-in-the-blank"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <footer>
+        <div class="progress-container" id="progress-container"></div>
+        <div class="action-buttons">
+            <button class="btn-secondary" id="reset-btn">Reset Answers</button>
+            <button class="btn-primary" id="submit-btn">Submit Answers</button>
+        </div>
+    </footer>
+
+    <div class="feedback-overlay" id="feedback-overlay">
+        <div class="feedback-container" id="feedback-container">
+            <div class="feedback-header">
+                <div class="feedback-title">
+                    <i class="fas fa-chart-bar"></i> Your Results
+                    <span class="score-display" id="score-display">0/13</span>
+                </div>
+                <button id="close-feedback" title="Close"><i class="fas fa-times"></i></button>
+            </div>
+            <div class="feedback-body" id="feedback-body"></div>
+        </div>
+    </div>
+
+    <script>
+        // Timer functionality
+        let timerInterval;
+        let seconds = 1200; // 20 minutes
+        let timerRunning = false;
+
+        const timerDisplay = document.getElementById('timer');
+        const startTimer = document.getElementById('start-timer');
+        const pauseTimer = document.getElementById('pause-timer');
+        const resetTimer = document.getElementById('reset-timer');
+
+        function formatTime(seconds) {
+            const mins = Math.floor(seconds / 60).toString().padStart(2, '0');
+            const secs = (seconds % 60).toString().padStart(2, '0');
+            return `${mins}:${secs}`;
+        }
+
+        function updateTimer() {
+            timerDisplay.textContent = formatTime(seconds);
+            if (seconds <= 0) {
+                clearInterval(timerInterval);
+                timerRunning = false;
+                document.getElementById('submit-btn').click();
+            }
+        }
+
+        startTimer.addEventListener('click', () => {
+            if (!timerRunning) {
+                timerRunning = true;
+                timerInterval = setInterval(() => {
+                    seconds--;
+                    updateTimer();
+                }, 1000);
+            }
+        });
+
+        pauseTimer.addEventListener('click', () => {
+            if (timerRunning) {
+                clearInterval(timerInterval);
+                timerRunning = false;
+            }
+        });
+
+        resetTimer.addEventListener('click', () => {
+            clearInterval(timerInterval);
+            timerRunning = false;
+            seconds = 1200;
+            updateTimer();
+        });
+
+        // Night mode toggle
+        const nightModeToggle = document.getElementById('night-mode-toggle');
+        nightModeToggle.addEventListener('click', () => {
+            document.body.classList.toggle('night-mode');
+            const icon = nightModeToggle.querySelector('i');
+            if (document.body.classList.contains('night-mode')) {
+                icon.classList.remove('fa-moon');
+                icon.classList.add('fa-sun');
+            } else {
+                icon.classList.remove('fa-sun');
+                icon.classList.add('fa-moon');
+            }
+        });
+
+        // Create progress indicators
+        const progressContainer = document.getElementById('progress-container');
+        for (let i = 1; i <= 13; i++) {
+            const progressItem = document.createElement('div');
+            progressItem.className = 'progress-item';
+            progressItem.textContent = i;
+            progressItem.dataset.question = i;
+            progressContainer.appendChild(progressItem);
+            
+            progressItem.addEventListener('click', () => {
+                const questionElement = document.getElementById(`q${i}`);
+                if (questionElement) {
+                    questionElement.scrollIntoView({ behavior: 'smooth' });
+                }
+            });
+        }
+
+        // Text highlighting functionality
+        let highlightTooltip = null;
+        let selectedHighlight = null;
+
+        function handleMouseUp(e) {
+            const container = e.currentTarget;
+            const selection = window.getSelection();
+            if (selection.toString().trim() !== '' && container.contains(selection.anchorNode)) {
+                const range = selection.getRangeAt(0);
+                const rect = range.getBoundingClientRect();
+
+                const startContainer = range.startContainer.nodeType === 3 ? range.startContainer.parentElement : range.startContainer;
+                const endContainer = range.endContainer.nodeType === 3 ? range.endContainer.parentElement : range.endContainer;
+                
+                let parentElement, isPassage;
+                const passageText = document.getElementById('passage-text');
+                const questionsContainer = document.getElementById('questions-container');
+                
+                if (passageText.contains(startContainer) && passageText.contains(endContainer)) {
+                    parentElement = startContainer.closest('p');
+                    isPassage = true;
+                } else if (questionsContainer.contains(startContainer) && questionsContainer.contains(endContainer)) {
+                    parentElement = startContainer.closest('.question-text');
+                    isPassage = false;
+                } else {
+                    alert('Please select text within a single paragraph or question.');
+                    selection.removeAllRanges();
+                    if (highlightTooltip) {
+                        highlightTooltip.remove();
+                        highlightTooltip = null;
+                    }
+                    return;
+                }
+
+                if (!parentElement || startContainer.closest(parentElement.tagName) !== endContainer.closest(parentElement.tagName)) {
+                    alert('Please select text within a single ' + (isPassage ? 'paragraph' : 'question') + '.');
+                    selection.removeAllRanges();
+                    if (highlightTooltip) {
+                        highlightTooltip.remove();
+                        highlightTooltip = null;
+                    }
+                    return;
+                }
+
+                const existingHighlights = parentElement.querySelectorAll('.highlight');
+                let hasOverlap = false;
+
+                existingHighlights.forEach(highlight => {
+                    const highlightRange = document.createRange();
+                    highlightRange.selectNodeContents(highlight);
+                    
+                    const startCompare = range.compareBoundaryPoints(Range.START_TO_START, highlightRange);
+                    const endCompare = range.compareBoundaryPoints(Range.END_TO_END, highlightRange);
+                    const startToEnd = range.compareBoundaryPoints(Range.START_TO_END, highlightRange);
+                    const endToStart = range.compareBoundaryPoints(Range.END_TO_START, highlightRange);
+                    
+                    if (
+                        (startCompare >= 0 && startCompare <= 0 && endCompare >= 0) ||
+                        (endCompare <= 0 && startCompare <= 0 && startToEnd >= 0) ||
+                        (startCompare <= 0 && endCompare >= 0) ||
+                        (startCompare >= 0 && endCompare <= 0)
+                    ) {
+                        hasOverlap = true;
+                    }
+                });
+
+                if (hasOverlap) {
+                    alert('Cannot highlight overlapping elements. Please try a different selection.');
+                    selection.removeAllRanges();
+                    if (highlightTooltip) {
+                        highlightTooltip.remove();
+                        highlightTooltip = null;
+                    }
+                    return;
+                }
+
+                const originalContent = range.cloneContents();
+
+                if (highlightTooltip) {
+                    highlightTooltip.remove();
+                    highlightTooltip = null;
+                }
+
+                highlightTooltip = document.createElement('div');
+                highlightTooltip.className = 'highlight-tooltip';
+                highlightTooltip.innerHTML = '<i class="fas fa-highlighter"></i> Highlight';
+                highlightTooltip.style.position = 'fixed';
+                highlightTooltip.style.top = `${rect.top - 40}px`;
+                highlightTooltip.style.left = `${rect.left}px`;
+                document.body.appendChild(highlightTooltip);
+
+                highlightTooltip.addEventListener('click', () => {
+                    try {
+                        const span = document.createElement('span');
+                        span.className = 'highlight';
+                        span.appendChild(range.extractContents());
+                        range.insertNode(span);
+                        span.addEventListener('click', handleHighlightClick);
+                        selection.removeAllRanges();
+                        highlightTooltip.remove();
+                        highlightTooltip = null;
+                        parentElement.normalize();
+                    } catch (error) {
+                        console.error('Error applying highlight:', error);
+                        alert('Failed to apply highlight. Restoring original text.');
+                        range.deleteContents();
+                        range.insertNode(originalContent.cloneNode(true));
+                        parentElement.normalize();
+                        if (highlightTooltip) {
+                            highlightTooltip.remove();
+                            highlightTooltip = null;
+                        }
+                    }
+                });
+            }
+        }
+
+        function handleHighlightClick(e) {
+            if (selectedHighlight && selectedHighlight !== e.target) {
+                selectedHighlight.classList.remove('selected-highlight');
+            }
+            selectedHighlight = e.target;
+            selectedHighlight.classList.toggle('selected-highlight');
+
+            if (highlightTooltip) {
+                highlightTooltip.remove();
+                highlightTooltip = null;
+            }
+
+            highlightTooltip = document.createElement('div');
+            highlightTooltip.className = 'highlight-tooltip';
+            highlightTooltip.innerHTML = '<i class="fas fa-eraser"></i> Unhighlight';
+            highlightTooltip.style.position = 'absolute';
+            highlightTooltip.style.top = '-30px';
+            highlightTooltip.style.left = '50%';
+            highlightTooltip.style.transform = 'translateX(-50%)';
+            e.target.appendChild(highlightTooltip);
+
+            highlightTooltip.addEventListener('click', () => {
+                const parent = e.target.parentNode;
+                try {
+                    while (e.target.firstChild) {
+                        parent.insertBefore(e.target.firstChild, e.target);
+                    }
+                    parent.removeChild(e.target);
+                    parent.normalize();
+                    if (highlightTooltip) {
+                        highlightTooltip.remove();
+                        highlightTooltip = null;
+                    }
+                    selectedHighlight = null;
+                } catch (error) {
+                    console.error('Error removing highlight:', error);
+                    alert('Failed to remove highlight. Please try again.');
+                }
+            });
+        }
+
+        document.getElementById('passage-text').addEventListener('mouseup', handleMouseUp);
+        document.getElementById('questions-container').addEventListener('mouseup', handleMouseUp);
+
+        document.addEventListener('mousedown', (e) => {
+            if (highlightTooltip && !highlightTooltip.contains(e.target) && e.target.className !== 'highlight') {
+                highlightTooltip.remove();
+                highlightTooltip = null;
+                if (selectedHighlight) {
+                    selectedHighlight.classList.remove('selected-highlight');
+                    selectedHighlight = null;
+                }
+                window.getSelection().removeAllRanges();
+            }
+        });
+
+        // Track answered questions
+        const questions = document.querySelectorAll('.question');
+        const progressItems = document.querySelectorAll('.progress-item');
+
+        function updateProgress() {
+            let answeredCount = 0;
+            
+            questions.forEach((question, index) => {
+                const questionNumber = index + 1;
+                let answered = false;
+                
+                if (questionNumber <= 4) {
+                    const select = question.querySelector('select');
+                    answered = select.value !== '';
+                } else if (questionNumber === 5) {
+                    const checkedBoxes = document.querySelectorAll('input[name="q5"]:checked');
+                    answered = checkedBoxes.length >= 5;
+                } else {
+                    const input = question.querySelector('input[type="text"]');
+                    answered = input.value.trim() !== '';
+                }
+                
+                if (answered) {
+                    question.classList.add('answered');
+                    if (progressItems[index]) {
+                        progressItems[index].classList.add('completed');
+                    }
+                    answeredCount++;
+                } else {
+                    question.classList.remove('answered');
+                    if (progressItems[index]) {
+                        progressItems[index].classList.remove('completed');
+                    }
+                }
+            });
+            
+            return answeredCount;
+        }
+
+        document.querySelectorAll('select, input[type="text"]').forEach(input => {
+            input.addEventListener('change', updateProgress);
+            input.addEventListener('input', updateProgress);
+        });
+
+        document.querySelectorAll('input[type="checkbox"]').forEach(checkbox => {
+            checkbox.addEventListener('change', updateProgress);
+        });
+
+        // Reset button
+        document.getElementById('reset-btn').addEventListener('click', () => {
+            document.querySelectorAll('select').forEach(select => {
+                select.value = '';
+            });
+            
+            document.querySelectorAll('input[type="checkbox"]').forEach(checkbox => {
+                checkbox.checked = false;
+            });
+            
+            document.querySelectorAll('input[type="text"]').forEach(input => {
+                input.value = '';
+            });
+            
+            document.querySelectorAll('.highlight').forEach(highlight => {
+                const parent = highlight.parentNode;
+                try {
+                    while (highlight.firstChild) {
+                        parent.insertBefore(highlight.firstChild, highlight);
+                    }
+                    parent.removeChild(highlight);
+                    parent.normalize();
+                } catch (error) {
+                    console.error('Error resetting highlights:', error);
+                    alert('Failed to reset highlights. Please try again.');
+                }
+            });
+            
+            updateProgress();
+            document.getElementById('feedback-overlay').style.display = 'none';
+        });
+
+        // Submit and Feedback functionality
+        const feedbackOverlay = document.getElementById('feedback-overlay');
+        const closeFeedbackBtn = document.getElementById('close-feedback');
+
+        document.getElementById('submit-btn').addEventListener('click', () => {
+            pauseTimer.click();
+            
+            const answers = {
+                1: 'C', 2: 'E', 3: 'A', 4: 'C',
+                5: ['A', 'D', 'E', 'F', 'J'],
+                10: 'maintenance', 11: 'slow turning', 12: 'low pressure', 13: 'cavitation'
+            };
+            
+            const explanations = {
+                1: "Paragraph C mentions that 'the first station is expected to be installed off Lymnouth in Devon'.",
+                2: "Paragraph E states that power from Alderney would be 're-imported into Britain via the cable under the Channel'.",
+                3: "Paragraph A refers to Britain originally developing wind power and then abandoning it for 20 years.",
+                4: "Paragraph C mentions that 'the technology for dealing with the hostile saline environment under the sea has been developed in the North Sea oil industry'.",
+                5: "The correct options are A (more reliable than wind), D (reduce emissions), E (close power plants), F (export earner), J (best near specific coastlines).",
+                10: "Paragraph D states that towers 'be designed to be lifted out of the water for maintenance and to clean seaweed from the blades'.",
+                11: "Paragraph D mentions that sea creatures are 'unlikely to be at risk from the relatively slow-turning blades'.",
+                12: "Paragraph F explains that 'low pressure behind a turning blade causes air bubbles'.",
+                13: "Paragraph F identifies this phenomenon as 'cavitation'."
+            };
+            
+            const passageReferences = {
+                1: "The first station is expected to be installed off Lymnouth in Devon shortly to test the technology",
+                2: "most would be fed into the French Grid and be re-imported into Britain via the cable under the Channel",
+                3: "Unlike wind power, which Britain originally developed and then abandoned for 20 years",
+                4: "The technology for dealing with the hostile saline environment under the sea has been developed in the North Sea oil industry",
+                5: "A: 'the tides are predictable and the power input is constant'; D: 'drastically reducing its carbon dioxide emissions'; E: 'Britain would be able to close gas, coal and nuclear power plants'; F: 'undersea turbines could become a big export earner'; J: 'The best sites are between islands or around heavily indented coasts where there are strong tidal currents'",
+                10: "designed to be lifted out of the water for maintenance and to clean seaweed from the blades",
+                11: "Fish and other creatures are thought unlikely to be at risk from the relatively slow-turning blades",
+                12: "where low pressure behind a turning blade causes air bubbles",
+                13: "One technical difficulty is cavitation"
+            };
+            
+            let correctCount = 0;
+            const feedbackBody = document.getElementById('feedback-body');
+            feedbackBody.innerHTML = '';
+            
+            // Check questions 1-4
+            for (let i = 1; i <= 4; i++) {
+                const select = document.querySelector(`select[name="q${i}"]`);
+                const userAnswer = select.value;
+                const isCorrect = userAnswer === answers[i];
+                
+                if (isCorrect) correctCount++;
+                
+                const feedbackItem = document.createElement('div');
+                feedbackItem.className = 'feedback-item';
+                feedbackItem.innerHTML = `
+                    <div class="feedback-question">
+                        <span class="${isCorrect ? 'correct' : 'incorrect'}">Question ${i}:</span>
+                        ${isCorrect ? `<i class="fas fa-check correct" style="margin-left: 5px;"></i>` : `<i class="fas fa-times incorrect" style="margin-left: 5px;"></i>`}
+                    </div>
+                    <p><em>Which paragraph contains this information?</em></p>
+                    <div class="feedback-answer">
+                        <strong>Your answer:</strong> ${userAnswer || 'Not answered'}<br>
+                        ${!isCorrect ? `<strong>Correct answer:</strong> ${answers[i]}` : ''}
+                    </div>
+                    <div class="feedback-explanation">
+                        <strong>Explanation:</strong> ${explanations[i]}
+                    </div>
+                    <div class="feedback-passage">
+                        <strong>Relevant passage:</strong> "${passageReferences[i]}"
+                    </div>
+                `;
+                feedbackBody.appendChild(feedbackItem);
+            }
+            
+            // Check question 5 (multiple selection)
+            const checkedBoxes = document.querySelectorAll('input[name="q5"]:checked');
+            const userAnswersQ5 = Array.from(checkedBoxes).map(cb => cb.value);
+            const correctAnswersQ5 = answers[5];
+            
+            // Count correct answers for Q5 (up to 1 point for getting all 5 correct)
+            const correctQ5Count = userAnswersQ5.filter(answer => 
+                correctAnswersQ5.includes(answer)).length;
+            const incorrectQ5Count = userAnswersQ5.filter(answer => 
+                !correctAnswersQ5.includes(answer)).length;
+            
+            const isQ5Correct = correctQ5Count === 5 && incorrectQ5Count === 0;
+            if (isQ5Correct) correctCount++;
+            
+            const feedbackItemQ5 = document.createElement('div');
+            feedbackItemQ5.className = 'feedback-item';
+            feedbackItemQ5.innerHTML = `
+                <div class="feedback-question">
+                    <span class="${isQ5Correct ? 'correct' : 'incorrect'}">Questions 5-9:</span>
+                    ${isQ5Correct ? `<i class="fas fa-check correct" style="margin-left: 5px;"></i>` : `<i class="fas fa-times incorrect" style="margin-left: 5px;"></i>`}
+                </div>
+                <p><em>Which FIVE claims about tidal power are made by the writer?</em></p>
+                <div class="feedback-answer">
+                    <strong>Your answers:</strong> ${userAnswersQ5.join(', ') || 'Not answered'}<br>
+                    <strong>Correct answers:</strong> ${correctAnswersQ5.join(', ')}<br>
+                    ${!isQ5Correct ? `<strong>Score:</strong> ${correctQ5Count}/5 correct selections` : ''}
+                </div>
+                <div class="feedback-explanation">
+                    <strong>Explanation:</strong> ${explanations[5]}
+                </div>
+                <div class="feedback-passage">
+                    <strong>Relevant passages:</strong> ${passageReferences[5]}
+                </div>
+            `;
+            feedbackBody.appendChild(feedbackItemQ5);
+            
+            // Check questions 10-13
+            for (let i = 10; i <= 13; i++) {
+                const input = document.querySelector(`input[name="q${i}"]`);
+                const userAnswer = input.value.trim().toLowerCase();
+                const correctAnswer = answers[i].toLowerCase();
+                const isCorrect = userAnswer === correctAnswer;
+                
+                if (isCorrect) correctCount++;
+                
+                const feedbackItem = document.createElement('div');
+                feedbackItem.className = 'feedback-item';
+                feedbackItem.innerHTML = `
+                    <div class="feedback-question">
+                        <span class="${isCorrect ? 'correct' : 'incorrect'}">Question ${i}:</span>
+                        ${isCorrect ? `<i class="fas fa-check correct" style="margin-left: 5px;"></i>` : `<i class="fas fa-times incorrect" style="margin-left: 5px;"></i>`}
+                    </div>
+                    <p><em>Label the diagram</em></p>
+                    <div class="feedback-answer">
+                        <strong>Your answer:</strong> ${userAnswer || 'Not answered'}<br>
+                        ${!isCorrect ? `<strong>Correct answer:</strong> ${answers[i]}` : ''}
+                    </div>
+                    <div class="feedback-explanation">
+                        <strong>Explanation:</strong> ${explanations[i]}
+                    </div>
+                    <div class="feedback-passage">
+                        <strong>Relevant passage:</strong> "${passageReferences[i]}"
+                    </div>
+                `;
+                feedbackBody.appendChild(feedbackItem);
+            }
+            
+            document.getElementById('score-display').textContent = `${correctCount}/13`;
+            feedbackOverlay.style.display = 'flex';
+        });
+
+        closeFeedbackBtn.addEventListener('click', () => {
+            feedbackOverlay.style.display = 'none';
+        });
+
+        feedbackOverlay.addEventListener('click', (e) => {
+            if (e.target === feedbackOverlay) {
+                feedbackOverlay.style.display = 'none';
+            }
+        });
+
+        // Initialize timer display and progress
+        updateProgress();
+        updateTimer();
+    </script>
+</body>
+</html>

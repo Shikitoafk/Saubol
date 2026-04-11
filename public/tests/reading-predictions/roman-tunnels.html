@@ -1,0 +1,365 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Reading Passage 1 — Roman tunnels</title>
+<style>
+  :root{--brand:#2563eb;--ink:#111827;--bg:#f7f7fb;--ok:#16a34a;--bad:#dc2626;--muted:#6b7280}
+  *{box-sizing:border-box}
+  body{margin:0;font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;background:var(--bg);color:#111}
+  .container{display:flex;gap:20px;max-width:1200px;margin:0 auto;padding:20px 20px 96px}
+  .card{background:#fff;border-radius:12px;box-shadow:0 4px 14px rgba(0,0,0,.08);padding:20px;overflow:auto;max-height:90vh}
+  .passage{flex:1}
+  .questions{flex:1}
+  h1{color:var(--ink);border-bottom:2px solid var(--brand);padding-bottom:10px;margin:0 0 14px}
+  h2{color:var(--brand);margin:22px 0 10px}
+  h3{margin:8px 0 0}
+  .muted{color:var(--muted)}
+
+  /* Timer */
+  .timerWrap{position:fixed;top:16px;right:16px;display:flex;align-items:center;gap:8px;z-index:10}
+  .timer{background:var(--brand);color:#fff;padding:10px 14px;border-radius:8px;font-weight:700}
+  .tbtn{border:1px solid #e5e7eb;background:#fff;color:#111;padding:8px 10px;border-radius:8px;cursor:pointer}
+
+  /* Questions */
+  .qsection{margin:14px 0 6px}
+  .qblock{padding:14px;border:1px solid #e5e7eb;border-radius:12px;margin:12px 0}
+  .qhead{font-weight:600;margin-bottom:8px}
+  .options{margin-top:8px}
+  .options label{display:block;margin:6px 0}
+  select,input[type="text"]{padding:8px;border-radius:8px;border:1px solid #e5e7eb;width:100%;max-width:520px}
+  .submit{background:var(--brand);color:#fff;border:0;padding:12px 18px;border-radius:8px;cursor:pointer;font-size:16px;margin-top:16px}
+  .submit:hover{filter:brightness(.95)}
+
+  /* Results */
+  .results{display:none;margin-top:18px;background:#f8f9fa;border-radius:10px;padding:16px}
+  .results ul{list-style:none;padding:0;margin:8px 0 0}
+  .results li{margin:6px 0;padding:8px;border-radius:8px}
+  .results li.ok{background:#ecfdf5;color:#065f46}
+  .results li.bad{background:#fef2f2;color:#991b1b}
+  .results .meta{font-size:13px;color:var(--muted)}
+
+  /* Footer chips */
+  .footerNav{position:fixed;left:0;right:0;bottom:0;background:#fff;border-top:1px solid #e5e7eb;padding:10px 12px;display:flex;flex-wrap:wrap;gap:8px;align-items:center;z-index:9}
+  .chip{border:1px solid #d1d5db;background:#fff;color:#111;padding:6px 10px;border-radius:999px;cursor:pointer;font-size:14px}
+  .chip.answered{border-color:#9ca3af;background:#f3f4f6}
+
+  .diagram{text-align:center;margin:20px 0;padding:20px;background:#f8f9fa;border-radius:8px}
+  .diagram img{max-width:100%;height:auto}
+  .diagram-desc{font-style:italic;color:var(--muted);margin-top:10px}
+</style>
+</head>
+<body>
+  <div class="timerWrap">
+    <div class="timer" id="timer">20:00</div>
+    <button class="tbtn" id="pauseBtn">⏸️ Pause</button>
+    <button class="tbtn" id="resumeBtn" disabled>▶️ Resume</button>
+  </div>
+
+  <div class="container">
+    <div class="card passage">
+      <h1>Reading Passage 1</h1>
+      <div class="muted">You should spend about 20 minutes on Questions 1–13, which are based on Reading Passage 1 below.</div>
+
+      <h2>Roman tunnels</h2>
+      <p><em>The Romans, who once controlled areas of Europe, North Africa and Asia Minor, adopted the construction techniques of other civilizations to build tunnels in their territories</em></p>
+
+      <p>The Persians, who lived in present-day Iran, were one of the first civilizations to build tunnels that provided a reliable supply of water to human settlements in dry areas. In the early first millennium BCE, they introduced the qanat method of tunnel construction, which consisted of placing posts over a hill in a straight line, to ensure that the tunnel kept to its route, and then digging vertical shafts down into the ground at regular intervals. Underground, workers removed the earth from between the ends of the shafts, creating a tunnel. The excavated soil was taken up to the surface using the shafts, which also provided ventilation during the work. Once the tunnel was completed, it allowed water to flow from the top of a hillside down towards a canal, which supplied water for human use. Remarkably, some qanats built by the Persians 2,700 years ago are still in use today.</p>
+
+      <p>They later passed on their knowledge to the Romans, who also used the qanat method to construct water-supply tunnels for agriculture. Roman qanat tunnels were constructed with vertical shafts dug at intervals of between 30 and 60 meters. The shafts were equipped with handholds and footholds to help those climbing in and out of them and were covered with a wooden or stone lid. To ensure that the shafts were vertical, Romans hung a plumb line from a rod placed across the top of each shaft and made sure that the weight at the end of it hung in the center of the shaft. Plumb lines were also used to measure the depth of the shaft and to determine the slope of the tunnel. The 5.6-kilometer-long Claudius tunnel, built in 41 CE to drain the Fucine Lake in central Italy, had shafts that were up to 122 meters deep, took 11 years to build and involved approximately 30,000 workers.</p>
+
+      <p>By the 6th century BCE, a second method of tunnel construction appeared called the counter-excavation method, in which the tunnel was constructed from both ends. It was used to cut through high mountains when the qanat method was not a practical alternative. This method required greater planning and advanced knowledge of surveying, mathematics and geometry as both ends of a tunnel had to meet correctly at the center of the mountain. Adjustments to the direction of the tunnel also had to be made whenever builders encountered geological problems or when it deviated from its set path. They constantly checked the tunnel's advancing direction, for example, by looking back at the light that penetrated through the tunnel mouth, and made corrections whenever necessary. Large deviations could happen, and they could result in one end of the tunnel not being usable. An inscription written on the side of a 428-meter tunnel, built by the Romans as part of the Saldae aqueduct system in modern-day Algeria, describes how the two teams of builders missed each other in the mountain and how the later construction of a lateral link between both corridors corrected the initial error.</p>
+
+      <p>The Romans dug tunnels for their roads using the counter-excavation method, whenever they encountered obstacles such as hills or mountains that were too high for roads to pass over. An example is the 37-meter-long, 6-meter-high, Furlo Pass Tunnel built in Italy in 69-79 CE. Remarkably, a modern road still uses this tunnel today. Tunnels were also built for mineral extraction. Miners would locate a mineral vein and then pursue it with shafts and tunnels underground. Traces of such tunnels used to mine gold can still be found at the Dolaucothi mines in Wales. When the sole purpose of a tunnel was mineral extraction, construction required less planning, as the tunnel route was determined by the mineral vein.</p>
+
+      <p>Roman tunnel projects were carefully planned and carried out. The length of time it took to construct a tunnel depended on the method being used and the type of rock being excavated. The qanat construction method was usually faster than the counter-excavation method as it was more straightforward. This was because the mountain could be excavated not only from the tunnel mouths but also from shafts. The type of rock could also influence construction times. When the rock was hard, the Romans employed a technique called fire quenching which consisted of heating the rock with fire, and then suddenly cooling it with cold water so that it would crack. Progress through hard rock could be very slow, and it was not uncommon for tunnels to take years, if not decades, to be built. Construction marks left on a Roman tunnel in Bologna show that the rate of advance through solid rock was 30 centimeters per day. In contrast, the rate of advance of the Claudius tunnel can be calculated at 1.4 meters per day. Most tunnels had inscriptions showing the names of patrons who ordered construction and sometimes the name of the architect. For example, the 1.4-kilometer Çevlik tunnel in Turkey, built to divert the floodwater threatening the harbor of the ancient city of Seleuceia Pieria, had inscriptions on the entrance, still visible today, that also indicate that the tunnel was started in 69 CE and was completed in 81 CE.</p>
+    </div>
+
+    <div class="card questions">
+      <h1>Questions</h1>
+      <div id="qroot"></div>
+      <button class="submit" id="submitBtn">Submit Answers</button>
+      <div class="results" id="results">
+        <h2>Your Results</h2>
+        <div id="score" class="meta"></div>
+        <ul id="answers"></ul>
+      </div>
+    </div>
+  </div>
+
+  <div class="footerNav" id="footerNav"></div>
+
+<script>
+const CONFIG = {
+  title: "READING PASSAGE 1 — Roman tunnels",
+  subtitle: "You should spend about 20 minutes on Questions 1–13.",
+  durationMinutes: 20,
+  showFooterNavigator: true,
+
+  sections: [
+    {
+      type: "diagram",
+      heading: "Questions 1–6",
+      instructions: [
+        "Label the diagrams below.",
+        "Choose ONE WORD ONLY from the passage for each answer.",
+        "Write your answers in boxes 1–6 on your answer sheet."
+      ],
+      items: [
+        { id: 1, text: "____________ to direct the tunnelling", correct: "posts" },
+        { id: 2, text: "water runs into a ____________ used by local people", correct: "canal" },
+        { id: 3, text: "vertical shafts to remove earth and for ____________", correct: "ventilation" },
+        { id: 4, text: "____________ made of wood or stone", correct: "lid" },
+        { id: 5, text: "____________ attached to the plumb line", correct: "weight" },
+        { id: 6, text: "handholds and footholds used for ____________", correct: "climbing" }
+      ]
+    },
+    {
+      type: "truefalse",
+      heading: "Questions 7–10",
+      instructions: [
+        "Do the following statements agree with the information given in Reading Passage 1?",
+        "In boxes 7–10 on your answer sheet, write",
+        "TRUE if the statement agrees with the information",
+        "FALSE if the statement contradicts the information",
+        "NOT GIVEN if there is no information on this"
+      ],
+      items: [
+        { id: 7, text: "The counter-excavation method completely replaced the qanat method in the 6th century BCE.", correct: "FALSE" },
+        { id: 8, text: "Only experienced builders were employed to construct a tunnel using the counter-excavation method.", correct: "NOT GIVEN" },
+        { id: 9, text: "The information about a problem that occurred during the construction of the Saldae aqueduct system was found in an ancient book.", correct: "FALSE" },
+        { id: 10, text: "The mistake made by the builders of the Saldae aqueduct system was that the two parts of the tunnel failed to meet.", correct: "TRUE" }
+      ]
+    },
+    {
+      type: "shortanswer",
+      heading: "Questions 11–13",
+      instructions: [
+        "Answer the questions below.",
+        "Choose NO MORE THAN TWO WORDS from the passage for each answer.",
+        "Write your answers in boxes 11–13 on your answer sheet."
+      ],
+      items: [
+        { id: 11, text: "What type of mineral were the Dolaucothi mines in Wales built to extract?", correct: "gold" },
+        { id: 12, text: "In addition to the patron, whose name might be carved onto a tunnel?", correct: "architect" },
+        { id: 13, text: "What part of Seleuceia Pieria was the Çevlik tunnel built to protect?", correct: "harbor" }
+      ]
+    }
+  ]
+};
+
+// Render functions
+const qroot = document.getElementById('qroot');
+const navIds = [];
+const answersMap = {};
+
+function sectionHeader(t){ 
+  const h=document.createElement('h2'); 
+  h.className='qsection'; 
+  h.textContent=t; 
+  return h; 
+}
+
+function renderDiagram(sec){
+  qroot.appendChild(sectionHeader(sec.heading));
+  (sec.instructions||[]).forEach(tx=>{ 
+    const p=document.createElement('p'); 
+    p.className='muted'; 
+    p.textContent=tx; 
+    qroot.appendChild(p); 
+  });
+  
+  const diagramDiv = document.createElement('div');
+  diagramDiv.className = 'diagram';
+  diagramDiv.innerHTML = `
+    <div class="diagram-desc">The Persian Qanat Method & Cross-section of a Roman Qanat Shaft</div>
+    <p style="text-align:left; margin-top:20px;">Use the passage to complete the labels below:</p>
+  `;
+  qroot.appendChild(diagramDiv);
+  
+  sec.items.forEach(it=>{
+    const b=document.createElement('div'); 
+    b.className='qblock'; 
+    b.id=`anchor-${it.id}`;
+    b.innerHTML=`<div class="qhead"><strong>${it.id}.</strong> ${it.text}</div>
+      <div class="options"><input type="text" id="q${it.id}" name="q${it.id}" placeholder="Enter your answer"></div>`;
+    qroot.appendChild(b); 
+    navIds.push(it.id); 
+    answersMap[it.id]=it.correct||'';
+  });
+}
+
+function renderTrueFalse(sec){
+  qroot.appendChild(sectionHeader(sec.heading));
+  (sec.instructions||[]).forEach(tx=>{ 
+    const p=document.createElement('p'); 
+    p.className='muted'; 
+    p.textContent=tx; 
+    qroot.appendChild(p); 
+  });
+  
+  sec.items.forEach(it=>{
+    const b=document.createElement('div'); 
+    b.className='qblock'; 
+    b.id=`anchor-${it.id}`;
+    const opts=['TRUE','FALSE','NOT GIVEN'].map(opt=>`<label><input type="radio" name="q${it.id}" value="${opt}"> ${opt}</label>`).join('');
+    b.innerHTML=`<div class="qhead"><strong>${it.id}.</strong> ${it.text}</div><div class="options">${opts}</div>`;
+    qroot.appendChild(b); 
+    navIds.push(it.id); 
+    answersMap[it.id]=it.correct||'';
+  });
+}
+
+function renderShortAnswer(sec){
+  qroot.appendChild(sectionHeader(sec.heading));
+  (sec.instructions||[]).forEach(tx=>{ 
+    const p=document.createElement('p'); 
+    p.className='muted'; 
+    p.textContent=tx; 
+    qroot.appendChild(p); 
+  });
+  
+  sec.items.forEach(it=>{
+    const b=document.createElement('div'); 
+    b.className='qblock'; 
+    b.id=`anchor-${it.id}`;
+    b.innerHTML=`<div class="qhead"><strong>${it.id}.</strong> ${it.text}</div>
+      <div class="options"><input type="text" id="q${it.id}" name="q${it.id}" placeholder="Enter your answer (max 2 words)"></div>`;
+    qroot.appendChild(b); 
+    navIds.push(it.id); 
+    answersMap[it.id]=it.correct||'';
+  });
+}
+
+// Build UI
+CONFIG.sections.forEach(sec=>{
+  if (sec.type==='diagram') renderDiagram(sec);
+  if (sec.type==='truefalse') renderTrueFalse(sec);
+  if (sec.type==='shortanswer') renderShortAnswer(sec);
+});
+
+// Footer navigation
+const footerNav=document.getElementById('footerNav');
+if(CONFIG.showFooterNavigator){
+  footerNav.innerHTML='<strong class="muted">Questions:</strong>';
+  [...new Set(navIds)].sort((a,b)=>a-b).forEach(id=>{
+    const chip=document.createElement('button'); 
+    chip.className='chip'; 
+    chip.id=`chip-${id}`; 
+    chip.textContent=id;
+    chip.addEventListener('click',()=>{ 
+      document.getElementById(`anchor-${id}`).scrollIntoView({behavior:'smooth',block:'center'}); 
+    });
+    footerNav.appendChild(chip);
+  });
+}
+
+function markChipAnswered(id, answered){
+  const chip=document.getElementById(`chip-${id}`); 
+  if(chip) chip.classList.toggle('answered', !!answered);
+}
+
+document.addEventListener('change',(e)=>{
+  const m=String(e.target.name||e.target.id||'').match(/q(\d+)/);
+  const id=m?+m[1]:null; 
+  if(!id) return;
+  const answered=(e.target.type==='radio') ? (!!document.querySelector(`input[name='q${id}']:checked`))
+                 : (e.target.value.trim().length>0);
+  markChipAnswered(id, answered);
+});
+
+// Timer functionality
+let timeLeft=CONFIG.durationMinutes*60;
+const timer=document.getElementById('timer');
+const pauseBtn=document.getElementById('pauseBtn');
+const resumeBtn=document.getElementById('resumeBtn');
+let paused=false, iv;
+
+const fmt=s=>`${String(Math.floor(s/60)).padStart(2,'0')}:${String(s%60).padStart(2,'0')}`;
+
+function startTick(){ 
+  if(iv) clearInterval(iv);
+  iv=setInterval(()=>{ 
+    if(paused) return; 
+    timer.textContent=fmt(timeLeft); 
+    if(timeLeft<=0){ 
+      clearInterval(iv); 
+      alert("Time's up! Submitting."); 
+      submit(); 
+    } 
+    timeLeft--; 
+  },1000);
+}
+
+timer.textContent=fmt(timeLeft); 
+startTick();
+
+pauseBtn.addEventListener('click',()=>{ 
+  paused=true; 
+  pauseBtn.disabled=true; 
+  resumeBtn.disabled=false; 
+});
+
+resumeBtn.addEventListener('click',()=>{ 
+  paused=false; 
+  pauseBtn.disabled=false; 
+  resumeBtn.disabled=true; 
+});
+
+// Submit functionality
+document.getElementById('submitBtn').addEventListener('click', submit);
+
+function submit(){
+  paused=true; 
+  pauseBtn.disabled=true; 
+  resumeBtn.disabled=false;
+  
+  let total=0, graded=0, correctCount=0;
+  const itemsOut=[];
+  const ids=Object.keys(answersMap);
+
+  ids.forEach(key=>{
+    const ans=answersMap[key];
+    const label=key;
+    let user='';
+    
+    const picked=document.querySelector(`input[name="q${key}"]:checked`);
+    if(picked){ 
+      user=picked.value; 
+    } else if(document.getElementById('q'+key)){ 
+      user=document.getElementById('q'+key).value; 
+    }
+    
+    const shown=user||'No answer';
+
+    if(String(ans).trim()===''){
+      total++; 
+      itemsOut.push({label, status:'— not graded —', user:shown, correct:'(no key)'}); 
+      return; 
+    }
+
+    total++; 
+    graded++;
+    const ok = shown.trim().toLowerCase() === String(ans).trim().toLowerCase();
+    if(ok) correctCount++;
+    itemsOut.push({
+      label, 
+      status: ok? '✓ Correct' : '✗ Incorrect', 
+      user:shown, 
+      correct:String(ans)
+    });
+  });
+
+  document.getElementById('score').innerHTML = `Graded ${graded} of ${total} • Score: ${correctCount}/${graded}`;
+  document.getElementById('answers').innerHTML = itemsOut.map(it=>
+    `<li class="${/Correct/.test(it.status)?'ok':'bad'}">Q${it.label}: ${it.status} — Your: <b>${it.user}</b> | Correct: <b>${it.correct}</b></li>`
+  ).join('');
+  
+  const r=document.getElementById('results'); 
+  r.style.display='block'; 
+  r.scrollIntoView({behavior:'smooth'});
+}
+</script>
+</body>
+</html>

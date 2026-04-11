@@ -1,0 +1,384 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Reading Passage 1 – The National Parks of America</title>
+<style>
+  :root{--brand:#2563eb;--ink:#111827;--bg:#f7f7fb;--ok:#16a34a;--bad:#dc2626;--muted:#6b7280}
+  *{box-sizing:border-box}
+  body{margin:0;font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;background:var(--bg);color:#111}
+  .container{display:flex;gap:20px;max-width:1200px;margin:0 auto;padding:20px 20px 96px}
+  .card{background:#fff;border-radius:12px;box-shadow:0 4px 14px rgba(0,0,0,.08);padding:20px;overflow:auto;max-height:90vh}
+  .passage{flex:1}
+  .questions{flex:1}
+  h1{color:var(--ink);border-bottom:2px solid var(--brand);padding-bottom:10px;margin:0 0 14px}
+  h2{color:var(--brand);margin:22px 0 10px}
+  h3{margin:8px 0 0}
+  h4{color:var(--brand);margin:16px 0 8px}
+  .muted{color:var(--muted)}
+
+  /* Timer */
+  .timerWrap{position:fixed;top:16px;right:16px;display:flex;align-items:center;gap:8px;z-index:10}
+  .timer{background:var(--brand);color:#fff;padding:10px 14px;border-radius:8px;font-weight:700}
+  .tbtn{border:1px solid #e5e7eb;background:#fff;color:#111;padding:8px 10px;border-radius:8px;cursor:pointer}
+
+  /* Questions */
+  .qsection{margin:14px 0 6px}
+  .qblock{padding:14px;border:1px solid #e5e7eb;border-radius:12px;margin:12px 0}
+  .qhead{font-weight:600;margin-bottom:8px}
+  .options{margin-top:8px}
+  .options label{display:block;margin:6px 0}
+  select,input[type="text"]{padding:8px;border-radius:8px;border:1px solid #e5e7eb;width:100%;max-width:520px}
+  .submit{background:var(--brand);color:#fff;border:0;padding:12px 18px;border-radius:8px;cursor:pointer;font-size:16px;margin-top:16px}
+  .submit:hover{filter:brightness(.95)}
+
+  /* Results */
+  .results{display:none;margin-top:18px;background:#f8f9fa;border-radius:10px;padding:16px}
+  .results ul{list-style:none;padding:0;margin:8px 0 0}
+  .results li{margin:6px 0;padding:8px;border-radius:8px}
+  .results li.ok{background:#ecfdf5;color:#065f46}
+  .results li.bad{background:#fef2f2;color:#991b1b}
+  .results .meta{font-size:13px;color:var(--muted)}
+
+  /* Footer chips */
+  .footerNav{position:fixed;left:0;right:0;bottom:0;background:#fff;border-top:1px solid #e5e7eb;padding:10px 12px;display:flex;flex-wrap:wrap;gap:8px;align-items:center;z-index:9}
+  .chip{border:1px solid #d1d5db;background:#fff;color:#111;padding:6px 10px;border-radius:999px;cursor:pointer;font-size:14px}
+  .chip.answered{border-color:#9ca3af;background:#f3f4f6}
+
+  /* Highlights */
+  .palette{position:fixed;background:#fff;padding:8px;border-radius:8px;box-shadow:0 2px 10px rgba(0,0,0,.12);display:none;z-index:9}
+  .hbtn{background:var(--brand);color:#fff;border:0;padding:6px 10px;border-radius:6px;margin:4px 4px 0 0;cursor:pointer}
+  .highlight{background:yellow}
+
+  
+
+  /* Notes structure */
+  .notes-structure{background:#f8f9fa;border-radius:8px;padding:16px;margin:10px 0}
+  .notes-structure h4{margin:0 0 12px;color:var(--brand)}
+  .notes-structure ul{margin:8px 0;padding-left:20px}
+  .notes-structure li{margin:6px 0;line-height:1.6}
+</style>
+</head>
+<body>
+  <div class="timerWrap">
+    <div class="timer" id="timer">20:00</div>
+    <button class="tbtn" id="pauseBtn">⏸️ Pause</button>
+    <button class="tbtn" id="resumeBtn" disabled>▶️ Resume</button>
+  </div>
+
+  <!-- Highlight palettes -->
+  <div class="palette" id="pPalette">
+    <button class="hbtn" data-color="yellow">Yellow</button>
+    <button class="hbtn" data-color="lightgreen">Green</button>
+    <button class="hbtn" data-color="lightblue">Blue</button>
+    <button class="hbtn" data-color="pink">Pink</button>
+    <button class="hbtn" data-color="orange">Orange</button>
+    <button class="hbtn" id="clearPMarks">Clear</button>
+  </div>
+  <div class="palette" id="qPalette">
+    <button class="hbtn" data-color="yellow">Yellow</button>
+    <button class="hbtn" data-color="lightgreen">Green</button>
+    <button class="hbtn" data-color="lightblue">Blue</button>
+    <button class="hbtn" data-color="pink">Pink</button>
+    <button class="hbtn" data-color="orange">Orange</button>
+    <button class="hbtn" id="clearQMarks">Clear</button>
+  </div>
+
+  <div class="container">
+    <div class="card passage" id="passageCard">
+      <h1 id="title"></h1>
+      <div id="subtitle" class="muted"></div>
+
+      <div id="passage">
+        <h2>Reading Passage 1</h2>
+        <h3>The National Parks of America</h3>
+
+        <p>America's national parks are one of the country's most remarkable and influential initiatives. The concept of the national park originated in America, though it was quickly replicated by similar parks in Canada, Finland, New Zealand, Australia and elsewhere. The first American national park was Yellowstone, created in 1872. Yellowstone comprises some 3,500 square miles of wilderness and today attracts more than four million visitors a year. Since 1872, nearly 60 additional national parks have been established in the USA, incorporating almost every type of natural environment, from mountains to deserts, lakes, rivers and coastlines. They are administered by the National Parks Service (NPS), which also manages significant monuments and historic structures such as the Statue of Liberty, the Gettysburg Museum and Ford's Theatre, where President Lincoln was assassinated.</p>
+
+        <p>The creation of the national parks came in response to a growing attachment to the natural world that was developing in American society. In 1832, the painter George Catlin dreamed of creating 'a nation's park' to preserve the grasslands in the state of South Dakota. Catlin failed to see such a park established in his lifetime, but his vision lived on. Four years later the writer Ralph Waldo Emerson published an important essay entitled 'Nature' in which he argued that natural landscapes should be protected rather than exploited for agriculture and commerce. The campaigner Frederick Olmsted went further, claiming that every American, not only the wealthy and powerful, had the right to access places of natural beauty. The creation of a public park in the Yosemite Valley was directly the result of his work.</p>
+
+        <p>The development of the national parks was a process that continued through the late 19th century and the early 20th century. The establishment of the first park at Yellowstone in 1872 was perhaps the defining moment in this process. The Yellowstone national park not only preserved the headwaters of the Mississippi, Colorado and Snake rivers, but also provided a sanctuary for countless endangered species by imposing a ban on hunting in all its forms. Today such an initiative would be commonplace but in these earliest days of the conservation movement, many Americans still regarded it as their right to shoot or trap wild animals.</p>
+
+        <p>Yellowstone was followed by Sequoia (1890), Mount Rainier (1899), Crater Lake (1902) and Wind Cave (1903), among many other parks. But while the creation of additional parks enjoyed wide popular support, there were frequent disagreements about their purpose. For some, the primary goal was the protection of the natural world, while for others the parks were about providing public access to nature. These two goals were at times contradictory and led to a variety of competing voices and factions. In recognition of the difficulties of running these vast wilderness areas, their management was for many years placed in the hands of the military, rather than the federal or state government.</p>
+
+        <p>The late 19th century was also a time when railroads were being constructed across America. Increasingly, these ran through even the most remote areas, where many parks were located, making tourism possible in these locations for the very first time. While this was welcomed by many park supporters, others were concerned that visitors should appreciate the parks in particular ways. Nathaniel Langford was instrumental in setting up Yellowstone and saw the park as an ideal opportunity for the education of ordinary citizens in all aspects of the natural world and environmental conservation, which was his number one priority.</p>
+
+        <p>In the early 20th century, the first really significant development was the setting up of the NPS in 1916. Now for the first time a single body was charged with administering the network and managing the numerous groups and interests that had a stake in it. Stephen Mather was appointed as the first Superintendent of Parks and under his leadership seven new parks were established, including Grand Canyon, Hawaii and Mount McKinley. However, arguably even more important was Mather's transformation of the hitherto poorly managed finances of the parks.</p>
+
+        <p>The NPS generally saw the primary role of the parks as being environmental protection. For this reason, most human activities were regulated – farming and forestry were certainly not allowed. However, the controversial decision to permit the construction of dams in national parks was made on the basis that the resulting supplies of water and hydroelectric power would be in the public interest. Certainly, visitor numbers were unaffected as park admissions increased every year. Then in the 1930s the number of visitors expanded dramatically, largely because mass-produced automobiles became affordable, allowing ever more city-dwellers to reach the park network. With this, the national parks assumed a pre-eminent position in the social fabric of America, a legacy that continues to the present day.</p>
+      </div>
+    </div>
+
+    <div class="card questions">
+      <h1>Questions</h1>
+      <div id="qroot"></div>
+      <button class="submit" id="submitBtn">Submit Answers</button>
+      <div class="results" id="results">
+        <h2>Your Results</h2>
+        <div id="score" class="meta"></div>
+        <ul id="answers"></ul>
+      </div>
+    </div>
+  </div>
+
+  <div class="footerNav" id="footerNav"></div>
+  
+
+<script>
+/* =======================
+   CONFIG
+   ======================= */
+const CONFIG = {
+  title: "READING PASSAGE 1 – The National Parks of America",
+  subtitle: "You should spend about 20 minutes on Questions 1–13.",
+  durationMinutes: 20,
+  
+  showFooterNavigator: true,
+
+  sections: [
+    /* 1–6 True/False/Not Given */
+    {
+      type: "tfng",
+      heading: "Questions 1–6",
+      instructions: [
+        "Choose TRUE if the statement agrees with the information given in the text,",
+        "Choose FALSE if the statement contradicts the information, or",
+        "Choose NOT GIVEN if there is no information on this."
+      ],
+      items: [
+        { id: 1, text: "America copied the idea of national parks from other countries.", correct: "FALSE" },
+        { id: 2, text: "Yellowstone is the most frequently visited national park in the USA.", correct: "NOT GIVEN" },
+        { id: 3, text: "The NPS is responsible for certain buildings as well as natural landscapes.", correct: "TRUE" },
+        { id: 4, text: "Catlin was criticised by some people for proposing 'a nation's park'.", correct: "NOT GIVEN" },
+        { id: 5, text: "Emerson believed that farms and businesses should be allowed to use land freely.", correct: "FALSE" },
+        { id: 6, text: "Olmsted helped establish a park in the Yosemite Valley.", correct: "TRUE" }
+      ]
+    },
+
+    /* 7–13 Notes Completion */
+    {
+      type: "notes_completion",
+      heading: "Questions 7–13",
+      instructions: [
+        "Complete the notes. Write ONE WORD ONLY from the text in each gap."
+      ],
+      title: "Development of the National Parks",
+      sections: [
+        {
+          subtitle: "Late 19th Century",
+          items: [
+            { text: "in Yellowstone Park, every type of", id: 7, gap: "was prohibited", correct: "hunting" },
+            { text: "Yellowstone and other parks were administered by the", id: 8, gap: "", correct: "military" },
+            { text: "the development of a railroad system encouraged new kinds of", id: 9, gap: "", correct: "tourism" },
+            { text: "Langford believed that public", id: 10, gap: "was the most important role of the parks", correct: "education" }
+          ]
+        },
+        {
+          subtitle: "Early 20th Century",
+          items: [
+            { text: "Mather greatly improved the", id: 11, gap: "of the parks", correct: "finances" },
+            { text: "the NPS allowed some", id: 12, gap: "to be built in national parks", correct: "dams" },
+            { text: "in the 1930s, the popularity of the parks increased with the availability of", id: 13, gap: "", correct: "automobiles" }
+          ]
+        }
+      ]
+    }
+  ]
+};
+
+/* =======================
+   RENDER
+   ======================= */
+document.getElementById('title').textContent = CONFIG.title;
+document.getElementById('subtitle').textContent = CONFIG.subtitle || '';
+
+const qroot = document.getElementById('qroot');
+const navIds = [];
+const answersMap = {};
+
+function sectionHeader(t){ const h=document.createElement('h2'); h.className='qsection'; h.textContent=t; return h; }
+
+/* True/False/Not Given renderer */
+function renderTFNG(sec){
+  qroot.appendChild(sectionHeader(sec.heading));
+  (sec.instructions||[]).forEach(tx=>{ const p=document.createElement('p'); p.className='muted'; p.textContent=tx; qroot.appendChild(p); });
+  sec.items.forEach(it=>{
+    const b=document.createElement('div'); b.className='qblock'; b.id=`anchor-${it.id}`;
+    const opts=['TRUE','FALSE','NOT GIVEN'].map(v=>`<label><input type="radio" name="q${it.id}" value="${v}"> ${v}</label>`).join('');
+    b.innerHTML=`<div class="qhead"><strong>${it.id}.</strong> ${it.text}</div><div class="options">${opts}</div>`;
+    qroot.appendChild(b); navIds.push(it.id); answersMap[it.id]=it.correct||'';
+  });
+}
+
+/* Notes Completion renderer */
+function renderNotesCompletion(sec){
+  qroot.appendChild(sectionHeader(sec.heading));
+  (sec.instructions||[]).forEach(tx=>{ const p=document.createElement('p'); p.className='muted'; p.textContent=tx; qroot.appendChild(p); });
+  
+  if(sec.title) {
+    const titleDiv = document.createElement('h3');
+    titleDiv.textContent = sec.title;
+    qroot.appendChild(titleDiv);
+  }
+
+  sec.sections.forEach(section => {
+    const notesDiv = document.createElement('div');
+    notesDiv.className = 'notes-structure';
+    
+    if(section.subtitle) {
+      const subtitleDiv = document.createElement('h4');
+      subtitleDiv.textContent = section.subtitle;
+      notesDiv.appendChild(subtitleDiv);
+    }
+
+    const listDiv = document.createElement('ul');
+    
+    section.items.forEach(it => {
+      const listItem = document.createElement('li');
+      
+      if(it.id) {
+        const b=document.createElement('div'); b.className='qblock'; b.id=`anchor-${it.id}`;
+        const input = `<input type="text" name="q${it.id}" id="q${it.id}" placeholder="Enter word" style="margin: 0 5px; width: 150px;">`;
+        const content = `${it.text} <strong>${it.id}</strong> ${input} ${it.gap}`;
+        listItem.innerHTML = `• ${content}`;
+        navIds.push(it.id); answersMap[it.id]=it.correct||'';
+      } else {
+        listItem.innerHTML = `• ${it.text}`;
+      }
+      
+      listDiv.appendChild(listItem);
+    });
+    
+    notesDiv.appendChild(listDiv);
+    qroot.appendChild(notesDiv);
+  });
+}
+
+/* Build UI */
+CONFIG.sections.forEach(sec=>{
+  if (sec.type==='tfng') renderTFNG(sec);
+  if (sec.type==='notes_completion') renderNotesCompletion(sec);
+});
+
+/* Footer chips */
+const footerNav=document.getElementById('footerNav');
+(function(){
+  if(!CONFIG.showFooterNavigator){ footerNav.style.display='none'; return; }
+  footerNav.innerHTML='<strong class="muted">Questions:</strong>';
+  [...new Set(navIds)].sort((a,b)=>a-b).forEach(id=>{
+    const chip=document.createElement('button'); chip.className='chip'; chip.id=`chip-${id}`; chip.textContent=id;
+    chip.addEventListener('click',()=>{ document.getElementById(`anchor-${id}`).scrollIntoView({behavior:'smooth',block:'center'}); });
+    footerNav.appendChild(chip);
+  });
+})();
+function markChipAnswered(id, answered){
+  const chip=document.getElementById(`chip-${id}`); if(chip) chip.classList.toggle('answered', !!answered);
+}
+document.addEventListener('change',(e)=>{
+  const m=String(e.target.name||e.target.id||'').match(/q(\d+)/);
+  const id=m?+m[1]:null; if(!id) return;
+  const answered=(e.target.type==='radio') ? (!!document.querySelector(`input[name='q${id}']:checked`))
+                 : (e.target.value.trim().length>0);
+  markChipAnswered(id, answered);
+});
+
+/* Timer */
+let timeLeft=Math.max(1,+CONFIG.durationMinutes||20)*60;
+const timer=document.getElementById('timer');
+const pauseBtn=document.getElementById('pauseBtn');
+const resumeBtn=document.getElementById('resumeBtn');
+let paused=false, iv;
+const fmt=s=>`${String(Math.floor(s/60)).padStart(2,'0')}:${String(s%60).padStart(2,'0')}`;
+function startTick(){ if(iv) clearInterval(iv);
+  iv=setInterval(()=>{ if(paused) return; timer.textContent=fmt(timeLeft); if(timeLeft<=0){ clearInterval(iv); alert("Time's up! Submitting."); submit(); } timeLeft--; },1000);
+}
+timer.textContent=fmt(timeLeft); startTick();
+pauseBtn.addEventListener('click',()=>{ paused=true; pauseBtn.disabled=true; resumeBtn.disabled=false; });
+resumeBtn.addEventListener('click',()=>{ paused=false; pauseBtn.disabled=false; resumeBtn.disabled=true; });
+
+/* Submit & grading */
+document.getElementById('submitBtn').addEventListener('click', submit);
+function submit(){
+  paused=true; pauseBtn.disabled=true; resumeBtn.disabled=false;
+  let total=0, graded=0, correctCount=0;
+  const itemsOut=[];
+  const ids=Object.keys(answersMap);
+
+  ids.forEach(key=>{
+    const ans=answersMap[key];
+    const label=key;
+    let user='';
+    const picked=document.querySelector(`input[name="q${key}"]:checked`);
+    if(picked){ user=picked.value; }
+    else if(document.getElementById('q'+key)){ user=document.getElementById('q'+key).value; }
+    const shown=user||'No answer';
+
+    if(String(ans).trim()===''){ total++; itemsOut.push({label, status:'— not graded —', user:shown, correct:'(no key)'}); return; }
+
+    total++; graded++;
+    const ok = shown.trim().toUpperCase() === String(ans).trim().toUpperCase();
+    if(ok) correctCount++;
+    itemsOut.push({label, status: ok? '✓ Correct' : '✗ Incorrect', user:shown, correct:String(ans)});
+  });
+
+  document.getElementById('score').innerHTML = `Graded ${graded} of ${total} • Score: ${correctCount}/${graded}`;
+  document.getElementById('answers').innerHTML = itemsOut.map(it=>`<li class="${/Correct/.test(it.status)?'ok':'bad'}">Q${it.label}: ${it.status} — Your: <b>${it.user}</b> | Correct: <b>${it.correct}</b></li>`).join('');
+  const r=document.getElementById('results'); r.style.display='block'; r.scrollIntoView({behavior:'smooth'});
+}
+
+/* Highlights */
+const passageCard=document.getElementById('passageCard');
+const pPalette=document.getElementById('pPalette');
+passageCard.addEventListener('mouseup',(e)=>{
+  const sel=window.getSelection(); if(!sel||sel.toString().trim().length===0) return;
+  if(!passageCard.contains(sel.getRangeAt(0).commonAncestorContainer)) return;
+  const r=passageCard.getBoundingClientRect(), x=Math.min(e.clientX-r.left,r.width-10), y=Math.max(0,e.clientY-r.top-40);
+  pPalette.style.left=(r.left+x)+'px'; pPalette.style.top=(r.top+y)+'px'; pPalette.style.display='block';
+});
+document.addEventListener('mousedown',(e)=>{ if(!pPalette.contains(e.target)) pPalette.style.display='none'; });
+pPalette.querySelectorAll('.hbtn[data-color]').forEach(btn=>{
+  btn.addEventListener('click',()=>{ markSelection(btn.dataset.color, passageCard); pPalette.style.display='none'; });
+});
+document.getElementById('clearPMarks').addEventListener('click',()=>{
+  passageCard.querySelectorAll('span.highlight').forEach(n=>{ const p=n.parentNode; while(n.firstChild) p.insertBefore(n.firstChild,n); p.removeChild(n); p.normalize(); });
+  pPalette.style.display='none';
+});
+
+/* Questions highlight */
+const qCard=document.querySelector('.card.questions');
+const qPalette=document.getElementById('qPalette');
+qCard.addEventListener('mouseup',(e)=>{
+  const sel=window.getSelection(); if(!sel||sel.toString().trim().length===0) return;
+  if(!qCard.contains(sel.getRangeAt(0).commonAncestorContainer)) return;
+  const node = sel.getRangeAt(0).commonAncestorContainer.nodeType===1 ? sel.getRangeAt(0).commonAncestorContainer : sel.getRangeAt(0).commonAncestorContainer.parentNode;
+  if (node.closest && node.closest('input,textarea,select')) return;
+  const r=qCard.getBoundingClientRect(), x=Math.min(e.clientX-r.left,r.width-10), y=Math.max(0,e.clientY-r.top-40);
+  qPalette.style.left=(r.left+x)+'px'; qPalette.style.top=(r.top+y)+'px'; qPalette.style.display='block';
+});
+document.addEventListener('mousedown',(e)=>{ if(!qPalette.contains(e.target)) qPalette.style.display='none';});
+qPalette.querySelectorAll('.hbtn[data-color]').forEach(btn=>{
+  btn.addEventListener('click',()=>{ markSelection(btn.dataset.color, qCard); qPalette.style.display='none'; });
+});
+document.getElementById('clearQMarks').addEventListener('click',()=>{
+  qCard.querySelectorAll('span.highlight').forEach(n=>{ const p=n.parentNode; while(n.firstChild) p.insertBefore(n.firstChild,n); p.removeChild(n); p.normalize(); });
+  qPalette.style.display='none';
+});
+
+/* Helper */
+function markSelection(color, scope){
+  const sel=window.getSelection(); if(!sel||!sel.rangeCount) return;
+  const range=sel.getRangeAt(0);
+  if(!scope.contains(range.commonAncestorContainer)) return;
+  const container=range.commonAncestorContainer.nodeType===1? range.commonAncestorContainer : range.commonAncestorContainer.parentNode;
+  if (container.closest && container.closest('input, textarea, select')) return;
+  const frag=range.extractContents();
+  const span=document.createElement('span'); span.className='highlight'; span.style.backgroundColor=color; span.appendChild(frag);
+  range.insertNode(span); sel.removeAllRanges();
+}
+
+/* TG button */
+
+</script>
+</body>
+</html>

@@ -1,0 +1,1303 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>IELTS Reading Test - Trans-Atlantic Telegraph Cable</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        /* Main styles */
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: Arial, sans-serif;
+            overflow: hidden;
+            background-color: #f0f8ff;
+        }
+        .test-wrapper {
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+        }
+        .test-container {
+            display: flex;
+            flex: 1;
+            overflow: hidden;
+        }
+        /* Header styles */
+        .header {
+            background-color: #fff;
+            border-bottom: 1px solid #ddd;
+            padding: 10px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .header__logo img {
+            height: 40px;
+        }
+        .header__timer {
+            font-size: 1.2rem;
+            font-weight: bold;
+            color: #333;
+            background-color: #e6f2ff;
+            padding: 5px 15px;
+            border-radius: 20px;
+            border: 1px solid #ddd;
+            transition: all 0.3s ease;
+        }
+        .header__icons {
+            display: flex;
+            gap: 15px;
+        }
+        .header__icon {
+            font-size: 1.2rem;
+            color: #666;
+            cursor: pointer;
+        }
+        /* Settings Modal */
+        .settings-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: rgba(0,0,0,0.7);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+        }
+        .settings-content {
+            background-color: white;
+            width: 90%;
+            max-width: 500px;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+        }
+        .settings-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 20px;
+            border-bottom: 1px solid #ddd;
+            background-color: #f0f8ff;
+        }
+        .settings-header h2 {
+            margin: 0;
+            font-size: 1.2rem;
+        }
+        .settings-close {
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: #666;
+        }
+        .settings-body {
+            padding: 20px;
+        }
+        .settings-option {
+            display: flex;
+            align-items: center;
+            padding: 10px 0;
+            border-bottom: 1px solid #eee;
+            cursor: pointer;
+        }
+        .settings-option:last-child {
+            border-bottom: none;
+        }
+        .settings-option i {
+            margin-right: 15px;
+            width: 20px;
+            text-align: center;
+            color: #2a6c96;
+        }
+        .settings-option span {
+            flex: 1;
+        }
+        .sectionRubric {
+            margin: 1em;
+            width: calc(100% - 4em - 3px);
+            border-radius: 4px;
+            padding: 0.75em 1em;
+            background: white;
+            border: 1px solid #d5d5d5;
+        }
+        .sectionRubric h2, .sectionRubric p {
+            margin: 0;
+        }
+        .sectionRubric h2 {
+            font-size: 1rem;
+            margin-bottom: 0.25em;
+        }
+        /* Passage container */
+        .passage-container {
+            width: 45%;
+            height: 100%;
+            overflow-y: auto;
+            padding: 20px;
+            box-sizing: border-box;
+            background-color: #f0f8ff;
+            position: relative;
+            -webkit-user-select: text;
+            user-select: text;
+        }
+        /* Questions container */
+        .questions-container {
+            flex: 1;
+            overflow-y: auto;
+            padding: 20px;
+            box-sizing: border-box;
+            background-color: #f0f8ff;
+            -webkit-user-select: text;
+            user-select: text;
+        }
+        /* Highlight styles */
+        .highlight {
+            position: relative;
+            border-radius: 2px;
+            padding: 0 1px;
+            margin: 0 -1px;
+        }
+        .highlight.yellow {
+            background-color: rgba(255, 255, 0, 0.3);
+        }
+        .highlight.green {
+            background-color: rgba(0, 255, 0, 0.3);
+        }
+        .highlight.pink {
+            background-color: rgba(255, 105, 180, 0.3);
+        }
+        .highlight.blue {
+            background-color: rgba(0, 191, 255, 0.3);
+        }
+        .highlight-toolbar {
+            position: fixed;
+            background: white;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+            display: none;
+            z-index: 1000;
+            padding: 5px;
+            transform: translate(-50%, -100%);
+            margin-top: -5px;
+        }
+        .highlight-toolbar button {
+            background: none;
+            border: none;
+            width: 24px;
+            height: 24px;
+            cursor: pointer;
+            margin: 0 2px;
+            border-radius: 3px;
+        }
+        .highlight-toolbar button:hover {
+            background: #f0f0f0;
+        }
+        .highlight-toolbar button.remove {
+            color: #ff0000;
+        }
+        /* Divider styling */
+        .divider {
+            width: 10px;
+            background: #ddd;
+            cursor: col-resize;
+            position: relative;
+        }
+        .divider-handle {
+            width: 4px;
+            height: 40px;
+            background: #999;
+            border-radius: 2px;
+            position: absolute;
+            top: 50%;
+            left: 3px;
+            transform: translateY(-50%);
+        }
+        /* Question styling */
+        .question {
+            margin-bottom: 30px;
+        }
+        .question-rubric {
+            margin-bottom: 15px;
+            font-weight: bold;
+        }
+        .question-options {
+            list-style-type: none;
+            padding: 0;
+        }
+        .question-options li {
+            margin: 10px 0;
+            display: flex;
+            align-items: center;
+        }
+        .question-options li input[type="checkbox"] {
+            margin-right: 10px;
+        }
+        /* True/False/Not Given questions */
+        .true-false-option {
+            display: flex;
+            align-items: center;
+            margin: 5px 0;
+        }
+        .true-false-option select {
+            min-width: 120px;
+            padding: 5px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            margin-left: 10px;
+        }
+        /* Sentence completion styles */
+        .sentence-completion-container {
+            margin-top: 20px;
+        }
+        .sentence-text p {
+            line-height: 2.5;
+            font-size: 16px;
+        }
+        .sentence-input {
+            width: 100px;
+            padding: 5px;
+            border: 2px dashed #999;
+            border-radius: 4px;
+            margin: 0 5px;
+            font-size: 15px;
+            font-weight: bold;
+            background-color: #e3f2fd;
+        }
+        .sentence-input.correct {
+            border-color: #28a745;
+            background-color: #e9f7ef;
+            border-style: solid;
+        }
+        .sentence-input.incorrect {
+            border-color: #dc3545;
+            background-color: #f8d7da;
+            border-style: solid;
+        }
+        .sentence-feedback {
+            display: inline-block;
+            margin-left: 10px;
+            font-size: 14px;
+        }
+        .sentence-feedback.correct {
+            color: #28a745;
+        }
+        .sentence-feedback.incorrect {
+            color: #dc3545;
+        }
+        /* Footer styles */
+        .footer {
+            background: #f5f5f5;
+            border-top: 1px solid #ddd;
+            padding: 10px;
+        }
+        .nav-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        .footer__questionWrapper {
+            display: flex;
+            align-items: center;
+        }
+        .footer__questionNo {
+            background: none;
+            border: none;
+            padding: 5px 10px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+        .footer__subquestionWrapper {
+            display: flex;
+            flex-wrap: wrap;
+            margin-left: 10px;
+        }
+        .subQuestion {
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            border: 1px solid #ccc;
+            background: #f0f0f0;
+            margin: 2px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #666;
+        }
+        .subQuestion.active {
+            background: #0066cc;
+            color: white;
+            border-color: #0066cc;
+        }
+        .subQuestion.attempted {
+            background: #0066cc;
+            color: white;
+        }
+        .footer__deliverButton {
+            background: #0066cc;
+            color: white;
+            border: none;
+            padding: 8px 15px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+        .footer__deliverButton:disabled {
+            background: #cccccc;
+            cursor: not-allowed;
+        }
+        .sr-only {
+            position: absolute;
+            width: 1px;
+            height: 1px;
+            padding: 0;
+            margin: -1px;
+            overflow: hidden;
+            clip: rect(0, 0, 0, 0);
+            white-space: nowrap;
+            border-width: 0;
+        }
+        /* Highlight color buttons */
+        .highlight-color {
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            display: inline-block;
+            margin: 0 2px;
+            cursor: pointer;
+            border: 1px solid #ccc;
+        }
+        .highlight-color.yellow {
+            background-color: #ffff00;
+        }
+        .highlight-color.green {
+            background-color: #00ff00;
+        }
+        .highlight-color.pink {
+            background-color: #ff69b4;
+        }
+        .highlight-color.blue {
+            background-color: #00bfff;
+        }
+        /* Time warning styles */
+        .timer-warning {
+            color: #ff0000;
+            animation: blink 1s infinite;
+        }
+         blink {
+            0% { opacity: 1; }
+            50% { opacity: 0.5; }
+            100% { opacity: 1; }
+        }
+        /* Submission modal styles */
+        .submission-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: rgba(0,0,0,0.8);
+            z-index: 2000;
+            justify-content: center;
+            align-items: center;
+        }
+        .submission-content {
+            background-color: white;
+            width: 80%;
+            max-width: 800px;
+            border-radius: 10px;
+            padding: 30px;
+            box-shadow: 0 5px 30px rgba(0,0,0,0.5);
+            max-height: 80vh;
+            overflow-y: auto;
+        }
+        .submission-content h2 {
+            margin-top: 0;
+            color: #0066cc;
+            border-bottom: 2px solid #0066cc;
+            padding-bottom: 10px;
+        }
+        .submission-content p {
+            margin-bottom: 20px;
+            color: #333;
+        }
+        .answers-section {
+            margin-top: 20px;
+        }
+        .answers-section h3 {
+            color: #0066cc;
+            margin-bottom: 15px;
+        }
+        .answer-item {
+            padding: 10px;
+            margin-bottom: 8px;
+            border-radius: 4px;
+            border-left: 4px solid #ddd;
+            background-color: #f9f9f9;
+        }
+        .answer-item.correct {
+            border-left-color: #4CAF50;
+            background-color: #f0fff0;
+        }
+        .answer-item.incorrect {
+            border-left-color: #f44336;
+            background-color: #fff0f0;
+        }
+        .answer-text {
+            font-weight: bold;
+        }
+        .correct-answer {
+            color: #4CAF50;
+            margin-left: 10px;
+        }
+        .incorrect-answer {
+            color: #f44336;
+            margin-left: 10px;
+        }
+        .answer-status {
+            float: right;
+            margin-left: 15px;
+        }
+        .correct-status {
+            color: #4CAF50;
+        }
+        .incorrect-status {
+            color: #f44336;
+        }
+        .submission-buttons {
+            margin-top: 25px;
+            text-align: right;
+            clear: both;
+        }
+        .submission-buttons button {
+            padding: 8px 15px;
+            margin-left: 10px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+        .submission-buttons .confirm {
+            background: #0066cc;
+            color: white;
+            border: none;
+        }
+        /* Disabled state */
+        input:disabled, select:disabled {
+            background-color: #f5f5f5;
+            cursor: not-allowed;
+        }
+        /* Score display styles */
+        .score-display {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        .score-number {
+            font-size: 3rem;
+            font-weight: bold;
+            color: #0066cc;
+            margin: 10px 0;
+        }
+        .score-total {
+            font-size: 1.5rem;
+            color: #666;
+        }
+        .performance-rating {
+            font-size: 1.5rem;
+            font-weight: bold;
+            margin: 15px 0;
+            padding: 10px;
+            border-radius: 5px;
+        }
+        .excellent {
+            color: #2E7D32;
+            background-color: #E8F5E9;
+        }
+        .very-good {
+            color: #388E3C;
+            background-color: #E8F5E9;
+        }
+        .good {
+            color: #689F38;
+            background-color: #F1F8E9;
+        }
+        .fair {
+            color: #F57C00;
+            background-color: #FFF3E0;
+        }
+        .poor {
+            color: #D32F2F;
+            background-color: #FFEBEE;
+        }
+        /* IELTS Band Score */
+        .band-score {
+            font-size: 2rem;
+            font-weight: bold;
+            color: #0066cc;
+            margin: 10px 0;
+        }
+        /* Correct answer highlight */
+        .correct-highlight {
+            background-color: rgba(76, 175, 80, 0.3);
+            padding: 2px;
+            border-radius: 2px;
+        }
+        /* Incorrect answer highlight */
+        .incorrect-highlight {
+            background-color: rgba(244, 67, 54, 0.3);
+            padding: 2px;
+            border-radius: 2px;
+        }
+        /* Answer comparison section */
+        .answer-comparison {
+            margin-top: 20px;
+            padding: 15px;
+            background-color: #f5f5f5;
+            border-radius: 5px;
+            display: none;
+        }
+        .answer-comparison h3 {
+            margin-top: 0;
+            color: #0066cc;
+        }
+        /* Time spent indicator */
+        .time-spent {
+            font-size: 1rem;
+            color: #666;
+            margin-bottom: 15px;
+            text-align: center;
+        }
+        /* Dropdown answer display */
+        .dropdown-answer {
+            display: inline-block;
+            margin-left: 10px;
+            font-weight: normal;
+        }
+        .dropdown-answer.correct {
+            color: #4CAF50;
+        }
+        .dropdown-answer.incorrect {
+            color: #f44336;
+        }
+    </style>
+</head>
+<body>
+    <div class="test-wrapper">
+        <!-- Header with Timer -->
+        <header class="header">
+            <div class="header__logo">
+                <img src="https://d2snzxottmona5.cloudfront.net/releases/3.46.0/images/logo/ielts.svg" alt="IELTS Logo">
+                <a href="" style="text-decoration: none; color: #0066cc; font-weight: bold; margin-left: 15px; display: inline-flex; align-items: center; gap: 5px;">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm4.64 6.8c-.15 1.58-.8 5.42-1.13 7.19-.14.75-.42 1-.68 1.03-.58.05-1.02-.38-1.58-.75-.88-.58-1.38-.94-2.23-1.5-.99-.65-.35-1.01.22-1.59.15-.15 2.71-2.48 2.76-2.69a.2.2 0 0 0-.05-.18c-.06-.05-.14-.03-.21-.02-.09.02-.38.24-1.07.7-.96.66-1.89 1.28-1.89 1.28s-.17.11-.49.03c-.32-.08-.72-.26-1.16-.47-.54-.26-1.17-.53-1.17-.53s-.87-.55.62-1.14c.32-.13 1.96-.84 2.99-1.2 1.05-.37 2.86-1.01 2.86-1.01s1.02-.4 1.02 0z" fill="#0088cc"/>
+                    </svg>
+                    aftum_8
+                </a>
+            </div>
+            <div class="header__timer" id="testTimer">00:00</div>
+            <div class="header__icons">
+                <i class="fas fa-wifi header__icon"></i>
+                <i class="fas fa-bell header__icon"></i>
+                <i class="fas fa-cog header__icon" id="settingsButton"></i>
+            </div>
+        </header>
+        <!-- Settings Modal -->
+        <div class="settings-modal" id="settingsModal">
+            <div class="settings-content">
+                <div class="settings-header">
+                    <h2>Options</h2>
+                    <button class="settings-close" id="settingsClose">&times;</button>
+                </div>
+                <div class="settings-body">
+                    <div class="settings-option">
+                        <i class="fas fa-paper-plane"></i>
+                        <span>Go to submission page</span>
+                    </div>
+                    <div class="settings-option" id="contrastOption">
+                        <i class="fas fa-adjust"></i>
+                        <span>Contrast</span>
+                    </div>
+                    <div class="settings-option" id="textSizeOption">
+                        <i class="fas fa-search-plus"></i>
+                        <span>Text size</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- Section Rubric -->
+        <div class="sectionRubric" id="sectionRubric">
+            <h2>Part 1</h2>
+            <p>You should spend about 20 minutes on Questions 1-13, which are based on Reading Passage 1 below.</p>
+        </div>
+        <div class="test-container">
+            <!-- Passage Section -->
+            <div class="passage-container" id="passage-container">
+                <div class="highlight-toolbar" id="highlightToolbar">
+                    <button class="highlight-color yellow" data-color="yellow" title="Yellow highlight"></button>
+                    <button class="highlight-color green" data-color="green" title="Green highlight"></button>
+                    <button class="highlight-color pink" data-color="pink" title="Pink highlight"></button>
+                    <button class="highlight-color blue" data-color="blue" title="Blue highlight"></button>
+                    <button class="remove" title="Remove highlight"><i class="fas fa-times"></i></button>
+                </div>
+                <div id="passageContent">
+                    <h2 style="text-align: center;">How the first trans-Atlantic telegraph cable was laid</h2>
+                    <p>On August 16, 1858, the first telegraphic message crossed the Atlantic Ocean. Travelling along a recently laid cable, the message from Britain's Queen Victoria to US President James Buchanan took just 16 hours. Prior to this, communication across the Atlantic would have been by ship - and taken around 10 days.</p>
+                    <p>People had been communicating via overland telegraph since 1844 and messages had been passing between Britain and France since 1850 when the first submarine cable was laid in the English Channel. But the attempt to span the Atlantic Ocean was the most daring attempt yet - and was the talk of the age, the 19th-century equivalent of the Apollo space mission. The idea that one could seemingly cheat time and space was inspiring and it changed the way people thought about the world and their place in it.</p>
+                    <p>The driving force behind the trans-Atlantic telegraph cable was an American businessman called Cyrus Field. In 1856, he and Englishmen John Watkins Brett and Charles Tilson Bright formed the Atlantic Telegraph company. They raised £350,000 mostly from businessmen in London, Liverpool, Manchester and Glasgow. They also secured £14,000 annually from the British government plus the loan of ships and a similar amount from the US government.</p>
+                    <p>Getting the cable made proved to be difficult. The distance between the west coast of Ireland and Newfoundland is over 3,700km, and Field was unable to find a company that was capable of supplying the required cable in the desired time frame. As a result, two companies were engaged to fulfil the order. The cable had a core of seven copper wires down which the signal would pass. These were insulated with several layers of gutta-percha (a natural plastic made from tree sap) and then armoured with iron wire. When it was complete, the weight of the cable proved too great for any single ship. It was therefore loaded onto two: the British ship, HMS Agamemnon and the American ship, USS Niagara.</p>
+                    <p>The first attempt to lay the cable began on August 5 1857 with both ships departing from the west coast of Ireland, near Ballycarbery Castle. The venture did not go according to plan. The cable snapped on the first day, but was recovered from the bottom and repaired. A few days later, mid-Atlantic, the cable snapped again, this time in water 3km deep. It was lost and the expedition abandoned.</p>
+                    <p>The next summer in 1858 they tried again. On this expedition, the two great ships met mid-Atlantic, each carrying half the cable. The two ends were joined together and the ships sailed away from each other. The cable broke three times and each time they were forced to start again. On July 29, with little hope of success, the cable was joined for the fourth time and the ships sailed for home. This time they succeeded. The cable was landed in Newfoundland on August 4 and in Ireland the following day. And a week or so later Queen Victoria sent that first trans-Atlantic message to President Buchanan.</p>
+                    <p>The celebrations were tremendous. One US newspaper proclaimed: <em>New York has seldom seen a more complete holiday than that on September 1 1858, in celebration of the successful laying of the Atlantic cable. The enthusiasm of an entire nation was expressed in this jubilee of its metropolis, and the era of a closer connection with Europe was well ushered in by a day of genuine rejoicing and gaiety.</em></p>
+                    <p>Celebrations were, however, short-lived: the cable performed badly and failed after just three weeks. The project was put on hold, but the concept had been proved possible. By 1865, further research had been carried out into the problems which had plagued the earlier cables. In addition, cables had been successfully laid in the Mediterranean and in the Persian Gulf. The cables that were used were better engineered, with thicker cores and better insulation allowing faster transmission speeds.</p>
+                    <p>In 1865, Field incorporated a second company to raise enough funds to try again. He chartered the largest ship in the world at the time, the SS Great Eastern, which could carry the entire Atlantic cable. Huge salt-water tanks and other state-of-the-art machinery were fitted to ensure it remained in mint condition during its journey. All went well until, in heavy winds 1000km off the coast of Newfoundland, the cable rubbed on the side of the ship, snapped and plunged to the deep ocean floor.</p>
+                    <p>Not one to quit, Field vowed to return the following year. This final 1866 expedition proved to be successful and the cable was put into commercial service on July 28. One month later, the 1865 cable was brought to the surface and repaired, providing a second Atlantic telegraph link.</p>
+                    <p>The service had obvious and immediate impact. People in government were able to respond more swiftly to evolving situations. News travelled more quickly, which boosted trade on both sides of the Atlantic. It also had a profound effect on things such as family life and cultural ties. For example, it was no longer so difficult for immigrants in America to keep in touch with their families back home.</p>
+                    <p>The roller-coaster of cable-laying highs and lows between 1857 and 1866 caught the imaginations of a generation the way the space race did in the 20th century. There was immense public interest in the endeavour and in telegraphy more generally. At the time, telegraphic science was reported widely in the newspapers and the fortunes of the telegraph companies were followed closely. Discussions of the pitfalls and solutions to spanning the Atlantic with cable became everyday topics of conversation, and endless articles in the newspapers ensured that the project stayed in people's thoughts.</p>
+                </div>
+            </div>
+            <!-- Draggable Divider -->
+            <div class="divider" id="divider">
+                <div class="divider-handle"></div>
+            </div>
+            <!-- Questions Section -->
+            <div class="questions-container" id="questions-container">
+                <!-- Questions 1-6 - True/False/Not Given -->
+                <div class="question">
+                    <div class="question-rubric">
+                        <h3>Questions 1-6</h3>
+                        <p>Do the following statements agree with the information given in the text?</p>
+                        <p>In boxes 1-6 below, write</p>
+                        <p><strong>TRUE</strong> if the statement agrees with the information</p>
+                        <p><strong>FALSE</strong> if the statement contradicts the information</p>
+                        <p><strong>NOT GIVEN</strong> if there is no information on this</p>
+                    </div>
+                    <div class="question-content">
+                        <div class="question-item">
+                            <p><span class="question-number">1</span> Field failed to find a company that could produce all of the cable needed by the specified date.</p>
+                            <div class="true-false-option">
+                                <select name="q1" id="q1">
+                                    <option value="">--</option>
+                                    <option value="TRUE">TRUE</option>
+                                    <option value="FALSE">FALSE</option>
+                                    <option value="NOT GIVEN">NOT GIVEN</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="question-item">
+                            <p><span class="question-number">2</span> HMS Agamemnon and USS Niagara set sail from different locations on August 5, 1857.</p>
+                            <div class="true-false-option">
+                                <select name="q2" id="q2">
+                                    <option value="">--</option>
+                                    <option value="TRUE">TRUE</option>
+                                    <option value="FALSE">FALSE</option>
+                                    <option value="NOT GIVEN">NOT GIVEN</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="question-item">
+                            <p><span class="question-number">3</span> On the 1858 expedition, the cable broke three times because of a manufacturing fault.</p>
+                            <div class="true-false-option">
+                                <select name="q3" id="q3">
+                                    <option value="">--</option>
+                                    <option value="TRUE">TRUE</option>
+                                    <option value="FALSE">FALSE</option>
+                                    <option value="NOT GIVEN">NOT GIVEN</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="question-item">
+                            <p><span class="question-number">4</span> The newspaper quoted in the passage disapproved of the enthusiasm that met the 1858 expedition.</p>
+                            <div class="true-false-option">
+                                <select name="q4" id="q4">
+                                    <option value="">--</option>
+                                    <option value="TRUE">TRUE</option>
+                                    <option value="FALSE">FALSE</option>
+                                    <option value="NOT GIVEN">NOT GIVEN</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="question-item">
+                            <p><span class="question-number">5</span> Many articles appeared in the press between 1857 and 1866 about the science behind the telegraph.</p>
+                            <div class="true-false-option">
+                                <select name="q5" id="q5">
+                                    <option value="">--</option>
+                                    <option value="TRUE">TRUE</option>
+                                    <option value="FALSE">FALSE</option>
+                                    <option value="NOT GIVEN">NOT GIVEN</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="question-item">
+                            <p><span class="question-number">6</span> Between 1857 and 1866, people talked about the problems related to the telegraph project on a regular basis.</p>
+                            <div class="true-false-option">
+                                <select name="q6" id="q6">
+                                    <option value="">--</option>
+                                    <option value="TRUE">TRUE</option>
+                                    <option value="FALSE">FALSE</option>
+                                    <option value="NOT GIVEN">NOT GIVEN</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- Questions 7-13 - Sentence Completion -->
+                <div class="question">
+                    <div class="question-rubric">
+                        <h3>Questions 7-13</h3>
+                        <p>Complete the notes below.</p>
+                        <p>Choose <strong>ONE WORD ONLY</strong> from the text for each answer.</p>
+                        <p>Write your answers in boxes <strong>7-13</strong> on your answer sheet.</p>
+                    </div>
+                    <div class="question-content">
+                        <div class="sentence-completion-container">
+                            <div class="sentence-text">
+                                <h4>The history of the trans-Atlantic telegraph</h4>
+                                <p><strong>The first attempts to lay cable:</strong></p>
+                                <p><span class="question-number">7</span> the central wires of the cable were made of <input type="text" class="sentence-input" id="q7" name="q7"></p>
+                                <p><span class="question-number">8</span> the cable was put onto two ships due to its <input type="text" class="sentence-input" id="q8" name="q8"></p>
+                                <p><span class="question-number">9</span> further research led to the cable's thickness and <input type="text" class="sentence-input" id="q9" name="q9"> being improved</p>
+                                <p><span class="question-number">10</span> Field set up another company to get the <input type="text" class="sentence-input" id="q10" name="q10"> for another attempt</p>
+                                <p><strong>The changes the trans-Atlantic telegraph brought about:</strong></p>
+                                <p><span class="question-number">11</span> members of the <input type="text" class="sentence-input" id="q11" name="q11"> could react more quickly to events</p>
+                                <p><span class="question-number">12</span> news could be relayed faster, thus improving <input type="text" class="sentence-input" id="q12" name="q12"></p>
+                                <p><span class="question-number">13</span> it became easier for US <input type="text" class="sentence-input" id="q13" name="q13"> to maintain contact with their families</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- Footer -->
+        <footer class="footer">
+            <nav class="nav-row perScorableItem" aria-label="Questions">
+                <div class="footer__questionWrapper selected multiple" role="tablist">
+                    <button role="tab" class="footer__questionNo" data-sectionid="128121930" tabindex="-1">
+                        <span>
+                            <span aria-hidden="true" class="section-prefix">Part </span>
+                            <span class="sectionNr" aria-hidden="true">1</span>
+                        </span>
+                    </button>
+                    <div class="footer__subquestionWrapper">
+                        <button class="subQuestion" data-contentrevisionid="128121896" data-ordernumber="1" data-sectionid="128121930" tabindex="0">
+                            <span class="sr-only">Question 1</span>
+                            <span aria-hidden="true">1</span>
+                            <span class="sr-only">Not attempted</span>
+                        </button>
+                        <button class="subQuestion" data-contentrevisionid="128121896" data-ordernumber="2" data-sectionid="128121930" tabindex="0">
+                            <span class="sr-only">Question 2</span>
+                            <span aria-hidden="true">2</span>
+                            <span class="sr-only">Not attempted</span>
+                        </button>
+                        <button class="subQuestion" data-contentrevisionid="128121896" data-ordernumber="3" data-sectionid="128121930" tabindex="0">
+                            <span class="sr-only">Question 3</span>
+                            <span aria-hidden="true">3</span>
+                            <span class="sr-only">Not attempted</span>
+                        </button>
+                        <button class="subQuestion" data-contentrevisionid="128121896" data-ordernumber="4" data-sectionid="128121930" tabindex="0">
+                            <span class="sr-only">Question 4</span>
+                            <span aria-hidden="true">4</span>
+                            <span class="sr-only">Not attempted</span>
+                        </button>
+                        <button class="subQuestion" data-contentrevisionid="128121896" data-ordernumber="5" data-sectionid="128121930" tabindex="0">
+                            <span class="sr-only">Question 5</span>
+                            <span aria-hidden="true">5</span>
+                            <span class="sr-only">Not attempted</span>
+                        </button>
+                        <button class="subQuestion" data-contentrevisionid="128121896" data-ordernumber="6" data-sectionid="128121930" tabindex="0">
+                            <span class="sr-only">Question 6</span>
+                            <span aria-hidden="true">6</span>
+                            <span class="sr-only">Not attempted</span>
+                        </button>
+                        <button class="subQuestion" data-contentrevisionid="128121896" data-ordernumber="7" data-sectionid="128121930" tabindex="0">
+                            <span class="sr-only">Question 7</span>
+                            <span aria-hidden="true">7</span>
+                            <span class="sr-only">Not attempted</span>
+                        </button>
+                        <button class="subQuestion" data-contentrevisionid="128121896" data-ordernumber="8" data-sectionid="128121930" tabindex="0">
+                            <span class="sr-only">Question 8</span>
+                            <span aria-hidden="true">8</span>
+                            <span class="sr-only">Not attempted</span>
+                        </button>
+                        <button class="subQuestion" data-contentrevisionid="128121896" data-ordernumber="9" data-sectionid="128121930" tabindex="0">
+                            <span class="sr-only">Question 9</span>
+                            <span aria-hidden="true">9</span>
+                            <span class="sr-only">Not attempted</span>
+                        </button>
+                        <button class="subQuestion" data-contentrevisionid="128121896" data-ordernumber="10" data-sectionid="128121930" tabindex="0">
+                            <span class="sr-only">Question 10</span>
+                            <span aria-hidden="true">10</span>
+                            <span class="sr-only">Not attempted</span>
+                        </button>
+                        <button class="subQuestion" data-contentrevisionid="128121896" data-ordernumber="11" data-sectionid="128121930" tabindex="0">
+                            <span class="sr-only">Question 11</span>
+                            <span aria-hidden="true">11</span>
+                            <span class="sr-only">Not attempted</span>
+                        </button>
+                        <button class="subQuestion" data-contentrevisionid="128121896" data-ordernumber="12" data-sectionid="128121930" tabindex="0">
+                            <span class="sr-only">Question 12</span>
+                            <span aria-hidden="true">12</span>
+                            <span class="sr-only">Not attempted</span>
+                        </button>
+                        <button class="subQuestion" data-contentrevisionid="128121896" data-ordernumber="13" data-sectionid="128121930" tabindex="0">
+                            <span class="sr-only">Question 13</span>
+                            <span aria-hidden="true">13</span>
+                            <span class="sr-only">Not attempted</span>
+                        </button>
+                    </div>
+                </div>
+                <button id="deliver-button" aria-label="Review your answers" class="footer__deliverButton">
+                    <i class="fas fa-check"></i> Submit
+                </button>
+            </nav>
+        </footer>
+    </div>
+    <!-- Submission Modal -->
+    <div class="submission-modal" id="submissionModal">
+        <div class="submission-content">
+            <h2 id="submissionTitle">Test Results</h2>
+            <div class="score-display">
+                <div>Your Score:</div>
+                <div class="score-number" id="userScore">0</div>
+                <div class="score-total">out of <span id="totalQuestions">13</span></div>
+                <div class="band-score" id="bandScore">Band: 0.0</div>
+                <div class="performance-rating" id="performanceRating">Poor - Needs Improvement</div>
+            </div>
+            <div class="time-spent" id="timeSpent"></div>
+            <p id="submissionMessage">Here are your answers with the correct solutions:</p>
+            <div class="answers-section">
+                <h3>Your Answers:</h3>
+                <div id="answersList"></div>
+            </div>
+            <div class="submission-buttons">
+                <button class="confirm" id="closeSubmission">Close</button>
+            </div>
+        </div>
+    </div>
+    <!-- Answer Comparison Section -->
+    <div class="answer-comparison" id="answerComparison">
+        <h3>Answer Comparison</h3>
+        <p>Your answers are highlighted below. Correct answers are marked in <span class="correct-highlight">green</span>, incorrect answers in <span class="incorrect-highlight">red</span>.</p>
+    </div>
+    <script>
+        // Correct answers
+        const correctAnswers = {
+            1: "TRUE",
+            2: "FALSE",
+            3: "NOT GIVEN",
+            4: "FALSE",
+            5: "TRUE",
+            6: "TRUE",
+            7: "copper",
+            8: "weight",
+            9: "insulation",
+            10: "funds",
+            11: "government",
+            12: "trade",
+            13: "immigrants"
+        };
+
+        // Timer functionality - stopwatch (count up from zero)
+        let totalSeconds = 0;
+        const timerElement = document.getElementById('testTimer');
+        let testSubmitted = false;
+        let userAnswers = {};
+        let startTime = new Date();
+        let resultsShown = false;
+
+        function updateTimer() {
+            if (testSubmitted) return;
+            const minutes = Math.floor(totalSeconds / 60);
+            const seconds = totalSeconds % 60;
+            const formattedTime = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+            timerElement.textContent = formattedTime;
+            totalSeconds++;
+        }
+
+        function disableAllInputs() {
+            document.querySelectorAll('input[type="text"], select').forEach(input => {
+                input.disabled = true;
+            });
+            document.getElementById('deliver-button').disabled = true;
+            document.removeEventListener('mouseup', handleTextSelection);
+        }
+
+        function showSubmissionModal(title, message) {
+            const modal = document.getElementById('submissionModal');
+            document.getElementById('submissionTitle').textContent = title;
+            document.getElementById('submissionMessage').textContent = message;
+
+            // Calculate time spent
+            const endTime = new Date();
+            const timeDiff = endTime - startTime;
+            const minutes = Math.floor(timeDiff / 60000);
+            const seconds = Math.floor((timeDiff % 60000) / 1000);
+            document.getElementById('timeSpent').textContent = `Time spent: ${minutes}m ${seconds}s`;
+
+            const answersList = document.getElementById('answersList');
+            answersList.innerHTML = '';
+            let score = 0;
+            userAnswers = {};
+
+            // Process True/False/Not Given questions (1-6)
+            for (let i = 1; i <= 6; i++) {
+                const select = document.querySelector(`select[name="q${i}"]`);
+                const userAnswer = select.value || 'Not answered';
+                userAnswers[i] = userAnswer;
+                const correctAnswer = correctAnswers[i];
+                const isCorrect = userAnswer === correctAnswer;
+                if (isCorrect) score++;
+                const answerItem = document.createElement('div');
+                answerItem.className = `answer-item ${isCorrect ? 'correct' : 'incorrect'}`;
+                answerItem.innerHTML = `
+                    <div class="answer-text">Question ${i}: ${userAnswer}</div>
+                    <span class="${isCorrect ? 'correct-answer' : 'incorrect-answer'}">(Correct answer: ${correctAnswer})</span>
+                    <span class="answer-status ${isCorrect ? 'correct-status' : 'incorrect-status'}">
+                        ${isCorrect ? '✓' : '✗'}
+                    </span>
+                `;
+                answersList.appendChild(answerItem);
+            }
+
+            // Process Sentence Completion questions (7-13)
+            for (let i = 7; i <= 13; i++) {
+                const input = document.querySelector(`input[name="q${i}"]`);
+                const userAnswer = input.value.trim().toLowerCase() || 'Not answered';
+                userAnswers[i] = userAnswer;
+                const correctAnswer = correctAnswers[i];
+                const isCorrect = userAnswer === correctAnswer.toLowerCase();
+                if (isCorrect) score++;
+                const answerItem = document.createElement('div');
+                answerItem.className = `answer-item ${isCorrect ? 'correct' : 'incorrect'}`;
+                answerItem.innerHTML = `
+                    <div class="answer-text">Question ${i}: ${userAnswer}</div>
+                    <span class="${isCorrect ? 'correct-answer' : 'incorrect-answer'}">(Correct answer: ${correctAnswer})</span>
+                    <span class="answer-status ${isCorrect ? 'correct-status' : 'incorrect-status'}">
+                        ${isCorrect ? '✓' : '✗'}
+                    </span>
+                `;
+                answersList.appendChild(answerItem);
+            }
+
+            // Update score display
+            document.getElementById('userScore').textContent = score;
+            document.getElementById('totalQuestions').textContent = "13";
+
+            // Calculate IELTS band score
+            const bandScore = calculateBandScore(score);
+            document.getElementById('bandScore').textContent = `Band: ${bandScore.toFixed(1)}`;
+
+            // Calculate performance rating
+            const percentage = (score / 13) * 100;
+            let rating, ratingClass;
+            if (score >= 12) {
+                rating = "Excellent!";
+                ratingClass = "excellent";
+            } else if (score >= 10) {
+                rating = "Very Good";
+                ratingClass = "very-good";
+            } else if (score >= 8) {
+                rating = "Good";
+                ratingClass = "good";
+            } else if (score >= 6) {
+                rating = "Fair";
+                ratingClass = "fair";
+            } else {
+                rating = "Poor - Needs Improvement";
+                ratingClass = "poor";
+            }
+            const ratingElement = document.getElementById('performanceRating');
+            ratingElement.textContent = rating;
+            ratingElement.className = `performance-rating ${ratingClass}`;
+
+            // Highlight answers if submitted
+            if (testSubmitted) {
+                highlightAnswers(correctAnswers);
+            }
+
+            modal.style.display = 'flex';
+            resultsShown = true;
+            const submitButton = document.getElementById('deliver-button');
+            submitButton.innerHTML = '<i class="fas fa-eye"></i> Show My Results';
+            submitButton.disabled = false;
+        }
+
+        function calculateBandScore(score) {
+            if (score >= 12) return 9.0;
+            if (score >= 11) return 8.5;
+            if (score >= 10) return 8.0;
+            if (score >= 9) return 7.5;
+            if (score >= 8) return 7.0;
+            if (score >= 7) return 6.5;
+            if (score >= 6) return 6.0;
+            if (score >= 5) return 5.5;
+            if (score >= 4) return 5.0;
+            return 0.0;
+        }
+
+        function highlightAnswers(correctAnswers) {
+            // Highlight True/False/Not Given questions (1-6)
+            for (let i = 1; i <= 6; i++) {
+                const select = document.querySelector(`select[name="q${i}"]`);
+                const userAnswer = userAnswers[i];
+                const correctAnswer = correctAnswers[i];
+                select.classList.remove('correct', 'incorrect');
+                if (userAnswer && userAnswer !== 'Not answered') {
+                    select.classList.add(userAnswer === correctAnswer ? 'correct' : 'incorrect');
+                    const feedback = document.createElement('span');
+                    feedback.className = `dropdown-answer ${userAnswer === correctAnswer ? 'correct' : 'incorrect'}`;
+                    feedback.textContent = userAnswer === correctAnswer ? '✓ Correct' : `✗ Correct: ${correctAnswer}`;
+                    if (!select.nextElementSibling || !select.nextElementSibling.classList.contains('dropdown-answer')) {
+                        select.parentNode.appendChild(feedback);
+                    }
+                }
+            }
+
+            // Highlight Sentence Completion questions (7-13)
+            for (let i = 7; i <= 13; i++) {
+                const input = document.querySelector(`input[name="q${i}"]`);
+                const userAnswer = userAnswers[i];
+                const correctAnswer = correctAnswers[i];
+                input.classList.remove('correct', 'incorrect');
+                if (userAnswer && userAnswer !== 'Not answered') {
+                    input.classList.add(userAnswer === correctAnswer.toLowerCase() ? 'correct' : 'incorrect');
+                    const feedback = document.createElement('span');
+                    feedback.className = `sentence-feedback ${userAnswer === correctAnswer.toLowerCase() ? 'correct' : 'incorrect'}`;
+                    feedback.textContent = userAnswer === correctAnswer.toLowerCase() ? '✓ Correct' : `✗ Correct: ${correctAnswer}`;
+                    if (!input.nextElementSibling || !input.nextElementSibling.classList.contains('sentence-feedback')) {
+                        input.parentNode.insertBefore(feedback, input.nextSibling);
+                    }
+                }
+            }
+
+            document.getElementById('answerComparison').style.display = 'block';
+        }
+
+        // Handle manual submission
+        document.getElementById('deliver-button').addEventListener('click', function() {
+            if (resultsShown) {
+                document.getElementById('submissionModal').style.display = 'flex';
+                return;
+            }
+            if (testSubmitted) return;
+            if (confirm('Are you sure you want to submit your test? You won\'t be able to make changes after submission.')) {
+                clearInterval(timerInterval);
+                testSubmitted = true;
+                disableAllInputs();
+                showSubmissionModal('Test Submitted', 'Thank you for completing the test.');
+            }
+        });
+
+        // Close submission modal and show answer comparison
+        document.getElementById('closeSubmission').addEventListener('click', function() {
+            document.getElementById('submissionModal').style.display = 'none';
+            highlightAnswers(correctAnswers);
+        });
+
+        // Start the timer
+        const timerInterval = setInterval(updateTimer, 1000);
+
+        // Settings Modal functionality
+        const settingsButton = document.getElementById('settingsButton');
+        const settingsModal = document.getElementById('settingsModal');
+        const settingsClose = document.getElementById('settingsClose');
+
+        settingsButton.addEventListener('click', function() {
+            settingsModal.style.display = 'flex';
+        });
+
+        settingsClose.addEventListener('click', function() {
+            settingsModal.style.display = 'none';
+        });
+
+        window.addEventListener('click', function(event) {
+            if (event.target === settingsModal) {
+                settingsModal.style.display = 'none';
+            }
+            if (event.target === document.getElementById('submissionModal')) {
+                document.getElementById('submissionModal').style.display = 'none';
+            }
+        });
+
+        // Draggable Divider Functionality
+        const divider = document.getElementById('divider');
+        const passageContainer = document.getElementById('passage-container');
+        const questionsContainer = document.getElementById('questions-container');
+        let isDragging = false;
+        let startX, startPassageWidth;
+
+        divider.addEventListener('mousedown', (e) => {
+            isDragging = true;
+            startX = e.clientX;
+            startPassageWidth = parseInt(document.defaultView.getComputedStyle(passageContainer).width, 10);
+            document.body.style.cursor = 'col-resize';
+            document.addEventListener('mousemove', onMouseMove);
+            document.addEventListener('mouseup', onMouseUp);
+            e.preventDefault();
+        });
+
+        function onMouseMove(e) {
+            if (!isDragging) return;
+            const containerWidth = document.querySelector('.test-container').offsetWidth;
+            const newPassageWidth = startPassageWidth + e.clientX - startX;
+            const minWidth = containerWidth * 0.3;
+            const maxWidth = containerWidth * 0.7;
+            if (newPassageWidth >= minWidth && newPassageWidth <= maxWidth) {
+                passageContainer.style.width = `${newPassageWidth}px`;
+            }
+        }
+
+        function onMouseUp() {
+            isDragging = false;
+            document.body.style.cursor = '';
+            document.removeEventListener('mousemove', onMouseMove);
+            document.removeEventListener('mouseup', onMouseUp);
+        }
+
+        divider.addEventListener('selectstart', (e) => {
+            if (isDragging) e.preventDefault();
+        });
+
+        // Question navigation functionality
+        document.querySelectorAll('.subQuestion').forEach(button => {
+            button.addEventListener('click', function() {
+                document.querySelectorAll('.subQuestion').forEach(btn => {
+                    btn.classList.remove('active');
+                });
+                this.classList.add('active');
+                const questionNumber = parseInt(this.textContent.trim());
+                if (questionNumber >= 1 && questionNumber <= 6) {
+                    document.querySelector('.question:nth-of-type(1)').scrollIntoView({ behavior: 'smooth' });
+                } else if (questionNumber >= 7 && questionNumber <= 13) {
+                    document.querySelector('.question:nth-of-type(2)').scrollIntoView({ behavior: 'smooth' });
+                }
+            });
+        });
+
+        // Enhanced Highlighting functionality
+        const highlightToolbar = document.getElementById('highlightToolbar');
+        let selectedText = '';
+        let selectedRange = null;
+        let currentHighlightColor = null;
+
+        document.querySelectorAll('#passageContent, .questions-container').forEach(element => {
+            element.style.userSelect = 'text';
+            element.style.webkitUserSelect = 'text';
+        });
+
+        function handleTextSelection() {
+            const selection = window.getSelection();
+            selectedText = selection.toString().trim();
+            if (selectedText.length > 0 && isTextInContent(selection)) {
+                selectedRange = selection.getRangeAt(0);
+                const rangeRect = selectedRange.getBoundingClientRect();
+                highlightToolbar.style.display = 'block';
+                highlightToolbar.style.top = `${rangeRect.top + window.scrollY - 35}px`;
+                highlightToolbar.style.left = `${rangeRect.left + window.scrollX + (rangeRect.width / 2)}px`;
+            } else {
+                highlightToolbar.style.display = 'none';
+            }
+        }
+
+        function isTextInContent(selection) {
+            if (!selection.rangeCount) return false;
+            const range = selection.getRangeAt(0);
+            const contentAreas = document.querySelectorAll('#passageContent, .question-content');
+            return Array.from(contentAreas).some(area => area.contains(range.commonAncestorContainer));
+        }
+
+        document.addEventListener('mouseup', handleTextSelection);
+
+        document.addEventListener('mousedown', function(e) {
+            if (!highlightToolbar.contains(e.target)) {
+                highlightToolbar.style.display = 'none';
+            }
+        });
+
+        document.querySelectorAll('.highlight-color').forEach(button => {
+            button.addEventListener('click', function() {
+                currentHighlightColor = this.dataset.color;
+                applyHighlight();
+            });
+        });
+
+        function applyHighlight() {
+            if (selectedText.length > 0 && selectedRange) {
+                const hasHighlights = checkForHighlightsInRange(selectedRange);
+                if (hasHighlights) {
+                    removeHighlightsInRange(selectedRange);
+                } else if (currentHighlightColor) {
+                    const span = document.createElement('span');
+                    span.className = `highlight ${currentHighlightColor}`;
+                    selectedRange.surroundContents(span);
+                }
+                window.getSelection().removeAllRanges();
+                highlightToolbar.style.display = 'none';
+            }
+        }
+
+        function checkForHighlightsInRange(range) {
+            const documentFragment = range.cloneContents();
+            const tempDiv = document.createElement('div');
+            tempDiv.appendChild(documentFragment);
+            return tempDiv.querySelector('.highlight') !== null;
+        }
+
+        function removeHighlightsInRange(range) {
+            const documentFragment = range.cloneContents();
+            const tempDiv = document.createElement('div');
+            tempDiv.appendChild(documentFragment);
+            const highlights = tempDiv.querySelectorAll('.highlight');
+            if (highlights.length > 0) {
+                const newRange = range.cloneRange();
+                const fragment = newRange.extractContents();
+                const textFragment = document.createDocumentFragment();
+                extractTextNodes(fragment, textFragment);
+                newRange.insertNode(textFragment);
+            }
+        }
+
+        function extractTextNodes(source, destination) {
+            const walker = document.createTreeWalker(
+                source,
+                NodeFilter.SHOW_TEXT | NodeFilter.SHOW_ELEMENT,
+                null,
+                false
+            );
+            let node;
+            while (node = walker.nextNode()) {
+                if (node.nodeType === Node.TEXT_NODE) {
+                    destination.appendChild(document.createTextNode(node.nodeValue));
+                } else if (!node.classList.contains('highlight')) {
+                    const container = node.cloneNode(false);
+                    extractTextNodes(node, container);
+                    destination.appendChild(container);
+                }
+            }
+        }
+
+        document.querySelector('.highlight-toolbar .remove').addEventListener('click', function() {
+            if (selectedText.length > 0 && selectedRange) {
+                removeHighlightsInRange(selectedRange);
+                window.getSelection().removeAllRanges();
+                highlightToolbar.style.display = 'none';
+            }
+        });
+
+        // Mark questions as attempted when answered
+        document.querySelectorAll('select, input[type="text"]').forEach(input => {
+            input.addEventListener('change', function() {
+                const questionNumber = parseInt(this.name.replace('q', ''));
+                const questionButton = document.querySelector(`.subQuestion[data-ordernumber="${questionNumber}"]`);
+                if (questionButton && (this.value || this.value.trim())) {
+                    questionButton.classList.add('attempted');
+                }
+            });
+        });
+    </script>
+</body>
+</html>

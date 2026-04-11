@@ -1,0 +1,1510 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>IELTS Reading Test - Passage 2</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --day-bg: #f8f9fa;
+            --day-text: #212529;
+            --day-primary: #4e73df;
+            --day-secondary: #e9ecef;
+            --day-highlight: #fff9c4;
+            --day-highlight-blue: #bbdefb;
+            
+            --night-bg: #1a1a2e;
+            --night-text: #e6e6e6;
+            --night-primary: #6c63ff;
+            --night-secondary: #16213e;
+            --night-highlight: #423a15;
+            --night-highlight-blue: #1e3a5f;
+            
+            --sepia-bg: #f5ecd7;
+            --sepia-text: #3e3e3e;
+            --sepia-primary: #a67c52;
+            --sepia-secondary: #e6d2b5;
+            --sepia-highlight: #e6d2b5;
+            --sepia-highlight-blue: #c4d4e0;
+            
+            --transition: all 0.3s ease;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: var(--day-bg);
+            color: var(--day-text);
+            transition: var(--transition);
+            line-height: 1.6;
+        }
+
+        body.night-mode {
+            background-color: var(--night-bg);
+            color: var(--night-text);
+        }
+
+        body.sepia-mode {
+            background-color: var(--sepia-bg);
+            color: var(--sepia-text);
+        }
+
+        .container {
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+
+        header {
+            background: linear-gradient(135deg, var(--day-primary) 0%, #2a4cb3 100%);
+            color: white;
+            padding: 15px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            transition: var(--transition);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .night-mode header {
+            background: linear-gradient(135deg, var(--night-primary) 0%, #4a43b3 100%);
+        }
+
+        .sepia-mode header {
+            background: linear-gradient(135deg, var(--sepia-primary) 0%, #8c6b46 100%);
+        }
+
+        .logo {
+            font-size: 1.5rem;
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+        }
+
+        .logo i {
+            margin-right: 10px;
+        }
+
+        .theme-switcher {
+            display: flex;
+            gap: 10px;
+        }
+
+        .theme-btn {
+            background: rgba(255, 255, 255, 0.2);
+            border: none;
+            border-radius: 50%;
+            width: 36px;
+            height: 36px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .theme-btn:hover {
+            background: rgba(255, 255, 255, 0.3);
+            transform: scale(1.1);
+        }
+
+        .telegram-btn {
+            background: #0088cc;
+            color: white;
+            border: none;
+            border-radius: 20px;
+            padding: 8px 15px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            cursor: pointer;
+            transition: var(--transition);
+            text-decoration: none;
+        }
+
+        .telegram-btn:hover {
+            background: #006da3;
+            transform: translateY(-2px);
+        }
+
+        .timer-container {
+            background-color: var(--day-secondary);
+            padding: 10px 20px;
+            text-align: center;
+            font-weight: bold;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+            transition: var(--transition);
+            position: sticky;
+            top: 80px;
+            z-index: 90;
+        }
+
+        .night-mode .timer-container {
+            background-color: var(--night-secondary);
+        }
+
+        .sepia-mode .timer-container {
+            background-color: var(--sepia-secondary);
+        }
+
+        .timer {
+            font-size: 1.2rem;
+            color: var(--day-primary);
+            transition: var(--transition);
+        }
+
+        .night-mode .timer {
+            color: var(--night-primary);
+        }
+
+        .sepia-mode .timer {
+            color: var(--sepia-primary);
+        }
+
+        .timer.warning {
+            color: #e74a3b;
+            animation: pulse 1s infinite;
+        }
+
+         pulse {
+            0% { opacity: 1; }
+            50% { opacity: 0.6; }
+            100% { opacity: 1; }
+        }
+
+        .content {
+            display: flex;
+            flex: 1;
+            overflow: hidden;
+        }
+
+        .passage-container {
+            flex: 1;
+            padding: 20px;
+            overflow-y: auto;
+            border-right: 1px solid #ddd;
+            transition: var(--transition);
+        }
+
+        .night-mode .passage-container {
+            border-color: #444;
+        }
+
+        .sepia-mode .passage-container {
+            border-color: #d6c9a9;
+        }
+
+        .passage {
+            max-width: 800px;
+            margin: 0 auto;
+            font-size: 1.1rem;
+        }
+
+        .passage h2 {
+            color: var(--day-primary);
+            margin-top: 0;
+            transition: var(--transition);
+        }
+
+        .night-mode .passage h2 {
+            color: var(--night-primary);
+        }
+
+        .sepia-mode .passage h2 {
+            color: var(--sepia-primary);
+        }
+
+        .passage p {
+            margin-bottom: 16px;
+        }
+
+        .highlight-yellow {
+            background-color: var(--day-highlight);
+            transition: var(--transition);
+        }
+
+        .night-mode .highlight-yellow {
+            background-color: var(--night-highlight);
+        }
+
+        .sepia-mode .highlight-yellow {
+            background-color: var(--sepia-highlight);
+        }
+
+        .highlight-blue {
+            background-color: var(--day-highlight-blue);
+            transition: var(--transition);
+        }
+
+        .night-mode .highlight-blue {
+            background-color: var(--night-highlight-blue);
+        }
+
+        .sepia-mode .highlight-blue {
+            background-color: var(--sepia-highlight-blue);
+        }
+
+        .questions-container {
+            flex: 1;
+            padding: 20px;
+            overflow-y: auto;
+            background-color: var(--day-secondary);
+            transition: var(--transition);
+            position: relative;
+        }
+
+        .night-mode .questions-container {
+            background-color: var(--night-secondary);
+        }
+
+        .sepia-mode .questions-container {
+            background-color: var(--sepia-secondary);
+        }
+
+        .questions {
+            max-width: 800px;
+            margin: 0 auto;
+            position: sticky;
+            top: 140px;
+            max-height: calc(100vh - 180px);
+            overflow-y: auto;
+        }
+
+        .question-section {
+            margin-bottom: 30px;
+        }
+
+        .question-section h3 {
+            color: var(--day-primary);
+            margin-top: 0;
+            transition: var(--transition);
+        }
+
+        .night-mode .question-section h3 {
+            color: var(--night-primary);
+        }
+
+        .sepia-mode .question-section h3 {
+            color: var(--sepia-primary);
+        }
+
+        .question {
+            margin-bottom: 15px;
+            padding: 15px;
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+            transition: var(--transition);
+        }
+
+        .night-mode .question {
+            background-color: #2d3748;
+        }
+
+        .sepia-mode .question {
+            background-color: #e9dfc7;
+        }
+
+        .question p {
+            margin-top: 0;
+            font-weight: 500;
+        }
+
+        .options {
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+        }
+
+        .option {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            cursor: pointer;
+            padding: 8px 12px;
+            border-radius: 6px;
+            background-color: var(--day-secondary);
+            transition: var(--transition);
+        }
+
+        .night-mode .option {
+            background-color: #374151;
+        }
+
+        .sepia-mode .option {
+            background-color: #d6c9a9;
+        }
+
+        .option:hover {
+            background-color: #dee2e6;
+        }
+
+        .night-mode .option:hover {
+            background-color: #4b5563;
+        }
+
+        .sepia-mode .option:hover {
+            background-color: #c9b992;
+        }
+
+        .option input {
+            margin: 0;
+            cursor: pointer;
+        }
+
+        .input-text {
+            width: 100%;
+            padding: 8px 12px;
+            border: 1px solid #ced4da;
+            border-radius: 6px;
+            font-family: inherit;
+            font-size: 1rem;
+            transition: var(--transition);
+        }
+
+        .night-mode .input-text {
+            background-color: #374151;
+            border-color: #4b5563;
+            color: var(--night-text);
+        }
+
+        .sepia-mode .input-text {
+            background-color: #e9dfc7;
+            border-color: #d6c9a9;
+            color: var(--sepia-text);
+        }
+
+        .input-text:focus {
+            outline: none;
+            border-color: var(--day-primary);
+            box-shadow: 0 0 0 3px rgba(78, 115, 223, 0.25);
+        }
+
+        .night-mode .input-text:focus {
+            border-color: var(--night-primary);
+            box-shadow: 0 0 0 3px rgba(108, 99, 255, 0.25);
+        }
+
+        .sepia-mode .input-text:focus {
+            border-color: var(--sepia-primary);
+            box-shadow: 0 0 0 3px rgba(166, 124, 82, 0.25);
+        }
+
+        .submit-btn {
+            display: block;
+            width: 100%;
+            padding: 12px;
+            background-color: var(--day-primary);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 1.1rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: var(--transition);
+            margin-top: 20px;
+        }
+
+        .submit-btn:hover {
+            background-color: #2e59d9;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .night-mode .submit-btn {
+            background-color: var(--night-primary);
+        }
+
+        .night-mode .submit-btn:hover {
+            background-color: #5a51d9;
+        }
+
+        .sepia-mode .submit-btn {
+            background-color: var(--sepia-primary);
+        }
+
+        .sepia-mode .submit-btn:hover {
+            background-color: #8c6b46;
+        }
+
+        .highlight-menu {
+            position: absolute;
+            background: white;
+            border-radius: 6px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.15);
+            display: flex;
+            padding: 5px;
+            z-index: 1000;
+            transition: opacity 0.2s;
+        }
+
+        .night-mode .highlight-menu {
+            background: #2d3748;
+        }
+
+        .sepia-mode .highlight-menu {
+            background: #e9dfc7;
+        }
+
+        .highlight-btn {
+            width: 30px;
+            height: 30px;
+            border-radius: 4px;
+            margin: 0 3px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            border: none;
+            transition: var(--transition);
+        }
+
+        .highlight-btn:hover {
+            transform: scale(1.1);
+        }
+
+        .highlight-yellow-btn {
+            background-color: var(--day-highlight);
+        }
+
+        .highlight-blue-btn {
+            background-color: var(--day-highlight-blue);
+        }
+
+        .highlight-clear-btn {
+            background-color: #f8f9fa;
+            color: #495057;
+        }
+
+        .night-mode .highlight-clear-btn {
+            background-color: #374151;
+            color: #e6e6e6;
+        }
+
+        .sepia-mode .highlight-clear-btn {
+            background-color: #d6c9a9;
+            color: #3e3e3e;
+        }
+
+        .result-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: rgba(0, 0, 0, 0.8);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 2000;
+            overflow-y: auto;
+            padding: 20px;
+        }
+
+        .result-content {
+            background-color: white;
+            border-radius: 12px;
+            padding: 30px;
+            max-width: 800px;
+            width: 100%;
+            max-height: 90vh;
+            overflow-y: auto;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            transition: var(--transition);
+        }
+
+        .night-mode .result-content {
+            background-color: #1a1a2e;
+        }
+
+        .sepia-mode .result-content {
+            background-color: #f5ecd7;
+        }
+
+        .result-header {
+            text-align: center;
+            margin-bottom: 25px;
+        }
+
+        .result-title {
+            color: var(--day-primary);
+            margin-top: 0;
+            transition: var(--transition);
+        }
+
+        .night-mode .result-title {
+            color: var(--night-primary);
+        }
+
+        .sepia-mode .result-title {
+            color: var(--sepia-primary);
+        }
+
+        .score {
+            font-size: 2.5rem;
+            font-weight: bold;
+            margin: 10px 0;
+            color: var(--day-primary);
+            transition: var(--transition);
+        }
+
+        .night-mode .score {
+            color: var(--night-primary);
+        }
+
+        .sepia-mode .score {
+            color: var(--sepia-primary);
+        }
+
+        .result-details {
+            margin-bottom: 20px;
+        }
+
+        .result-item {
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 10px;
+            background-color: #f8f9fa;
+            transition: var(--transition);
+        }
+
+        .night-mode .result-item {
+            background-color: #16213e;
+        }
+
+        .sepia-mode .result-item {
+            background-color: #e9dfc7;
+        }
+
+        .result-item.correct {
+            border-left: 4px solid #28a745;
+        }
+
+        .result-item.incorrect {
+            border-left: 4px solid #dc3545;
+        }
+
+        .result-question {
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+
+        .result-answer {
+            display: flex;
+            justify-content: space-between;
+            flex-wrap: wrap;
+        }
+
+        .result-reference {
+            font-size: 0.9rem;
+            color: #6c757d;
+            margin-top: 5px;
+            width: 100%;
+        }
+
+        .night-mode .result-reference {
+            color: #a0aec0;
+        }
+
+        .sepia-mode .result-reference {
+            color: #8c7b5d;
+        }
+
+        .result-actions {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin-top: 25px;
+        }
+
+        .result-btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: var(--transition);
+        }
+
+        .restart-btn {
+            background-color: var(--day-primary);
+            color: white;
+        }
+
+        .restart-btn:hover {
+            background-color: #2e59d9;
+        }
+
+        .night-mode .restart-btn {
+            background-color: var(--night-primary);
+        }
+
+        .night-mode .restart-btn:hover {
+            background-color: #5a51d9;
+        }
+
+        .sepia-mode .restart-btn {
+            background-color: var(--sepia-primary);
+        }
+
+        .sepia-mode .restart-btn:hover {
+            background-color: #8c6b46;
+        }
+
+        .close-btn {
+            background-color: #6c757d;
+            color: white;
+        }
+
+        .close-btn:hover {
+            background-color: #5a6268;
+        }
+
+         (max-width: 992px) {
+            .content {
+                flex-direction: column;
+            }
+            
+            .passage-container {
+                border-right: none;
+                border-bottom: 1px solid #ddd;
+                max-height: 40vh;
+            }
+            
+            .night-mode .passage-container {
+                border-color: #444;
+            }
+            
+            .sepia-mode .passage-container {
+                border-color: #d6c9a9;
+            }
+            
+            .questions {
+                position: relative;
+                top: 0;
+                max-height: none;
+            }
+        }
+
+         (max-width: 576px) {
+            header {
+                flex-direction: column;
+                gap: 15px;
+                text-align: center;
+            }
+            
+            .options {
+                flex-direction: column;
+                gap: 8px;
+            }
+            
+            .option {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body class="day-mode">
+    <div class="container">
+        <header>
+            <div class="logo">
+                <i class="fas fa-book-reader"></i>
+                <span>IELTS Reading Test</span>
+            </div>
+            <div class="theme-switcher">
+                <button class="theme-btn" id="day-mode" title="Day Mode">
+                    <i class="fas fa-sun"></i>
+                </button>
+                <button class="theme-btn" id="night-mode" title="Night Mode">
+                    <i class="fas fa-moon"></i>
+                </button>
+                <button class="theme-btn" id="sepia-mode" title="Sepia Mode">
+                    <i class="fas fa-seedling"></i>
+                </button>
+            </div>
+            
+        </header>
+
+        <div class="timer-container">
+            <div class="timer" id="timer">20:00</div>
+        </div>
+
+        <div class="content">
+            <div class="passage-container">
+                <div class="passage" id="passage">
+                    <h2>READING PASSAGE 2</h2>
+                    <h3>Ideal Homes</h3>
+                    <p><i>New ideas and some old ones</i></p>
+                    
+                    <p><strong>A</strong> The traditional kampung houses of Malaysia do not need air-conditioning. Built on stilts and with steep roofs, they have year-round ventilation. The raised structure ensures a cooling breeze comes up through the floorboards, while the high roof acts as a chimney to release hot air. The airtight, concrete boxes of modern city construction, in contrast, are heat traps, says Muhammad Peter Davis of University Putra Malaysia. He has calculated that typical modern Malaysian houses are 5°C hotter than the air outside. The builders of kampung houses "had no knowledge of modern science or engineering but they came up with the perfect design," says Davis.</p>
+                    
+                    <p><strong>B</strong> This story of ancient architectural sophistication and model insanity is repeated around the world. In the name of modernism, people have thrown away architecture designed to cope with the environment in which they live, and adopted house designs originating from cold, northern environments, where the idea is to keep heat in.</p>
+                    
+                    <p><strong>C</strong> Once, the aim of architectural modernists was to build structures that kept nature out and to replace it with air-conditioning. Now they are learning that they cannot do that effectively. Slowly, they are seeing the benefit of working with nature, rather than against it. In California, they probably use more power for air-conditioning than anywhere else on Earth. According to Arthur Rosenfeld from the University of California, what California needs is white paint. If Los Angeles painted its roofs white, planted trees to shade buildings, and chose lighter-colored paving, it could reduce city temperatures by 3°C and cut the annual air-conditioning bill by $170 million a year.</p>
+                    
+                    <p><strong>D</strong> Modern buildings are greedy in their use of energy. Much is made of the contribution of transportation to global warming, through its emissions of greenhouse gases. But, globally, transportation is responsible for just 22 per cent of carbon dioxide emissions. The building sector is responsible for 31 per cent, mostly the result of heating and air-conditioning systems. In developing countries, where demand for electricity for buildings is rising by 5 per cent a year, the biggest demand is for air-conditioning in modern buildings which are often designed to cope with every different climatic condition.</p>
+                    
+                    <p><strong>E</strong> Before air-conditioning, much of the Arab world kept cool through thoughtful building design. Many buildings were built according to the principles of the wind tower, a tall structure with vertical vents at the top that open in all directions to catch any passing breeze. Typically, these wind-tower buildings were made of local materials such as stone, mud brick, wood and palm-tree fronds. The buildings were inward-looking, which served the dual function of focusing attention on the courtyard, where family members spend time together, and protecting living areas from the rays of the sun.</p>
+                    
+                    <p><strong>F</strong> Throughout the Middle East today, wind towers are often little more than museum piece. But there are exceptions, Jordan has won awards for the architecture of a village on the shores of the Red Sea, which is designed to conserve energy. Made of rough, local stone in a traditional style, it combines the ventilation system of the wind towers for summer coolness with up-to-date heating and floor insulation to protect against the desert cold in winter.</p>
+                    
+                    <p><strong>G</strong> Traditional building materials, like traditional building designs, are being rediscovered by those looking for low-energy solutions to the current construction needs. Clay is one such material: As the Dutch housing contractor R van der Ley has argued in promoting a series of clay housing projects in developing countries, clay has many benefits over its industrialized version, brick. Clay blocks cost only half as much as ordinary bricks. Clay also generates work because people can find it, mould it, bake it and work it themselves. Two hundred clay bricks can be made with the fuel oil that makes just one ordinary brick. Moreover, clay is an excellent insulator against both cold and heat outside, and can easily be recycled.</p>
+                    
+                    <p><strong>H</strong> But although traditional methods and materials can be revived in appropriate settings, new green, low-energy technologies are needed, especially in urban environments. The thermal insulation of homes in cold countries is an example. In 1983, Sweden adopted a national standard, requiring the country's homes to lose no more than 60 kilowatt-hours per square meter over the year. To meet that standard, windows were double-glazed, and walls and roofs insulated. Every home became a fortress against the cold air outside. Unfortunately, the rest of Europe has not followed the lead.</p>
+                    
+                    <p><strong>I</strong> In the United States, Amory Lovins has promoted a range of low-energy technologies: 'superwindows', for example, which let in invisible light but can be 'tuned' to either allow in, or reflect away, infrared solar radiation - the stuff that heats. Buildings with large expanses of window (and big energy bills) can be designed to achieve optimum temperatures.</p>
+                    
+                    <p><strong>J</strong> As well as more efficient use of energy, the world also needs new sources of renewable power. Solar energy is being tried out in the developing world, in villages often far from electricity grids. The world's biggest solar power installation got underway in the Philippines, in 2001, where a project commenced to install solar panels for 400,000 people in 150 villages. Such projects are demonstrating that countries, whether developing or developed, no longer need huge national grids to supply electricity. Every home can do its own thing with the help of a solar panel and a storage battery.</p>
+                    
+                    <p><strong>K</strong> Houses, of course, are more than machines for living in. They are social and psychological spaces, too. Future houses may not look exactly like kampungs or wind towers or any other traditional models. But to work for us and for our environment, they will have to suit us as well as these traditional forms did.</p>
+                </div>
+            </div>
+
+            <div class="questions-container">
+                <div class="questions">
+                    <div class="question-section">
+                        <h3>Questions 14 - 18</h3>
+                        <p>Reading Passage 2 has eleven paragraphs, A-K.</p>
+                        <p>Which paragraph contains the following information?</p>
+                        <p>Write the correct letter, A-K, in boxes 14-18 on your answer sheet.</p>
+
+                        <div class="question" id="q14">
+                            <p>14. Reasons why a particular construction material is advantageous</p>
+                            <div class="options">
+                                <label class="option">
+                                    <input type="radio" name="q14" value="A"> A
+                                </label>
+                                <label class="option">
+                                    <input type="radio" name="q14" value="B"> B
+                                </label>
+                                <label class="option">
+                                    <input type="radio" name="q14" value="C"> C
+                                </label>
+                                <label class="option">
+                                    <input type="radio" name="q14" value="D"> D
+                                </label>
+                                <label class="option">
+                                    <input type="radio" name="q14" value="E"> E
+                                </label>
+                                <label class="option">
+                                    <input type="radio" name="q14" value="F"> F
+                                </label>
+                                <label class="option">
+                                    <input type="radio" name="q14" value="G"> G
+                                </label>
+                                <label class="option">
+                                    <input type="radio" name="q14" value="H"> H
+                                </label>
+                                <label class="option">
+                                    <input type="radio" name="q14" value="I"> I
+                                </label>
+                                <label class="option">
+                                    <input type="radio" name="q14" value="J"> J
+                                </label>
+                                <label class="option">
+                                    <input type="radio" name="q14" value="K"> K
+                                </label>
+                            </div>
+                        </div>
+
+                        <div class="question" id="q15">
+                            <p>15. An example of a construction design which benefits domestic interaction</p>
+                            <div class="options">
+                                <label class="option">
+                                    <input type="radio" name="q15" value="A"> A
+                                </label>
+                                <label class="option">
+                                    <input type="radio" name="q15" value="B"> B
+                                </label>
+                                <label class="option">
+                                    <input type="radio" name="q15" value="C"> C
+                                </label>
+                                <label class="option">
+                                    <input type="radio" name="q15" value="D"> D
+                                </label>
+                                <label class="option">
+                                    <input type="radio" name="q15" value="E"> E
+                                </label>
+                                <label class="option">
+                                    <input type="radio" name="q15" value="F"> F
+                                </label>
+                                <label class="option">
+                                    <input type="radio" name="q15" value="G"> G
+                                </label>
+                                <label class="option">
+                                    <input type="radio" name="q15" value="H"> H
+                                </label>
+                                <label class="option">
+                                    <input type="radio" name="q15" value="I"> I
+                                </label>
+                                <label class="option">
+                                    <input type="radio" name="q15" value="J"> J
+                                </label>
+                                <label class="option">
+                                    <input type="radio" name="q15" value="K"> K
+                                </label>
+                            </div>
+                        </div>
+
+                        <div class="question" id="q16">
+                            <p>16. A description of a house that is ventilated from below</p>
+                            <div class="options">
+                                <label class="option">
+                                    <input type="radio" name="q16" value="A"> A
+                                </label>
+                                <label class="option">
+                                    <input type="radio" name="q16" value="B"> B
+                                </label>
+                                <label class="option">
+                                    <input type="radio" name="q16" value="C"> C
+                                </label>
+                                <label class="option">
+                                    <input type="radio" name="q16" value="D"> D
+                                </label>
+                                <label class="option">
+                                    <input type="radio" name="q16" value="E"> E
+                                </label>
+                                <label class="option">
+                                    <input type="radio" name="q16" value="F"> F
+                                </label>
+                                <label class="option">
+                                    <input type="radio" name="q16" value="G"> G
+                                </label>
+                                <label class="option">
+                                    <input type="radio" name="q16" value="H"> H
+                                </label>
+                                <label class="option">
+                                    <input type="radio" name="q16" value="I"> I
+                                </label>
+                                <label class="option">
+                                    <input type="radio" name="q16" value="J"> J
+                                </label>
+                                <label class="option">
+                                    <input type="radio" name="q16" value="K"> K
+                                </label>
+                            </div>
+                        </div>
+
+                        <div class="question" id="q17">
+                            <p>17. An example of self-sufficient energy supply</p>
+                            <div class="options">
+                                <label class="option">
+                                    <input type="radio" name="q17" value="A"> A
+                                </label>
+                                <label class="option">
+                                    <input type="radio" name="q17" value="B"> B
+                                </label>
+                                <label class="option">
+                                    <input type="radio" name="q17" value="C"> C
+                                </label>
+                                <label class="option">
+                                    <input type="radio" name="q17" value="D"> D
+                                </label>
+                                <label class="option">
+                                    <input type="radio" name="q17" value="E"> E
+                                </label>
+                                <label class="option">
+                                    <input type="radio" name="q17" value="F"> F
+                                </label>
+                                <label class="option">
+                                    <input type="radio" name="q17" value="G"> G
+                                </label>
+                                <label class="option">
+                                    <input type="radio" name="q17" value="H"> H
+                                </label>
+                                <label class="option">
+                                    <input type="radio" name="q17" value="I"> I
+                                </label>
+                                <label class="option">
+                                    <input type="radio" name="q17" value="J"> J
+                                </label>
+                                <label class="option">
+                                    <input type="radio" name="q17" value="K"> K
+                                </label>
+                            </div>
+                        </div>
+
+                        <div class="question" id="q18">
+                            <p>18. Suggested methods of reducing temperatures in a city</p>
+                            <div class="options">
+                                <label class="option">
+                                    <input type="radio" name="q18" value="A"> A
+                                </label>
+                                <label class="option">
+                                    <input type="radio" name="q18" value="B"> B
+                                </label>
+                                <label class="option">
+                                    <input type="radio" name="q18" value="C"> C
+                                </label>
+                                <label class="option">
+                                    <input type="radio" name="q18" value="D"> D
+                                </label>
+                                <label class="option">
+                                    <input type="radio" name="q18" value="E"> E
+                                </label>
+                                <label class="option">
+                                    <input type="radio" name="q18" value="F"> F
+                                </label>
+                                <label class="option">
+                                    <input type="radio" name="q18" value="G"> G
+                                </label>
+                                <label class="option">
+                                    <input type="radio" name="q18" value="H"> H
+                                </label>
+                                <label class="option">
+                                    <input type="radio" name="q18" value="I"> I
+                                </label>
+                                <label class="option">
+                                    <input type="radio" name="q18" value="J"> J
+                                </label>
+                                <label class="option">
+                                    <input type="radio" name="q18" value="K"> K
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="question-section">
+                        <h3>Questions 19 - 22</h3>
+                        <p>Look at the following people (Questions 19-22) and the list of ideas below.</p>
+                        <p>Match each person with the correct idea, A-G</p>
+                        <p>Write the correct letter, A-G, in boxes 19-22 on your answer sheet.</p>
+
+                        <div class="question" id="q19">
+                            <p>19. Muhammad Peter Davis</p>
+                            <div class="options">
+                                <label class="option">
+                                    <input type="radio" name="q19" value="A"> A
+                                </label>
+                                <label class="option">
+                                    <input type="radio" name="q19" value="B"> B
+                                </label>
+                                <label class="option">
+                                    <input type="radio" name="q19" value="C"> C
+                                </label>
+                                <label class="option">
+                                    <input type="radio" name="q19" value="D"> D
+                                </label>
+                                <label class="option">
+                                    <input type="radio" name="q19" value="E"> E
+                                </label>
+                                <label class="option">
+                                    <input type="radio" name="q19" value="F"> F
+                                </label>
+                                <label class="option">
+                                    <input type="radio" name="q19" value="G"> G
+                                </label>
+                            </div>
+                        </div>
+
+                        <div class="question" id="q20">
+                            <p>20. Arthur Rosenfeld</p>
+                            <div class="options">
+                                <label class="option">
+                                    <input type="radio" name="q20" value="A"> A
+                                </label>
+                                <label class="option">
+                                    <input type="radio" name="q20" value="B"> B
+                                </label>
+                                <label class="option">
+                                    <input type="radio" name="q20" value="C"> C
+                                </label>
+                                <label class="option">
+                                    <input type="radio" name="q20" value="D"> D
+                                </label>
+                                <label class="option">
+                                    <input type="radio" name="q20" value="E"> E
+                                </label>
+                                <label class="option">
+                                    <input type="radio" name="q20" value="F"> F
+                                </label>
+                                <label class="option">
+                                    <input type="radio" name="q20" value="G"> G
+                                </label>
+                            </div>
+                        </div>
+
+                        <div class="question" id="q21">
+                            <p>21. R van der Ley</p>
+                            <div class="options">
+                                <label class="option">
+                                    <input type="radio" name="q21" value="A"> A
+                                </label>
+                                <label class="option">
+                                    <input type="radio" name="q21" value="B"> B
+                                </label>
+                                <label class="option">
+                                    <input type="radio" name="q21" value="C"> C
+                                </label>
+                                <label class="option">
+                                    <input type="radio" name="q21" value="D"> D
+                                </label>
+                                <label class="option">
+                                    <input type="radio" name="q21" value="E"> E
+                                </label>
+                                <label class="option">
+                                    <input type="radio" name="q21" value="F"> F
+                                </label>
+                                <label class="option">
+                                    <input type="radio" name="q21" value="G"> G
+                                </label>
+                            </div>
+                        </div>
+
+                        <div class="question" id="q22">
+                            <p>22. Amory Lovins</p>
+                            <div class="options">
+                                <label class="option">
+                                    <input type="radio" name="q22" value="A"> A
+                                </label>
+                                <label class="option">
+                                    <input type="radio" name="q22" value="B"> B
+                                </label>
+                                <label class="option">
+                                    <input type="radio" name="q22" value="C"> C
+                                </label>
+                                <label class="option">
+                                    <input type="radio" name="q22" value="D"> D
+                                </label>
+                                <label class="option">
+                                    <input type="radio" name="q22" value="E"> E
+                                </label>
+                                <label class="option">
+                                    <input type="radio" name="q22" value="F"> F
+                                </label>
+                                <label class="option">
+                                    <input type="radio" name="q22" value="G"> G
+                                </label>
+                            </div>
+                        </div>
+
+                        <div class="question" id="list-of-ideas">
+                            <p><strong>List of ideas</strong></p>
+                            <p>A The choice of a certain construction material can have a socio-economic impact</p>
+                            <p>B Throughout the world, people are rejecting traditional housing design in order to appear modern.</p>
+                            <p>C Houses should not only meet people's physical needs but also their social and psychological needs.</p>
+                            <p>D Traditional knowledge can be superior to modern knowledge.</p>
+                            <p>E There is an innovation that can save costs on both air-conditioning and heating.</p>
+                            <p>F Solar energy can meet the energy needs of people living in villages in developing countries.</p>
+                            <p>G There is a very simple solution that can save on the cost of air-conditioning</p>
+                        </div>
+                    </div>
+
+                    <div class="question-section">
+                        <h3>Questions 23 - 26</h3>
+                        <p>Do the following statements agree with the information given in Reading Passage 2?</p>
+                        <p>In boxes 23-26 on your answer sheet, write</p>
+                        <p><strong>TRUE</strong> - if the statement agrees with the information<br>
+                        <strong>FALSE</strong> - if the statement contradicts the information<br>
+                        <strong>NOT GIVEN</strong> - if there is no information on this</p>
+
+                        <div class="question" id="q23">
+                            <p>23. The air temperature in modern Malaysian houses is lower than the air temperature outside.</p>
+                            <div class="options">
+                                <label class="option">
+                                    <input type="radio" name="q23" value="TRUE"> TRUE
+                                </label>
+                                <label class="option">
+                                    <input type="radio" name="q23" value="FALSE"> FALSE
+                                </label>
+                                <label class="option">
+                                    <input type="radio" name="q23" value="NOT GIVEN"> NOT GIVEN
+                                </label>
+                            </div>
+                        </div>
+
+                        <div class="question" id="q24">
+                            <p>24. The construction industry is more to blame than transport for global warming.</p>
+                            <div class="options">
+                                <label class="option">
+                                    <input type="radio" name="q24" value="TRUE"> TRUE
+                                </label>
+                                <label class="option">
+                                    <input type="radio" name="q24" value="FALSE"> FALSE
+                                </label>
+                                <label class="option">
+                                    <input type="radio" name="q24" value="NOT GIVEN"> NOT GIVEN
+                                </label>
+                            </div>
+                        </div>
+
+                        <div class="question" id="q25">
+                            <p>25. The use of wind towers for cooling is widespread in the Middle East today.</p>
+                            <div class="options">
+                                <label class="option">
+                                    <input type="radio" name="q25" value="TRUE"> TRUE
+                                </label>
+                                <label class="option">
+                                    <input type="radio" name="q25" value="FALSE"> FALSE
+                                </label>
+                                <label class="option">
+                                    <input type="radio" name="q25" value="NOT GIVEN"> NOT GIVEN
+                                </label>
+                            </div>
+                        </div>
+
+                        <div class="question" id="q26">
+                            <p>26. The 'super-windows' promoted by Amory Lovins can be installed at low cost.</p>
+                            <div class="options">
+                                <label class="option">
+                                    <input type="radio" name="q26" value="TRUE"> TRUE
+                                </label>
+                                <label class="option">
+                                    <input type="radio" name="q26" value="FALSE"> FALSE
+                                </label>
+                                <label class="option">
+                                    <input type="radio" name="q26" value="NOT GIVEN"> NOT GIVEN
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <button class="submit-btn" id="submit-btn">Submit Answers</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="result-overlay" id="result-overlay">
+        <div class="result-content">
+            <div class="result-header">
+                <h2 class="result-title">Test Results</h2>
+                <div class="score" id="score">0/13</div>
+                <p id="result-message">Check your answers below</p>
+            </div>
+            
+            <div class="result-details" id="result-details">
+                <!-- Results will be inserted here -->
+            </div>
+            
+            <div class="result-actions">
+                <button class="result-btn restart-btn" id="restart-btn">Restart Test</button>
+                <button class="result-btn close-btn" id="close-btn">Close</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Theme switching
+            const body = document.body;
+            const dayModeBtn = document.getElementById('day-mode');
+            const nightModeBtn = document.getElementById('night-mode');
+            const sepiaModeBtn = document.getElementById('sepia-mode');
+            
+            dayModeBtn.addEventListener('click', () => {
+                body.className = 'day-mode';
+            });
+            
+            nightModeBtn.addEventListener('click', () => {
+                body.className = 'night-mode';
+            });
+            
+            sepiaModeBtn.addEventListener('click', () => {
+                body.className = 'sepia-mode';
+            });
+            
+            // Timer functionality
+            const timerElement = document.getElementById('timer');
+            let timeLeft = 20 * 60; // 20 minutes in seconds
+            let timerInterval;
+            
+            function startTimer() {
+                clearInterval(timerInterval);
+                timerInterval = setInterval(updateTimer, 1000);
+            }
+            
+            function updateTimer() {
+                if (timeLeft <= 0) {
+                    clearInterval(timerInterval);
+                    submitAnswers();
+                    return;
+                }
+                
+                timeLeft--;
+                
+                const minutes = Math.floor(timeLeft / 60);
+                const seconds = timeLeft % 60;
+                
+                timerElement.textContent = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+                
+                if (timeLeft === 5 * 60) {
+                    timerElement.classList.add('warning');
+                }
+            }
+            
+            startTimer();
+            
+            // Text highlighting functionality
+            const passage = document.getElementById('passage');
+            let highlightMenu = null;
+            let currentSelection = null;
+            
+            passage.addEventListener('mouseup', function(e) {
+                const selection = window.getSelection();
+                if (!selection.toString().trim()) return;
+                
+                // Remove any existing highlight menu
+                if (highlightMenu) {
+                    highlightMenu.remove();
+                    highlightMenu = null;
+                }
+                
+                currentSelection = selection;
+                
+                // Create and position the highlight menu
+                highlightMenu = document.createElement('div');
+                highlightMenu.className = 'highlight-menu';
+                
+                const yellowBtn = document.createElement('button');
+                yellowBtn.className = 'highlight-btn highlight-yellow-btn';
+                yellowBtn.innerHTML = '<i class="fas fa-highlighter"></i>';
+                yellowBtn.title = 'Yellow Highlight';
+                yellowBtn.addEventListener('click', () => highlightText('yellow'));
+                
+                const blueBtn = document.createElement('button');
+                blueBtn.className = 'highlight-btn highlight-blue-btn';
+                blueBtn.innerHTML = '<i class="fas fa-highlighter"></i>';
+                blueBtn.title = 'Blue Highlight';
+                blueBtn.addEventListener('click', () => highlightText('blue'));
+                
+                const clearBtn = document.createElement('button');
+                clearBtn.className = 'highlight-btn highlight-clear-btn';
+                clearBtn.innerHTML = '<i class="fas fa-eraser"></i>';
+                clearBtn.title = 'Clear Highlight';
+                clearBtn.addEventListener('click', clearHighlight);
+                
+                highlightMenu.appendChild(yellowBtn);
+                highlightMenu.appendChild(blueBtn);
+                highlightMenu.appendChild(clearBtn);
+                
+                document.body.appendChild(highlightMenu);
+                
+                // Position the menu near the selection
+                const range = selection.getRangeAt(0);
+                const rect = range.getBoundingClientRect();
+                
+                highlightMenu.style.top = `${rect.bottom + window.scrollY + 5}px`;
+                highlightMenu.style.left = `${rect.left + window.scrollX}px`;
+            });
+            
+            document.addEventListener('mousedown', function(e) {
+                if (highlightMenu && !highlightMenu.contains(e.target)) {
+                    highlightMenu.remove();
+                    highlightMenu = null;
+                    window.getSelection().removeAllRanges();
+                }
+            });
+            
+            function highlightText(color) {
+                if (!currentSelection || currentSelection.toString().trim() === '') return;
+                
+                const range = currentSelection.getRangeAt(0);
+                const selectedText = range.toString();
+                
+                // Create a span with the appropriate highlight class
+                const span = document.createElement('span');
+                span.textContent = selectedText;
+                
+                if (color === 'yellow') {
+                    span.className = 'highlight-yellow';
+                } else if (color === 'blue') {
+                    span.className = 'highlight-blue';
+                }
+                
+                // Replace the selected text with the highlighted span
+                range.deleteContents();
+                range.insertNode(span);
+                
+                // Remove the menu and clear selection
+                highlightMenu.remove();
+                highlightMenu = null;
+                window.getSelection().removeAllRanges();
+            }
+            
+            function clearHighlight() {
+                if (!currentSelection || currentSelection.toString().trim() === '') return;
+                
+                const range = currentSelection.getRangeAt(0);
+                const selectedText = range.toString();
+                
+                // Create a text node to replace the highlighted text
+                const textNode = document.createTextNode(selectedText);
+                
+                // Replace the selected text with the plain text node
+                range.deleteContents();
+                range.insertNode(textNode);
+                
+                // Remove the menu and clear selection
+                highlightMenu.remove();
+                highlightMenu = null;
+                window.getSelection().removeAllRanges();
+            }
+            
+            // Answer submission and scoring
+            const submitBtn = document.getElementById('submit-btn');
+            const resultOverlay = document.getElementById('result-overlay');
+            const scoreElement = document.getElementById('score');
+            const resultDetails = document.getElementById('result-details');
+            const restartBtn = document.getElementById('restart-btn');
+            const closeBtn = document.getElementById('close-btn');
+            
+            // Correct answers
+            const correctAnswers = {
+                q14: 'G',
+                q15: 'E',
+                q16: 'A',
+                q17: 'J',
+                q18: 'C',
+                q19: 'D',
+                q20: 'G',
+                q21: 'A',
+                q22: 'E',
+                q23: 'FALSE',
+                q24: 'TRUE',
+                q25: 'FALSE',
+                q26: 'NOT GIVEN'
+            };
+            
+            // Answer references
+            const answerReferences = {
+                q14: "Paragraph G: 'Clay blocks cost only half as much as ordinary bricks. Clay also generates work... Moreover, clay is an excellent insulator...'",
+                q15: "Paragraph E: 'The buildings were inward-looking, which served the dual function of focusing attention on the courtyard, where family members spend time together...'",
+                q16: "Paragraph A: 'The raised structure ensures a cooling breeze comes up through the floorboards...'",
+                q17: "Paragraph J: 'Every home can do its own thing with the help of a solar panel and a storage battery.'",
+                q18: "Paragraph C: 'If Los Angeles painted its roofs white, planted trees to shade buildings, and chose lighter-colored paving...'",
+                q19: "Paragraph A: 'The builders of kampung houses had no knowledge of modern science or engineering but they came up with the perfect design,' says Davis. (Traditional knowledge can be superior to modern knowledge)",
+                q20: "Paragraph C: 'According to Arthur Rosenfeld from the University of California, what California needs is white paint.' (Simple solution for air-conditioning costs)",
+                q21: "Paragraph G: 'Clay also generates work because people can find it, mould it, bake it and work it themselves.' (Socio-economic impact)",
+                q22: "Paragraph I: 'superwindows... can be 'tuned' to either allow in, or reflect away, infrared solar radiation' (Innovation for both heating and cooling)",
+                q23: "Paragraph A: 'typical modern Malaysian houses are 5°C hotter than the air outside' (FALSE)",
+                q24: "Paragraph D: 'transportation is responsible for just 22 per cent of carbon dioxide emissions. The building sector is responsible for 31 per cent' (TRUE)",
+                q25: "Paragraph F: 'Throughout the Middle East today, wind towers are often little more than museum piece.' (FALSE)",
+                q26: "No information about the cost of superwindows is provided (NOT GIVEN)"
+            };
+            
+            submitBtn.addEventListener('click', submitAnswers);
+            
+            function submitAnswers() {
+                clearInterval(timerInterval);
+                
+                let score = 0;
+                let resultsHTML = '';
+                
+                // Check questions 14-18 (paragraph selection)
+                for (let i = 14; i <= 18; i++) {
+                    const questionId = `q${i}`;
+                    const selectedOption = document.querySelector(`input[name="${questionId}"]:checked`);
+                    const userAnswer = selectedOption ? selectedOption.value : 'Not answered';
+                    const isCorrect = userAnswer === correctAnswers[questionId];
+                    
+                    if (isCorrect) score++;
+                    
+                    resultsHTML += `
+                        <div class="result-item ${isCorrect ? 'correct' : 'incorrect'}">
+                            <div class="result-question">Question ${i}: ${document.querySelector(`#${questionId} p`).textContent}</div>
+                            <div class="result-answer">
+                                <span>Your answer: ${userAnswer}</span>
+                                <span>Correct answer: ${correctAnswers[questionId]}</span>
+                            </div>
+                            <div class="result-reference">${answerReferences[questionId]}</div>
+                        </div>
+                    `;
+                }
+                
+                // Check questions 19-22 (multiple choice)
+                for (let i = 19; i <= 22; i++) {
+                    const questionId = `q${i}`;
+                    const selectedOption = document.querySelector(`input[name="${questionId}"]:checked`);
+                    const userAnswer = selectedOption ? selectedOption.value : 'Not answered';
+                    const isCorrect = userAnswer === correctAnswers[questionId];
+                    
+                    if (isCorrect) score++;
+                    
+                    resultsHTML += `
+                        <div class="result-item ${isCorrect ? 'correct' : 'incorrect'}">
+                            <div class="result-question">Question ${i}: ${document.querySelector(`#${questionId} p`).textContent}</div>
+                            <div class="result-answer">
+                                <span>Your answer: ${userAnswer}</span>
+                                <span>Correct answer: ${correctAnswers[questionId]}</span>
+                            </div>
+                            <div class="result-reference">${answerReferences[questionId]}</div>
+                        </div>
+                    `;
+                }
+                
+                // Check questions 23-26 (True/False/Not Given)
+                for (let i = 23; i <= 26; i++) {
+                    const questionId = `q${i}`;
+                    const selectedOption = document.querySelector(`input[name="${questionId}"]:checked`);
+                    const userAnswer = selectedOption ? selectedOption.value : 'Not answered';
+                    const isCorrect = userAnswer === correctAnswers[questionId];
+                    
+                    if (isCorrect) score++;
+                    
+                    resultsHTML += `
+                        <div class="result-item ${isCorrect ? 'correct' : 'incorrect'}">
+                            <div class="result-question">Question ${i}: ${document.querySelector(`#${questionId} p`).textContent}</div>
+                            <div class="result-answer">
+                                <span>Your answer: ${userAnswer}</span>
+                                <span>Correct answer: ${correctAnswers[questionId]}</span>
+                            </div>
+                            <div class="result-reference">${answerReferences[questionId]}</div>
+                        </div>
+                    `;
+                }
+                
+                // Update score and results
+                scoreElement.textContent = `${score}/13`;
+                resultDetails.innerHTML = resultsHTML;
+                
+                // Show result message based on score
+                const resultMessage = document.getElementById('result-message');
+                if (score >= 11) {
+                    resultMessage.textContent = 'Excellent! You have a great understanding of the text.';
+                } else if (score >= 8) {
+                    resultMessage.textContent = 'Good job! You understood most of the text.';
+                } else if (score >= 5) {
+                    resultMessage.textContent = 'Not bad! Review the text and try again.';
+                } else {
+                    resultMessage.textContent = 'Keep practicing! Review the text and try again.';
+                }
+                
+                // Show the result overlay
+                resultOverlay.style.display = 'flex';
+            }
+            
+            restartBtn.addEventListener('click', function() {
+                // Reset the form
+                document.querySelectorAll('input[type="radio"]').forEach(input => {
+                    input.checked = false;
+                });
+                
+                // Remove highlights
+                document.querySelectorAll('.highlight-yellow, .highlight-blue').forEach(el => {
+                    const parent = el.parentNode;
+                    parent.replaceChild(document.createTextNode(el.textContent), el);
+                    parent.normalize();
+                });
+                
+                // Hide result overlay
+                resultOverlay.style.display = 'none';
+                
+                // Reset timer
+                timeLeft = 20 * 60;
+                timerElement.classList.remove('warning');
+                startTimer();
+            });
+            
+            closeBtn.addEventListener('click', function() {
+                resultOverlay.style.display = 'none';
+            });
+        });
+    </script>
+</body>
+</html>

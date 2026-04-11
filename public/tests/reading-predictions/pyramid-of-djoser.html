@@ -1,0 +1,428 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Reading Passage 2 — The Step Pyramid of Djoser</title>
+<style>
+  :root{--brand:#2563eb;--ink:#111827;--bg:#f7f7fb;--ok:#16a34a;--bad:#dc2626;--muted:#6b7280}
+  *{box-sizing:border-box}
+  body{margin:0;font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;background:var(--bg);color:#111}
+  .container{display:flex;gap:20px;max-width:1200px;margin:0 auto;padding:20px 20px 96px}
+  .card{background:#fff;border-radius:12px;box-shadow:0 4px 14px rgba(0,0,0,.08);padding:20px;overflow:auto;max-height:90vh}
+  .passage{flex:1}
+  .questions{flex:1}
+  h1{color:var(--ink);border-bottom:2px solid var(--brand);padding-bottom:10px;margin:0 0 14px}
+  .h2{color:var(--brand);margin:22px 0 10px}
+  h3{margin:8px 0 0}
+  .muted{color:var(--muted)}
+  .section{margin:20px 0;padding:15px;border-left:4px solid var(--brand);background:#f8f9fa}
+  .section-label{font-weight:bold;color:var(--brand);margin-bottom:10px}
+
+  /* Timer */
+  .timerWrap{position:fixed;top:16px;right:16px;display:flex;align-items:center;gap:8px;z-index:10}
+  .timer{background:var(--brand);color:#fff;padding:10px 14px;border-radius:8px;font-weight:700}
+  .tbtn{border:1px solid #e5e7eb;background:#fff;color:#111;padding:8px 10px;border-radius:8px;cursor:pointer}
+
+  /* Questions */
+  .qsection{margin:14px 0 6px}
+  .qblock{padding:14px;border:1px solid #e5e7eb;border-radius:12px;margin:12px 0}
+  .qhead{font-weight:600;margin-bottom:8px}
+  .options{margin-top:8px}
+  .options label{display:block;margin:6px 0}
+  select,input[type="text"]{padding:8px;border-radius:8px;border:1px solid #e5e7eb;width:100%;max-width:520px}
+  .submit{background:var(--brand);color:#fff;border:0;padding:12px 18px;border-radius:8px;cursor:pointer;font-size:16px;margin-top:16px}
+  .submit:hover{filter:brightness(.95)}
+
+  /* Results */
+  .results{display:none;margin-top:18px;background:#f8f9fa;border-radius:10px;padding:16px}
+  .results ul{list-style:none;padding:0;margin:8px 0 0}
+  .results li{margin:6px 0;padding:8px;border-radius:8px}
+  .results li.ok{background:#ecfdf5;color:#065f46}
+  .results li.bad{background:#fef2f2;color:#991b1b}
+  .results .meta{font-size:13px;color:var(--muted)}
+
+  /* Footer chips */
+  .footerNav{position:fixed;left:0;right:0;bottom:0;background:#fff;border-top:1px solid #e5e7eb;padding:10px 12px;display:flex;flex-wrap:wrap;gap:8px;align-items:center;z-index:9}
+  .chip{border:1px solid #d1d5db;background:#fff;color:#111;padding:6px 10px;border-radius:999px;cursor:pointer;font-size:14px}
+  .chip.answered{border-color:#9ca3af;background:#f3f4f6}
+
+  .notes-box{background:#f8f9fa;padding:20px;border-radius:8px;margin:15px 0;border-left:4px solid var(--brand)}
+</style>
+</head>
+<body>
+  <div class="timerWrap">
+    <div class="timer" id="timer">20:00</div>
+    <button class="tbtn" id="pauseBtn">⏸️ Pause</button>
+    <button class="tbtn" id="resumeBtn" disabled>▶️ Resume</button>
+  </div>
+
+  <div class="container">
+    <div class="card passage">
+      <h1>Reading Passage 2</h1>
+      <div class="muted">You should spend about 20 minutes on Questions 14–26, which are based on Reading Passage 2 below.</div>
+
+      <h2 style="color:var(--brand);margin:22px 0 10px">The Step Pyramid of Djoser</h2>
+
+      <div class="section">
+        <div class="section-label">A</div>
+        <p>The pyramids are the most famous monuments of ancient Egypt and still hold enormous interest for people in the present day. These grand, impressive tributes to the memory of the Egyptian kings have become linked with the country even though other cultures, such as the Chinese and Mayan, also built pyramids. The evolution of the pyramid form has been written and argued about for centuries. However, there is no question that, as far as Egypt is concerned, it began with one monument to one king designed by one brilliant architect: the Step Pyramid of Djoser at Saqqara.</p>
+      </div>
+
+      <div class="section">
+        <div class="section-label">B</div>
+        <p>Djoser was the first king of the Third Dynasty of Egypt and the first to build in stone. Prior to Djoser's reign, tombs were rectangular monuments made of dried clay brick, which covered underground passages where the deceased person was buried. For reasons which remain unclear, Djoser's main official, whose name was Imhotep, conceived of building a taller, more impressive tomb for his king by stacking stone slabs on top of one another, progressively making them smaller, to form the shape now known as the Step Pyramid. Djoser is thought to have reigned for 19 years, but some historians and scholars attribute a much longer time for his rule, owing to the number and size of the monuments he built.</p>
+      </div>
+
+      <div class="section">
+        <div class="section-label">C</div>
+        <p>The Step Pyramid has been thoroughly examined and investigated over the last century, and it is now known that the building process went through many different stages. Historian Marc Van de Mieroop comments on this, writing 'Much experimentation was involved, which is especially clear in the construction of the pyramid in the center of the complex. It had several plans ... before it became the first Step Pyramid in history, piling six levels on top of one another ... The weight of the enormous mass was a challenge for the builders, who placed the stones at an inward incline in order to prevent the monument breaking up.'</p>
+      </div>
+
+      <div class="section">
+        <div class="section-label">D</div>
+        <p>When finally completed, the Step Pyramid rose 62 meters high and was the tallest structure of its time. The complex in which it was built was the size of a city in ancient Egypt and included a temple, courtyards, shrines, and living quarters for the priests. It covered a region of 16 hectares and was surrounded by a wall 10.5 meters high. The wall had 13 false doors cut into it with only one true entrance cut into the south-east corner; the entire wall was then ringed by a trench 750 meters long and 40 meters wide. The false doors and the trench were incorporated into the complex to discourage unwanted visitors. If someone wished to enter, he or she would have needed to know in advance how to find the location of the true opening in the wall. Djoser was so proud of his accomplishment that he broke the tradition of having only his own name on the monument and had Imhotep's name carved on it as well.</p>
+      </div>
+
+      <div class="section">
+        <div class="section-label">E</div>
+        <p>The burial chamber of the tomb, where the king's body was laid to rest, was dug beneath the base of the pyramid, surrounded by a vast maze of long tunnels that had rooms off them to discourage robbers. One of the most mysterious discoveries found inside the pyramid was a large number of stone vessels. Over 40,000 of these vessels, of various forms and shapes, were discovered in storerooms off the pyramid's underground passages. They are inscribed with the names of rulers from the First and Second Dynasties of Egypt and made from different kinds of stone. There is no agreement among scholars and archaeologists on why the vessels were placed in the tomb of Djoser or what they were supposed to represent. The archaeologist Jean-Philippe Lauer, who excavated most of the pyramid and complex, believes they were originally stored and then given a 'proper burial' by Djoser in his pyramid to honor his predecessors. There are other historians, however, who claim the vessels were dumped into the shafts as yet another attempt to prevent grave robbers from getting to the king's burial chamber.</p>
+      </div>
+
+      <div class="section">
+        <div class="section-label">F</div>
+        <p>Unfortunately, all of the precautions and intricate design of the underground network did not prevent ancient robbers from finding a way in. Djoser's grave goods, and even his body, were stolen at some point in the past and all archaeologists found were a small number of his valuables overlooked by the thieves. There was enough left throughout the pyramid and its complex, however, to astonish and amaze the archaeologists who excavated it.</p>
+      </div>
+
+      <div class="section">
+        <div class="section-label">G</div>
+        <p>Egyptologist Miroslav Verner writes, 'Few monuments hold a place in human history as significant as that of the Step Pyramid in Saqqara ... It can be said without exaggeration that this pyramid complex constitutes a milestone in the evolution of monumental stone architecture in Egypt and in the world as a whole.' The Step Pyramid was a revolutionary advance in architecture and became the archetype which all the other great pyramid builders of Egypt would follow.</p>
+      </div>
+    </div>
+
+    <div class="card questions">
+      <h1>Questions</h1>
+      <div id="qroot"></div>
+      <button class="submit" id="submitBtn">Submit Answers</button>
+      <div class="results" id="results">
+        <h2>Your Results</h2>
+        <div id="score" class="meta"></div>
+        <ul id="answers"></ul>
+      </div>
+    </div>
+  </div>
+
+  <div class="footerNav" id="footerNav"></div>
+
+<script>
+const CONFIG = {
+  title: "READING PASSAGE 2 — The Step Pyramid of Djoser",
+  subtitle: "You should spend about 20 minutes on Questions 14–26.",
+  durationMinutes: 20,
+  showFooterNavigator: true,
+
+  sections: [
+    {
+      type: "headings",
+      heading: "Questions 14–20",
+      instructions: [
+        "Reading Passage 2 has seven paragraphs, A–G.",
+        "Choose the correct heading for each paragraph from the list of headings below.",
+        "Write the correct number, i–ix, in boxes 14–20 on your answer sheet."
+      ],
+      headingsList: {
+        i: "The areas and artefacts within the pyramid itself",
+        ii: "A difficult task for those involved",
+        iii: "A king who saved his people",
+        iv: "A single certainty among other less definite facts",
+        v: "An overview of the external buildings and areas",
+        vi: "A pyramid design that others copied",
+        vii: "An idea for changing the design of burial structures",
+        viii: "An incredible experience despite the few remains",
+        ix: "The answers to some unexpected questions"
+      },
+      items: [
+        { id: 14, text: "Paragraph A", correct: "iv" },
+        { id: 15, text: "Paragraph B", correct: "vii" },
+        { id: 16, text: "Paragraph C", correct: "ii" },
+        { id: 17, text: "Paragraph D", correct: "v" },
+        { id: 18, text: "Paragraph E", correct: "ix" },
+        { id: 19, text: "Paragraph F", correct: "viii" },
+        { id: 20, text: "Paragraph G", correct: "vi" }
+      ]
+    },
+    {
+      type: "notes",
+      heading: "Questions 21–24",
+      instructions: [
+        "Complete the notes below.",
+        "Choose ONE WORD ONLY from the passage for each answer.",
+        "Write your answers in boxes 21–24 on your answer sheet."
+      ],
+      notesTitle: "The Step Pyramid of Djoser",
+      notesContent: "The complex that includes the Step Pyramid and its surroundings is considered to be as big as an Egyptian 21____ of the past. The area outside the pyramid included accommodation that was occupied by 22____, along with many other buildings and features.\n\nA wall ran around the outside of the complex and a number of false entrances were built into this. In addition, a long 23____ encircled the wall. As a result, any visitors who had not been invited were cleverly prevented from entering the pyramid grounds unless they knew the 24____ of the real entrance.",
+      items: [
+        { id: 21, correct: "city" },
+        { id: 22, correct: "priests" },
+        { id: 23, correct: "trench" },
+        { id: 24, correct: "location" }
+      ]
+    },
+    {
+      type: "multichoice",
+      heading: "Questions 25 and 26",
+      instructions: [
+        "Choose TWO letters, A–E.",
+        "Write the correct letters in boxes 25 and 26 on your answer sheet.",
+        "Which TWO of the following points does the writer make about King Djoser?"
+      ],
+      options: {
+        A: "Initially he had to be persuaded to build in stone rather than clay.",
+        B: "There is disagreement concerning the length of his reign.",
+        C: "He failed to appreciate Imhotep's part in the design of the Step Pyramid.",
+        D: "A few of his possessions were still in his tomb when archaeologists found it.",
+        E: "He criticised the design and construction of other pyramids in Egypt."
+      },
+      items: [
+        { id: 25, correct: "B" },
+        { id: 26, correct: "D" }
+      ]
+    }
+  ]
+};
+
+// Render functions
+const qroot = document.getElementById('qroot');
+const navIds = [];
+const answersMap = {};
+
+function sectionHeader(t){ 
+  const h=document.createElement('h2'); 
+  h.className='qsection'; 
+  h.textContent=t; 
+  return h; 
+}
+
+function renderHeadings(sec){
+  qroot.appendChild(sectionHeader(sec.heading));
+  (sec.instructions||[]).forEach(tx=>{ 
+    const p=document.createElement('p'); 
+    p.className='muted'; 
+    p.textContent=tx; 
+    qroot.appendChild(p); 
+  });
+
+  const headingsDiv = document.createElement('div');
+  headingsDiv.className = 'qblock';
+  headingsDiv.innerHTML = `
+    <div class="qhead"><strong>List of Headings</strong></div>
+    <div style="background:#f8f9fa;padding:15px;border-radius:8px;margin:10px 0;">
+      ${Object.entries(sec.headingsList).map(([k,v])=>`<div style="margin:5px 0;"><strong>${k}</strong> ${v}</div>`).join('')}
+    </div>
+  `;
+  qroot.appendChild(headingsDiv);
+  
+  sec.items.forEach(it=>{
+    const b=document.createElement('div'); 
+    b.className='qblock'; 
+    b.id=`anchor-${it.id}`;
+    const opts=Object.keys(sec.headingsList).map(k=>`<option value="${k}">${k}</option>`).join('');
+    b.innerHTML=`<div class="qhead"><strong>${it.id}.</strong> ${it.text}</div>
+      <div class="options">
+        <select id="q${it.id}" name="q${it.id}">
+          <option value="">Choose heading...</option>
+          ${opts}
+        </select>
+      </div>`;
+    qroot.appendChild(b); 
+    navIds.push(it.id); 
+    answersMap[it.id]=it.correct||'';
+  });
+}
+
+function renderNotes(sec){
+  qroot.appendChild(sectionHeader(sec.heading));
+  (sec.instructions||[]).forEach(tx=>{ 
+    const p=document.createElement('p'); 
+    p.className='muted'; 
+    p.textContent=tx; 
+    qroot.appendChild(p); 
+  });
+
+  const notesDiv = document.createElement('div');
+  notesDiv.className = 'notes-box';
+  notesDiv.innerHTML = `
+    <div class="qhead"><strong>${sec.notesTitle}</strong></div>
+    <div style="white-space: pre-line; line-height: 1.6; margin-top: 15px;">
+      ${sec.notesContent}
+    </div>
+  `;
+  qroot.appendChild(notesDiv);
+  
+  sec.items.forEach(it=>{
+    navIds.push(it.id); 
+    answersMap[it.id]=it.correct||'';
+  });
+}
+
+function renderMultiChoice(sec){
+  qroot.appendChild(sectionHeader(sec.heading));
+  (sec.instructions||[]).forEach(tx=>{ 
+    const p=document.createElement('p'); 
+    p.className='muted'; 
+    p.textContent=tx; 
+    qroot.appendChild(p); 
+  });
+
+  if(sec.options) {
+    const optionsDiv = document.createElement('div');
+    optionsDiv.className = 'qblock';
+    optionsDiv.innerHTML = `
+      <div class="qhead"><strong>Options:</strong></div>
+      <div style="margin-top:10px;">
+        ${Object.entries(sec.options).map(([k,v])=>`<div style="margin:8px 0;"><strong>${k}</strong> ${v}</div>`).join('')}
+      </div>
+    `;
+    qroot.appendChild(optionsDiv);
+  }
+  
+  sec.items.forEach(it=>{
+    navIds.push(it.id); 
+    answersMap[it.id]=it.correct||'';
+  });
+}
+
+// Build UI
+CONFIG.sections.forEach(sec=>{
+  if (sec.type==='headings') renderHeadings(sec);
+  if (sec.type==='notes') renderNotes(sec);
+  if (sec.type==='multichoice') renderMultiChoice(sec);
+});
+
+// Footer navigation
+const footerNav=document.getElementById('footerNav');
+if(CONFIG.showFooterNavigator){
+  footerNav.innerHTML='<strong class="muted">Questions:</strong>';
+  [...new Set(navIds)].sort((a,b)=>a-b).forEach(id=>{
+    const chip=document.createElement('button'); 
+    chip.className='chip'; 
+    chip.id=`chip-${id}`; 
+    chip.textContent=id;
+    chip.addEventListener('click',()=>{ 
+      const anchor = document.getElementById(`anchor-${id}`);
+      if(anchor) {
+        anchor.scrollIntoView({behavior:'smooth',block:'center'}); 
+      }
+    });
+    footerNav.appendChild(chip);
+  });
+}
+
+function markChipAnswered(id, answered){
+  const chip=document.getElementById(`chip-${id}`); 
+  if(chip) chip.classList.toggle('answered', !!answered);
+}
+
+document.addEventListener('change',(e)=>{
+  const m=String(e.target.name||e.target.id||'').match(/q(\d+)/);
+  const id=m?+m[1]:null; 
+  if(!id) return;
+  const answered=(e.target.type==='radio') ? (!!document.querySelector(`input[name='q${id}']:checked`))
+                 : (e.target.value.trim().length>0);
+  markChipAnswered(id, answered);
+});
+
+// Timer functionality
+let timeLeft=CONFIG.durationMinutes*60;
+const timer=document.getElementById('timer');
+const pauseBtn=document.getElementById('pauseBtn');
+const resumeBtn=document.getElementById('resumeBtn');
+let paused=false, iv;
+
+const fmt=s=>`${String(Math.floor(s/60)).padStart(2,'0')}:${String(s%60).padStart(2,'0')}`;
+
+function startTick(){ 
+  if(iv) clearInterval(iv);
+  iv=setInterval(()=>{ 
+    if(paused) return; 
+    timer.textContent=fmt(timeLeft); 
+    if(timeLeft<=0){ 
+      clearInterval(iv); 
+      alert("Time's up! Submitting."); 
+      submit(); 
+    } 
+    timeLeft--; 
+  },1000);
+}
+
+timer.textContent=fmt(timeLeft); 
+startTick();
+
+pauseBtn.addEventListener('click',()=>{ 
+  paused=true; 
+  pauseBtn.disabled=true; 
+  resumeBtn.disabled=false; 
+});
+
+resumeBtn.addEventListener('click',()=>{ 
+  paused=false; 
+  pauseBtn.disabled=false; 
+  resumeBtn.disabled=true; 
+});
+
+// Submit functionality
+document.getElementById('submitBtn').addEventListener('click', submit);
+
+function submit(){
+  paused=true; 
+  pauseBtn.disabled=true; 
+  resumeBtn.disabled=false;
+  
+  let total=0, graded=0, correctCount=0;
+  const itemsOut=[];
+  const ids=Object.keys(answersMap);
+
+  ids.forEach(key=>{
+    const ans=answersMap[key];
+    const label=key;
+    let user='';
+    
+    const picked=document.querySelector(`input[name="q${key}"]:checked`);
+    if(picked){ 
+      user=picked.value; 
+    } else if(document.getElementById('q'+key)){ 
+      user=document.getElementById('q'+key).value; 
+    }
+    
+    const shown=user||'No answer';
+
+    if(String(ans).trim()===''){
+      total++; 
+      itemsOut.push({label, status:'— not graded —', user:shown, correct:'(no key)'}); 
+      return; 
+    }
+
+    total++; 
+    graded++;
+    const ok = shown.trim().toUpperCase() === String(ans).trim().toUpperCase();
+    if(ok) correctCount++;
+    itemsOut.push({
+      label, 
+      status: ok? '✓ Correct' : '✗ Incorrect', 
+      user:shown, 
+      correct:String(ans)
+    });
+  });
+
+  document.getElementById('score').innerHTML = `Graded ${graded} of ${total} • Score: ${correctCount}/${graded}`;
+  document.getElementById('answers').innerHTML = itemsOut.map(it=>
+    `<li class="${/Correct/.test(it.status)?'ok':'bad'}">Q${it.label}: ${it.status} — Your: <b>${it.user}</b> | Correct: <b>${it.correct}</b></li>`
+  ).join('');
+  
+  const r=document.getElementById('results'); 
+  r.style.display='block'; 
+  r.scrollIntoView({behavior:'smooth'});
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,1036 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>IELTS Reading Test - The Father of English Geology</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --day-bg: #f8f9fa;
+            --day-text: #212529;
+            --day-primary: #007bff;
+            --day-secondary: #6c757d;
+            --day-highlight-yellow: rgba(255, 255, 0, 0.3);
+            --day-highlight-blue: rgba(0, 123, 255, 0.3);
+            --day-panel: #ffffff;
+            --day-border: #dee2e6;
+            
+            --night-bg: #121212;
+            --night-text: #e0e0e0;
+            --night-primary: #bb86fc;
+            --night-secondary: #a0a0a0;
+            --night-highlight-yellow: rgba(255, 255, 0, 0.5);
+            --night-highlight-blue: rgba(30, 144, 255, 0.5);
+            --night-panel: #1e1e1e;
+            --night-border: #2d2d2d;
+            
+            --sepia-bg: #f4ecd8;
+            --sepia-text: #5a4a42;
+            --sepia-primary: #a67c52;
+            --sepia-secondary: #8a7866;
+            --sepia-highlight-yellow: rgba(204, 173, 108, 0.4);
+            --sepia-highlight-blue: rgba(118, 159, 203, 0.4);
+            --sepia-panel: #e6d9bc;
+            --sepia-border: #c4b5a3;
+            
+            --current-bg: var(--day-bg);
+            --current-text: var(--day-text);
+            --current-primary: var(--day-primary);
+            --current-secondary: var(--day-secondary);
+            --current-highlight-yellow: var(--day-highlight-yellow);
+            --current-highlight-blue: var(--day-highlight-blue);
+            --current-panel: var(--day-panel);
+            --current-border: var(--day-border);
+            
+            --transition-speed: 0.3s;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--current-bg);
+            color: var(--current-text);
+            margin: 0;
+            padding: 0;
+            transition: background-color var(--transition-speed), color var(--transition-speed);
+            line-height: 1.6;
+        }
+
+        .container {
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+
+        header {
+            background-color: var(--current-primary);
+            color: white;
+            padding: 1rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            position: relative;
+            z-index: 100;
+        }
+
+        .header-center {
+            position: absolute;
+            left: 50%;
+            transform: translateX(-50%);
+        }
+
+        .telegram-btn {
+            background-color: #0088cc;
+            color: white;
+            padding: 0.5rem 1rem;
+            border-radius: 50px;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-weight: bold;
+            transition: all 0.2s;
+        }
+
+        .telegram-btn:hover {
+            background-color: #006da3;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
+
+        .theme-selector {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .theme-btn {
+            background: var(--current-panel);
+            border: 1px solid var(--current-border);
+            border-radius: 50%;
+            width: 30px;
+            height: 30px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s;
+        }
+
+        .theme-btn:hover {
+            transform: scale(1.1);
+        }
+
+        .theme-day {
+            background: linear-gradient(135deg, #ffcc00 0%, #ffcc00 50%, #66ccff 50%, #66ccff 100%);
+        }
+
+        .theme-night {
+            background: linear-gradient(135deg, #2c3e50 0%, #2c3e50 50%, #34495e 50%, #34495e 100%);
+        }
+
+        .theme-sepia {
+            background: linear-gradient(135deg, #d2b48c 0%, #d2b48c 50%, #bc9a6a 50%, #bc9a6a 100%);
+        }
+
+        .timer {
+            background-color: var(--current-panel);
+            padding: 0.5rem 1rem;
+            border-radius: 50px;
+            font-weight: bold;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .timer.warning {
+            animation: pulse 1s infinite;
+            color: #dc3545;
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+
+        .content {
+            display: flex;
+            flex: 1;
+            overflow: hidden;
+        }
+
+        @media (max-width: 992px) {
+            .content {
+                flex-direction: column;
+            }
+        }
+
+        .passage-container {
+            flex: 1;
+            overflow-y: auto;
+            padding: 1.5rem;
+            border-right: 1px solid var(--current-border);
+        }
+
+        .questions-container {
+            flex: 1;
+            overflow-y: auto;
+            padding: 1.5rem;
+            background-color: var(--current-panel);
+        }
+
+        .passage {
+            max-width: 800px;
+            margin: 0 auto;
+            background-color: var(--current-panel);
+            padding: 2rem;
+            border-radius: 10px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+        }
+
+        .passage h2 {
+            color: var(--current-primary);
+            margin-top: 0;
+            border-bottom: 2px solid var(--current-primary);
+            padding-bottom: 0.5rem;
+        }
+
+        .passage p {
+            margin-bottom: 1rem;
+            position: relative;
+            z-index: 1;
+        }
+
+        .highlight-menu {
+            position: absolute;
+            background: var(--current-panel);
+            border: 1px solid var(--current-border);
+            border-radius: 6px;
+            padding: 0.5rem;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+            display: flex;
+            gap: 0.5rem;
+            z-index: 1000;
+        }
+
+        .highlight-btn {
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            border: none;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s;
+        }
+
+        .highlight-btn:hover {
+            transform: scale(1.1);
+        }
+
+        .yellow-btn {
+            background-color: #ffd700;
+        }
+
+        .blue-btn {
+            background-color: #87ceeb;
+        }
+
+        .clear-btn {
+            background-color: #f8f9fa;
+            border: 1px solid #dee2e6;
+        }
+
+        .highlight-yellow {
+            background-color: var(--current-highlight-yellow);
+            border-radius: 3px;
+            padding: 0 2px;
+        }
+
+        .highlight-blue {
+            background-color: var(--current-highlight-blue);
+            border-radius: 3px;
+            padding: 0 2px;
+        }
+
+        .question {
+            margin-bottom: 1.5rem;
+            padding: 1rem;
+            border-radius: 8px;
+            background-color: var(--current-bg);
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+        }
+
+        .question h3 {
+            margin-top: 0;
+            color: var(--current-primary);
+        }
+
+        .options {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+            margin-top: 0.5rem;
+        }
+
+        .option {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.5rem;
+            border-radius: 5px;
+            transition: background-color 0.2s;
+            cursor: pointer;
+        }
+
+        .option:hover {
+            background-color: rgba(0, 0, 0, 0.05);
+        }
+
+        .option input {
+            cursor: pointer;
+        }
+
+        .text-input {
+            padding: 0.5rem;
+            border: 1px solid var(--current-border);
+            border-radius: 4px;
+            background-color: var(--current-panel);
+            color: var(--current-text);
+            width: 200px;
+        }
+
+        .submit-btn {
+            background-color: var(--current-primary);
+            color: white;
+            border: none;
+            padding: 0.75rem 1.5rem;
+            border-radius: 50px;
+            font-size: 1.1rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: block;
+            margin: 2rem auto;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .submit-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+        }
+
+        .results {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: var(--current-bg);
+            color: var(--current-text);
+            padding: 2rem;
+            overflow-y: auto;
+            z-index: 1000;
+            display: none;
+        }
+
+        .results-content {
+            max-width: 800px;
+            margin: 0 auto;
+            background-color: var(--current-panel);
+            padding: 2rem;
+            border-radius: 10px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+        }
+
+        .results h2 {
+            color: var(--current-primary);
+            text-align: center;
+            margin-top: 0;
+        }
+
+        .score {
+            text-align: center;
+            font-size: 2rem;
+            margin: 1rem 0;
+            font-weight: bold;
+        }
+
+        .answer {
+            padding: 1rem;
+            margin: 1rem 0;
+            border-radius: 8px;
+            border-left: 4px solid var(--current-secondary);
+        }
+
+        .correct {
+            border-left-color: #28a745;
+            background-color: rgba(40, 167, 69, 0.1);
+        }
+
+        .incorrect {
+            border-left-color: #dc3545;
+            background-color: rgba(220, 53, 69, 0.1);
+        }
+
+        .close-results {
+            background-color: var(--current-primary);
+            color: white;
+            border: none;
+            padding: 0.75rem 1.5rem;
+            border-radius: 50px;
+            font-size: 1.1rem;
+            cursor: pointer;
+            display: block;
+            margin: 2rem auto 0;
+        }
+
+        .night-mode {
+            --current-bg: var(--night-bg);
+            --current-text: var(--night-text);
+            --current-primary: var(--night-primary);
+            --current-secondary: var(--night-secondary);
+            --current-highlight-yellow: var(--night-highlight-yellow);
+            --current-highlight-blue: var(--night-highlight-blue);
+            --current-panel: var(--night-panel);
+            --current-border: var(--night-border);
+        }
+
+        .sepia-mode {
+            --current-bg: var(--sepia-bg);
+            --current-text: var(--sepia-text);
+            --current-primary: var(--sepia-primary);
+            --current-secondary: var(--sepia-secondary);
+            --current-highlight-yellow: var(--sepia-highlight-yellow);
+            --current-highlight-blue: var(--sepia-highlight-blue);
+            --current-panel: var(--sepia-panel);
+            --current-border: var(--sepia-border);
+        }
+
+        .section-title {
+            font-weight: bold;
+            margin-top: 1.5rem;
+            margin-bottom: 0.5rem;
+            color: var(--current-primary);
+        }
+
+        .question-palette {
+            position: sticky;
+            top: 1rem;
+            background-color: var(--current-panel);
+            padding: 1rem;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            margin-bottom: 1.5rem;
+        }
+
+        .question-palette h3 {
+            margin-top: 0;
+            color: var(--current-primary);
+            text-align: center;
+            border-bottom: 1px solid var(--current-border);
+            padding-bottom: 0.5rem;
+        }
+
+        .question-buttons {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+            justify-content: center;
+            margin-top: 1rem;
+        }
+
+        .question-btn {
+            width: 35px;
+            height: 35px;
+            border-radius: 50%;
+            border: 1px solid var(--current-border);
+            background-color: var(--current-bg);
+            color: var(--current-text);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .question-btn.answered {
+            background-color: #28a745;
+            color: white;
+            border-color: #28a745;
+        }
+
+        .question-btn.current {
+            border: 2px solid var(--current-primary);
+            transform: scale(1.1);
+        }
+
+        .question-btn:hover {
+            transform: scale(1.1);
+        }
+
+        .true-false-options {
+            display: flex;
+            gap: 1rem;
+            margin-top: 0.5rem;
+        }
+
+        .true-false-option {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <div class="theme-selector">
+                <button class="theme-btn theme-day" title="Day Mode" onclick="setTheme('day')"><i class="fas fa-sun"></i></button>
+                <button class="theme-btn theme-night" title="Night Mode" onclick="setTheme('night')"><i class="fas fa-moon"></i></button>
+                <button class="theme-btn theme-sepia" title="Sepia Mode" onclick="setTheme('sepia')"><i class="fas fa-book"></i></button>
+            </div>
+            
+            <div class="header-center">
+                
+            </div>
+            
+            <div class="timer" id="timer">
+                <i class="fas fa-clock"></i> <span id="time">20:00</span>
+            </div>
+        </header>
+        
+        <div class="content">
+            <div class="passage-container">
+                <div class="passage" id="passage">
+                    <h2>The Father of English Geology</h2>
+                    
+                    <p>William Smith, 1769–1839, has been called the 'Father of English Geology'. His pioneering map of 1815, depicting the geology of England, Wales and part of Scotland, helped to shape the economic and scientific development of Britain, just as the country was experiencing the Industrial Revolution.</p>
+                    
+                    <p>William Smith was born in rural Oxfordshire in 1769. The son of the village blacksmith, Smith was the eldest of five children. After elementary education at the village school, where he developed a liking for geometry and drawing, he decided to teach himself the skills of surveying, possibly because there were an increasing number of openings for that profession. At the age of 18 he was employed by Edward Webb, a surveyor in a nearby town, and subsequently, in 1791, he set up in business on his own.</p>
+                    
+                    <p>As a boy, Smith had developed an interest in the exposures of rock and the fossils which were to be found locally. As an adult, his surveys of land that would be suitable for building canals, and for sources of building stone and coal in other parts of England, led to a great increase in his knowledge and awareness of various geological features.</p>
+                    
+                    <p>As he travelled, he found the strata* that he was familiar with in the south of England were repeated in other areas, with some outcrops – the rocks emerging above ground – stretching right across the country. Coal miners were already aware of the occurrences of regular successions of workable coal seams. But on a larger scale, Smith began to recognise that sedimentary rocks could be identified by the fossils they contained, and that these rocks were always arranged in the same order. Smith's discovery that beds of rocks can be distinguished by the fossils found in them was a concept virtually unrecognised by geologists of that period.</p>
+                    
+                    <p>Working on this principle, Smith was able to draw up a table of successive strata which could be applied in any other locality – an early version of the geological column.</p>
+                    
+                    <p>By 1799, Smith was using both his skills as a surveyor and the knowledge gained from his observations in the field to draw up a geological map. This first map was circular in form, covered the area around the city of Bath, and was exhibited at the Bath Agricultural Society. At the same time, Smith continued to plan the publication of a treatise describing his discoveries, but financial support proved difficult to find. In 1801, Smith produced a small geological map of England and Wales which illustrated the outcrops of seven geological formations.</p>
+                    
+                    <p>Other maps were produced for exhibition at various meetings, but it was not until 1815 that, with input from the enterprising map publisher John Cary, Smith's first major map actually appeared. It was called 'A delineation of the Strata of England and Wales with part of Scotland; exhibiting the Collieries and Mines, the Marshes and Fen Lands originally overflowed by the Sea, and the varieties of soil according to the variations in the substrata, illustrated by the most descriptive names'.</p>
+                    
+                    <p>Based on Cary's new topographical map at the scale of five miles to the inch, Smith's map showed the outcrops of some twenty formations. Other publications on stratigraphy followed, including his major mapping publication 'Geological Atlas', comprising maps of 21 counties. Published between 1819 and 1824, these maps represent a first attempt at systematic sheet mapping of England and Wales.</p>
+                    
+                    <p>Despite the importance of his ideas and publications, Smith continued to find recognition elusive and it was not until 1831, when the Geological Society awarded him the first Wollaston Medal, that the importance of his achievements was finally acknowledged. In his citation, the geologist Adam Sedgwick called Smith the 'Founder of English Geology'.</p>
+                    
+                    <p>From time to time Smith's expertise continued to be drawn upon for major projects. In 1838 he was commissioned to accompany Henry De la Beche and Sir Charles Barry on a tour of the principal stone quarries to recommend the stone to be used in the rebuilding of the Houses of Parliament, which had been destroyed by fire in 1835. The practical nature of the commission provides a link between Smith's work and that of De la Beche and his newly founded Geological Survey.</p>
+                    
+                    <p>The main focus of Smith's work was to apply his observations and ideas to the everyday needs of the canal builders, quarry- and mine-owners, landowners and agriculturists who were underpinning the Industrial Revolution. His understanding of geology enabled him to predict where coal or different types of stone could be found, which was very useful for mining companies. He talked at meetings about geology and its valuable contribution to the national economy.</p>
+                    
+                    <p>The methods involved in map production have developed and the ways in which people access maps have altered radically since Smith's time. However, his conviction that geological mapping is of vital importance at many levels and in many areas of the nation's society, science, and industry is as true today as it was two centuries ago, when he conceived his original geological map. It is as vital for today's industries to be provided with accurate geological map data as it was in Smith's time.</p>
+                    
+                    <p>* Strata: layers of rock in the ground</p>
+                </div>
+            </div>
+            
+            <div class="questions-container">
+                <div class="question-palette">
+                    <h3>Question Palette</h3>
+                    <div class="timer">
+                        <i class="fas fa-clock"></i> <span id="palette-time">20:00</span>
+                    </div>
+                    <div class="question-buttons">
+                        <div class="question-btn" data-question="1">1</div>
+                        <div class="question-btn" data-question="2">2</div>
+                        <div class="question-btn" data-question="3">3</div>
+                        <div class="question-btn" data-question="4">4</div>
+                        <div class="question-btn" data-question="5">5</div>
+                        <div class="question-btn" data-question="6">6</div>
+                        <div class="question-btn" data-question="7">7</div>
+                        <div class="question-btn" data-question="8">8</div>
+                        <div class="question-btn" data-question="9">9</div>
+                        <div class="question-btn" data-question="10">10</div>
+                        <div class="question-btn" data-question="11">11</div>
+                        <div class="question-btn" data-question="12">12</div>
+                        <div class="question-btn" data-question="13">13</div>
+                    </div>
+                </div>
+                
+                <h2>Questions 1-13</h2>
+                
+                <div class="question" id="q1">
+                    <h3>Questions 1-6</h3>
+                    <p>Do the following statements agree with the information given in the text?</p>
+                    <p>In boxes 1-6 below, write</p>
+                    <p><strong>TRUE</strong> if the statement agrees with the information</p>
+                    <p><strong>FALSE</strong> if the statement contradicts the information</p>
+                    <p><strong>NOT GIVEN</strong> if there is no information on this</p>
+                    
+                    <div class="question">
+                        <p><strong>1</strong> At the time when Smith left school, there was a growing demand for surveyors.</p>
+                        <div class="true-false-options">
+                            <div class="true-false-option">
+                                <input type="radio" id="q1_true" name="q1" value="TRUE">
+                                <label for="q1_true">TRUE</label>
+                            </div>
+                            <div class="true-false-option">
+                                <input type="radio" id="q1_false" name="q1" value="FALSE">
+                                <label for="q1_false">FALSE</label>
+                            </div>
+                            <div class="true-false-option">
+                                <input type="radio" id="q1_ng" name="q1" value="NOT GIVEN">
+                                <label for="q1_ng">NOT GIVEN</label>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="question">
+                        <p><strong>2</strong> When Smith was 18, he formed a partnership with another surveyor.</p>
+                        <div class="true-false-options">
+                            <div class="true-false-option">
+                                <input type="radio" id="q2_true" name="q2" value="TRUE">
+                                <label for="q2_true">TRUE</label>
+                            </div>
+                            <div class="true-false-option">
+                                <input type="radio" id="q2_false" name="q2" value="FALSE">
+                                <label for="q2_false">FALSE</label>
+                            </div>
+                            <div class="true-false-option">
+                                <input type="radio" id="q2_ng" name="q2" value="NOT GIVEN">
+                                <label for="q2_ng">NOT GIVEN</label>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="question">
+                        <p><strong>3</strong> Smith's interest in rocks and fossils was encouraged by his school.</p>
+                        <div class="true-false-options">
+                            <div class="true-false-option">
+                                <input type="radio" id="q3_true" name="q3" value="TRUE">
+                                <label for="q3_true">TRUE</label>
+                            </div>
+                            <div class="true-false-option">
+                                <input type="radio" id="q3_false" name="q3" value="FALSE">
+                                <label for="q3_false">FALSE</label>
+                            </div>
+                            <div class="true-false-option">
+                                <input type="radio" id="q3_ng" name="q3" value="NOT GIVEN">
+                                <label for="q3_ng">NOT GIVEN</label>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="question">
+                        <p><strong>4</strong> Smith noticed that the same types of rocks were visible in a number of places.</p>
+                        <div class="true-false-options">
+                            <div class="true-false-option">
+                                <input type="radio" id="q4_true" name="q4" value="TRUE">
+                                <label for="q4_true">TRUE</label>
+                            </div>
+                            <div class="true-false-option">
+                                <input type="radio" id="q4_false" name="q4" value="FALSE">
+                                <label for="q4_false">FALSE</label>
+                            </div>
+                            <div class="true-false-option">
+                                <input type="radio" id="q4_ng" name="q4" value="NOT GIVEN">
+                                <label for="q4_ng">NOT GIVEN</label>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="question">
+                        <p><strong>5</strong> Smith believed that the order of strata in the ground varied from locality to locality.</p>
+                        <div class="true-false-options">
+                            <div class="true-false-option">
+                                <input type="radio" id="q5_true" name="q5" value="TRUE">
+                                <label for="q5_true">TRUE</label>
+                            </div>
+                            <div class="true-false-option">
+                                <input type="radio" id="q5_false" name="q5" value="FALSE">
+                                <label for="q5_false">FALSE</label>
+                            </div>
+                            <div class="true-false-option">
+                                <input type="radio" id="q5_ng" name="q5" value="NOT GIVEN">
+                                <label for="q5_ng">NOT GIVEN</label>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="question">
+                        <p><strong>6</strong> Smith's map of Bath was commissioned by the Bath Agricultural Society.</p>
+                        <div class="true-false-options">
+                            <div class="true-false-option">
+                                <input type="radio" id="q6_true" name="q6" value="TRUE">
+                                <label for="q6_true">TRUE</label>
+                            </div>
+                            <div class="true-false-option">
+                                <input type="radio" id="q6_false" name="q6" value="FALSE">
+                                <label for="q6_false">FALSE</label>
+                            </div>
+                            <div class="true-false-option">
+                                <input type="radio" id="q6_ng" name="q6" value="NOT GIVEN">
+                                <label for="q6_ng">NOT GIVEN</label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="question" id="q7">
+                    <h3>Questions 7-13</h3>
+                    <p>Complete the sentences below.</p>
+                    <p>Choose ONE WORD ONLY from the text for each answer.</p>
+                    
+                    <div class="question">
+                        <p><strong>7</strong> Around 1799, Smith struggled to raise money for a publication about his <input type="text" class="text-input" id="q7_input">.</p>
+                    </div>
+                    
+                    <div class="question">
+                        <p><strong>8</strong> Unlike other maps, Smith's 1815 map was produced with help from a <input type="text" class="text-input" id="q8_input">.</p>
+                    </div>
+                    
+                    <div class="question">
+                        <p><strong>9</strong> Smith's 'Geological Atlas' contained maps of a number of the <input type="text" class="text-input" id="q9_input"> of England and Wales.</p>
+                    </div>
+                    
+                    <div class="question">
+                        <p><strong>10</strong> Smith did not receive <input type="text" class="text-input" id="q10_input"> for his work until 1831.</p>
+                    </div>
+                    
+                    <div class="question">
+                        <p><strong>11</strong> In 1838 Smith advised on the most suitable <input type="text" class="text-input" id="q11_input"> for rebuilding the Houses of Parliament.</p>
+                    </div>
+                    
+                    <div class="question">
+                        <p><strong>12</strong> Smith made speeches about how the country's <input type="text" class="text-input" id="q12_input"> benefited from geology.</p>
+                    </div>
+                    
+                    <div class="question">
+                        <p><strong>13</strong> Nowadays, geological maps still have the <input type="text" class="text-input" id="q13_input"> that Smith believed they had.</p>
+                    </div>
+                </div>
+                
+                <button class="submit-btn" onclick="submitAnswers()">Submit Answers</button>
+            </div>
+        </div>
+    </div>
+    
+    <div class="results" id="results">
+        <div class="results-content">
+            <h2>Test Results</h2>
+            <div class="score" id="score"></div>
+            
+            <div id="answers">
+                <!-- Results will be inserted here -->
+            </div>
+            
+            <button class="close-results" onclick="closeResults()">Close Results</button>
+        </div>
+    </div>
+    
+    <script>
+        // Theme switching
+        function setTheme(theme) {
+            document.body.classList.remove('night-mode', 'sepia-mode');
+            
+            if (theme === 'night') {
+                document.body.classList.add('night-mode');
+            } else if (theme === 'sepia') {
+                document.body.classList.add('sepia-mode');
+            }
+            
+            // Save theme preference
+            localStorage.setItem('theme', theme);
+        }
+        
+        // Load saved theme
+        const savedTheme = localStorage.getItem('theme');
+        if (savedTheme) {
+            setTheme(savedTheme);
+        }
+        
+        // Timer functionality
+        let timeLeft = 20 * 60; // 20 minutes in seconds
+        const timerElement = document.getElementById('timer');
+        const timeDisplay = document.getElementById('time');
+        const paletteTimeDisplay = document.getElementById('palette-time');
+        
+        function updateTimer() {
+            const minutes = Math.floor(timeLeft / 60);
+            const seconds = timeLeft % 60;
+            
+            timeDisplay.textContent = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+            paletteTimeDisplay.textContent = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+            
+            if (timeLeft === 5 * 60) {
+                timerElement.classList.add('warning');
+            }
+            
+            if (timeLeft <= 0) {
+                clearInterval(timerInterval);
+                submitAnswers();
+            } else {
+                timeLeft--;
+            }
+        }
+        
+        const timerInterval = setInterval(updateTimer, 1000);
+        
+        // Text highlighting
+        let highlightMenu = null;
+        let lastSelection = null;
+        
+        function createHighlightMenu() {
+            if (highlightMenu) {
+                document.body.removeChild(highlightMenu);
+            }
+            
+            highlightMenu = document.createElement('div');
+            highlightMenu.className = 'highlight-menu';
+            highlightMenu.style.display = 'none';
+            
+            const yellowBtn = document.createElement('button');
+            yellowBtn.className = 'highlight-btn yellow-btn';
+            yellowBtn.innerHTML = '<i class="fas fa-highlighter"></i>';
+            yellowBtn.title = 'Yellow Highlight';
+            yellowBtn.onclick = () => applyHighlight('yellow');
+            
+            const blueBtn = document.createElement('button');
+            blueBtn.className = 'highlight-btn blue-btn';
+            blueBtn.innerHTML = '<i class="fas fa-highlighter"></i>';
+            blueBtn.title = 'Blue Highlight';
+            blueBtn.onclick = () => applyHighlight('blue');
+            
+            const clearBtn = document.createElement('button');
+            clearBtn.className = 'highlight-btn clear-btn';
+            clearBtn.innerHTML = '<i class="fas fa-eraser"></i>';
+            clearBtn.title = 'Clear Highlight';
+            clearBtn.onclick = clearHighlight;
+            
+            highlightMenu.appendChild(yellowBtn);
+            highlightMenu.appendChild(blueBtn);
+            highlightMenu.appendChild(clearBtn);
+            
+            document.body.appendChild(highlightMenu);
+            
+            return highlightMenu;
+        }
+        
+        function getSelectedText() {
+            if (window.getSelection) {
+                return window.getSelection();
+            } else if (document.selection) {
+                return document.selection.createRange();
+            }
+            return null;
+        }
+        
+        function showHighlightMenu(x, y) {
+            if (!highlightMenu) {
+                highlightMenu = createHighlightMenu();
+            }
+            
+            highlightMenu.style.display = 'flex';
+            highlightMenu.style.top = (y - highlightMenu.offsetHeight - 10) + 'px';
+            highlightMenu.style.left = (x - highlightMenu.offsetWidth / 2) + 'px';
+        }
+        
+        function hideHighlightMenu() {
+            if (highlightMenu) {
+                highlightMenu.style.display = 'none';
+            }
+        }
+        
+        function applyHighlight(color) {
+            if (!lastSelection) return;
+            
+            const range = lastSelection.getRangeAt(0);
+            const selectedText = range.toString();
+            if (!selectedText.trim()) return;
+            
+            const span = document.createElement('span');
+            span.className = `highlight-${color}`;
+            
+            try {
+                span.appendChild(range.extractContents());
+                range.insertNode(span);
+            } catch (e) {
+                console.error("Error applying highlight:", e);
+            }
+            
+            // Clear selection
+            if (window.getSelection) {
+                window.getSelection().removeAllRanges();
+            }
+            
+            hideHighlightMenu();
+            lastSelection = null;
+        }
+        
+        function clearHighlight() {
+            if (!lastSelection) return;
+            
+            const range = lastSelection.getRangeAt(0);
+            let node = range.startContainer;
+            
+            // Traverse up to find highlight element
+            while (node !== document && node !== null) {
+                if (node.nodeType === Node.ELEMENT_NODE) {
+                    if (node.classList.contains('highlight-yellow') || node.classList.contains('highlight-blue')) {
+                        // Replace with text node
+                        const text = document.createTextNode(node.textContent);
+                        node.parentNode.replaceChild(text, node);
+                        break;
+                    }
+                }
+                node = node.parentNode;
+            }
+            
+            // Clear selection
+            if (window.getSelection) {
+                window.getSelection().removeAllRanges();
+            }
+            
+            hideHighlightMenu();
+            lastSelection = null;
+        }
+        
+        document.addEventListener('mouseup', (e) => {
+            const selection = getSelectedText();
+            if (!selection || selection.toString().trim() === '') {
+                hideHighlightMenu();
+                return;
+            }
+            
+            lastSelection = selection;
+            showHighlightMenu(e.pageX, e.pageY);
+        });
+        
+        document.addEventListener('mousedown', (e) => {
+            if (highlightMenu && !highlightMenu.contains(e.target)) {
+                hideHighlightMenu();
+            }
+        });
+        
+        // Question navigation
+        const questionButtons = document.querySelectorAll('.question-btn');
+        questionButtons.forEach(btn => {
+            btn.addEventListener('click', () => {
+                const questionId = btn.getAttribute('data-question');
+                const questionElement = document.getElementById(`q${questionId}`);
+                if (questionElement) {
+                    questionElement.scrollIntoView({ behavior: 'smooth' });
+                    
+                    // Update current question indicator
+                    questionButtons.forEach(b => b.classList.remove('current'));
+                    btn.classList.add('current');
+                }
+            });
+        });
+        
+        // Mark questions as answered when interacted with
+        const inputs = document.querySelectorAll('input, select');
+        inputs.forEach(input => {
+            input.addEventListener('change', () => {
+                // Find which question this input belongs to
+                let questionId = null;
+                if (input.name.includes('q1') || input.name.includes('q2') || 
+                    input.name.includes('q3') || input.name.includes('q4') || 
+                    input.name.includes('q5') || input.name.includes('q6')) {
+                    questionId = input.name.replace('q', '');
+                } else if (input.id.includes('q7') || input.id.includes('q8') || 
+                          input.id.includes('q9') || input.id.includes('q10') || 
+                          input.id.includes('q11') || input.id.includes('q12') || 
+                          input.id.includes('q13')) {
+                    questionId = input.id.replace('_input', '').replace('q', '');
+                }
+                
+                if (questionId) {
+                    const questionBtn = document.querySelector(`.question-btn[data-question="${questionId}"]`);
+                    if (questionBtn && input.value !== '') {
+                        questionBtn.classList.add('answered');
+                    }
+                }
+            });
+        });
+        
+        // Answer submission and scoring
+        const correctAnswers = {
+            q1: 'TRUE',
+            q2: 'FALSE',
+            q3: 'NOT GIVEN',
+            q4: 'TRUE',
+            q5: 'FALSE',
+            q6: 'NOT GIVEN',
+            q7: 'discoveries',
+            q8: 'publisher',
+            q9: 'counties',
+            q10: 'recognition',
+            q11: 'stone',
+            q12: 'economy',
+            q13: 'importance'
+        };
+        
+        const answerLocations = {
+            q1: "Paragraph 2: 'there were an increasing number of openings for that profession'",
+            q2: "Paragraph 2: 'he set up in business on his own' (not in partnership)",
+            q3: "Paragraph 3: No information about school encouragement",
+            q4: "Paragraph 4: 'he found the strata that he was familiar with in the south of England were repeated in other areas'",
+            q5: "Paragraph 4: 'these rocks were always arranged in the same order' (contradicts the statement)",
+            q6: "Paragraph 6: 'exhibited at the Bath Agricultural Society' (not commissioned by them)",
+            q7: "Paragraph 6: 'plan the publication of a treatise describing his discoveries, but financial support proved difficult to find'",
+            q8: "Paragraph 7: 'with input from the enterprising map publisher John Cary'",
+            q9: "Paragraph 8: 'comprising maps of 21 counties'",
+            q10: "Paragraph 9: 'Smith continued to find recognition elusive'",
+            q11: "Paragraph 10: 'recommend the stone to be used in the rebuilding of the Houses of Parliament'",
+            q12: "Paragraph 11: 'valuable contribution to the national economy'",
+            q13: "Paragraph 12: 'his conviction that geological mapping is of vital importance... is as true today'"
+        };
+        
+        function submitAnswers() {
+            clearInterval(timerInterval);
+            
+            let score = 0;
+            const totalQuestions = Object.keys(correctAnswers).length;
+            const answersContainer = document.getElementById('answers');
+            answersContainer.innerHTML = '';
+            
+            for (const question in correctAnswers) {
+                let userAnswer = '';
+                
+                if (question === 'q1' || question === 'q2' || question === 'q3' || 
+                    question === 'q4' || question === 'q5' || question === 'q6') {
+                    const selectedOption = document.querySelector(`input[name="${question}"]:checked`);
+                    userAnswer = selectedOption ? selectedOption.value : '';
+                } else {
+                    userAnswer = document.getElementById(`${question}_input`).value.trim().toLowerCase();
+                }
+                
+                const isCorrect = userAnswer === correctAnswers[question];
+                if (isCorrect) score++;
+                
+                const answerDiv = document.createElement('div');
+                answerDiv.className = `answer ${isCorrect ? 'correct' : 'incorrect'}`;
+                
+                answerDiv.innerHTML = `
+                    <p><strong>Question ${question.toUpperCase()}:</strong> ${isCorrect ? 'Correct' : 'Incorrect'}</p>
+                    <p>Your answer: ${userAnswer || 'Not answered'}</p>
+                    <p>Correct answer: ${correctAnswers[question]}</p>
+                    <p>Location in text: ${answerLocations[question]}</p>
+                `;
+                
+                answersContainer.appendChild(answerDiv);
+            }
+            
+            document.getElementById('score').textContent = `Score: ${score}/${totalQuestions}`;
+            document.getElementById('results').style.display = 'block';
+        }
+        
+        function closeResults() {
+            document.getElementById('results').style.display = 'none';
+        }
+    </script>
+</body>
+</html>

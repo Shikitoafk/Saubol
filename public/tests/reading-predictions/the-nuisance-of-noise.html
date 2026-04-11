@@ -1,0 +1,1565 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>IELTS Reading Test - The Nuisance of Noise</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        /* Main styles */
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: Arial, sans-serif;
+            overflow: hidden;
+            background-color: #f0f8ff;
+        }
+        .test-wrapper {
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+        }
+        .test-container {
+            display: flex;
+            flex: 1;
+            overflow: hidden;
+        }
+        /* Header styles */
+        .header {
+            background-color: #fff;
+            border-bottom: 1px solid #ddd;
+            padding: 10px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .header__logo img {
+            height: 40px;
+        }
+        .header__timer {
+            font-size: 1.2rem;
+            font-weight: bold;
+            color: #333;
+            background-color: #e6f2ff;
+            padding: 5px 15px;
+            border-radius: 20px;
+            border: 1px solid #ddd;
+            transition: all 0.3s ease;
+        }
+        .header__icons {
+            display: flex;
+            gap: 15px;
+        }
+        .header__icon {
+            font-size: 1.2rem;
+            color: #666;
+            cursor: pointer;
+        }
+        /* Settings Modal */
+        .settings-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: rgba(0,0,0,0.7);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+        }
+        .settings-content {
+            background-color: white;
+            width: 90%;
+            max-width: 500px;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+        }
+        .settings-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 20px;
+            border-bottom: 1px solid #ddd;
+            background-color: #f0f8ff;
+        }
+        .settings-header h2 {
+            margin: 0;
+            font-size: 1.2rem;
+        }
+        .settings-close {
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: #666;
+        }
+        .settings-body {
+            padding: 20px;
+        }
+        .settings-option {
+            display: flex;
+            align-items: center;
+            padding: 10px 0;
+            border-bottom: 1px solid #eee;
+            cursor: pointer;
+        }
+        .settings-option:last-child {
+            border-bottom: none;
+        }
+        .settings-option i {
+            margin-right: 15px;
+            width: 20px;
+            text-align: center;
+            color: #2a6c96;
+        }
+        .settings-option span {
+            flex: 1;
+        }
+        .sectionRubric {
+            margin: 1em;
+            width: calc(100% - 4em - 3px);
+            border-radius: 4px;
+            padding: 0.75em 1em;
+            background: white;
+            border: 1px solid #d5d5d5;
+        }
+        .sectionRubric h2, .sectionRubric p {
+            margin: 0;
+        }
+        .sectionRubric h2 {
+            font-size: 1rem;
+            margin-bottom: 0.25em;
+        }
+        /* Passage container */
+        .passage-container {
+            width: 45%;
+            height: 100%;
+            overflow-y: auto;
+            padding: 20px;
+            box-sizing: border-box;
+            background-color: #f0f8ff;
+            position: relative;
+            -webkit-user-select: text;
+            user-select: text;
+        }
+        /* Questions container */
+        .questions-container {
+            flex: 1;
+            overflow-y: auto;
+            padding: 20px;
+            box-sizing: border-box;
+            background-color: #f0f8ff;
+            -webkit-user-select: text;
+            user-select: text;
+        }
+        /* Highlight styles */
+        .highlight {
+            position: relative;
+            border-radius: 2px;
+            padding: 0 1px;
+            margin: 0 -1px;
+        }
+        .highlight.yellow {
+            background-color: rgba(255, 255, 0, 0.3);
+        }
+        .highlight.green {
+            background-color: rgba(0, 255, 0, 0.3);
+        }
+        .highlight.pink {
+            background-color: rgba(255, 105, 180, 0.3);
+        }
+        .highlight.blue {
+            background-color: rgba(0, 191, 255, 0.3);
+        }
+        .highlight-toolbar {
+            position: fixed;
+            background: white;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+            display: none;
+            z-index: 1000;
+            padding: 5px;
+            transform: translate(-50%, -100%);
+            margin-top: -5px;
+        }
+        .highlight-toolbar button {
+            background: none;
+            border: none;
+            width: 24px;
+            height: 24px;
+            cursor: pointer;
+            margin: 0 2px;
+            border-radius: 3px;
+        }
+        .highlight-toolbar button:hover {
+            background: #f0f0f0;
+        }
+        .highlight-toolbar button.remove {
+            color: #ff0000;
+        }
+        /* Divider styling */
+        .divider {
+            width: 10px;
+            background: #ddd;
+            cursor: col-resize;
+            position: relative;
+        }
+        .divider-handle {
+            width: 4px;
+            height: 40px;
+            background: #999;
+            border-radius: 2px;
+            position: absolute;
+            top: 50%;
+            left: 3px;
+            transform: translateY(-50%);
+        }
+        /* Question styling */
+        .question {
+            margin-bottom: 30px;
+        }
+        .question-rubric {
+            margin-bottom: 15px;
+            font-weight: bold;
+        }
+        .question-options {
+            list-style-type: none;
+            padding: 0;
+        }
+        .question-options li {
+            margin: 10px 0;
+            display: flex;
+            align-items: center;
+        }
+        .question-options li input[type="checkbox"] {
+            margin-right: 10px;
+        }
+        /* Matching information */
+        .matching-info-option {
+            display: flex;
+            align-items: center;
+            margin: 5px 0;
+        }
+        .matching-info-option select {
+            min-width: 120px;
+            padding: 5px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            margin-left: 10px;
+        }
+        /* Multiple choice questions */
+        .multiple-choice-option {
+            margin: 10px 0;
+        }
+        /* Sentence completion styles */
+        .sentence-completion-container {
+            margin-top: 20px;
+        }
+        .sentence-text p {
+            line-height: 2.5;
+            font-size: 16px;
+        }
+        .sentence-input {
+            width: 120px;
+            padding: 5px;
+            border: 2px dashed #999;
+            border-radius: 4px;
+            margin: 0 5px;
+            font-size: 15px;
+            font-weight: bold;
+            background-color: #e3f2fd;
+        }
+        .sentence-input.correct {
+            border-color: #28a745;
+            background-color: #e9f7ef;
+            border-style: solid;
+        }
+        .sentence-input.incorrect {
+            border-color: #dc3545;
+            background-color: #f8d7da;
+            border-style: solid;
+        }
+        .sentence-feedback {
+            display: inline-block;
+            margin-left: 10px;
+            font-size: 14px;
+        }
+        .sentence-feedback.correct {
+            color: #28a745;
+        }
+        .sentence-feedback.incorrect {
+            color: #dc3545;
+        }
+        /* Footer styles */
+        .footer {
+            background: #f5f5f5;
+            border-top: 1px solid #ddd;
+            padding: 10px;
+        }
+        .nav-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        .footer__questionWrapper {
+            display: flex;
+            align-items: center;
+        }
+        .footer__questionNo {
+            background: none;
+            border: none;
+            padding: 5px 10px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+        .footer__subquestionWrapper {
+            display: flex;
+            flex-wrap: wrap;
+            margin-left: 10px;
+        }
+        .subQuestion {
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            border: 1px solid #ccc;
+            background: #f0f0f0;
+            margin: 2px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #666;
+        }
+        .subQuestion.active {
+            background: #0066cc;
+            color: white;
+            border-color: #0066cc;
+        }
+        .subQuestion.attempted {
+            background: #0066cc;
+            color: white;
+        }
+        .footer__deliverButton {
+            background: #0066cc;
+            color: white;
+            border: none;
+            padding: 8px 15px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+        .footer__deliverButton:disabled {
+            background: #cccccc;
+            cursor: not-allowed;
+        }
+        .sr-only {
+            position: absolute;
+            width: 1px;
+            height: 1px;
+            padding: 0;
+            margin: -1px;
+            overflow: hidden;
+            clip: rect(0, 0, 0, 0);
+            white-space: nowrap;
+            border-width: 0;
+        }
+        /* Highlight color buttons */
+        .highlight-color {
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            display: inline-block;
+            margin: 0 2px;
+            cursor: pointer;
+            border: 1px solid #ccc;
+        }
+        .highlight-color.yellow {
+            background-color: #ffff00;
+        }
+        .highlight-color.green {
+            background-color: #00ff00;
+        }
+        .highlight-color.pink {
+            background-color: #ff69b4;
+        }
+        .highlight-color.blue {
+            background-color: #00bfff;
+        }
+        /* Time warning styles */
+        .timer-warning {
+            color: #ff0000;
+            animation: blink 1s infinite;
+        }
+        @keyframes blink {
+            0% { opacity: 1; }
+            50% { opacity: 0.5; }
+            100% { opacity: 1; }
+        }
+        /* Submission modal styles */
+        .submission-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: rgba(0,0,0,0.8);
+            z-index: 2000;
+            justify-content: center;
+            align-items: center;
+        }
+        .submission-content {
+            background-color: white;
+            width: 80%;
+            max-width: 800px;
+            border-radius: 10px;
+            padding: 30px;
+            box-shadow: 0 5px 30px rgba(0,0,0,0.5);
+            max-height: 80vh;
+            overflow-y: auto;
+        }
+        .submission-content h2 {
+            margin-top: 0;
+            color: #0066cc;
+            border-bottom: 2px solid #0066cc;
+            padding-bottom: 10px;
+        }
+        .submission-content p {
+            margin-bottom: 20px;
+            color: #333;
+        }
+        .answers-section {
+            margin-top: 20px;
+        }
+        .answers-section h3 {
+            color: #0066cc;
+            margin-bottom: 15px;
+        }
+        .answer-item {
+            padding: 10px;
+            margin-bottom: 8px;
+            border-radius: 4px;
+            border-left: 4px solid #ddd;
+            background-color: #f9f9f9;
+        }
+        .answer-item.correct {
+            border-left-color: #4CAF50;
+            background-color: #f0fff0;
+        }
+        .answer-item.incorrect {
+            border-left-color: #f44336;
+            background-color: #fff0f0;
+        }
+        .answer-text {
+            font-weight: bold;
+        }
+        .correct-answer {
+            color: #4CAF50;
+            margin-left: 10px;
+        }
+        .incorrect-answer {
+            color: #f44336;
+            margin-left: 10px;
+        }
+        .answer-status {
+            float: right;
+            margin-left: 15px;
+        }
+        .correct-status {
+            color: #4CAF50;
+        }
+        .incorrect-status {
+            color: #f44336;
+        }
+        .submission-buttons {
+            margin-top: 25px;
+            text-align: right;
+            clear: both;
+        }
+        .submission-buttons button {
+            padding: 8px 15px;
+            margin-left: 10px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+        .submission-buttons .confirm {
+            background: #0066cc;
+            color: white;
+            border: none;
+        }
+        /* Disabled state */
+        input:disabled, select:disabled {
+            background-color: #f5f5f5;
+            cursor: not-allowed;
+        }
+        /* Score display styles */
+        .score-display {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        .score-number {
+            font-size: 3rem;
+            font-weight: bold;
+            color: #0066cc;
+            margin: 10px 0;
+        }
+        .score-total {
+            font-size: 1.5rem;
+            color: #666;
+        }
+        .performance-rating {
+            font-size: 1.5rem;
+            font-weight: bold;
+            margin: 15px 0;
+            padding: 10px;
+            border-radius: 5px;
+        }
+        .excellent {
+            color: #2E7D32;
+            background-color: #E8F5E9;
+        }
+        .very-good {
+            color: #388E3C;
+            background-color: #E8F5E9;
+        }
+        .good {
+            color: #689F38;
+            background-color: #F1F8E9;
+        }
+        .fair {
+            color: #F57C00;
+            background-color: #FFF3E0;
+        }
+        .poor {
+            color: #D32F2F;
+            background-color: #FFEBEE;
+        }
+        /* IELTS Band Score */
+        .band-score {
+            font-size: 2rem;
+            font-weight: bold;
+            color: #0066cc;
+            margin: 10px 0;
+        }
+        /* Correct answer highlight */
+        .correct-highlight {
+            background-color: rgba(76, 175, 80, 0.3);
+            padding: 2px;
+            border-radius: 2px;
+        }
+        /* Incorrect answer highlight */
+        .incorrect-highlight {
+            background-color: rgba(244, 67, 54, 0.3);
+            padding: 2px;
+            border-radius: 2px;
+        }
+        /* Answer comparison section */
+        .answer-comparison {
+            margin-top: 20px;
+            padding: 15px;
+            background-color: #f5f5f5;
+            border-radius: 5px;
+            display: none;
+        }
+        .answer-comparison h3 {
+            margin-top: 0;
+            color: #0066cc;
+        }
+        /* Time spent indicator */
+        .time-spent {
+            font-size: 1rem;
+            color: #666;
+            margin-bottom: 15px;
+            text-align: center;
+        }
+        /* Dropdown answer display */
+        .dropdown-answer {
+            display: inline-block;
+            margin-left: 10px;
+            font-weight: normal;
+        }
+        .dropdown-answer.correct {
+            color: #4CAF50;
+        }
+        .dropdown-answer.incorrect {
+            color: #f44336;
+        }
+    </style>
+</head>
+<body>
+    <div class="test-wrapper">
+        <!-- Header with Timer -->
+        <header class="header">
+            <div class="header__logo">
+                <img src="https://d2snzxottmona5.cloudfront.net/releases/3.46.0/images/logo/ielts.svg" alt="IELTS Logo">
+                
+            </div>
+            <div class="header__timer" id="testTimer">00:00</div>
+            <div class="header__icons">
+                <i class="fas fa-wifi header__icon"></i>
+                <i class="fas fa-bell header__icon"></i>
+                <i class="fas fa-cog header__icon" id="settingsButton"></i>
+            </div>
+        </header>
+        <!-- Settings Modal -->
+        <div class="settings-modal" id="settingsModal">
+            <div class="settings-content">
+                <div class="settings-header">
+                    <h2>Options</h2>
+                    <button class="settings-close" id="settingsClose">&times;</button>
+                </div>
+                <div class="settings-body">
+                    <div class="settings-option">
+                        <i class="fas fa-paper-plane"></i>
+                        <span>Go to submission page</span>
+                    </div>
+                    <div class="settings-option" id="contrastOption">
+                        <i class="fas fa-adjust"></i>
+                        <span>Contrast</span>
+                    </div>
+                    <div class="settings-option" id="textSizeOption">
+                        <i class="fas fa-search-plus"></i>
+                        <span>Text size</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- Section Rubric -->
+        <div class="sectionRubric" id="sectionRubric">
+            <h2>Part 2</h2>
+            <p>You should spend about 20 minutes on Questions 17-32, which are based on Reading Passage 2 below.</p>
+        </div>
+        <div class="test-container">
+            <!-- Passage Section -->
+            <div class="passage-container" id="passage-container">
+                <div class="highlight-toolbar" id="highlightToolbar">
+                    <button class="highlight-color yellow" data-color="yellow" title="Yellow highlight"></button>
+                    <button class="highlight-color green" data-color="green" title="Green highlight"></button>
+                    <button class="highlight-color pink" data-color="pink" title="Pink highlight"></button>
+                    <button class="highlight-color blue" data-color="blue" title="Blue highlight"></button>
+                    <button class="remove" title="Remove highlight"><i class="fas fa-times"></i></button>
+                </div>
+                <div id="passageContent">
+                    <h2 style="text-align: center;">The Nuisance of Noise</h2>
+                    
+                    <p><strong>A</strong> As long as people have lived in close vicinity, they have been complaining about the noises other people make and yearning for quiet and relief from these disturbances.</p>
+                    <p>To be sure, exposure to very loud noise, measured in high decibel levels, can impact more than a person's mental state. About 2500 years ago, the Greek physician Hippocrates identified the condition 'tinnitus', a ringing in the ears often caused by prolonged exposure to loud noise. In modern times, people are often subjected to noise above 85 decibels. That's indisputably a serious threat to one's health, enough to cause significant hearing loss over time. Yet for some people, it's not just the loud noise that's a problem; moderate, everyday noise at low decibels is also a constant nuisance.</p>
+                    
+                    <p><strong>B</strong> It has often been asserted that a kind of absolute quietness is needed to achieve truly enlightened thinking. Famous philosophers dating back to Plato of ancient Greece have pointed to the need for quiet in order to really perceive things clearly. Only when the outside world is tuned out, it is said, can the thinker understand the true nature of the world. The French writer Blaise Pascal complained in 1660 that 'the sole cause of man's unhappiness is that he does not know how to stay quietly in his room'. Two centuries later, the German philosopher Schopenhauer wrote that 'noise is a torture to intellectual people'.</p>
+                    
+                    <p><strong>C</strong> Yet research reveals something of a paradox: The more time and effort people spend trying to keep unwanted sound out, the more sensitive to it they become. Take the example of Scottish writer Thomas Carlyle. In 1831, he moved to London and soon complained in a letter to the authorities about the noise outside his window. He spent a fortune soundproofing the study in his house, but he couldn't be satisfied. His unusually perceptive ears exaggerated the slightest sound, and he was forced to retreat to the countryside.</p>
+                    
+                    <p><strong>D</strong> In 1907 an American, Julia Barnett Rice, founded a citizens' group – the Society for the Suppression of Unnecessary Noise of New York – to combat the noise of her city. It attracted over 200 members from all walks of life. At a time before automobiles crowded the streets of New York, Rice and her group set out to restrict sea captains from blaring their horns as they navigated boats along the city waterways. The society next convinced the local government to establish quiet zones around hospitals and schools, so that patients could recover and children could study in peace. It even proposed regulations on the sidewalk vendors who shouted about their products to the hundreds of pedestrians passing by. However, in the end, by focusing on noise Mrs Rice only became more sensitive to it. She finally turned to architects to help build a quiet place deep under her house.</p>
+                    
+                    <p><strong>E</strong> In modern cities, governments around the world have stepped up to treat noise as a kind of environmental pollution, to be regulated the same way that smog and other chemical byproducts are regulated in factories. In New York, for instance, airline pilots are required to fly higher and more slowly around populated areas. City laws also specify the time of day that landscapers, construction crews and repairmen can use power tools and other noisy machines in residential neighborhoods. In recent years, New York City has sent out police with sound-measuring devices to go after noisemakers, and installed hypersensitive listening devices to monitor the soundscape. Citizens are also encouraged to call a special telephone hotline to report noise violations.</p>
+                    
+                    <p><strong>F</strong> Yet laws against noisemakers have not satisfied our desire for quietness, so consumer products have emerged to meet the demand of increasingly sensitive consumers. One early and impractical attempt was called 'The Isolator', invented in 1925 by Hugo Gernsback. This was a large heavy helmet made of lead, with thin eye slits for viewing. It had a tube that could be connected to an oxygen tank, allowing the user to breathe without letting in noise. Around the same time, materials were designed to prevent noise outside from coming in. These include sound-muffling curtains, non-hardwood floors with synthetic lining, and better insulation for walls. No matter how thoughtful the design, however, unwanted sound continues to be a part of everyday life.</p>
+                    
+                    <p><strong>G</strong> Unable to suppress noise, consumers started trying to mask it with more pleasant audio, buying gadgets like white-noise machines or playing recorded versions of what they would hear in nature, from breaking waves to rustling forests, on their stereos. Today, there are hundreds of digital apps and technologies, including noise cancellation products that detect outside noise and render it inaudible. In a Sony print commercial for their noise-canceling headphones, the company depicts a world where the consumer exists in a sonic bubble as he walks along a strangely empty city street.</p>
+                    <p>However, there is a risk to becoming accustomed to life without unwanted sounds from others. Psychologists warn that we may grow hyper-sensitized and isolated, and the outside world may seem increasingly noisy and hostile. The best strategy, they say, is to learn to live with, and to ignore, the nuisances of everyday sounds.</p>
+                </div>
+            </div>
+            <!-- Draggable Divider -->
+            <div class="divider" id="divider">
+                <div class="divider-handle"></div>
+            </div>
+            <!-- Questions Section -->
+            <div class="questions-container" id="questions-container">
+                <!-- Questions 17-21 - Matching Information -->
+                <div class="question">
+                    <div class="question-rubric">
+                        <h3>Questions 17-21</h3>
+                        <p>Reading Passage 2 has seven sections, <strong>A-G</strong>.</p>
+                        <p>Which section contains the following information?</p>
+                        <p>Write the correct letter, <strong>A-G</strong>, in boxes <strong>17-21</strong> on your answer sheet.</p>
+                    </div>
+                    <div class="question-content">
+                        <div class="question-item">
+                            <p><span class="question-number">17</span> examples of using relaxing sounds to cover up noise</p>
+                            <div class="matching-info-option">
+                                <select name="q17" id="q17">
+                                    <option value="">--</option>
+                                    <option value="A">A</option>
+                                    <option value="B">B</option>
+                                    <option value="C">C</option>
+                                    <option value="D">D</option>
+                                    <option value="E">E</option>
+                                    <option value="F">F</option>
+                                    <option value="G">G</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="question-item">
+                            <p><span class="question-number">18</span> a reference to an organisation with a goal to prohibit certain noises</p>
+                            <div class="matching-info-option">
+                                <select name="q18" id="q18">
+                                    <option value="">--</option>
+                                    <option value="A">A</option>
+                                    <option value="B">B</option>
+                                    <option value="C">C</option>
+                                    <option value="D">D</option>
+                                    <option value="E">E</option>
+                                    <option value="F">F</option>
+                                    <option value="G">G</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="question-item">
+                            <p><span class="question-number">19</span> a mention of the physical effect of noise on the ears</p>
+                            <div class="matching-info-option">
+                                <select name="q19" id="q19">
+                                    <option value="">--</option>
+                                    <option value="A">A</option>
+                                    <option value="B">B</option>
+                                    <option value="C">C</option>
+                                    <option value="D">D</option>
+                                    <option value="E">E</option>
+                                    <option value="F">F</option>
+                                    <option value="G">G</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="question-item">
+                            <p><span class="question-number">20</span> historical views on how noise affects our state of ability to reason</p>
+                            <div class="matching-info-option">
+                                <select name="q20" id="q20">
+                                    <option value="">--</option>
+                                    <option value="A">A</option>
+                                    <option value="B">B</option>
+                                    <option value="C">C</option>
+                                    <option value="D">D</option>
+                                    <option value="E">E</option>
+                                    <option value="F">F</option>
+                                    <option value="G">G</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="question-item">
+                            <p><span class="question-number">21</span> examples of technology used in law enforcement</p>
+                            <div class="matching-info-option">
+                                <select name="q21" id="q21">
+                                    <option value="">--</option>
+                                    <option value="A">A</option>
+                                    <option value="B">B</option>
+                                    <option value="C">C</option>
+                                    <option value="D">D</option>
+                                    <option value="E">E</option>
+                                    <option value="F">F</option>
+                                    <option value="G">G</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Questions 22-23 - Multiple Choice (Thomas Carlyle) -->
+                <div class="question">
+                    <div class="question-rubric">
+                        <h3>Questions 22 and 23</h3>
+                        <p>Choose <strong>TWO</strong> letters, <strong>A-E</strong>.</p>
+                        <p>Write the correct letters in boxes <strong>22 and 23</strong> on your answer sheet.</p>
+                        <p>Which TWO of the following statements does the writer make about Thomas Carlyle?</p>
+                    </div>
+                    <div class="question-content">
+                        <ul class="question-options">
+                            <li>
+                                <input type="checkbox" name="q22_23" id="q22_23_A" value="A">
+                                <label for="q22_23_A">A He invented a device to block out noise.</label>
+                            </li>
+                            <li>
+                                <input type="checkbox" name="q22_23" id="q22_23_B" value="B">
+                                <label for="q22_23_B">B He left the city because of the noise.</label>
+                            </li>
+                            <li>
+                                <input type="checkbox" name="q22_23" id="q22_23_C" value="C">
+                                <label for="q22_23_C">C Loud music made it impossible for him to work as a writer.</label>
+                            </li>
+                            <li>
+                                <input type="checkbox" name="q22_23" id="q22_23_D" value="D">
+                                <label for="q22_23_D">D His hearing was particularly sensitive.</label>
+                            </li>
+                            <li>
+                                <input type="checkbox" name="q22_23" id="q22_23_E" value="E">
+                                <label for="q22_23_E">E The loud noise damaged his sense of hearing.</label>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Questions 24-25 - Multiple Choice (Julia Barnett Rice) -->
+                <div class="question">
+                    <div class="question-rubric">
+                        <h3>Questions 24 and 25</h3>
+                        <p>Choose <strong>TWO</strong> letters, <strong>A-E</strong>.</p>
+                        <p>Write the correct letters in boxes <strong>24 and 25</strong> on your answer sheet.</p>
+                        <p>According to the writer, which TWO sources of noise did Julia Barnett Rice work to limit?</p>
+                    </div>
+                    <div class="question-content">
+                        <ul class="question-options">
+                            <li>
+                                <input type="checkbox" name="q24_25" id="q24_25_A" value="A">
+                                <label for="q24_25_A">A pedestrians</label>
+                            </li>
+                            <li>
+                                <input type="checkbox" name="q24_25" id="q24_25_B" value="B">
+                                <label for="q24_25_B">B boats</label>
+                            </li>
+                            <li>
+                                <input type="checkbox" name="q24_25" id="q24_25_C" value="C">
+                                <label for="q24_25_C">C vendors</label>
+                            </li>
+                            <li>
+                                <input type="checkbox" name="q24_25" id="q24_25_D" value="D">
+                                <label for="q24_25_D">D school children</label>
+                            </li>
+                            <li>
+                                <input type="checkbox" name="q24_25" id="q24_25_E" value="E">
+                                <label for="q24_25_E">E automobiles</label>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Questions 26-27 - Multiple Choice (Modern city noise) -->
+                <div class="question">
+                    <div class="question-rubric">
+                        <h3>Questions 26 and 27</h3>
+                        <p>Choose <strong>TWO</strong> letters, <strong>A-E</strong>.</p>
+                        <p>Write the correct letters in boxes <strong>26 and 27</strong> on your answer sheet.</p>
+                        <p>The list below gives some of the noise sources that modern cities regulate.</p>
+                        <p>Which TWO of these noise sources are mentioned by the writer of the text?</p>
+                    </div>
+                    <div class="question-content">
+                        <ul class="question-options">
+                            <li>
+                                <input type="checkbox" name="q26_27" id="q26_27_A" value="A">
+                                <label for="q26_27_A">A factories</label>
+                            </li>
+                            <li>
+                                <input type="checkbox" name="q26_27" id="q26_27_B" value="B">
+                                <label for="q26_27_B">B telephones</label>
+                            </li>
+                            <li>
+                                <input type="checkbox" name="q26_27" id="q26_27_C" value="C">
+                                <label for="q26_27_C">C work equipment</label>
+                            </li>
+                            <li>
+                                <input type="checkbox" name="q26_27" id="q26_27_D" value="D">
+                                <label for="q26_27_D">D neighbours</label>
+                            </li>
+                            <li>
+                                <input type="checkbox" name="q26_27" id="q26_27_E" value="E">
+                                <label for="q26_27_E">E planes</label>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Questions 28-32 - Sentence Completion -->
+                <div class="question">
+                    <div class="question-rubric">
+                        <h3>Questions 28-32</h3>
+                        <p>Complete the sentences below.</p>
+                        <p>Choose <strong>ONE WORD ONLY</strong> from the passage for each answer.</p>
+                        <p>Write your answers in boxes <strong>28-32</strong> on your answer sheet.</p>
+                    </div>
+                    <div class="question-content">
+                        <div class="sentence-completion-container">
+                            <div class="sentence-text">
+                                <p><span class="question-number">28</span> Users of 'The Isolator' wore a heavy helmet and breathed through a <input type="text" class="sentence-input" id="q28" name="q28">.</p>
+                                <p><span class="question-number">29</span> Insulated walls, lined floors and <input type="text" class="sentence-input" id="q29" name="q29"> that reduce noise were some of the 20th century designs to keep places quiet.</p>
+                                <p><span class="question-number">30</span> To mask noise, consumers use audio devices that produce white noise or sounds from <input type="text" class="sentence-input" id="q30" name="q30"> (e.g. moving water or trees).</p>
+                                <p><span class="question-number">31</span> An advert for headphones shows a person surrounded by a <input type="text" class="sentence-input" id="q31" name="q31">.</p>
+                                <p><span class="question-number">32</span> Learning to tolerate noise is an approach recommended by <input type="text" class="sentence-input" id="q32" name="q32">.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- Footer -->
+        <footer class="footer">
+            <nav class="nav-row perScorableItem" aria-label="Questions">
+                <div class="footer__questionWrapper selected multiple" role="tablist">
+                    <button role="tab" class="footer__questionNo" data-sectionid="128121930" tabindex="-1">
+                        <span>
+                            <span aria-hidden="true" class="section-prefix">Part </span>
+                            <span class="sectionNr" aria-hidden="true">2</span>
+                        </span>
+                    </button>
+                    <div class="footer__subquestionWrapper">
+                        <button class="subQuestion" data-contentrevisionid="128121896" data-ordernumber="17" data-sectionid="128121930" tabindex="0">
+                            <span class="sr-only">Question 17</span>
+                            <span aria-hidden="true">17</span>
+                            <span class="sr-only">Not attempted</span>
+                        </button>
+                        <button class="subQuestion" data-contentrevisionid="128121896" data-ordernumber="18" data-sectionid="128121930" tabindex="0">
+                            <span class="sr-only">Question 18</span>
+                            <span aria-hidden="true">18</span>
+                            <span class="sr-only">Not attempted</span>
+                        </button>
+                        <button class="subQuestion" data-contentrevisionid="128121896" data-ordernumber="19" data-sectionid="128121930" tabindex="0">
+                            <span class="sr-only">Question 19</span>
+                            <span aria-hidden="true">19</span>
+                            <span class="sr-only">Not attempted</span>
+                        </button>
+                        <button class="subQuestion" data-contentrevisionid="128121896" data-ordernumber="20" data-sectionid="128121930" tabindex="0">
+                            <span class="sr-only">Question 20</span>
+                            <span aria-hidden="true">20</span>
+                            <span class="sr-only">Not attempted</span>
+                        </button>
+                        <button class="subQuestion" data-contentrevisionid="128121896" data-ordernumber="21" data-sectionid="128121930" tabindex="0">
+                            <span class="sr-only">Question 21</span>
+                            <span aria-hidden="true">21</span>
+                            <span class="sr-only">Not attempted</span>
+                        </button>
+                        <button class="subQuestion" data-contentrevisionid="128121896" data-ordernumber="22" data-sectionid="128121930" tabindex="0">
+                            <span class="sr-only">Question 22</span>
+                            <span aria-hidden="true">22</span>
+                            <span class="sr-only">Not attempted</span>
+                        </button>
+                        <button class="subQuestion" data-contentrevisionid="128121896" data-ordernumber="23" data-sectionid="128121930" tabindex="0">
+                            <span class="sr-only">Question 23</span>
+                            <span aria-hidden="true">23</span>
+                            <span class="sr-only">Not attempted</span>
+                        </button>
+                        <button class="subQuestion" data-contentrevisionid="128121896" data-ordernumber="24" data-sectionid="128121930" tabindex="0">
+                            <span class="sr-only">Question 24</span>
+                            <span aria-hidden="true">24</span>
+                            <span class="sr-only">Not attempted</span>
+                        </button>
+                        <button class="subQuestion" data-contentrevisionid="128121896" data-ordernumber="25" data-sectionid="128121930" tabindex="0">
+                            <span class="sr-only">Question 25</span>
+                            <span aria-hidden="true">25</span>
+                            <span class="sr-only">Not attempted</span>
+                        </button>
+                        <button class="subQuestion" data-contentrevisionid="128121896" data-ordernumber="26" data-sectionid="128121930" tabindex="0">
+                            <span class="sr-only">Question 26</span>
+                            <span aria-hidden="true">26</span>
+                            <span class="sr-only">Not attempted</span>
+                        </button>
+                        <button class="subQuestion" data-contentrevisionid="128121896" data-ordernumber="27" data-sectionid="128121930" tabindex="0">
+                            <span class="sr-only">Question 27</span>
+                            <span aria-hidden="true">27</span>
+                            <span class="sr-only">Not attempted</span>
+                        </button>
+                        <button class="subQuestion" data-contentrevisionid="128121896" data-ordernumber="28" data-sectionid="128121930" tabindex="0">
+                            <span class="sr-only">Question 28</span>
+                            <span aria-hidden="true">28</span>
+                            <span class="sr-only">Not attempted</span>
+                        </button>
+                        <button class="subQuestion" data-contentrevisionid="128121896" data-ordernumber="29" data-sectionid="128121930" tabindex="0">
+                            <span class="sr-only">Question 29</span>
+                            <span aria-hidden="true">29</span>
+                            <span class="sr-only">Not attempted</span>
+                        </button>
+                        <button class="subQuestion" data-contentrevisionid="128121896" data-ordernumber="30" data-sectionid="128121930" tabindex="0">
+                            <span class="sr-only">Question 30</span>
+                            <span aria-hidden="true">30</span>
+                            <span class="sr-only">Not attempted</span>
+                        </button>
+                        <button class="subQuestion" data-contentrevisionid="128121896" data-ordernumber="31" data-sectionid="128121930" tabindex="0">
+                            <span class="sr-only">Question 31</span>
+                            <span aria-hidden="true">31</span>
+                            <span class="sr-only">Not attempted</span>
+                        </button>
+                        <button class="subQuestion" data-contentrevisionid="128121896" data-ordernumber="32" data-sectionid="128121930" tabindex="0">
+                            <span class="sr-only">Question 32</span>
+                            <span aria-hidden="true">32</span>
+                            <span class="sr-only">Not attempted</span>
+                        </button>
+                    </div>
+                </div>
+                <button id="deliver-button" aria-label="Review your answers" class="footer__deliverButton">
+                    <i class="fas fa-check"></i> Submit
+                </button>
+            </nav>
+        </footer>
+    </div>
+    <!-- Submission Modal -->
+    <div class="submission-modal" id="submissionModal">
+        <div class="submission-content">
+            <h2 id="submissionTitle">Test Results</h2>
+            <div class="score-display">
+                <div>Your Score:</div>
+                <div class="score-number" id="userScore">0</div>
+                <div class="score-total">out of <span id="totalQuestions">16</span></div>
+                <div class="band-score" id="bandScore">Band: 0.0</div>
+                <div class="performance-rating" id="performanceRating">Poor - Needs Improvement</div>
+            </div>
+            <div class="time-spent" id="timeSpent"></div>
+            <p id="submissionMessage">Here are your answers with the correct solutions:</p>
+            <div class="answers-section">
+                <h3>Your Answers:</h3>
+                <div id="answersList"></div>
+            </div>
+            <div class="submission-buttons">
+                <button class="confirm" id="closeSubmission">Close</button>
+            </div>
+        </div>
+    </div>
+    <!-- Answer Comparison Section -->
+    <div class="answer-comparison" id="answerComparison">
+        <h3>Answer Comparison</h3>
+        <p>Your answers are highlighted below. Correct answers are marked in <span class="correct-highlight">green</span>, incorrect answers in <span class="incorrect-highlight">red</span>.</p>
+    </div>
+    <script>
+        // Correct answers
+        const correctAnswers = {
+            17: "G",
+            18: "D",
+            19: "A",
+            20: "B",
+            21: "E",
+            22: "B",
+            23: "D",
+            24: "B",
+            25: "C",
+            26: "C",
+            27: "E",
+            28: "tube",
+            29: "curtains",
+            30: "nature",
+            31: "bubble",
+            32: "psychologists"
+        };
+
+        // Timer functionality - stopwatch (count up from zero)
+        let totalSeconds = 0;
+        const timerElement = document.getElementById('testTimer');
+        let testSubmitted = false;
+        let userAnswers = {};
+        let startTime = new Date();
+        let resultsShown = false;
+
+        function updateTimer() {
+            if (testSubmitted) return;
+            const minutes = Math.floor(totalSeconds / 60);
+            const seconds = totalSeconds % 60;
+            const formattedTime = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+            timerElement.textContent = formattedTime;
+            totalSeconds++;
+        }
+
+        function disableAllInputs() {
+            document.querySelectorAll('input[type="text"], input[type="checkbox"], select').forEach(input => {
+                input.disabled = true;
+            });
+            document.getElementById('deliver-button').disabled = true;
+            document.removeEventListener('mouseup', handleTextSelection);
+        }
+
+        function showSubmissionModal(title, message) {
+            const modal = document.getElementById('submissionModal');
+            document.getElementById('submissionTitle').textContent = title;
+            document.getElementById('submissionMessage').textContent = message;
+
+            // Calculate time spent
+            const endTime = new Date();
+            const timeDiff = endTime - startTime;
+            const minutes = Math.floor(timeDiff / 60000);
+            const seconds = Math.floor((timeDiff % 60000) / 1000);
+            document.getElementById('timeSpent').textContent = `Time spent: ${minutes}m ${seconds}s`;
+
+            const answersList = document.getElementById('answersList');
+            answersList.innerHTML = '';
+            let score = 0;
+            userAnswers = {};
+
+            // Process Matching Information questions (17-21)
+            for (let i = 17; i <= 21; i++) {
+                const select = document.querySelector(`select[name="q${i}"]`);
+                const userAnswer = select.value || 'Not answered';
+                userAnswers[i] = userAnswer;
+                const correctAnswer = correctAnswers[i];
+                const isCorrect = userAnswer === correctAnswer;
+                if (isCorrect) score++;
+                const answerItem = document.createElement('div');
+                answerItem.className = `answer-item ${isCorrect ? 'correct' : 'incorrect'}`;
+                answerItem.innerHTML = `
+                    <div class="answer-text">Question ${i}: ${userAnswer}</div>
+                    <span class="${isCorrect ? 'correct-answer' : 'incorrect-answer'}">(Correct answer: ${correctAnswer})</span>
+                    <span class="answer-status ${isCorrect ? 'correct-status' : 'incorrect-status'}">
+                        ${isCorrect ? '✓' : '✗'}
+                    </span>
+                `;
+                answersList.appendChild(answerItem);
+            }
+
+            // Process Multiple Choice questions (22-23)
+            const selectedOptions22_23 = Array.from(document.querySelectorAll('input[name="q22_23"]:checked')).map(input => input.value);
+            userAnswers[22] = selectedOptions22_23.length > 0 ? selectedOptions22_23[0] : 'Not answered';
+            userAnswers[23] = selectedOptions22_23.length > 1 ? selectedOptions22_23[1] : 'Not answered';
+            const correctOptions22_23 = [correctAnswers[22], correctAnswers[23]].sort();
+            const userSelected22_23 = selectedOptions22_23.sort();
+            let mcCorrect22_23 = 0;
+            if (userSelected22_23.length === 2 && userSelected22_23[0] === correctOptions22_23[0] && userSelected22_23[1] === correctOptions22_23[1]) {
+                mcCorrect22_23 = 2;
+            } else if (userSelected22_23.length === 1 && correctOptions22_23.includes(userSelected22_23[0])) {
+                mcCorrect22_23 = 1;
+            }
+            score += mcCorrect22_23;
+            const mcAnswerItem22_23 = document.createElement('div');
+            mcAnswerItem22_23.className = `answer-item ${mcCorrect22_23 === 2 ? 'correct' : 'incorrect'}`;
+            mcAnswerItem22_23.innerHTML = `
+                <div class="answer-text">Questions 22-23: ${userSelected22_23.join(', ') || 'Not answered'}</div>
+                <span class="${mcCorrect22_23 === 2 ? 'correct-answer' : 'incorrect-answer'}">(Correct answers: ${correctOptions22_23.join(', ')})</span>
+                <span class="answer-status ${mcCorrect22_23 === 2 ? 'correct-status' : 'incorrect-status'}">
+                    ${mcCorrect22_23 === 2 ? '✓' : '✗'}
+                </span>
+            `;
+            answersList.appendChild(mcAnswerItem22_23);
+
+            // Process Multiple Choice questions (24-25)
+            const selectedOptions24_25 = Array.from(document.querySelectorAll('input[name="q24_25"]:checked')).map(input => input.value);
+            userAnswers[24] = selectedOptions24_25.length > 0 ? selectedOptions24_25[0] : 'Not answered';
+            userAnswers[25] = selectedOptions24_25.length > 1 ? selectedOptions24_25[1] : 'Not answered';
+            const correctOptions24_25 = [correctAnswers[24], correctAnswers[25]].sort();
+            const userSelected24_25 = selectedOptions24_25.sort();
+            let mcCorrect24_25 = 0;
+            if (userSelected24_25.length === 2 && userSelected24_25[0] === correctOptions24_25[0] && userSelected24_25[1] === correctOptions24_25[1]) {
+                mcCorrect24_25 = 2;
+            } else if (userSelected24_25.length === 1 && correctOptions24_25.includes(userSelected24_25[0])) {
+                mcCorrect24_25 = 1;
+            }
+            score += mcCorrect24_25;
+            const mcAnswerItem24_25 = document.createElement('div');
+            mcAnswerItem24_25.className = `answer-item ${mcCorrect24_25 === 2 ? 'correct' : 'incorrect'}`;
+            mcAnswerItem24_25.innerHTML = `
+                <div class="answer-text">Questions 24-25: ${userSelected24_25.join(', ') || 'Not answered'}</div>
+                <span class="${mcCorrect24_25 === 2 ? 'correct-answer' : 'incorrect-answer'}">(Correct answers: ${correctOptions24_25.join(', ')})</span>
+                <span class="answer-status ${mcCorrect24_25 === 2 ? 'correct-status' : 'incorrect-status'}">
+                    ${mcCorrect24_25 === 2 ? '✓' : '✗'}
+                </span>
+            `;
+            answersList.appendChild(mcAnswerItem24_25);
+
+            // Process Multiple Choice questions (26-27)
+            const selectedOptions26_27 = Array.from(document.querySelectorAll('input[name="q26_27"]:checked')).map(input => input.value);
+            userAnswers[26] = selectedOptions26_27.length > 0 ? selectedOptions26_27[0] : 'Not answered';
+            userAnswers[27] = selectedOptions26_27.length > 1 ? selectedOptions26_27[1] : 'Not answered';
+            const correctOptions26_27 = [correctAnswers[26], correctAnswers[27]].sort();
+            const userSelected26_27 = selectedOptions26_27.sort();
+            let mcCorrect26_27 = 0;
+            if (userSelected26_27.length === 2 && userSelected26_27[0] === correctOptions26_27[0] && userSelected26_27[1] === correctOptions26_27[1]) {
+                mcCorrect26_27 = 2;
+            } else if (userSelected26_27.length === 1 && correctOptions26_27.includes(userSelected26_27[0])) {
+                mcCorrect26_27 = 1;
+            }
+            score += mcCorrect26_27;
+            const mcAnswerItem26_27 = document.createElement('div');
+            mcAnswerItem26_27.className = `answer-item ${mcCorrect26_27 === 2 ? 'correct' : 'incorrect'}`;
+            mcAnswerItem26_27.innerHTML = `
+                <div class="answer-text">Questions 26-27: ${userSelected26_27.join(', ') || 'Not answered'}</div>
+                <span class="${mcCorrect26_27 === 2 ? 'correct-answer' : 'incorrect-answer'}">(Correct answers: ${correctOptions26_27.join(', ')})</span>
+                <span class="answer-status ${mcCorrect26_27 === 2 ? 'correct-status' : 'incorrect-status'}">
+                    ${mcCorrect26_27 === 2 ? '✓' : '✗'}
+                </span>
+            `;
+            answersList.appendChild(mcAnswerItem26_27);
+
+            // Process Sentence Completion questions (28-32)
+            for (let i = 28; i <= 32; i++) {
+                const input = document.querySelector(`input[name="q${i}"]`);
+                const userAnswer = input.value.trim().toLowerCase() || 'Not answered';
+                userAnswers[i] = userAnswer;
+                const correctAnswer = correctAnswers[i];
+                const isCorrect = userAnswer === correctAnswer.toLowerCase();
+                if (isCorrect) score++;
+                const answerItem = document.createElement('div');
+                answerItem.className = `answer-item ${isCorrect ? 'correct' : 'incorrect'}`;
+                answerItem.innerHTML = `
+                    <div class="answer-text">Question ${i}: ${userAnswer}</div>
+                    <span class="${isCorrect ? 'correct-answer' : 'incorrect-answer'}">(Correct answer: ${correctAnswer})</span>
+                    <span class="answer-status ${isCorrect ? 'correct-status' : 'incorrect-status'}">
+                        ${isCorrect ? '✓' : '✗'}
+                    </span>
+                `;
+                answersList.appendChild(answerItem);
+            }
+
+            // Update score display
+            document.getElementById('userScore').textContent = score;
+            document.getElementById('totalQuestions').textContent = "16";
+
+            // Calculate IELTS band score
+            const bandScore = calculateBandScore(score);
+            document.getElementById('bandScore').textContent = `Band: ${bandScore.toFixed(1)}`;
+
+            // Calculate performance rating
+            const percentage = (score / 16) * 100;
+            let rating, ratingClass;
+            if (score >= 15) {
+                rating = "Excellent!";
+                ratingClass = "excellent";
+            } else if (score >= 13) {
+                rating = "Very Good";
+                ratingClass = "very-good";
+            } else if (score >= 11) {
+                rating = "Good";
+                ratingClass = "good";
+            } else if (score >= 9) {
+                rating = "Fair";
+                ratingClass = "fair";
+            } else {
+                rating = "Poor - Needs Improvement";
+                ratingClass = "poor";
+            }
+            const ratingElement = document.getElementById('performanceRating');
+            ratingElement.textContent = rating;
+            ratingElement.className = `performance-rating ${ratingClass}`;
+
+            // Highlight answers if submitted
+            if (testSubmitted) {
+                highlightAnswers(correctAnswers);
+            }
+
+            modal.style.display = 'flex';
+            resultsShown = true;
+            const submitButton = document.getElementById('deliver-button');
+            submitButton.innerHTML = '<i class="fas fa-eye"></i> Show My Results';
+            submitButton.disabled = false;
+        }
+
+        function calculateBandScore(score) {
+            if (score >= 15) return 9.0;
+            if (score >= 14) return 8.5;
+            if (score >= 13) return 8.0;
+            if (score >= 12) return 7.5;
+            if (score >= 11) return 7.0;
+            if (score >= 10) return 6.5;
+            if (score >= 9) return 6.0;
+            if (score >= 8) return 5.5;
+            if (score >= 7) return 5.0;
+            return 0.0;
+        }
+
+        function highlightAnswers(correctAnswers) {
+            // Highlight Matching Information questions (17-21)
+            for (let i = 17; i <= 21; i++) {
+                const select = document.querySelector(`select[name="q${i}"]`);
+                const userAnswer = userAnswers[i];
+                const correctAnswer = correctAnswers[i];
+                select.classList.remove('correct', 'incorrect');
+                if (userAnswer && userAnswer !== 'Not answered') {
+                    select.classList.add(userAnswer === correctAnswer ? 'correct' : 'incorrect');
+                    const feedback = document.createElement('span');
+                    feedback.className = `dropdown-answer ${userAnswer === correctAnswer ? 'correct' : 'incorrect'}`;
+                    feedback.textContent = userAnswer === correctAnswer ? '✓ Correct' : `✗ Correct: ${correctAnswer}`;
+                    if (!select.nextElementSibling || !select.nextElementSibling.classList.contains('dropdown-answer')) {
+                        select.parentNode.appendChild(feedback);
+                    }
+                }
+            }
+
+            // Highlight Multiple Choice questions (22-23)
+            document.querySelectorAll('input[name="q22_23"]').forEach(checkbox => {
+                checkbox.classList.remove('correct', 'incorrect');
+                const label = checkbox.nextElementSibling;
+                if (checkbox.checked) {
+                    const isCorrect = [correctAnswers[22], correctAnswers[23]].includes(checkbox.value);
+                    checkbox.classList.add(isCorrect ? 'correct' : 'incorrect');
+                    const feedback = document.createElement('span');
+                    feedback.className = `dropdown-answer ${isCorrect ? 'correct' : 'incorrect'}`;
+                    feedback.textContent = isCorrect ? '✓ Correct' : `✗`;
+                    if (!label.nextElementSibling || !label.nextElementSibling.classList.contains('dropdown-answer')) {
+                        label.parentNode.appendChild(feedback);
+                    }
+                }
+            });
+
+            // Highlight Multiple Choice questions (24-25)
+            document.querySelectorAll('input[name="q24_25"]').forEach(checkbox => {
+                checkbox.classList.remove('correct', 'incorrect');
+                const label = checkbox.nextElementSibling;
+                if (checkbox.checked) {
+                    const isCorrect = [correctAnswers[24], correctAnswers[25]].includes(checkbox.value);
+                    checkbox.classList.add(isCorrect ? 'correct' : 'incorrect');
+                    const feedback = document.createElement('span');
+                    feedback.className = `dropdown-answer ${isCorrect ? 'correct' : 'incorrect'}`;
+                    feedback.textContent = isCorrect ? '✓ Correct' : `✗`;
+                    if (!label.nextElementSibling || !label.nextElementSibling.classList.contains('dropdown-answer')) {
+                        label.parentNode.appendChild(feedback);
+                    }
+                }
+            });
+
+            // Highlight Multiple Choice questions (26-27)
+            document.querySelectorAll('input[name="q26_27"]').forEach(checkbox => {
+                checkbox.classList.remove('correct', 'incorrect');
+                const label = checkbox.nextElementSibling;
+                if (checkbox.checked) {
+                    const isCorrect = [correctAnswers[26], correctAnswers[27]].includes(checkbox.value);
+                    checkbox.classList.add(isCorrect ? 'correct' : 'incorrect');
+                    const feedback = document.createElement('span');
+                    feedback.className = `dropdown-answer ${isCorrect ? 'correct' : 'incorrect'}`;
+                    feedback.textContent = isCorrect ? '✓ Correct' : `✗`;
+                    if (!label.nextElementSibling || !label.nextElementSibling.classList.contains('dropdown-answer')) {
+                        label.parentNode.appendChild(feedback);
+                    }
+                }
+            });
+
+            // Highlight Sentence Completion questions (28-32)
+            for (let i = 28; i <= 32; i++) {
+                const input = document.querySelector(`input[name="q${i}"]`);
+                const userAnswer = userAnswers[i];
+                const correctAnswer = correctAnswers[i].toLowerCase();
+                input.classList.remove('correct', 'incorrect');
+                if (userAnswer && userAnswer !== 'Not answered') {
+                    input.classList.add(userAnswer === correctAnswer ? 'correct' : 'incorrect');
+                    const feedback = document.createElement('span');
+                    feedback.className = `sentence-feedback ${userAnswer === correctAnswer ? 'correct' : 'incorrect'}`;
+                    feedback.textContent = userAnswer === correctAnswer ? '✓ Correct' : `✗ Correct: ${correctAnswers[i]}`;
+                    if (!input.nextElementSibling || !input.nextElementSibling.classList.contains('sentence-feedback')) {
+                        input.parentNode.insertBefore(feedback, input.nextSibling);
+                    }
+                }
+            }
+
+            document.getElementById('answerComparison').style.display = 'block';
+        }
+
+        // Handle manual submission
+        document.getElementById('deliver-button').addEventListener('click', function() {
+            if (resultsShown) {
+                document.getElementById('submissionModal').style.display = 'flex';
+                return;
+            }
+            if (testSubmitted) return;
+            if (confirm('Are you sure you want to submit your test? You won\'t be able to make changes after submission.')) {
+                clearInterval(timerInterval);
+                testSubmitted = true;
+                disableAllInputs();
+                showSubmissionModal('Test Submitted', 'Thank you for completing the test.');
+            }
+        });
+
+        // Close submission modal and show answer comparison
+        document.getElementById('closeSubmission').addEventListener('click', function() {
+            document.getElementById('submissionModal').style.display = 'none';
+            highlightAnswers(correctAnswers);
+        });
+
+        // Start the timer
+        const timerInterval = setInterval(updateTimer, 1000);
+
+        // Settings Modal functionality
+        const settingsButton = document.getElementById('settingsButton');
+        const settingsModal = document.getElementById('settingsModal');
+        const settingsClose = document.getElementById('settingsClose');
+
+        settingsButton.addEventListener('click', function() {
+            settingsModal.style.display = 'flex';
+        });
+
+        settingsClose.addEventListener('click', function() {
+            settingsModal.style.display = 'none';
+        });
+
+        window.addEventListener('click', function(event) {
+            if (event.target === settingsModal) {
+                settingsModal.style.display = 'none';
+            }
+            if (event.target === document.getElementById('submissionModal')) {
+                document.getElementById('submissionModal').style.display = 'none';
+            }
+        });
+
+        // Draggable Divider Functionality
+        const divider = document.getElementById('divider');
+        const passageContainer = document.getElementById('passage-container');
+        const questionsContainer = document.getElementById('questions-container');
+        let isDragging = false;
+        let startX, startPassageWidth;
+
+        divider.addEventListener('mousedown', (e) => {
+            isDragging = true;
+            startX = e.clientX;
+            startPassageWidth = parseInt(document.defaultView.getComputedStyle(passageContainer).width, 10);
+            document.body.style.cursor = 'col-resize';
+            document.addEventListener('mousemove', onMouseMove);
+            document.addEventListener('mouseup', onMouseUp);
+            e.preventDefault();
+        });
+
+        function onMouseMove(e) {
+            if (!isDragging) return;
+            const containerWidth = document.querySelector('.test-container').offsetWidth;
+            const newPassageWidth = startPassageWidth + e.clientX - startX;
+            const minWidth = containerWidth * 0.3;
+            const maxWidth = containerWidth * 0.7;
+            if (newPassageWidth >= minWidth && newPassageWidth <= maxWidth) {
+                passageContainer.style.width = `${newPassageWidth}px`;
+            }
+        }
+
+        function onMouseUp() {
+            isDragging = false;
+            document.body.style.cursor = '';
+            document.removeEventListener('mousemove', onMouseMove);
+            document.removeEventListener('mouseup', onMouseUp);
+        }
+
+        divider.addEventListener('selectstart', (e) => {
+            if (isDragging) e.preventDefault();
+        });
+
+        // Question navigation functionality
+        document.querySelectorAll('.subQuestion').forEach(button => {
+            button.addEventListener('click', function() {
+                document.querySelectorAll('.subQuestion').forEach(btn => {
+                    btn.classList.remove('active');
+                });
+                this.classList.add('active');
+                const questionNumber = parseInt(this.textContent.trim());
+                if (questionNumber >= 17 && questionNumber <= 21) {
+                    document.querySelector('.question:nth-of-type(1)').scrollIntoView({ behavior: 'smooth' });
+                } else if (questionNumber >= 22 && questionNumber <= 23) {
+                    document.querySelector('.question:nth-of-type(2)').scrollIntoView({ behavior: 'smooth' });
+                } else if (questionNumber >= 24 && questionNumber <= 25) {
+                    document.querySelector('.question:nth-of-type(3)').scrollIntoView({ behavior: 'smooth' });
+                } else if (questionNumber >= 26 && questionNumber <= 27) {
+                    document.querySelector('.question:nth-of-type(4)').scrollIntoView({ behavior: 'smooth' });
+                } else if (questionNumber >= 28 && questionNumber <= 32) {
+                    document.querySelector('.question:nth-of-type(5)').scrollIntoView({ behavior: 'smooth' });
+                }
+            });
+        });
+
+        // Enhanced Highlighting functionality
+        const highlightToolbar = document.getElementById('highlightToolbar');
+        let selectedText = '';
+        let selectedRange = null;
+        let currentHighlightColor = null;
+
+        document.querySelectorAll('#passageContent, .questions-container').forEach(element => {
+            element.style.userSelect = 'text';
+            element.style.webkitUserSelect = 'text';
+        });
+
+        function handleTextSelection() {
+            const selection = window.getSelection();
+            selectedText = selection.toString().trim();
+            if (selectedText.length > 0 && isTextInContent(selection)) {
+                selectedRange = selection.getRangeAt(0);
+                const rangeRect = selectedRange.getBoundingClientRect();
+                highlightToolbar.style.display = 'block';
+                highlightToolbar.style.top = `${rangeRect.top + window.scrollY - 35}px`;
+                highlightToolbar.style.left = `${rangeRect.left + window.scrollX + (rangeRect.width / 2)}px`;
+            } else {
+                highlightToolbar.style.display = 'none';
+            }
+        }
+
+        function isTextInContent(selection) {
+            if (!selection.rangeCount) return false;
+            const range = selection.getRangeAt(0);
+            const contentAreas = document.querySelectorAll('#passageContent, .question-content');
+            return Array.from(contentAreas).some(area => area.contains(range.commonAncestorContainer));
+        }
+
+        document.addEventListener('mouseup', handleTextSelection);
+
+        document.addEventListener('mousedown', function(e) {
+            if (!highlightToolbar.contains(e.target)) {
+                highlightToolbar.style.display = 'none';
+            }
+        });
+
+        document.querySelectorAll('.highlight-color').forEach(button => {
+            button.addEventListener('click', function() {
+                currentHighlightColor = this.dataset.color;
+                applyHighlight();
+            });
+        });
+
+        function applyHighlight() {
+            if (selectedText.length > 0 && selectedRange) {
+                const hasHighlights = checkForHighlightsInRange(selectedRange);
+                if (hasHighlights) {
+                    removeHighlightsInRange(selectedRange);
+                } else if (currentHighlightColor) {
+                    const span = document.createElement('span');
+                    span.className = `highlight ${currentHighlightColor}`;
+                    selectedRange.surroundContents(span);
+                }
+                window.getSelection().removeAllRanges();
+                highlightToolbar.style.display = 'none';
+            }
+        }
+
+        function checkForHighlightsInRange(range) {
+            const documentFragment = range.cloneContents();
+            const tempDiv = document.createElement('div');
+            tempDiv.appendChild(documentFragment);
+            return tempDiv.querySelector('.highlight') !== null;
+        }
+
+        function removeHighlightsInRange(range) {
+            const documentFragment = range.cloneContents();
+            const tempDiv = document.createElement('div');
+            tempDiv.appendChild(documentFragment);
+            const highlights = tempDiv.querySelectorAll('.highlight');
+            if (highlights.length > 0) {
+                const newRange = range.cloneRange();
+                const fragment = newRange.extractContents();
+                const textFragment = document.createDocumentFragment();
+                extractTextNodes(fragment, textFragment);
+                newRange.insertNode(textFragment);
+            }
+        }
+
+        function extractTextNodes(source, destination) {
+            const walker = document.createTreeWalker(
+                source,
+                NodeFilter.SHOW_TEXT | NodeFilter.SHOW_ELEMENT,
+                null,
+                false
+            );
+            let node;
+            while (node = walker.nextNode()) {
+                if (node.nodeType === Node.TEXT_NODE) {
+                    destination.appendChild(document.createTextNode(node.nodeValue));
+                } else if (!node.classList.contains('highlight')) {
+                    const container = node.cloneNode(false);
+                    extractTextNodes(node, container);
+                    destination.appendChild(container);
+                }
+            }
+        }
+
+        document.querySelector('.highlight-toolbar .remove').addEventListener('click', function() {
+            if (selectedText.length > 0 && selectedRange) {
+                removeHighlightsInRange(selectedRange);
+                window.getSelection().removeAllRanges();
+                highlightToolbar.style.display = 'none';
+            }
+        });
+
+        // Mark questions as attempted when answered
+        document.querySelectorAll('select, input[type="text"], input[type="checkbox"]').forEach(input => {
+            input.addEventListener('change', function() {
+                let questionNumber;
+                if (this.name.startsWith('q') && this.name.length <= 3) {
+                    questionNumber = parseInt(this.name.replace('q', ''));
+                } else if (this.name.startsWith('q22_23') || this.name.startsWith('q24_25') || this.name.startsWith('q26_27')) {
+                    // For multiple choice questions with multiple answers
+                    const baseNumber = parseInt(this.name.split('_')[0].replace('q', ''));
+                    questionNumber = baseNumber;
+                } else {
+                    return;
+                }
+                const questionButton = document.querySelector(`.subQuestion[data-ordernumber="${questionNumber}"]`);
+                if (questionButton && (this.value || this.value.trim() || this.checked)) {
+                    questionButton.classList.add('attempted');
+                }
+            });
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,1106 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>IELTS Reading Comprehension - Passage 2</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --bg-color: #ffffff;
+            --text-color: #333333;
+            --passage-bg: #f8f9fa;
+            --questions-bg: #ffffff;
+            --border-color: #e0e0e0;
+            --highlight-color: #ffff00;
+            --header-bg: #F8F8F8;
+            --header-text: #333333;
+            --button-bg: #CC0000;
+            --button-hover: #A30000;
+            --correct-color: #28a745;
+            --incorrect-color: #dc3545;
+            --progress-complete: #28a745;
+            --progress-incomplete: #bdbdbd;
+            --timer-bg: #ffebee;
+            --timer-text: #d32f2f;
+            --footer-bg: #f5f5f5;
+            --telegram-color: #0088cc;
+        }
+
+        .night-mode {
+            --bg-color: #121212;
+            --text-color: #e0e0e0;
+            --passage-bg: #1e1e1e;
+            --questions-bg: #1e1e1e;
+            --border-color: #424242;
+            --highlight-color: #cccc00;
+            --header-bg: #1a1a1a;
+            --header-text: #ffffff;
+            --button-bg: #990000;
+            --button-hover: #7a0000;
+            --correct-color: #218838;
+            --incorrect-color: #c82333;
+            --progress-complete: #218838;
+            --progress-incomplete: #616161;
+            --timer-bg: #420000;
+            --timer-text: #ffcdd2;
+            --footer-bg: #121212;
+            --telegram-color: #33a8e0;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            transition: background-color 0.3s, color 0.3s;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            line-height: 1.6;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        header {
+            background-color: var(--header-bg);
+            color: var(--header-text);
+            padding: 12px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            z-index: 100;
+        }
+
+        .header-left {
+            display: flex;
+            align-items: center;
+        }
+
+        .telegram-btn {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            background-color: var(--telegram-color);
+            color: white;
+            text-decoration: none;
+            padding: 8px 15px;
+            border-radius: 50px;
+            font-weight: 600;
+            font-size: 14px;
+            transition: background-color 0.3s, transform 0.2s;
+        }
+
+        .telegram-btn:hover {
+            background-color: #0077b5;
+            transform: translateY(-2px);
+        }
+
+        .header-controls {
+            display: flex;
+            gap: 15px;
+            align-items: center;
+        }
+
+        .timer-container {
+            background-color: var(--timer-bg);
+            color: var(--timer-text);
+            padding: 8px 15px;
+            border-radius: 50px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .timer-controls {
+            display: flex;
+            gap: 8px;
+        }
+
+        .timer-controls button {
+            background: none;
+            border: none;
+            color: var(--timer-text);
+            cursor: pointer;
+            font-size: 16px;
+            padding: 4px;
+            border-radius: 50%;
+            width: 28px;
+            height: 28px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .timer-controls button:hover {
+            background-color: rgba(0,0,0,0.1);
+        }
+        .night-mode .timer-controls button:hover {
+            background-color: rgba(255,255,255,0.2);
+        }
+
+        .mode-toggle {
+            background: none;
+            border: none;
+            color: var(--header-text);
+            cursor: pointer;
+            font-size: 20px;
+            padding: 6px;
+            border-radius: 50%;
+            width: 36px;
+            height: 36px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .mode-toggle:hover {
+            background-color: rgba(0,0,0,0.1);
+        }
+        .night-mode .mode-toggle:hover {
+            background-color: rgba(255,255,255,0.2);
+        }
+
+        main {
+            display: flex;
+            flex: 1;
+            overflow: hidden;
+        }
+
+        .passage-container, .questions-container {
+            height: 100%;
+            overflow-y: auto;
+            padding: 20px;
+        }
+
+        .passage-container {
+            width: 50%;
+            background-color: var(--passage-bg);
+            border-right: 1px solid var(--border-color);
+            position: relative;
+        }
+
+        .questions-container {
+            width: 50%;
+            background-color: var(--questions-bg);
+        }
+
+        .passage-content {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .passage-title {
+            font-size: 24px;
+            font-weight: 700;
+            margin-bottom: 20px;
+            color: var(--text-color);
+            padding-bottom: 10px;
+            border-bottom: 2px solid var(--border-color);
+        }
+
+        .passage-text {
+            font-size: 17px;
+        }
+
+        .question-text {
+            font-size: 17px;
+            line-height: 1.8;
+        }
+
+        .passage-text p {
+            margin-bottom: 20px;
+            text-align: justify;
+        }
+
+        .highlight {
+            background-color: var(--highlight-color);
+            cursor: pointer;
+            position: relative;
+        }
+
+        .highlight-tooltip {
+            position: absolute;
+            background-color: #333;
+            color: white;
+            padding: 5px 10px;
+            border-radius: 4px;
+            font-size: 14px;
+            z-index: 1000;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            top: -30px;
+            left: 50%;
+            transform: translateX(-50%);
+        }
+
+        .section-title {
+            font-size: 18px;
+            font-weight: 600;
+            margin: 25px 0 15px;
+            color: var(--text-color);
+            padding-bottom: 8px;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .question-group {
+            margin-bottom: 30px;
+        }
+
+        .question {
+            margin-bottom: 25px;
+            padding: 15px;
+            border-radius: 8px;
+            background-color: var(--passage-bg);
+            border-left: 4px solid var(--border-color);
+        }
+
+        .question-title {
+            font-weight: 600;
+            margin-bottom: 12px;
+            display: flex;
+            align-items: baseline;
+        }
+
+        .question-number {
+            display: inline-block;
+            width: 28px;
+            height: 28px;
+            background-color: var(--progress-incomplete);
+            color: white;
+            border-radius: 50%;
+            text-align: center;
+            line-height: 28px;
+            margin-right: 10px;
+            font-size: 14px;
+            flex-shrink: 0;
+        }
+
+        .question.answered .question-number {
+            background-color: var(--progress-complete);
+        }
+
+        .options {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+            margin-top: 8px;
+        }
+
+        .option {
+            display: flex;
+            align-items: center;
+            cursor: pointer;
+        }
+
+        .option input {
+            margin-right: 8px;
+        }
+
+        .fill-in-the-blank, .question select {
+            background: transparent;
+            border: none;
+            border-bottom: 2px solid var(--text-color);
+            width: 150px;
+            font-family: inherit;
+            font-size: 1em;
+            color: inherit;
+            padding: 0 4px 2px 4px;
+            margin: 0 3px;
+            vertical-align: baseline;
+            text-align: center;
+            outline: none;
+            transition: border-color 0.3s;
+        }
+
+        .fill-in-the-blank:focus, .question select:focus {
+            border-bottom-color: var(--button-bg);
+        }
+
+        .researcher-list {
+            padding: 10px;
+            margin: 15px 0;
+            background-color: #e9e9e9;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+
+        .instructions {
+            font-size: 14px;
+            color: #757575;
+            margin-top: 5px;
+            font-style: italic;
+        }
+
+        footer {
+            background-color: var(--footer-bg);
+            padding: 15px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-top: 1px solid var(--border-color);
+            box-shadow: 0 -2px 5px rgba(0,0,0,0.05);
+        }
+
+        .progress-container {
+            display: flex;
+            gap: 8px;
+        }
+
+        .progress-item {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            background-color: var(--progress-incomplete);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+
+        .progress-item:hover {
+            transform: scale(1.1);
+        }
+
+        .progress-item.completed {
+            background-color: var(--progress-complete);
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 12px;
+        }
+
+        button {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: background-color 0.3s, border-color 0.3s, color 0.3s;
+        }
+
+        .btn-primary {
+            background-color: var(--button-bg);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background-color: var(--button-hover);
+        }
+
+        .btn-secondary {
+            background-color: transparent;
+            border: 1px solid var(--button-bg);
+            color: var(--button-bg);
+        }
+
+        .btn-secondary:hover {
+            background-color: rgba(204, 0, 0, 0.1);
+        }
+        .night-mode .btn-secondary:hover {
+            background-color: rgba(153, 0, 0, 0.2);
+        }
+
+        .feedback-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.7);
+            z-index: 1000;
+            display: none;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .feedback-container {
+            background-color: var(--passage-bg);
+            width: 90%;
+            max-width: 900px;
+            height: 90%;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+            display: flex;
+            flex-direction: column;
+        }
+
+        .feedback-header {
+            padding: 20px;
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .feedback-title {
+            font-size: 22px;
+            font-weight: 700;
+            color: var(--text-color);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        #close-feedback {
+            font-size: 24px;
+            background: none;
+            border: none;
+            color: var(--text-color);
+            cursor: pointer;
+        }
+
+        .score-display {
+            font-size: 24px;
+            font-weight: 700;
+            margin-left: 10px;
+        }
+
+        .feedback-body {
+            padding: 20px;
+            overflow-y: auto;
+        }
+
+        .feedback-item {
+            margin-bottom: 25px;
+            padding: 15px;
+            border-radius: 8px;
+            background-color: var(--questions-bg);
+        }
+
+        .feedback-question {
+            font-weight: 600;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+        }
+
+        .feedback-answer {
+            margin-bottom: 10px;
+            padding: 8px 12px;
+            border-radius: 4px;
+            background-color: rgba(0,0,0,0.05);
+        }
+
+        .correct {
+            color: var(--correct-color);
+        }
+
+        .incorrect {
+            color: var(--incorrect-color);
+        }
+
+        .feedback-explanation {
+            margin-top: 10px;
+            padding: 10px;
+            border-left: 3px solid var(--button-bg);
+            background-color: rgba(0,0,0,0.03);
+        }
+
+        .feedback-passage {
+            margin-top: 8px;
+            font-style: italic;
+            color: #757575;
+        }
+
+        @media (max-width: 900px) {
+            main {
+                flex-direction: column;
+            }
+            
+            .passage-container, .questions-container {
+                width: 100%;
+                height: 50%;
+            }
+            
+            .passage-container {
+                border-right: none;
+                border-bottom: 1px solid var(--border-color);
+            }
+            
+            .progress-container {
+                flex-wrap: wrap;
+                max-width: 60%;
+            }
+        }
+
+        @media (max-width: 600px) {
+            header {
+                flex-direction: column;
+                gap: 10px;
+                padding: 10px;
+            }
+            .header-left, .header-controls {
+                width: 100%;
+                justify-content: center;
+            }
+            .progress-container {
+                max-width: 50%;
+            }
+            .progress-item {
+                width: 26px;
+                height: 26px;
+                font-size: 12px;
+            }
+            footer {
+                flex-direction: column;
+                gap: 15px;
+            }
+            .action-buttons {
+                width: 100%;
+                justify-content: center;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="header-left">
+            
+        </div>
+        <div class="header-controls">
+            <div class="timer-container">
+                <i class="fas fa-clock"></i>
+                <span id="timer">20:00</span>
+                <div class="timer-controls">
+                    <button id="start-timer" title="Start"><i class="fas fa-play"></i></button>
+                    <button id="pause-timer" title="Pause"><i class="fas fa-pause"></i></button>
+                    <button id="reset-timer" title="Reset"><i class="fas fa-redo"></i></button>
+                </div>
+            </div>
+            <button class="mode-toggle" id="night-mode-toggle" title="Toggle Night Mode">
+                <i class="fas fa-moon"></i>
+            </button>
+        </div>
+    </header>
+
+    <main>
+        <div class="passage-container" id="passage-container">
+            <div class="passage-content">
+                <div class="passage-title">Reading Passage 2: What kind of structure will make living in space comfortable for us?</div>
+                <div class="passage-text" id="passage-text">
+                    <p><strong>A</strong> In the future, says Brent Sherwood, there will be a different kind of holiday. Imagine a hotel with a view that's constantly changing, where there are 18 sunrises a day, where food floats into your mouth. Sherwood trained as an architect and aerospace engineer. He is convinced it's only a matter of time before space becomes a desirable destination, and we're living on the Moon, and then, Mars. There's only one drawback. 'Nobody knows how to cook in space,' he says. 'No one would pay $1 million a night for a space hotel and put up with microwave meals.' Until now, says Sherwood, space habitats have been about the basics. But as more people stay in space for increasingly long periods, their physical environment is becoming more important.</p>
+                    <p><strong>B</strong> Experts like to contrast the first space station, Skylab, with the current International Space Station (ISS). Skylab was a generous habitat in comparison to the ISS because it was recycled out of a tank formerly used for storing fuel on an obsolete rocket. Designer Raymond Loewy put in a tiny window, which became a popular feature with the astronauts. When engineers designed the ISS, one of the things they had to consider was greater comfort, and this resulted in a number of design innovations, particularly when it came to the highly unusual beds the astronauts use - always a big problem in a zero-gravity environment. One ongoing issue is the transportation of essential cargo into space. It is extremely expensive to send essential deliveries to their destination by spacecraft - for example, it would cost $500,000 to send a single brick by spacecraft to the Moon.</p>
+                    <p><strong>C</strong> Consequently, the challenge has been to develop lightweight materials and kits. For this reason, attention is shifting towards inflatable structures, allowing entire habitats to be folded and packed on board. Aerospace company Bigelow won a contract with the National Aeronautics and Space Administration (NASA) to install the first inflatable on the ISS. It looks like a flimsy tinfoil balloon, but the Bigelow Expandable Activity Module is constructed using one of the most advanced fabrics ever developed by scientists. It has a layer of 'liquid crystal polyarylate superfibre', which makes it immensely tough and can survive the impact of small meteoroids.</p>
+                    <p><strong>D</strong> Trotti went on to co-found the Sasakawa International Center for Space Architecture, which offers a space architecture master's program. Trotti explains that every year, one aim of the program is to inspire young students to work on projects that will "push established NASA scientists to dream further, with creative and inspirational visions for future spaceships and buildings on the Moon, Mars, and beyond. 'If you look at the history of the industry, what we do in space is a mirror for our contemporary values on Earth,' says architect Neil Leach. Just like our earthly priorities, environmental sustainability is now top of the space agenda. The Apollo program was part of the rivalry between the old USSR and the USA; the ISS was a defining moment of international collaboration, and now we're seeing private entrepreneurs leading the way."</p>
+                    <p><strong>E</strong> Scientists at NASA have begun to consider the possibility of using things such as moon dust and meteoroids for building. "The Moon's surface is an open mine of potential resources," says space architect Madhu Thangavelu. "It is full of accessible minerals and compounds that could be used to produce metals, bricks, and glass." Thangavelu has worked to develop a method of Moon-based 3D printing, using moon dust, concrete, and sulfur. The technique they use would create structures that have high, rounded ceilings and walls of many layers, resembling the Gothic designs that emerged in European architecture from around the 12th century. Another leading architectural company has been developing a technique for 3D printing for the European Space Agency, based on building up a moon dust shell over a network of round domes.</p>
+                    <p><strong>F</strong> Getting to Mars is likely to cost $100 billion, spread over several decades. "Mars is the new world," says Robert Zubrin, engineer and president of the Mars Society. He imagines a world of greenhouses initially transported from Earth, "opening up the planet to both human habitation and agriculture." It is a plan the Mars Society illustrates with images of people in spacesuits watering crops and holding hands among radiant red rocks. Although this may seem somewhat far-fetched and optimistic, at least for the foreseeable future, it is certain that deep-space exploration will be the biggest challenge for international architects, Trotti says. "The key question is how to build an environment in which you can live for three years in a confined space, with the same people, in peace. Virtual reality could be an answer, allowing people to escape mentally, reduce anxiety, visit their hometown, or study remotely."</p>
+                </div>
+            </div>
+        </div>
+        
+        <div class="questions-container" id="questions-container">
+            <div class="section-title">Questions 14-17</div>
+            <div class="instructions">Reading Passage 2 has six paragraphs, A-F. Which paragraph contains the following information? Write the correct letter, A-F, in boxes 14-17 on your answer sheet.</div>
+            <div class="question-group">
+                <div class="question" id="q14">
+                    <div class="question-title">
+                        <div class="question-number">14</div>
+                        <div class="question-text">The suggestion that space exploration has been driven by both international competition and cooperation.</div>
+                    </div>
+                    <div class="options">
+                        <label class="option"><input type="radio" name="q14" value="A"> A</label>
+                        <label class="option"><input type="radio" name="q14" value="B"> B</label>
+                        <label class="option"><input type="radio" name="q14" value="C"> C</label>
+                        <label class="option"><input type="radio" name="q14" value="D"> D</label>
+                        <label class="option"><input type="radio" name="q14" value="E"> E</label>
+                        <label class="option"><input type="radio" name="q14" value="F"> F</label>
+                    </div>
+                </div>
+                <div class="question" id="q15">
+                    <div class="question-title">
+                        <div class="question-number">15</div>
+                        <div class="question-text">An example of a new man-made material that is extremely strong.</div>
+                    </div>
+                    <div class="options">
+                        <label class="option"><input type="radio" name="q15" value="A"> A</label>
+                        <label class="option"><input type="radio" name="q15" value="B"> B</label>
+                        <label class="option"><input type="radio" name="q15" value="C"> C</label>
+                        <label class="option"><input type="radio" name="q15" value="D"> D</label>
+                        <label class="option"><input type="radio" name="q15" value="E"> E</label>
+                        <label class="option"><input type="radio" name="q15" value="F"> F</label>
+                    </div>
+                </div>
+                <div class="question" id="q16">
+                    <div class="question-title">
+                        <div class="question-number">16</div>
+                        <div class="question-text">A mention of a way in which people could use technology to cope with stress.</div>
+                    </div>
+                    <div class="options">
+                        <label class="option"><input type="radio" name="q16" value="A"> A</label>
+                        <label class="option"><input type="radio" name="q16" value="B"> B</label>
+                        <label class="option"><input type="radio" name="q16" value="C"> C</label>
+                        <label class="option"><input type="radio" name="q16" value="D"> D</label>
+                        <label class="option"><input type="radio" name="q16" value="E"> E</label>
+                        <label class="option"><input type="radio" name="q16" value="F"> F</label>
+                    </div>
+                </div>
+                <div class="question" id="q17">
+                    <div class="question-title">
+                        <div class="question-number">17</div>
+                        <div class="question-text">Reference to Moon buildings that would be similar to a historic building style on Earth.</div>
+                    </div>
+                    <div class="options">
+                        <label class="option"><input type="radio" name="q17" value="A"> A</label>
+                        <label class="option"><input type="radio" name="q17" value="B"> B</label>
+                        <label class="option"><input type="radio" name="q17" value="C"> C</label>
+                        <label class="option"><input type="radio" name="q17" value="D"> D</label>
+                        <label class="option"><input type="radio" name="q17" value="E"> E</label>
+                        <label class="option"><input type="radio" name="q17" value="F"> F</label>
+                    </div>
+                </div>
+            </div>
+
+            <div class="section-title">Questions 18-23</div>
+            <div class="instructions">Look at the following statements (Questions 18-23) and the list of architects and engineers below. Match each statement with the correct architect or engineer, A-E. Write the correct letter, A-E, in boxes 18-23 on your answer sheet. <br><strong>NB</strong> You may use any letter more than once.</div>
+            <div class="researcher-list">
+                <strong>List of Architects and Engineers</strong><br>
+                <strong>A</strong> Brent Sherwood<br>
+                <strong>C</strong> Neil Leach<br>
+                <strong>D</strong> Madhu Thangavelu<br>
+                <strong>E</strong> Robert Zubrin
+            </div>
+            <div class="question-group">
+                <div class="question" id="q18">
+                    <div class="question-title">
+                        <div class="question-number">18</div>
+                        <div class="question-text">The main issue is creating accommodation that will maintain friendly human relationships.</div>
+                    </div>
+                    <select name="q18">
+                        <option value="">Select Architect/Engineer...</option>
+                        <option value="A">A</option>
+                        <option value="B">B</option>
+                        <option value="C">C</option>
+                        <option value="D">D</option>
+                        <option value="E">E</option>
+                    </select>
+                </div>
+                <div class="question" id="q19">
+                    <div class="question-title">
+                        <div class="question-number">19</div>
+                        <div class="question-text">Innovations in spacecraft and architectural development reflect changing social beliefs on Earth.</div>
+                    </div>
+                    <select name="q19">
+                        <option value="">Select Architect/Engineer...</option>
+                        <option value="A">A</option>
+                        <option value="B">B</option>
+                        <option value="C">C</option>
+                        <option value="D">D</option>
+                        <option value="E">E</option>
+                    </select>
+                </div>
+                <div class="question" id="q20">
+                    <div class="question-title">
+                        <div class="question-number">20</div>
+                        <div class="question-text">People will be reluctant to go on a space vacation unless good service is available.</div>
+                    </div>
+                    <select name="q20">
+                        <option value="">Select Architect/Engineer...</option>
+                        <option value="A">A</option>
+                        <option value="B">B</option>
+                        <option value="C">C</option>
+                        <option value="D">D</option>
+                        <option value="E">E</option>
+                    </select>
+                </div>
+                <div class="question" id="q21">
+                    <div class="question-title">
+                        <div class="question-number">21</div>
+                        <div class="question-text">It is possible to use natural materials found on the Moon to build a structure.</div>
+                    </div>
+                    <select name="q21">
+                        <option value="">Select Architect/Engineer...</option>
+                        <option value="A">A</option>
+                        <option value="B">B</option>
+                        <option value="C">C</option>
+                        <option value="D">D</option>
+                        <option value="E">E</option>
+                    </select>
+                </div>
+                <div class="question" id="q22">
+                    <div class="question-title">
+                        <div class="question-number">22</div>
+                        <div class="question-text">It might be possible to create the kind of structure that will allow plants to be grown on another planet.</div>
+                    </div>
+                    <select name="q22">
+                        <option value="">Select Architect/Engineer...</option>
+                        <option value="A">A</option>
+                        <option value="B">B</option>
+                        <option value="C">C</option>
+                        <option value="D">D</option>
+                        <option value="E">E</option>
+                    </select>
+                </div>
+                <div class="question" id="q23">
+                    <div class="question-title">
+                        <div class="question-number">23</div>
+                        <div class="question-text">Newer generations of architects can encourage forward thinking in spacecraft and architectural design.</div>
+                    </div>
+                    <select name="q23">
+                        <option value="">Select Architect/Engineer...</option>
+                        <option value="A">A</option>
+                        <option value="B">B</option>
+                        <option value="C">C</option>
+                        <option value="D">D</option>
+                        <option value="E">E</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="section-title">Questions 24-26</div>
+            <div class="instructions">Complete the sentences below. Choose <strong>ONE WORD ONLY</strong> from the passage for each answer. Write your answers in boxes 24-26 on your answer sheet.</div>
+            <div class="question-group">
+                <div class="question" id="q24">
+                    <div class="question-title">
+                        <div class="question-number">24</div>
+                        <div class="question-text">Skylab was made from a tank that had once contained a rocket's <input type="text" name="q24" class="fill-in-the-blank">.</div>
+                    </div>
+                </div>
+                <div class="question" id="q25">
+                    <div class="question-title">
+                        <div class="question-number">25</div>
+                        <div class="question-text">Personnel on Skylab were happy that a <input type="text" name="q25" class="fill-in-the-blank"> was added to their craft.</div>
+                    </div>
+                </div>
+                <div class="question" id="q26">
+                    <div class="question-title">
+                        <div class="question-number">26</div>
+                        <div class="question-text">The ISS has more comfortable facilities than Skylab, including redesigned <input type="text" name="q26" class="fill-in-the-blank">.</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <footer>
+        <div class="progress-container" id="progress-container"></div>
+        <div class="action-buttons">
+            <button class="btn-secondary" id="reset-btn">Reset Answers</button>
+            <button class="btn-primary" id="submit-btn">Submit Answers</button>
+        </div>
+    </footer>
+
+    <div class="feedback-overlay" id="feedback-overlay">
+        <div class="feedback-container" id="feedback-container">
+            <div class="feedback-header">
+                <div class="feedback-title">
+                    <i class="fas fa-chart-bar"></i> Your Results
+                    <span class="score-display" id="score-display">0/13</span>
+                </div>
+                <button id="close-feedback" title="Close"><i class="fas fa-times"></i></button>
+            </div>
+            <div class="feedback-body" id="feedback-body"></div>
+        </div>
+    </div>
+
+    <script type="text/javascript">
+        // ... остальной JavaScript код остается без изменений ...
+        var gk_isXlsx = false;
+        var gk_xlsxFileLookup = {};
+        var gk_fileData = {};
+        function filledCell(cell) {
+            return cell !== '' && cell != null;
+        }
+        function loadFileData(filename) {
+            if (gk_isXlsx && gk_xlsxFileLookup[filename]) {
+                try {
+                    var workbook = XLSX.read(gk_fileData[filename], { type: 'base64' });
+                    var firstSheetName = workbook.SheetNames[0];
+                    var worksheet = workbook.Sheets[firstSheetName];
+                    var jsonData = XLSX.utils.sheet_to_json(worksheet, { header: 1, blankrows: false, defval: '' });
+                    var filteredData = jsonData.filter(row => row.some(filledCell));
+                    var headerRowIndex = filteredData.findIndex((row, index) =>
+                        row.filter(filledCell).length >= filteredData[index + 1]?.filter(filledCell).length
+                    );
+                    if (headerRowIndex === -1 || headerRowIndex > 25) {
+                        headerRowIndex = 0;
+                    }
+                    var csv = XLSX.utils.aoa_to_sheet(filteredData.slice(headerRowIndex));
+                    csv = XLSX.utils.sheet_to_csv(csv, { header: 1 });
+                    return csv;
+                } catch (e) {
+                    console.error(e);
+                    return "";
+                }
+            }
+            return gk_fileData[filename] || "";
+        }
+
+        // Timer functionality
+        let timerInterval;
+        let seconds = 1200; // 20 minutes
+        let timerRunning = false;
+
+        const timerDisplay = document.getElementById('timer');
+        const startTimer = document.getElementById('start-timer');
+        const pauseTimer = document.getElementById('pause-timer');
+        const resetTimer = document.getElementById('reset-timer');
+
+        function formatTime(seconds) {
+            const mins = Math.floor(seconds / 60).toString().padStart(2, '0');
+            const secs = (seconds % 60).toString().padStart(2, '0');
+            return `${mins}:${secs}`;
+        }
+
+        function updateTimer() {
+            timerDisplay.textContent = formatTime(seconds);
+            if (seconds <= 0) {
+                clearInterval(timerInterval);
+                timerRunning = false;
+                document.getElementById('submit-btn').click();
+            }
+        }
+
+        startTimer.addEventListener('click', () => {
+            if (!timerRunning) {
+                timerRunning = true;
+                timerInterval = setInterval(() => {
+                    seconds--;
+                    updateTimer();
+                }, 1000);
+            }
+        });
+
+        pauseTimer.addEventListener('click', () => {
+            if (timerRunning) {
+                clearInterval(timerInterval);
+                timerRunning = false;
+            }
+        });
+
+        resetTimer.addEventListener('click', () => {
+            clearInterval(timerInterval);
+            timerRunning = false;
+            seconds = 1200;
+            updateTimer();
+        });
+
+        // Night mode toggle
+        const nightModeToggle = document.getElementById('night-mode-toggle');
+        nightModeToggle.addEventListener('click', () => {
+            document.body.classList.toggle('night-mode');
+            const icon = nightModeToggle.querySelector('i');
+            if (document.body.classList.contains('night-mode')) {
+                icon.classList.remove('fa-moon');
+                icon.classList.add('fa-sun');
+            } else {
+                icon.classList.remove('fa-sun');
+                icon.classList.add('fa-moon');
+            }
+        });
+
+        // Initialize progress indicators
+        const progressContainer = document.getElementById('progress-container');
+        for (let i = 1; i <= 13; i++) {
+            const progressItem = document.createElement('div');
+            progressItem.className = 'progress-item';
+            progressItem.textContent = i;
+            progressItem.dataset.question = i;
+            progressItem.addEventListener('click', () => {
+                const questionElement = document.getElementById(`q${i}`);
+                if (questionElement) {
+                    questionElement.scrollIntoView({ behavior: 'smooth' });
+                }
+            });
+            progressContainer.appendChild(progressItem);
+        }
+
+        // Update progress when answers are selected
+        document.querySelectorAll('input, select').forEach(element => {
+            element.addEventListener('change', () => {
+                updateProgress();
+            });
+        });
+
+        function updateProgress() {
+            document.querySelectorAll('.progress-item').forEach(item => {
+                const questionNum = parseInt(item.dataset.question);
+                const questionElement = document.getElementById(`q${questionNum}`);
+                const questionAnswered = isQuestionAnswered(questionNum);
+                
+                if (questionAnswered) {
+                    item.classList.add('completed');
+                    questionElement.classList.add('answered');
+                } else {
+                    item.classList.remove('completed');
+                    questionElement.classList.remove('answered');
+                }
+            });
+        }
+
+        function isQuestionAnswered(questionNum) {
+            if (questionNum <= 17) {
+                // Questions 14-17 are radio buttons
+                return document.querySelector(`input[name="q${questionNum}"]:checked`) !== null;
+            } else if (questionNum <= 23) {
+                // Questions 18-23 are dropdowns
+                return document.querySelector(`select[name="q${questionNum}"]`).value !== '';
+            } else {
+                // Questions 24-26 are text inputs
+                return document.querySelector(`input[name="q${questionNum}"]`).value.trim() !== '';
+            }
+        }
+
+        // Reset button functionality
+        document.getElementById('reset-btn').addEventListener('click', () => {
+            if (confirm('Are you sure you want to reset all answers?')) {
+                document.querySelectorAll('input[type="radio"]').forEach(radio => {
+                    radio.checked = false;
+                });
+                document.querySelectorAll('select').forEach(select => {
+                    select.value = '';
+                });
+                document.querySelectorAll('input[type="text"]').forEach(textInput => {
+                    textInput.value = '';
+                });
+                updateProgress();
+            }
+        });
+
+        // Submit button functionality
+        document.getElementById('submit-btn').addEventListener('click', () => {
+            showResults();
+        });
+
+        // Close feedback overlay
+        document.getElementById('close-feedback').addEventListener('click', () => {
+            document.getElementById('feedback-overlay').style.display = 'none';
+        });
+
+        // Correct answers
+        const correctAnswers = {
+            q14: 'D',
+            q15: 'C',
+            q16: 'F',
+            q17: 'E',
+            q18: 'E',
+            q19: 'C',
+            q20: 'A',
+            q21: 'D',
+            q22: 'E',
+            q23: 'B',
+            q24: 'fuel',
+            q25: 'window',
+            q26: 'beds'
+        };
+
+        function showResults() {
+            let score = 0;
+            const feedbackBody = document.getElementById('feedback-body');
+            feedbackBody.innerHTML = '';
+            
+            // Stop timer if running
+            if (timerRunning) {
+                clearInterval(timerInterval);
+                timerRunning = false;
+            }
+            
+            for (let i = 14; i <= 26; i++) {
+                const questionId = `q${i}`;
+                const userAnswer = getUserAnswer(questionId);
+                const correctAnswer = correctAnswers[questionId];
+                const isCorrect = userAnswer === correctAnswer;
+                
+                if (isCorrect) score++;
+                
+                const feedbackItem = document.createElement('div');
+                feedbackItem.className = 'feedback-item';
+                
+                const questionTitle = document.createElement('div');
+                questionTitle.className = 'feedback-question';
+                questionTitle.innerHTML = `<span class="${isCorrect ? 'correct' : 'incorrect'}">Question ${i}: ${isCorrect ? '✓ Correct' : '✗ Incorrect'}</span>`;
+                
+                const userAnswerDiv = document.createElement('div');
+                userAnswerDiv.className = 'feedback-answer';
+                userAnswerDiv.innerHTML = `<strong>Your answer:</strong> ${userAnswer || 'No answer provided'}`;
+                
+                const correctAnswerDiv = document.createElement('div');
+                correctAnswerDiv.className = 'feedback-answer';
+                correctAnswerDiv.innerHTML = `<strong>Correct answer:</strong> ${correctAnswer}`;
+                
+                feedbackItem.appendChild(questionTitle);
+                feedbackItem.appendChild(userAnswerDiv);
+                feedbackItem.appendChild(correctAnswerDiv);
+                
+                // Add explanation if available
+                const explanation = getExplanation(questionId);
+                if (explanation) {
+                    const explanationDiv = document.createElement('div');
+                    explanationDiv.className = 'feedback-explanation';
+                    explanationDiv.innerHTML = `<strong>Explanation:</strong> ${explanation}`;
+                    feedbackItem.appendChild(explanationDiv);
+                }
+                
+                // Add relevant passage text if available
+                const passageText = getPassageText(questionId);
+                if (passageText) {
+                    const passageDiv = document.createElement('div');
+                    passageDiv.className = 'feedback-passage';
+                    passageDiv.innerHTML = `<strong>From passage:</strong> ${passageText}`;
+                    feedbackItem.appendChild(passageDiv);
+                }
+                
+                feedbackBody.appendChild(feedbackItem);
+            }
+            
+            document.getElementById('score-display').textContent = `${score}/13`;
+            document.getElementById('feedback-overlay').style.display = 'flex';
+        }
+
+        function getUserAnswer(questionId) {
+            if (questionId <= 'q17') {
+                const selected = document.querySelector(`input[name="${questionId}"]:checked`);
+                return selected ? selected.value : '';
+            } else if (questionId <= 'q23') {
+                return document.querySelector(`select[name="${questionId}"]`).value;
+            } else {
+                return document.querySelector(`input[name="${questionId}"]`).value.trim();
+            }
+        }
+
+        function getExplanation(questionId) {
+            const explanations = {
+                q14: 'Paragraph D mentions that "the Apollo program was part of the rivalry between the old USSR and the USA; the ISS was a defining moment of international collaboration."',
+                q15: 'Paragraph C describes the "liquid crystal polyarylate superfibre" used in the Bigelow Expandable Activity Module as "immensely tough."',
+                q16: 'Paragraph F mentions that "virtual reality could be an answer, allowing people to escape mentally, reduce anxiety."',
+                q17: 'Paragraph E states that the structures created "resemble the Gothic designs that emerged in European architecture from around the 12th century."',
+                q18: 'Robert Zubrin discusses creating an environment for human habitation and agriculture on Mars.',
+                q19: 'Neil Leach states that "what we do in space is a mirror for our contemporary values on Earth."',
+                q20: 'Brent Sherwood mentions that "no one would pay $1 million a night for a space hotel and put up with microwave meals."',
+                q21: 'Madhu Thangavelu discusses using "accessible minerals and compounds" from the Moon to produce building materials.',
+                q22: 'Robert Zubrin imagines "a world of greenhouses initially transported from Earth" for agriculture on Mars.',
+                q23: 'Trotti (option B) explains that the space architecture program aims to "push established NASA scientists to dream further."',
+                q24: 'Paragraph B states that Skylab was "recycled out of a tank formerly used for storing fuel."',
+                q25: 'Paragraph B mentions that the "tiny window" added by designer Raymond Loewy "became a popular feature with the astronauts."',
+                q26: 'Paragraph B states that the ISS has "a number of design innovations, particularly when it came to the highly unusual beds."'
+            };
+            return explanations[questionId] || '';
+        }
+
+        function getPassageText(questionId) {
+            const passageTexts = {
+                q24: 'Skylab was a generous habitat in comparison to the ISS because it was recycled out of a tank formerly used for storing fuel on an obsolete rocket.',
+                q25: 'Designer Raymond Loewy put in a tiny window, which became a popular feature with the astronauts.',
+                q26: 'When engineers designed the ISS, one of the things they had to consider was greater comfort, and this resulted in a number of design innovations, particularly when it came to the highly unusual beds the astronauts use.'
+            };
+            return passageTexts[questionId] || '';
+        }
+
+        // Initialize timer display
+        updateTimer();
+        updateProgress();
+    </script>
+</body>
+</html>

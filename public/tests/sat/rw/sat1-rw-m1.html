@@ -1,0 +1,595 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SAT Practice Test 1 — Reading & Writing Module 1</title>
+<style>
+:root {
+  --bg: #f5f6fa; --surface: #ffffff; --text: #1a1a2e; --muted: #6b7280;
+  --primary: #2563eb; --primary-light: #dbeafe; --border: #e5e7eb;
+  --correct: #16a34a; --wrong: #dc2626; --option-hover: #f0f7ff;
+  --nav-active: #2563eb; --nav-done: #d1fae5; --nav-done-text: #065f46;
+  --timer-warn: #f59e0b; --timer-danger: #ef4444;
+}
+body.night { --bg: #0f172a; --surface: #1e293b; --text: #e2e8f0; --muted: #94a3b8; --border: #334155; --primary-light: #1e3a5f; --option-hover: #1e3a5f; }
+body.sepia { --bg: #f5efe0; --surface: #fdf6e3; --text: #5c4b37; --muted: #8a7560; --border: #d6c9b0; --option-hover: #ece3d0; }
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: 'Segoe UI', system-ui, sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; transition: background 0.3s, color 0.3s; }
+
+.top-bar { position: fixed; top: 0; left: 0; right: 0; z-index: 100; background: var(--surface); border-bottom: 1px solid var(--border); padding: 12px 24px; display: flex; align-items: center; justify-content: space-between; box-shadow: 0 1px 4px rgba(0,0,0,0.08); }
+.top-bar-title { font-weight: 700; font-size: 1rem; color: var(--primary); }
+.top-bar-right { display: flex; align-items: center; gap: 16px; }
+.timer { font-size: 1.3rem; font-weight: 700; font-variant-numeric: tabular-nums; color: var(--text); transition: color 0.3s; }
+.timer.warn { color: var(--timer-warn); }
+.timer.danger { color: var(--timer-danger); animation: pulse 1s infinite; }
+@keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.5} }
+
+.theme-btns { display: flex; gap: 6px; }
+.theme-btn { width: 28px; height: 28px; border-radius: 50%; border: 2px solid var(--border); cursor: pointer; transition: border-color 0.2s; }
+.theme-btn:hover, .theme-btn.active { border-color: var(--primary); }
+.theme-btn.day { background: #f5f6fa; }
+.theme-btn.night { background: #0f172a; }
+.theme-btn.sepia { background: #f5efe0; }
+
+.layout { display: flex; height: 100vh; padding-top: 61px; }
+.left-pane { width: 48%; min-width: 320px; overflow-y: auto; padding: 32px 28px; border-right: 1px solid var(--border); background: var(--surface); }
+.right-pane { flex: 1; overflow-y: auto; padding: 32px 28px; background: var(--bg); }
+
+.passage-label { font-size: 0.75rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.08em; color: var(--primary); margin-bottom: 8px; }
+.passage-title { font-size: 1.1rem; font-weight: 700; margin-bottom: 16px; color: var(--text); }
+.passage-text { font-size: 0.97rem; line-height: 1.8; color: var(--text); }
+.passage-text p { margin-bottom: 14px; }
+.highlight { background: #fef9c3; padding: 1px 2px; border-radius: 2px; }
+body.night .highlight { background: #3d3200; }
+body.sepia .highlight { background: #e3cda5; }
+.divider { border: none; border-top: 2px solid var(--border); margin: 24px 0; }
+.source { font-size: 0.8rem; color: var(--muted); font-style: italic; margin-top: 12px; }
+
+.question-card { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 24px; margin-bottom: 20px; transition: box-shadow 0.2s; }
+.question-card:hover { box-shadow: 0 2px 12px rgba(37,99,235,0.08); }
+.q-num { font-size: 0.75rem; font-weight: 600; color: var(--muted); text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 8px; }
+.q-domain { display: inline-block; background: var(--primary-light); color: var(--primary); font-size: 0.7rem; font-weight: 600; padding: 2px 8px; border-radius: 99px; margin-bottom: 12px; }
+.q-text { font-size: 0.97rem; line-height: 1.65; color: var(--text); margin-bottom: 18px; }
+.q-choices { display: flex; flex-direction: column; gap: 10px; }
+.choice { display: flex; align-items: flex-start; gap: 12px; padding: 12px 16px; border-radius: 10px; border: 1.5px solid var(--border); cursor: pointer; transition: all 0.15s; background: var(--surface); }
+.choice:hover:not(.selected):not(.correct):not(.wrong) { background: var(--option-hover); border-color: var(--primary); }
+.choice.selected { border-color: var(--primary); background: var(--primary-light); }
+.choice.correct { border-color: var(--correct); background: #f0fdf4; }
+.choice.wrong { border-color: var(--wrong); background: #fef2f2; }
+body.night .choice.correct { background: #052e16; }
+body.night .choice.wrong { background: #2d0b0b; }
+.choice-letter { width: 26px; height: 26px; border-radius: 50%; border: 1.5px solid currentColor; display: flex; align-items: center; justify-content: center; font-size: 0.8rem; font-weight: 700; flex-shrink: 0; margin-top: 1px; color: var(--muted); }
+.choice.selected .choice-letter { background: var(--primary); border-color: var(--primary); color: white; }
+.choice.correct .choice-letter { background: var(--correct); border-color: var(--correct); color: white; }
+.choice.wrong .choice-letter { background: var(--wrong); border-color: var(--wrong); color: white; }
+.choice-text { font-size: 0.93rem; line-height: 1.5; color: var(--text); }
+.explanation { margin-top: 16px; padding: 14px 16px; background: var(--primary-light); border-left: 3px solid var(--primary); border-radius: 0 8px 8px 0; font-size: 0.88rem; line-height: 1.6; color: var(--text); display: none; }
+.explanation.show { display: block; }
+
+.nav-panel { position: fixed; bottom: 0; left: 0; right: 0; background: var(--surface); border-top: 1px solid var(--border); padding: 12px 24px; display: flex; align-items: center; gap: 16px; flex-wrap: wrap; z-index: 100; box-shadow: 0 -2px 8px rgba(0,0,0,0.06); }
+.nav-dots { display: flex; flex-wrap: wrap; gap: 6px; flex: 1; }
+.nav-dot { width: 32px; height: 32px; border-radius: 8px; border: 1.5px solid var(--border); background: var(--surface); cursor: pointer; font-size: 0.78rem; font-weight: 600; color: var(--muted); display: flex; align-items: center; justify-content: center; transition: all 0.15s; }
+.nav-dot.current { border-color: var(--primary); color: var(--primary); background: var(--primary-light); }
+.nav-dot.answered { background: var(--nav-done); border-color: #6ee7b7; color: var(--nav-done-text); }
+.submit-btn { background: var(--primary); color: white; border: none; border-radius: 10px; padding: 10px 24px; font-weight: 700; font-size: 0.95rem; cursor: pointer; transition: opacity 0.2s; white-space: nowrap; }
+.submit-btn:hover { opacity: 0.9; }
+
+.result-overlay { display: none; position: fixed; inset: 0; z-index: 200; background: var(--bg); overflow-y: auto; padding: 40px 20px; }
+.result-overlay.show { display: block; }
+.result-card { max-width: 600px; margin: 0 auto; background: var(--surface); border-radius: 20px; padding: 48px; box-shadow: 0 8px 40px rgba(0,0,0,0.12); text-align: center; }
+.result-score { font-size: 5rem; font-weight: 900; color: var(--primary); line-height: 1; }
+.result-total { font-size: 1.5rem; color: var(--muted); margin-bottom: 8px; }
+.result-label { font-size: 1.2rem; font-weight: 600; margin-bottom: 32px; color: var(--text); }
+.result-bars { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 32px; }
+.result-bar-item { background: var(--bg); border-radius: 12px; padding: 16px; }
+.result-bar-label { font-size: 0.78rem; font-weight: 600; color: var(--muted); margin-bottom: 8px; text-align: left; }
+.result-bar-track { height: 8px; background: var(--border); border-radius: 4px; overflow: hidden; }
+.result-bar-fill { height: 100%; border-radius: 4px; transition: width 1s ease; }
+.result-bar-pct { font-size: 1.1rem; font-weight: 700; color: var(--text); margin-top: 6px; text-align: right; }
+.result-actions { display: flex; gap: 12px; justify-content: center; }
+.btn-review { background: var(--surface); border: 1.5px solid var(--border); border-radius: 10px; padding: 12px 24px; font-weight: 600; cursor: pointer; color: var(--text); }
+.btn-back { background: var(--primary); color: white; border: none; border-radius: 10px; padding: 12px 24px; font-weight: 700; cursor: pointer; }
+
+@media (max-width: 768px) {
+  .layout { flex-direction: column; height: auto; }
+  .left-pane, .right-pane { width: 100%; border-right: none; border-bottom: 1px solid var(--border); }
+  .nav-panel { position: relative; }
+}
+</style>
+</head>
+<body class="day">
+
+<div class="top-bar">
+  <div class="top-bar-title">SAT — Reading &amp; Writing · Module 1</div>
+  <div class="top-bar-right">
+    <div class="timer" id="timer">32:00</div>
+    <div class="theme-btns">
+      <div class="theme-btn day active" onclick="setTheme('day')" title="Day"></div>
+      <div class="theme-btn night" onclick="setTheme('night')" title="Night"></div>
+      <div class="theme-btn sepia" onclick="setTheme('sepia')" title="Sepia"></div>
+    </div>
+  </div>
+</div>
+
+<div class="layout">
+  <div class="left-pane" id="left-pane">
+    <!-- Passages rendered by JS -->
+  </div>
+  <div class="right-pane" id="right-pane">
+    <!-- Questions rendered by JS -->
+  </div>
+</div>
+
+<div class="nav-panel">
+  <div class="nav-dots" id="nav-dots"></div>
+  <button class="submit-btn" onclick="submitTest()">Submit</button>
+</div>
+
+<div class="result-overlay" id="result-overlay">
+  <div class="result-card">
+    <div class="result-score" id="r-score"></div>
+    <div class="result-total" id="r-total"></div>
+    <div class="result-label" id="r-label"></div>
+    <div class="result-bars" id="r-bars"></div>
+    <div class="result-actions">
+      <button class="btn-review" onclick="reviewAnswers()">Review Answers</button>
+      <button class="btn-back" onclick="goBack()">Back to SAT</button>
+    </div>
+  </div>
+</div>
+
+<script>
+const QUESTIONS = [
+  {
+    id:1, domain:"Craft & Structure", subdomain:"Words in Context",
+    passage: `The committee's proposal was met with <u>ambivalence</u> by the council members—some welcomed the new policies enthusiastically, while others harbored deep reservations about their long-term implications.`,
+    question: `As used in the sentence, "ambivalence" most nearly means`,
+    choices: ["hostility","uncertainty","indifference","approval"],
+    answer: 1,
+    explanation: `"Ambivalence" means having mixed or contradictory feelings. The sentence contrasts enthusiasm with reservations, showing mixed reactions — which fits "uncertainty" (option B) best in context.`
+  },
+  {
+    id:2, domain:"Craft & Structure", subdomain:"Text Structure & Purpose",
+    passage: `A recent article in a botanical journal opens with a striking claim: the common dandelion, long dismissed as a nuisance weed, may hold significant promise as a bioremediator — an organism that can absorb and neutralize heavy metals from contaminated soils. The article then presents evidence from field trials, discusses the mechanisms behind absorption, and concludes with recommendations for further study.`,
+    question: `Which choice best describes the overall structure of the article as described in the passage?`,
+    choices: [
+      "It refutes a misconception, then proposes an alternative explanation.",
+      "It presents a surprising finding, supports it with evidence, and suggests future research.",
+      "It describes a historical development and traces its contemporary relevance.",
+      "It outlines a problem, evaluates competing solutions, and recommends the best one."
+    ],
+    answer: 1,
+    explanation: `The passage describes the article as: (1) making a striking claim about dandelions as bioremediators, (2) presenting field trial evidence, (3) discussing mechanisms, and (4) recommending further study. This matches "presents a surprising finding, supports it with evidence, and suggests future research."`
+  },
+  {
+    id:3, domain:"Information & Ideas", subdomain:"Central Ideas and Details",
+    passage: `Historians once attributed the decline of the Roman Empire primarily to military defeats. More recent scholarship, however, emphasizes the role of economic factors — including trade disruptions, currency debasement, and rural depopulation — as key drivers of Rome's collapse. While military pressures certainly contributed, they may have been symptoms rather than causes of an underlying economic deterioration.`,
+    question: `Which statement best captures the main idea of the passage?`,
+    choices: [
+      "Military defeats were the sole cause of the Roman Empire's decline.",
+      "Economic instability is now seen as a more fundamental cause of Rome's decline than military defeat.",
+      "Rome's economy collapsed because of currency debasement alone.",
+      "Historians have always agreed on the economic causes of Rome's fall."
+    ],
+    answer: 1,
+    explanation: `The passage states that recent scholarship emphasizes economic factors over military defeats, and that military pressures may have been "symptoms rather than causes" — making option B the best summary of the main idea.`
+  },
+  {
+    id:4, domain:"Information & Ideas", subdomain:"Command of Evidence — Textual",
+    passage: `"Despite the proliferation of digital reading devices, many readers still prefer physical books. A 2022 survey found that 65% of respondents said they retained information better from print, and 58% reported that physical books were less tiring on their eyes. However, e-readers offer advantages in portability and adjustable font sizes that benefit readers with visual impairments."`,
+    question: `Which finding from the survey most directly supports the claim that physical books may have cognitive advantages?`,
+    choices: [
+      "58% of readers found physical books less tiring on their eyes.",
+      "65% of readers reported better information retention from print.",
+      "E-readers offer advantages for readers with visual impairments.",
+      "Many readers prefer physical books despite digital alternatives."
+    ],
+    answer: 1,
+    explanation: `The claim is about cognitive advantages (learning/memory). Option B — 65% reported better information retention from print — directly addresses cognition. Eye fatigue (A) is a physical advantage, not cognitive.`
+  },
+  {
+    id:5, domain:"Craft & Structure", subdomain:"Words in Context",
+    passage: `The new CEO's approach to restructuring the company was nothing short of <u>audacious</u>: she announced plans to dissolve three entire divisions, relocate the headquarters, and rebrand the product line, all within a single fiscal year.`,
+    question: `As used in the sentence, "audacious" most nearly means`,
+    choices: ["reckless","bold","cautious","practical"],
+    answer: 1,
+    explanation: `"Audacious" means showing a willingness to take bold risks. Given the sweeping, ambitious nature of the changes described, "bold" is the closest synonym in this context.`
+  },
+  {
+    id:6, domain:"Standard English Conventions", subdomain:"Boundaries",
+    question: `Which choice completes the text with the most logical and grammatically correct punctuation?`,
+    passage: `The research team published their results ______ however, critics immediately questioned the methodology.`,
+    choices: [
+      "results, however",
+      "results; however,",
+      "results however,",
+      "results however"
+    ],
+    answer: 1,
+    explanation: `"However" used as a conjunctive adverb connecting two independent clauses requires a semicolon before it and a comma after it: "results; however," — option B.`
+  },
+  {
+    id:7, domain:"Standard English Conventions", subdomain:"Form, Structure, and Sense",
+    passage: `The team of researchers ______ published their findings in a peer-reviewed journal last month.`,
+    question: `Which choice completes the text so that it conforms to the conventions of Standard English?`,
+    choices: ["have","has","were","are"],
+    answer: 1,
+    explanation: `The subject is "team" (a collective singular noun), so the verb should be singular: "has published." Option B is correct.`
+  },
+  {
+    id:8, domain:"Expression of Ideas", subdomain:"Transitions",
+    passage: `Some scientists argue that large-scale geoengineering could help reverse climate change. ______, others warn that such interventions could have unpredictable and potentially catastrophic side effects.`,
+    question: `Which choice most effectively signals a contrast with the previous sentence?`,
+    choices: ["Similarly,","In addition,","Consequently,","In contrast,"],
+    answer: 3,
+    explanation: `The second sentence presents an opposing viewpoint (warnings vs. support). "In contrast" (option D) is the transition word that signals a shift to an opposing idea.`
+  },
+  {
+    id:9, domain:"Information & Ideas", subdomain:"Inferences",
+    passage: `Researchers studying ancient Arctic permafrost have found that as global temperatures rise, permafrost thaws and releases carbon dioxide and methane — both potent greenhouse gases — into the atmosphere. Scientists note that permafrost contains an estimated 1.5 trillion metric tons of organic carbon accumulated over millennia.`,
+    question: `Which inference is most supported by the information in the passage?`,
+    choices: [
+      "Permafrost thawing will have no significant effect on global temperatures.",
+      "Releasing carbon from permafrost could accelerate climate change.",
+      "Methane is less dangerous than carbon dioxide as a greenhouse gas.",
+      "Scientists have fully solved the problem of permafrost thawing."
+    ],
+    answer: 1,
+    explanation: `Since permafrost holds enormous amounts of carbon and its thaw releases greenhouse gases, it logically follows that this release could accelerate climate change — option B.`
+  },
+  {
+    id:10, domain:"Craft & Structure", subdomain:"Cross-Text Connections",
+    passageA: `Text 1: Proponents of universal basic income (UBI) argue that it would eliminate poverty, reduce inequality, and give workers the freedom to pursue meaningful employment. Several pilot programs have shown promising results in improving recipients' wellbeing.`,
+    passageB: `Text 2: Critics of universal basic income contend that it is fiscally unsustainable and could reduce incentives to work, potentially harming economic productivity. They also argue that existing social programs could be strengthened rather than replaced.`,
+    question: `Based on the two texts, how would the author of Text 2 most likely respond to the UBI pilot program results mentioned in Text 1?`,
+    choices: [
+      "By arguing that small pilot programs cannot demonstrate long-term fiscal sustainability.",
+      "By acknowledging that UBI has been proven effective on a national scale.",
+      "By agreeing that UBI improves wellbeing without economic drawbacks.",
+      "By suggesting that pilot programs should replace existing social programs."
+    ],
+    answer: 0,
+    explanation: `The author of Text 2 focuses on fiscal sustainability and broad economic effects. A likely counter to pilot program success would be questioning whether small-scale results translate to long-term fiscal viability at scale — option A.`
+  },
+  {
+    id:11, domain:"Standard English Conventions", subdomain:"Boundaries",
+    passage: `Dr. Amin published three books ______ each explored a different aspect of postcolonial theory.`,
+    question: `Which choice completes the text with the most appropriate punctuation?`,
+    choices: [
+      "books, each",
+      "books; each",
+      "books: each",
+      "books each"
+    ],
+    answer: 0,
+    explanation: `The second clause ("each explored...") is a restrictive relative clause modifying "books." A comma (option A) is the standard punctuation here to introduce a non-essential clarifying clause.`
+  },
+  {
+    id:12, domain:"Expression of Ideas", subdomain:"Rhetorical Synthesis",
+    passage: `A student is writing an essay about the benefits of community gardens in urban areas. She wants to include a sentence that emphasizes the social benefits specifically. Which quotation from her notes would be most useful?`,
+    notesA: `"Community gardens reduce urban heat islands by up to 3°C during summer months."`,
+    notesB: `"Studies show that neighborhoods with community gardens report higher rates of social interaction and community cohesion."`,
+    notesC: `"The average community garden produces 200 pounds of fresh produce per season."`,
+    notesD: `"Gardening reduces individual stress and improves mental health outcomes."`,
+    question: `Which note best supports her focus on social benefits?`,
+    choices: [
+      `"Community gardens reduce urban heat islands by up to 3°C during summer months."`,
+      `"Studies show that neighborhoods with community gardens report higher rates of social interaction and community cohesion."`,
+      `"The average community garden produces 200 pounds of fresh produce per season."`,
+      `"Gardening reduces individual stress and improves mental health outcomes."`
+    ],
+    answer: 1,
+    explanation: `"Social benefits" refers to community-level interactions. Option B directly mentions "social interaction and community cohesion" — the clearest match. Option D is about individual mental health, not social benefits.`
+  },
+  {
+    id:13, domain:"Information & Ideas", subdomain:"Command of Evidence — Quantitative",
+    passage: `A study tracked bee colony populations across 200 farms over 10 years. Results showed that farms using integrated pest management (IPM) had an average colony decline of 8%, while farms using conventional pesticides had an average decline of 34%. The study concluded that IPM practices better support bee health.`,
+    chartNote: `[Chart: IPM farms — 8% colony decline; Conventional farms — 34% colony decline]`,
+    question: `Which statement is best supported by the data?`,
+    choices: [
+      "IPM farms had a higher rate of colony decline than conventional farms.",
+      "Conventional pesticide use is associated with a significantly greater colony decline than IPM.",
+      "All farms in the study experienced complete colony collapse.",
+      "IPM practices eliminated colony decline entirely."
+    ],
+    answer: 1,
+    explanation: `The data clearly shows 34% decline for conventional vs. 8% for IPM — a significant difference. Option B accurately reflects this. Option D is wrong (8% decline still occurred).`
+  },
+  {
+    id:14, domain:"Craft & Structure", subdomain:"Text Structure & Purpose",
+    passage: `The author opens the essay with a personal anecdote about struggling to communicate in a foreign country before pivoting to a broader argument about the global importance of multilingual education. The anecdote serves to draw the reader in emotionally before the author presents empirical evidence for her thesis.`,
+    question: `What is the primary function of the opening anecdote as described in the passage?`,
+    choices: [
+      "To provide statistical evidence for the importance of multilingual education.",
+      "To establish an emotional connection with the reader before presenting the argument.",
+      "To refute opposing views about monolingual education systems.",
+      "To summarize the key findings of the essay."
+    ],
+    answer: 1,
+    explanation: `The passage explicitly states the anecdote is used to "draw the reader in emotionally" — option B.`
+  },
+  {
+    id:15, domain:"Standard English Conventions", subdomain:"Form, Structure, and Sense",
+    passage: `Neither the manager nor the employees ______ fully satisfied with the revised contract.`,
+    question: `Which choice conforms to Standard English conventions?`,
+    choices: ["was","were","has been","is"],
+    answer: 1,
+    explanation: `When "neither...nor" connects a singular and plural subject, the verb agrees with the subject closest to it ("the employees" — plural). So "were" (option B) is correct.`
+  },
+  {
+    id:16, domain:"Craft & Structure", subdomain:"Words in Context",
+    passage: `The diplomat's remarks were deliberately <u>equivocal</u>, designed to satisfy all parties without committing to any specific course of action.`,
+    question: `As used in the sentence, "equivocal" most nearly means`,
+    choices: ["decisive","ambiguous","accurate","offensive"],
+    answer: 1,
+    explanation: `"Equivocal" means open to multiple interpretations — designed to avoid commitment. "Ambiguous" (option B) is the closest synonym.`
+  },
+  {
+    id:17, domain:"Information & Ideas", subdomain:"Central Ideas and Details",
+    passage: `Mangrove forests occupy a small fraction of the world's coastline but are disproportionately important ecosystems. They serve as nurseries for nearly 80% of tropical fish species, filter pollutants from coastal waters, and act as a buffer against storm surges and tsunamis. Despite these functions, mangroves have been destroyed at a rate of 1-2% per year globally, largely due to coastal development and aquaculture expansion.`,
+    question: `Which sentence best expresses the central tension presented in the passage?`,
+    choices: [
+      "Mangroves are being destroyed faster than any other ecosystem.",
+      "Mangroves are disproportionately valuable yet are being lost at an alarming rate.",
+      "Aquaculture expansion causes more damage to mangroves than coastal development.",
+      "Most people are unaware of the role mangroves play in supporting fish populations."
+    ],
+    answer: 1,
+    explanation: `The passage contrasts the extreme ecological importance of mangroves with their rapid destruction — option B captures this tension accurately.`
+  },
+  {
+    id:18, domain:"Expression of Ideas", subdomain:"Transitions",
+    passage: `Early studies suggested that sleep deprivation impairs cognitive performance. ______ recent research has shown that even mild, chronic sleep restriction can have effects comparable to total sleep deprivation.`,
+    question: `Which transition word or phrase most logically introduces the second sentence?`,
+    choices: ["As a result,","Nevertheless,","Furthermore,","Therefore,"],
+    answer: 2,
+    explanation: `"Furthermore" (option C) is used to add information that strengthens or extends the first point. The second sentence builds on the first by showing sleep deprivation effects are even more widespread than early studies suggested.`
+  },
+  {
+    id:19, domain:"Standard English Conventions", subdomain:"Boundaries",
+    passage: `The experiment yielded surprising results ______ the researchers had expected to confirm the original hypothesis.`,
+    question: `Which choice completes the text with the most appropriate punctuation?`,
+    choices: [
+      "results, although",
+      "results although",
+      "results; although",
+      "results: although"
+    ],
+    answer: 0,
+    explanation: `"Although" introduces a subordinate clause. A comma before "although" (option A) is standard when the subordinate clause follows the main clause and adds a contrasting qualifier.`
+  },
+  {
+    id:20, domain:"Information & Ideas", subdomain:"Inferences",
+    passage: `When Mount Tambora erupted in 1815, it ejected enormous quantities of ash and sulfur dioxide into the stratosphere, blocking sunlight globally. The following year, 1816, became known as "the Year Without a Summer" — temperatures dropped, crops failed across the Northern Hemisphere, and famine affected millions. Historians have also linked the period to a surge in Gothic and Romantic literature, as the gloomy weather kept many writers and artists indoors.`,
+    question: `Which inference does the passage most strongly support?`,
+    choices: [
+      "The eruption of Tambora had only minor effects on agriculture.",
+      "Natural disasters can have wide-ranging effects on both society and culture.",
+      "Gothic literature originated solely because of the Tambora eruption.",
+      "Scientists in 1815 accurately predicted the climate effects of the eruption."
+    ],
+    answer: 1,
+    explanation: `The passage shows the eruption affected agriculture (crop failures, famine) and culture (surge in Gothic literature). Option B — natural disasters have wide-ranging societal and cultural effects — is the best inference.`
+  },
+  {
+    id:21, domain:"Craft & Structure", subdomain:"Words in Context",
+    passage: `Though the artist's early works were <u>derivative</u>, critics acknowledged that her later paintings showed an unmistakably original vision.`,
+    question: `As used in the sentence, "derivative" most nearly means`,
+    choices: ["innovative","unoriginal","complex","successful"],
+    answer: 1,
+    explanation: `"Derivative" means lacking originality, copying or deriving from others. The contrast with "original vision" in the second clause confirms the answer is "unoriginal" (option B).`
+  },
+  {
+    id:22, domain:"Standard English Conventions", subdomain:"Form, Structure, and Sense",
+    passage: `Each of the volunteers ______ expected to complete a four-hour training session before beginning work.`,
+    question: `Which choice conforms to Standard English conventions?`,
+    choices: ["are","were","is","have been"],
+    answer: 2,
+    explanation: `"Each" is singular, so the verb must be singular. "Is" (option C) is correct: "Each of the volunteers is expected...""`
+  },
+  {
+    id:23, domain:"Expression of Ideas", subdomain:"Rhetorical Synthesis",
+    passage: `A student is writing a report arguing that urban trees improve residents' mental health. Which of the following pieces of evidence from her research notes would best support that argument?`,
+    choices: [
+      "A study finding that urban trees reduce air pollution levels by 15%.",
+      "A longitudinal study showing that neighborhoods with more tree coverage had residents with lower rates of anxiety and depression.",
+      "Data showing that cities with more trees have higher property values.",
+      "Research indicating that trees prevent soil erosion in urban areas."
+    ],
+    answer: 1,
+    explanation: `The report specifically argues about mental health. Option B directly provides evidence about anxiety and depression rates — the most relevant evidence for the mental health argument.`
+  },
+  {
+    id:24, domain:"Information & Ideas", subdomain:"Command of Evidence — Textual",
+    passage: `"The domestication of dogs is one of the oldest human-animal partnerships. Genetic studies suggest that dogs diverged from wolves between 15,000 and 40,000 years ago. Initially, dogs likely provided early humans with hunting assistance and protection. Over time, the relationship deepened, with dogs developing the ability to read human social cues — a skill not observed in wolves raised with humans."`,
+    question: `Which quotation from the passage best supports the idea that dogs evolved unique social abilities distinct from their wolf ancestors?`,
+    choices: [
+      `"dogs diverged from wolves between 15,000 and 40,000 years ago"`,
+      `"dogs developing the ability to read human social cues — a skill not observed in wolves raised with humans"`,
+      `"dogs likely provided early humans with hunting assistance and protection"`,
+      `"The domestication of dogs is one of the oldest human-animal partnerships"`
+    ],
+    answer: 1,
+    explanation: `The question asks about unique social abilities distinct from wolves. Option B explicitly states dogs developed the ability to read human cues "a skill not observed in wolves" — directly supporting the claim.`
+  },
+  {
+    id:25, domain:"Craft & Structure", subdomain:"Text Structure & Purpose",
+    passage: `The opening paragraphs of the article describe the history of the disease and its global spread. The middle sections then pivot to discuss promising new treatments currently in clinical trials. The author ends with a cautionary note: even with advances, access to these treatments remains severely limited in low-income countries.`,
+    question: `What is the function of the final section of the article, as described in the passage?`,
+    choices: [
+      "To summarize the historical background of the disease.",
+      "To introduce a complication that qualifies the optimistic tone of the middle section.",
+      "To argue that clinical trials have been largely ineffective.",
+      "To propose solutions for distributing new treatments globally."
+    ],
+    answer: 1,
+    explanation: `After building optimism about new treatments, the ending introduces a complicating reality (limited access in low-income countries). This serves to "qualify" or temper the optimism — option B.`
+  },
+  {
+    id:26, domain:"Standard English Conventions", subdomain:"Boundaries",
+    passage: `The physicist spent decades researching quantum entanglement ______ phenomenon that still puzzles scientists today.`,
+    question: `Which choice most effectively completes the sentence?`,
+    choices: [
+      "entanglement, a",
+      "entanglement a",
+      "entanglement; a",
+      "entanglement: a"
+    ],
+    answer: 0,
+    explanation: `"A phenomenon that still puzzles scientists today" is an appositive noun phrase modifying "quantum entanglement." Appositives are set off by a comma — option A.`
+  },
+  {
+    id:27, domain:"Information & Ideas", subdomain:"Central Ideas and Details",
+    passage: `For centuries, historians considered the fall of the Western Roman Empire in 476 CE a singular catastrophe. However, recent scholars argue that "fall" is a misleading term. Rather than collapsing suddenly, Roman institutions, laws, and culture transformed gradually and were absorbed into successor kingdoms. Latin evolved into the Romance languages, Roman law influenced European legal codes, and the Catholic Church preserved much Roman administrative tradition.`,
+    question: `What is the central claim of the passage?`,
+    choices: [
+      "The Western Roman Empire fell suddenly in 476 CE.",
+      "The end of the Roman Empire is better understood as a gradual transformation than a sudden collapse.",
+      "Latin is the direct ancestor of all modern European languages.",
+      "The Catholic Church caused the fall of the Roman Empire."
+    ],
+    answer: 1,
+    explanation: `The passage's main argument is that "fall" is misleading and that Roman culture transformed gradually rather than collapsing suddenly — option B.`
+  }
+];
+
+let currentQ = 0;
+let answers = new Array(QUESTIONS.length).fill(null);
+let submitted = false;
+let timeLeft = 32 * 60;
+
+function setTheme(t) {
+  document.body.className = t;
+  document.querySelectorAll('.theme-btn').forEach(b => b.classList.remove('active'));
+  document.querySelector('.theme-btn.' + t).classList.add('active');
+}
+
+function renderQuestion(idx) {
+  const q = QUESTIONS[idx];
+  const lp = document.getElementById('left-pane');
+  const rp = document.getElementById('right-pane');
+
+  let leftHtml = '';
+  if (q.passageA && q.passageB) {
+    leftHtml = `<div class="passage-label">Text 1</div><div class="passage-text"><p>${q.passageA}</p></div><hr class="divider"><div class="passage-label">Text 2</div><div class="passage-text"><p>${q.passageB}</p></div>`;
+  } else if (q.passage) {
+    leftHtml = `<div class="passage-label">Context</div><div class="passage-text"><p>${q.passage}</p></div>`;
+  }
+  if (q.notesA) {
+    leftHtml += `<hr class="divider"><div class="passage-label">Research Notes</div><div class="passage-text"><p><strong>Note A:</strong> ${q.notesA}</p><p><strong>Note B:</strong> ${q.notesB}</p><p><strong>Note C:</strong> ${q.notesC}</p><p><strong>Note D:</strong> ${q.notesD}</p></div>`;
+  }
+  if (q.chartNote) {
+    leftHtml += `<hr class="divider"><div class="passage-label">Data</div><div class="passage-text"><p><em>${q.chartNote}</em></p></div>`;
+  }
+  lp.innerHTML = leftHtml || '<div class="passage-text" style="color:var(--muted);font-style:italic">No additional context provided.</div>';
+
+  let choicesHtml = q.choices.map((c, ci) => {
+    let cls = 'choice';
+    if (submitted) {
+      if (ci === q.answer) cls += ' correct';
+      else if (ci === answers[idx]) cls += ' wrong';
+    } else if (answers[idx] === ci) cls += ' selected';
+    const letter = ['A','B','C','D'][ci];
+    return `<div class="${cls}" onclick="selectChoice(${ci})" data-ci="${ci}">
+      <div class="choice-letter">${letter}</div>
+      <div class="choice-text">${c}</div>
+    </div>`;
+  }).join('');
+
+  const explCls = submitted ? 'explanation show' : 'explanation';
+  rp.innerHTML = `<div class="question-card">
+    <div class="q-num">Question ${idx + 1} of ${QUESTIONS.length}</div>
+    <div class="q-domain">${q.domain} · ${q.subdomain}</div>
+    <div class="q-text">${q.question}</div>
+    <div class="q-choices" id="choices">${choicesHtml}</div>
+    <div class="${explCls}" id="explanation">💡 ${q.explanation}</div>
+  </div>`;
+  updateNav();
+}
+
+function selectChoice(ci) {
+  if (submitted) return;
+  answers[currentQ] = ci;
+  document.querySelectorAll('.choice').forEach((el, i) => {
+    el.className = 'choice' + (i === ci ? ' selected' : '');
+  });
+  updateNav();
+}
+
+function updateNav() {
+  const dots = document.getElementById('nav-dots');
+  dots.innerHTML = QUESTIONS.map((_, i) => {
+    let cls = 'nav-dot';
+    if (i === currentQ) cls += ' current';
+    else if (answers[i] !== null) cls += ' answered';
+    return `<div class="${cls}" onclick="goToQ(${i})">${i+1}</div>`;
+  }).join('');
+}
+
+function goToQ(i) {
+  currentQ = i;
+  renderQuestion(i);
+}
+
+function submitTest() {
+  if (!submitted && answers.filter(a=>a!==null).length < QUESTIONS.length) {
+    const unanswered = answers.filter(a=>a===null).length;
+    if (!confirm(`You have ${unanswered} unanswered question(s). Submit anyway?`)) return;
+  }
+  submitted = true;
+  clearInterval(timerInterval);
+  showResults();
+}
+
+function showResults() {
+  const correct = QUESTIONS.filter((q,i) => answers[i] === q.answer).length;
+  const total = QUESTIONS.length;
+  const pct = Math.round(correct/total*100);
+  const domains = {};
+  QUESTIONS.forEach((q,i) => {
+    if (!domains[q.domain]) domains[q.domain] = {correct:0,total:0};
+    domains[q.domain].total++;
+    if (answers[i] === q.answer) domains[q.domain].correct++;
+  });
+  document.getElementById('r-score').textContent = correct;
+  document.getElementById('r-total').textContent = `out of ${total}`;
+  document.getElementById('r-label').textContent = pct >= 80 ? '🎉 Excellent Work!' : pct >= 60 ? '📚 Good — keep practicing!' : '💪 Keep going!';
+  const colors = {'Information & Ideas':'#3b82f6','Craft & Structure':'#8b5cf6','Expression of Ideas':'#ec4899','Standard English Conventions':'#f59e0b'};
+  document.getElementById('r-bars').innerHTML = Object.entries(domains).map(([d,s]) => {
+    const dp = Math.round(s.correct/s.total*100);
+    const color = colors[d] || '#6b7280';
+    return `<div class="result-bar-item">
+      <div class="result-bar-label">${d}</div>
+      <div class="result-bar-track"><div class="result-bar-fill" style="width:${dp}%;background:${color}"></div></div>
+      <div class="result-bar-pct">${s.correct}/${s.total}</div>
+    </div>`;
+  }).join('');
+  document.getElementById('result-overlay').classList.add('show');
+}
+
+function reviewAnswers() {
+  document.getElementById('result-overlay').classList.remove('show');
+  renderQuestion(0);
+}
+
+function goBack() {
+  window.parent.postMessage('sat-test-back', '*');
+  window.history.back();
+}
+
+// Timer
+let timerInterval = setInterval(() => {
+  if (timeLeft <= 0) { clearInterval(timerInterval); submitTest(); return; }
+  timeLeft--;
+  const m = Math.floor(timeLeft/60);
+  const s = timeLeft % 60;
+  const el = document.getElementById('timer');
+  el.textContent = `${m}:${s.toString().padStart(2,'0')}`;
+  el.className = 'timer' + (timeLeft <= 60 ? ' danger' : timeLeft <= 300 ? ' warn' : '');
+}, 1000);
+
+renderQuestion(0);
+</script>
+</body>
+</html>

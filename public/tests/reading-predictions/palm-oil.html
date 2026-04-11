@@ -1,0 +1,405 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Reading Passage 2 – Palm oil</title>
+<style>
+  :root{--brand:#2563eb;--ink:#111827;--bg:#f7f7fb;--ok:#16a34a;--bad:#dc2626;--muted:#6b7280}
+  *{box-sizing:border-box}
+  body{margin:0;font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;background:var(--bg);color:#111}
+  .container{display:flex;gap:20px;max-width:1200px;margin:0 auto;padding:20px 20px 96px}
+  .card{background:#fff;border-radius:12px;box-shadow:0 4px 14px rgba(0,0,0,.08);padding:20px;overflow:auto;max-height:90vh}
+  .passage{flex:1}
+  .questions{flex:1}
+  h1{color:var(--ink);border-bottom:2px solid var(--brand);padding-bottom:10px;margin:0 0 14px}
+  h2{color:var(--brand);margin:22px 0 10px}
+  h3{margin:8px 0 0}
+  .muted{color:var(--muted)}
+
+  /* Timer */
+  .timerWrap{position:fixed;top:16px;right:16px;display:flex;align-items:center;gap:8px;z-index:10}
+  .timer{background:var(--brand);color:#fff;padding:10px 14px;border-radius:8px;font-weight:700}
+  .tbtn{border:1px solid #e5e7eb;background:#fff;color:#111;padding:8px 10px;border-radius:8px;cursor:pointer}
+
+  /* Questions */
+  .qsection{margin:14px 0 6px}
+  .qblock{padding:14px;border:1px solid #e5e7eb;border-radius:12px;margin:12px 0}
+  .qhead{font-weight:600;margin-bottom:8px}
+  .options{margin-top:8px}
+  .options label{display:block;margin:6px 0}
+  select,input[type="text"]{padding:8px;border-radius:8px;border:1px solid #e5e7eb;width:100%;max-width:520px}
+  .submit{background:var(--brand);color:#fff;border:0;padding:12px 18px;border-radius:8px;cursor:pointer;font-size:16px;margin-top:16px}
+  .submit:hover{filter:brightness(.95)}
+
+  /* Results */
+  .results{display:none;margin-top:18px;background:#f8f9fa;border-radius:10px;padding:16px}
+  .results ul{list-style:none;padding:0;margin:8px 0 0}
+  .results li{margin:6px 0;padding:8px;border-radius:8px}
+  .results li.ok{background:#ecfdf5;color:#065f46}
+  .results li.bad{background:#fef2f2;color:#991b1b}
+  .results .meta{font-size:13px;color:var(--muted)}
+
+  /* Footer chips */
+  .footerNav{position:fixed;left:0;right:0;bottom:0;background:#fff;border-top:1px solid #e5e7eb;padding:10px 12px;display:flex;flex-wrap:wrap;gap:8px;align-items:center;z-index:9}
+  .chip{border:1px solid #d1d5db;background:#fff;color:#111;padding:6px 10px;border-radius:999px;cursor:pointer;font-size:14px}
+  .chip.answered{border-color:#9ca3af;background:#f3f4f6}
+
+  /* Highlights */
+  .palette{position:fixed;background:#fff;padding:8px;border-radius:8px;box-shadow:0 2px 10px rgba(0,0,0,.12);display:none;z-index:9}
+  .hbtn{background:var(--brand);color:#fff;border:0;padding:6px 10px;border-radius:6px;margin:4px 4px 0 0;cursor:pointer}
+  .highlight{background:yellow}
+
+  
+</style>
+</head>
+<body>
+  <div class="timerWrap">
+    <div class="timer" id="timer">20:00</div>
+    <button class="tbtn" id="pauseBtn">⏸️ Pause</button>
+    <button class="tbtn" id="resumeBtn" disabled>▶️ Resume</button>
+  </div>
+
+  <!-- Highlight palettes -->
+  <div class="palette" id="pPalette">
+    <button class="hbtn" data-color="yellow">Yellow</button>
+    <button class="hbtn" data-color="lightgreen">Green</button>
+    <button class="hbtn" data-color="lightblue">Blue</button>
+    <button class="hbtn" data-color="pink">Pink</button>
+    <button class="hbtn" data-color="orange">Orange</button>
+    <button class="hbtn" id="clearPMarks">Clear</button>
+  </div>
+  <div class="palette" id="qPalette">
+    <button class="hbtn" data-color="yellow">Yellow</button>
+    <button class="hbtn" data-color="lightgreen">Green</button>
+    <button class="hbtn" data-color="lightblue">Blue</button>
+    <button class="hbtn" data-color="pink">Pink</button>
+    <button class="hbtn" data-color="orange">Orange</button>
+    <button class="hbtn" id="clearQMarks">Clear</button>
+  </div>
+
+  <div class="container">
+    <div class="card passage" id="passageCard">
+      <h1 id="title"></h1>
+      <div id="subtitle" class="muted"></div>
+
+      <div id="passage">
+        <h2>Reading Passage 2</h2>
+        <h3>Palm oil</h3>
+
+        <p><strong>A</strong> Palm oil is an edible oil derived from the fruit of the African oil palm tree, and is currently the most consumed vegetable oil in the world. It's almost certainly in the soap we wash with in the morning, the sandwich we have for lunch, and the biscuits we snack on during the day. Why is palm oil so attractive for manufacturers? Primarily because its unique properties — such as remaining solid at room temperature — make it an ideal ingredient for long-term preservation, allowing many packaged foods on supermarket shelves to have 'best before' dates of months, even years, into the future.</p>
+
+        <p><strong>B</strong> Many farmers have seized the opportunity to maximise the planting of oil palm trees. Between 1990 and 2012, the global land area devoted to growing oil palm trees grew from 6 to 17 million hectares, now accounting for around ten percent of total cropland in the entire world. From a mere two million tonnes of palm oil being produced annually globally 50 years ago, there are now around 60 million tonnes produced every single year, a figure looking likely to double or even triple by the middle of the century.</p>
+
+        <p><strong>C</strong> However, there are multiple reasons why conservationists cite the rapid spread of oil palm plantations as a major concern. There are countless news stories of deforestation, habitat destruction and dwindling species populations, all as a direct result of land clearing to establish oil palm tree monoculture on an industrial scale, particularly in Malaysia and Indonesia. Endangered species — most famously the Sumatran orangutan, but also rhinos, elephants, tigers, and numerous other fauna — have suffered from the unstoppable spread of oil palm plantations.</p>
+
+        <p><strong>D</strong> 'Palm oil is surely one of the greatest threats to global biodiversity,' declares Dr Farnon Ellwood of the University of the West of England, Bristol. 'Palm oil is replacing rainforest, and rainforest is where all the species are. That's a problem.' This has led to some radical questions among environmentalists, such as whether consumers should try to boycott palm oil entirely.</p>
+
+        <p>Meanwhile Bhavani Shankar, Professor at London's School of Oriental and African Studies, argues, 'It's easy to say that palm oil is the enemy and we should be against it. It makes for a more dramatic story, and it's very intuitive. But given the complexity of the argument, I think a much more nuanced story is closer to the truth.'</p>
+
+        <p><strong>E</strong> One response to the boycott movement has been the argument for the vital role palm oil plays in lifting many millions of people in the developing world out of poverty. Is it desirable to have palm oil boycotted, replaced, eliminated from the global supply chain, given how many low-income people in developing countries depend on it for their livelihoods? How best to strike a utilitarian balance between these competing factors has become a serious bone of contention.</p>
+
+        <p><strong>F</strong> Even the deforestation argument isn't as straightforward as it seems. Oil palm plantations produce at least four and potentially up to ten times more oil per hectare than soybean, rapeseed, sunflower or other competing oils. That immensely high yield — which is predominantly what makes it so profitable — is potentially also an ecological benefit. If ten times more palm oil can be produced from a patch of land than any competing oil, then ten times more land would need to be cleared in order to produce the same volume of oil from that competitor.</p>
+
+        <p>As for the question of carbon emissions, the issue really depends on what oil palm trees are replacing. Crops vary in the degree to which they sequester carbon — in other words, the amount of carbon they capture from the atmosphere and store within the plant. The more carbon a plant sequesters, the more it reduces the effect of climate change. As Shankar explains: '[Palm oil production] actually sequesters more carbon in some ways than other alternatives. [...] Of course, if you're cutting down virgin forest it's terrible — that's what's happening in Indonesia and Malaysia, it's been allowed to get out of hand. But if it's replacing rice, for example, it might actually sequester more carbon.'</p>
+
+        <p><strong>G</strong> The industry is now regulated by a group called the <strong>Roundtable on Sustainable Palm Oil (RSPO)</strong>, consisting of palm growers, retailers, product manufacturers, and other interested parties. Over the past decade or so, an agreement has gradually been reached regarding standards that producers of palm oil have to meet in order for their product to be regarded as officially 'sustainable'. The RSPO insists upon no virgin forest clearing, <strong>transparency</strong> and regular assessment of <strong>carbon stocks</strong>, among other criteria. Only once these requirements are fully satisfied is the oil allowed to be sold as certified sustainable palm oil (CSPO). Recent figures show that the RSPO now certifies around 12 million tonnes of palm oil annually, equivalent to roughly 21 percent of the world's total palm oil production.</p>
+
+        <p><strong>H</strong> There is even hope that oil palm plantations might not need to be such sterile monocultures, or 'green deserts', as Ellwood describes them. New research at Ellwood's lab hints at one plant which might make all the difference. The <strong>bird's nest fern</strong> (Asplenium nidus) grows on trees in an epiphytic fashion (meaning it's dependent on the tree only for support, not for nutrients), and is native to many tropical regions, where as a keystone species it performs a vital ecological role. Ellwood believes that reintroducing the bird's nest fern into oil palm plantations could potentially allow these areas to recover their <strong>biodiversity</strong>, providing a home for all manner of species, from fungi and bacteria, to invertebrates such as insects, amphibians, reptiles and even mammals.</p>
+      </div>
+    </div>
+
+    <div class="card questions">
+      <h1>Questions</h1>
+      <div id="qroot"></div>
+      <button class="submit" id="submitBtn">Submit Answers</button>
+      <div class="results" id="results">
+        <h2>Your Results</h2>
+        <div id="score" class="meta"></div>
+        <ul id="answers"></ul>
+      </div>
+    </div>
+  </div>
+
+  <div class="footerNav" id="footerNav"></div>
+  
+
+<script>
+/* =======================
+   CONFIG
+   ======================= */
+const CONFIG = {
+  title: "READING PASSAGE 2 – Palm oil",
+  subtitle: "You should spend about 20 minutes on Questions 14–26.",
+  durationMinutes: 20,
+  
+  showFooterNavigator: true,
+
+  sections: [
+    /* 14–20 Section matching */
+    {
+      type: "section_match",
+      heading: "Questions 14–20",
+      instructions: ["Reading Passage 2 has eight sections, A–H.", "Which section contains the following information?", "Write the correct letter, A–H, in boxes 14–20 on your answer sheet."],
+      items: [
+        { id: 14, text: "examples of a range of potential environmental advantages of oil palm tree cultivation", correct: "F" },
+        { id: 15, text: "description of an organisation which controls the environmental impact of palm oil production", correct: "G" },
+        { id: 16, text: "examples of the widespread global use of palm oil", correct: "A" },
+        { id: 17, text: "reference to a particular species which could benefit the ecosystem of oil palm plantations", correct: "H" },
+        { id: 18, text: "figures illustrating the rapid expansion of the palm oil industry", correct: "B" },
+        { id: 19, text: "an economic justification for not opposing the palm oil industry", correct: "E" },
+        { id: 20, text: "examples of creatures badly affected by the establishment of oil palm plantations", correct: "C" }
+      ]
+    },
+
+    /* 21–22 Multiple choice */
+    {
+      type: "multi_choice",
+      heading: "Questions 21 and 22",
+      instructions: ["Choose TWO letters, A–E.", "Write the correct letters in boxes 21 and 22 on your answer sheet.", "Which TWO statements are made about the Roundtable on Sustainable Palm Oil (RSPO)?"],
+      options: {
+        A: "Its membership has grown steadily over the course of the last decade.",
+        B: "It demands that certified producers be open and honest about their practices.",
+        C: "It took several years to establish its set of criteria for sustainable palm oil certification.",
+        D: "Its regulations regarding sustainability are stricter than those governing other industries.",
+        E: "It was formed at the request of environmentalists concerned about the loss of virgin forests."
+      },
+      correct: ["B", "C"]
+    },
+
+    /* 23–26 Sentence completion */
+    {
+      type: "sentence_completion",
+      heading: "Questions 23–26",
+      instructions: ["Complete the sentences below.", "Choose NO MORE THAN TWO WORDS from the passage for each answer.", "Write your answers in boxes 23–26 on your answer sheet."],
+      items: [
+        { id: 23, text: "One advantage of palm oil for manufacturers is that it stays ........................ even when not refrigerated.", correct: "solid" },
+        { id: 24, text: "The ........................ is the best known of the animals suffering habitat loss as a result of the spread of oil palm plantations.", correct: "Sumatran orangutan" },
+        { id: 25, text: "As one of its criteria for the certification of sustainable palm oil, the RSPO insists that growers check ........................ on a routine basis.", correct: "carbon stocks" },
+        { id: 26, text: "Ellwood and his researchers are looking into whether the bird's nest fern could restore ........................ in areas where oil palm trees are grown.", correct: "biodiversity" }
+      ]
+    }
+  ]
+};
+
+/* =======================
+   RENDER
+   ======================= */
+document.getElementById('title').textContent = CONFIG.title;
+document.getElementById('subtitle').textContent = CONFIG.subtitle || '';
+
+const qroot = document.getElementById('qroot');
+const navIds = [];
+const answersMap = {};
+
+function sectionHeader(t){ const h=document.createElement('h2'); h.className='qsection'; h.textContent=t; return h; }
+
+/* Section matching renderer */
+function renderSectionMatch(sec){
+  qroot.appendChild(sectionHeader(sec.heading));
+  (sec.instructions||[]).forEach(tx=>{ const p=document.createElement('p'); p.className='muted'; p.textContent=tx; qroot.appendChild(p); });
+  sec.items.forEach(it=>{
+    const b=document.createElement('div'); b.className='qblock'; b.id=`anchor-${it.id}`;
+    const sel=`<select id="q${it.id}" name="q${it.id}">
+      <option value="">—</option>
+      <option value="A">A</option>
+      <option value="B">B</option>
+      <option value="C">C</option>
+      <option value="D">D</option>
+      <option value="E">E</option>
+      <option value="F">F</option>
+      <option value="G">G</option>
+      <option value="H">H</option>
+    </select>`;
+    b.innerHTML=`<div class="qhead"><strong>${it.id}.</strong> ${it.text}</div><div class="options">${sel}</div>`;
+    qroot.appendChild(b); navIds.push(it.id); answersMap[it.id]=it.correct||'';
+  });
+}
+
+/* Multiple choice renderer */
+function renderMultiChoice(sec){
+  qroot.appendChild(sectionHeader(sec.heading));
+  (sec.instructions||[]).forEach(tx=>{ const p=document.createElement('p'); p.className='muted'; p.textContent=tx; qroot.appendChild(p); });
+  
+  const optionsBlock=document.createElement('div'); optionsBlock.className='qblock';
+  const optionsHtml = Object.entries(sec.options).map(([key, value]) => 
+    `<label><input type="checkbox" name="multi_choice_${sec.heading}" value="${key}"> <strong>${key}</strong> ${value}</label>`
+  ).join('');
+  optionsBlock.innerHTML = `<div class="options">${optionsHtml}</div>`;
+  qroot.appendChild(optionsBlock);
+  
+  // Add special handling for multi-choice questions
+  sec.correct.forEach((answer, index) => {
+    const qId = 21 + index;
+    navIds.push(qId);
+    answersMap[qId] = answer;
+  });
+}
+
+/* Sentence completion renderer */
+function renderSentenceCompletion(sec){
+  qroot.appendChild(sectionHeader(sec.heading));
+  (sec.instructions||[]).forEach(tx=>{ const p=document.createElement('p'); p.className='muted'; p.textContent=tx; qroot.appendChild(p); });
+  
+  sec.items.forEach(it=>{
+    const b=document.createElement('div'); b.className='qblock'; b.id=`anchor-${it.id}`;
+    const input = `<input type="text" id="q${it.id}" name="q${it.id}" style="width:200px;display:inline;" placeholder="Answer ${it.id}">`;
+    const text = it.text.replace('........................', input);
+    b.innerHTML=`<div class="qhead"><strong>${it.id}.</strong> ${text}</div>`;
+    qroot.appendChild(b); navIds.push(it.id); answersMap[it.id]=it.correct||'';
+  });
+}
+
+/* Build UI */
+CONFIG.sections.forEach(sec=>{
+  if (sec.type==='section_match') renderSectionMatch(sec);
+  if (sec.type==='multi_choice') renderMultiChoice(sec);
+  if (sec.type==='sentence_completion') renderSentenceCompletion(sec);
+});
+
+/* Footer chips */
+const footerNav=document.getElementById('footerNav');
+(function(){
+  if(!CONFIG.showFooterNavigator){ footerNav.style.display='none'; return; }
+  footerNav.innerHTML='<strong class="muted">Questions:</strong>';
+  [...new Set(navIds)].sort((a,b)=>a-b).forEach(id=>{
+    const chip=document.createElement('button'); chip.className='chip'; chip.id=`chip-${id}`; chip.textContent=id;
+    chip.addEventListener('click',()=>{ 
+      const anchor = document.getElementById(`anchor-${id}`);
+      if (anchor) {
+        anchor.scrollIntoView({behavior:'smooth',block:'center'}); 
+      }
+    });
+    footerNav.appendChild(chip);
+  });
+})();
+
+function markChipAnswered(id, answered){
+  const chip=document.getElementById(`chip-${id}`); if(chip) chip.classList.toggle('answered', !!answered);
+}
+
+document.addEventListener('change',(e)=>{
+  const m=String(e.target.name||e.target.id||'').match(/q(\d+)/);
+  const id=m?+m[1]:null; if(!id) return;
+  const answered=(e.target.type==='radio') ? (!!document.querySelector(`input[name='q${id}']:checked`))
+                 : (e.target.value.trim().length>0);
+  markChipAnswered(id, answered);
+});
+
+/* Timer */
+let timeLeft=Math.max(1,+CONFIG.durationMinutes||20)*60;
+const timer=document.getElementById('timer');
+const pauseBtn=document.getElementById('pauseBtn');
+const resumeBtn=document.getElementById('resumeBtn');
+let paused=false, iv;
+const fmt=s=>`${String(Math.floor(s/60)).padStart(2,'0')}:${String(s%60).padStart(2,'0')}`;
+function startTick(){ if(iv) clearInterval(iv);
+  iv=setInterval(()=>{ if(paused) return; timer.textContent=fmt(timeLeft); if(timeLeft<=0){ clearInterval(iv); alert("Time's up! Submitting."); submit(); } timeLeft--; },1000);
+}
+timer.textContent=fmt(timeLeft); startTick();
+pauseBtn.addEventListener('click',()=>{ paused=true; pauseBtn.disabled=true; resumeBtn.disabled=false; });
+resumeBtn.addEventListener('click',()=>{ paused=false; pauseBtn.disabled=false; resumeBtn.disabled=true; });
+
+/* Submit & grading */
+document.getElementById('submitBtn').addEventListener('click', submit);
+function submit(){
+  paused=true; pauseBtn.disabled=true; resumeBtn.disabled=false;
+  let total=0, graded=0, correctCount=0;
+  const itemsOut=[];
+  
+  // Handle multi-choice questions specially
+  const multiChoiceAnswers = Array.from(document.querySelectorAll('input[name="multi_choice_Questions 21 and 22"]:checked')).map(cb => cb.value);
+  
+  CONFIG.sections.forEach(section => {
+    if (section.type === 'multi_choice') {
+      [21, 22].forEach((qId, index) => {
+        const userAnswer = multiChoiceAnswers[index] || '';
+        const correctAnswer = section.correct[index];
+        total++; graded++;
+        const ok = userAnswer === correctAnswer;
+        if(ok) correctCount++;
+        itemsOut.push({label: qId, status: ok? '✓ Correct' : '✗ Incorrect', user: userAnswer || 'No answer', correct: correctAnswer});
+      });
+    }
+  });
+
+  // Handle other question types
+  Object.keys(answersMap).forEach(key=>{
+    if ([21, 22].includes(parseInt(key))) return; // Skip multi-choice, already handled
+    
+    const ans=answersMap[key];
+    const label=key;
+    let user='';
+    const picked=document.querySelector(`input[name="q${key}"]:checked`);
+    if(picked){ user=picked.value; }
+    else if(document.getElementById('q'+key)){ user=document.getElementById('q'+key).value; }
+    const shown=user||'No answer';
+
+    if(String(ans).trim()===''){ total++; itemsOut.push({label, status:'— not graded —', user:shown, correct:'(no key)'}); return; }
+
+    total++; graded++;
+    const ok = shown.trim().toLowerCase() === String(ans).trim().toLowerCase();
+    if(ok) correctCount++;
+    itemsOut.push({label, status: ok? '✓ Correct' : '✗ Incorrect', user:shown, correct:String(ans)});
+  });
+
+  document.getElementById('score').innerHTML = `Graded ${graded} of ${total} • Score: ${correctCount}/${graded}`;
+  document.getElementById('answers').innerHTML = itemsOut.sort((a,b) => parseInt(a.label) - parseInt(b.label)).map(it=>`<li class="${/Correct/.test(it.status)?'ok':'bad'}">Q${it.label}: ${it.status} — Your: <b>${it.user}</b> | Correct: <b>${it.correct}</b></li>`).join('');
+  const r=document.getElementById('results'); r.style.display='block'; r.scrollIntoView({behavior:'smooth'});
+}
+
+/* Highlights */
+const passageCard=document.getElementById('passageCard');
+const pPalette=document.getElementById('pPalette');
+passageCard.addEventListener('mouseup',(e)=>{
+  const sel=window.getSelection(); if(!sel||sel.toString().trim().length===0) return;
+  if(!passageCard.contains(sel.getRangeAt(0).commonAncestorContainer)) return;
+  const r=passageCard.getBoundingClientRect(), x=Math.min(e.clientX-r.left,r.width-10), y=Math.max(0,e.clientY-r.top-40);
+  pPalette.style.left=(r.left+x)+'px'; pPalette.style.top=(r.top+y)+'px'; pPalette.style.display='block';
+});
+document.addEventListener('mousedown',(e)=>{ if(!pPalette.contains(e.target)) pPalette.style.display='none'; });
+pPalette.querySelectorAll('.hbtn[data-color]').forEach(btn=>{
+  btn.addEventListener('click',()=>{ markSelection(btn.dataset.color, passageCard); pPalette.style.display='none'; });
+});
+document.getElementById('clearPMarks').addEventListener('click',()=>{
+  passageCard.querySelectorAll('span.highlight').forEach(n=>{ const p=n.parentNode; while(n.firstChild) p.insertBefore(n.firstChild,n); p.removeChild(n); p.normalize(); });
+  pPalette.style.display='none';
+});
+
+/* Questions highlight */
+const qCard=document.querySelector('.card.questions');
+const qPalette=document.getElementById('qPalette');
+qCard.addEventListener('mouseup',(e)=>{
+  const sel=window.getSelection(); if(!sel||sel.toString().trim().length===0) return;
+  if(!qCard.contains(sel.getRangeAt(0).commonAncestorContainer)) return;
+  const node = sel.getRangeAt(0).commonAncestorContainer.nodeType===1 ? sel.getRangeAt(0).commonAncestorContainer : sel.getRangeAt(0).commonAncestorContainer.parentNode;
+  if (node.closest && node.closest('input,textarea,select')) return;
+  const r=qCard.getBoundingClientRect(), x=Math.min(e.clientX-r.left,r.width-10), y=Math.max(0,e.clientY-r.top-40);
+  qPalette.style.left=(r.left+x)+'px'; qPalette.style.top=(r.top+y)+'px'; qPalette.style.display='block';
+});
+document.addEventListener('mousedown',(e)=>{ if(!qPalette.contains(e.target)) qPalette.style.display='none'; });
+qPalette.querySelectorAll('.hbtn[data-color]').forEach(btn=>{
+  btn.addEventListener('click',()=>{ markSelection(btn.dataset.color, qCard); qPalette.style.display='none'; });
+});
+document.getElementById('clearQMarks').addEventListener('click',()=>{
+  qCard.querySelectorAll('span.highlight').forEach(n=>{ const p=n.parentNode; while(n.firstChild) p.insertBefore(n.firstChild,n); p.removeChild(n); p.normalize(); });
+  qPalette.style.display='none';
+});
+
+/* Helper */
+function markSelection(color, scope){
+  const sel=window.getSelection(); if(!sel||!sel.rangeCount) return;
+  const range=sel.getRangeAt(0);
+  if(!scope.contains(range.commonAncestorContainer)) return;
+  const container=range.commonAncestorContainer.nodeType===1? range.commonAncestorContainer : range.commonAncestorContainer.parentNode;
+  if (container.closest && container.closest('input, textarea, select')) return;
+  const frag=range.extractContents();
+  const span=document.createElement('span'); span.className='highlight'; span.style.backgroundColor=color; span.appendChild(frag);
+  range.insertNode(span); sel.removeAllRanges();
+}
+
+/* TG button */
+
+</script>
+</body>
+</html>

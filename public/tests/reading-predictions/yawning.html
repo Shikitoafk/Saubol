@@ -1,0 +1,1500 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CDI IELTS Reading Test - Yawning</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        /* Main styles */
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: Arial, sans-serif;
+            overflow: hidden;
+            background-color: #f0f2f5;
+        }
+        
+        .test-wrapper {
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+        }
+        
+        .test-container {
+            display: flex;
+            flex: 1;
+            overflow: hidden;
+        }
+        
+        /* Header styles */
+        .header {
+            background-color: #fff;
+            border-bottom: 1px solid #ddd;
+            padding: 10px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        }
+        
+        .header__logo img {
+            height: 40px;
+        }
+        
+        .header__timer {
+            font-size: 1.2rem;
+            font-weight: bold;
+            color: #333;
+            background-color: #f5f5f5;
+            padding: 5px 15px;
+            border-radius: 20px;
+            border: 1px solid #ddd;
+            transition: all 0.3s ease;
+        }
+        
+        .header__icons {
+            display: flex;
+            gap: 15px;
+        }
+        
+        .header__icon {
+            font-size: 1.2rem;
+            color: #666;
+            cursor: pointer;
+        }
+        
+        /* Settings Modal */
+        .settings-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: rgba(0,0,0,0.7);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+        }
+        
+        .settings-content {
+            background-color: white;
+            width: 90%;
+            max-width: 500px;
+            border-radius: 5px;
+            overflow: hidden;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+        }
+        
+        .settings-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 20px;
+            border-bottom: 1px solid #ddd;
+        }
+        
+        .settings-header h2 {
+            margin: 0;
+            font-size: 1.2rem;
+        }
+        
+        .settings-close {
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: #666;
+        }
+        
+        .settings-body {
+            padding: 20px;
+        }
+        
+        .settings-option {
+            display: flex;
+            align-items: center;
+            padding: 10px 0;
+            border-bottom: 1px solid #eee;
+            cursor: pointer;
+        }
+        
+        .settings-option:last-child {
+            border-bottom: none;
+        }
+        
+        .settings-option i {
+            margin-right: 15px;
+            width: 20px;
+            text-align: center;
+            color: #2a6c96;
+        }
+        
+        .settings-option span {
+            flex: 1;
+        }
+        
+        .sectionRubric {
+            margin: 1em;
+            width: calc(100% - 4em - 3px);
+            border-radius: 4px;
+            padding: 0.75em 1em;
+            background: white;
+            border: 1px solid #d5d5d5;
+        }
+        
+        .sectionRubric h2, .sectionRubric p {
+            margin: 0;
+        }
+        
+        .sectionRubric h2 {
+            font-size: 1rem;
+            margin-bottom: 0.25em;
+        }
+        
+        /* Passage container */
+        .passage-container {
+            width: 45%;
+            height: 100%;
+            overflow-y: auto;
+            padding: 20px;
+            box-sizing: border-box;
+            background-color: #ffffff;
+            position: relative;
+            -webkit-user-select: text;
+            user-select: text;
+        }
+        
+        /* Questions container */
+        .questions-container {
+            flex: 1;
+            overflow-y: auto;
+            padding: 20px;
+            box-sizing: border-box;
+            -webkit-user-select: text;
+            user-select: text;
+        }
+        
+        /* Highlight styles */
+        .highlight {
+            position: relative;
+            border-radius: 2px;
+            padding: 0 1px;
+            margin: 0 -1px;
+        }
+        
+        .highlight.yellow {
+            background-color: rgba(255, 255, 0, 0.3);
+        }
+        
+        .highlight.green {
+            background-color: rgba(0, 255, 0, 0.3);
+        }
+        
+        .highlight.pink {
+            background-color: rgba(255, 105, 180, 0.3);
+        }
+        
+        .highlight.blue {
+            background-color: rgba(0, 191, 255, 0.3);
+        }
+        
+        .highlight-toolbar {
+            position: fixed;
+            background: white;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+            display: none;
+            z-index: 1000;
+            padding: 5px;
+            transform: translate(-50%, -100%);
+            margin-top: -5px;
+        }
+        
+        .highlight-toolbar button {
+            background: none;
+            border: none;
+            width: 24px;
+            height: 24px;
+            cursor: pointer;
+            margin: 0 2px;
+            border-radius: 3px;
+        }
+        
+        .highlight-toolbar button:hover {
+            background: #f0f0f0;
+        }
+        
+        .highlight-toolbar button.remove {
+            color: #ff0000;
+        }
+        
+        /* Divider styling */
+        .divider {
+            width: 10px;
+            background: #ddd;
+            cursor: col-resize;
+            position: relative;
+        }
+        
+        .divider-handle {
+            width: 4px;
+            height: 40px;
+            background: #999;
+            border-radius: 2px;
+            position: absolute;
+            top: 50%;
+            left: 3px;
+            transform: translateY(-50%);
+        }
+        
+        /* Question styling */
+        .question {
+            margin-bottom: 30px;
+            background: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+        
+        .question-rubric {
+            margin-bottom: 15px;
+            font-weight: bold;
+            border-bottom: 1px solid #eee;
+            padding-bottom: 10px;
+        }
+        
+        .question-options {
+            list-style-type: none;
+            padding: 0;
+        }
+        
+        .question-options li {
+            margin: 10px 0;
+            display: flex;
+            align-items: center;
+        }
+        
+        /* Multiple choice questions */
+        .mcq-option {
+            display: flex;
+            align-items: center;
+            margin: 5px 0;
+            padding: 8px;
+            border-radius: 4px;
+        }
+        
+        .mcq-option input[type="radio"] {
+            margin-right: 10px;
+        }
+
+        .mcq-option label {
+            cursor: pointer;
+        }
+        
+        /* Yes/No/Not Given questions */
+        .yng-option {
+            display: flex;
+            align-items: center;
+            margin: 5px 0;
+            padding: 8px;
+            border-radius: 4px;
+        }
+        
+        .yng-option input[type="radio"] {
+            margin-right: 10px;
+        }
+
+        .yng-option label {
+            cursor: pointer;
+        }
+        
+        /* Footer styles */
+        .footer {
+            background: #f5f5f5;
+            border-top: 1px solid #ddd;
+            padding: 10px;
+        }
+        
+        .nav-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        
+        .footer__questionWrapper {
+            display: flex;
+            align-items: center;
+        }
+        
+        .footer__questionNo {
+            background: none;
+            border: none;
+            padding: 5px 10px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+        
+        .footer__subquestionWrapper {
+            display: flex;
+            flex-wrap: wrap;
+            margin-left: 10px;
+        }
+        
+        .subQuestion {
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            border: 1px solid #ccc;
+            background: #f0f0f0;
+            margin: 2px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #666;
+            transition: all 0.2s ease-in-out;
+        }
+
+        .subQuestion:hover {
+            transform: scale(1.1);
+            border-color: #0066cc;
+        }
+        
+        .subQuestion.active {
+            background: #0066cc;
+            color: white;
+            border-color: #0066cc;
+            font-weight: bold;
+        }
+        
+        .subQuestion.attempted {
+            background: #0066cc;
+            color: white;
+        }
+        
+        .footer__deliverButton {
+            background: #0066cc;
+            color: white;
+            border: none;
+            padding: 8px 15px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: background-color 0.3s;
+        }
+        
+        .footer__deliverButton:hover {
+            background-color: #0052a3;
+        }
+
+        .footer__deliverButton:disabled {
+            background: #cccccc;
+            cursor: not-allowed;
+        }
+        
+        .sr-only {
+            position: absolute;
+            width: 1px;
+            height: 1px;
+            padding: 0;
+            margin: -1px;
+            overflow: hidden;
+            clip: rect(0, 0, 0, 0);
+            white-space: nowrap;
+            border-width: 0;
+        }
+        
+        /* Highlight color buttons */
+        .highlight-color {
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            display: inline-block;
+            margin: 0 2px;
+            cursor: pointer;
+            border: 1px solid #ccc;
+        }
+        
+        .highlight-color.yellow { background-color: #ffff00; }
+        .highlight-color.green { background-color: #00ff00; }
+        .highlight-color.pink { background-color: #ff69b4; }
+        .highlight-color.blue { background-color: #00bfff; }
+        /* Time warning styles */
+        .timer-warning {
+            color: #ff0000;
+            animation: blink 1s infinite;
+        }
+        @keyframes blink {
+            0% { opacity: 1; }
+            50% { opacity: 0.5; }
+            100% { opacity: 1; }
+        }
+        /* Submission modal styles */
+        .submission-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: rgba(0,0,0,0.8);
+            z-index: 2000;
+            justify-content: center;
+            align-items: center;
+        }
+        .submission-content {
+            background-color: white;
+            width: 80%;
+            max-width: 800px;
+            border-radius: 10px;
+            padding: 30px;
+            box-shadow: 0 5px 30px rgba(0,0,0,0.5);
+            max-height: 80vh;
+            overflow-y: auto;
+        }
+        .submission-content h2 {
+            margin-top: 0;
+            color: #0066cc;
+            border-bottom: 2px solid #0066cc;
+            padding-bottom: 10px;
+        }
+        .submission-content p {
+            margin-bottom: 20px;
+            color: #333;
+        }
+        .answers-section {
+            margin-top: 20px;
+        }
+        .answers-section h3 {
+            color: #0066cc;
+            margin-bottom: 15px;
+        }
+        .answer-item {
+            padding: 10px;
+            margin-bottom: 8px;
+            border-radius: 4px;
+            border-left: 4px solid #ddd;
+            background-color: #f9f9f9;
+        }
+        .answer-item.correct {
+            border-left-color: #4CAF50;
+            background-color: #f0fff0;
+        }
+        .answer-item.incorrect {
+            border-left-color: #f44336;
+            background-color: #fff0f0;
+        }
+        .answer-text {
+            font-weight: bold;
+        }
+        .correct-answer {
+            color: #4CAF50;
+            margin-left: 10px;
+        }
+        .incorrect-answer {
+            color: #f44336;
+            margin-left: 10px;
+        }
+        .answer-status {
+            float: right;
+            margin-left: 15px;
+        }
+        .correct-status {
+            color: #4CAF50;
+        }
+        .incorrect-status {
+            color: #f44336;
+        }
+        .submission-buttons {
+            margin-top: 25px;
+            text-align: right;
+            clear: both;
+        }
+        .submission-buttons button {
+            padding: 8px 15px;
+            margin-left: 10px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+        .submission-buttons .confirm {
+            background: #0066cc;
+            color: white;
+            border: none;
+        }
+        /* Disabled state */
+        input:disabled {
+            background-color: #f5f5f5;
+            cursor: not-allowed;
+        }
+        /* Score display styles */
+        .score-display {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        .score-number {
+            font-size: 3rem;
+            font-weight: bold;
+            color: #0066cc;
+            margin: 10px 0;
+        }
+        .score-total {
+            font-size: 1.5rem;
+            color: #666;
+        }
+        .performance-rating {
+            font-size: 1.5rem;
+            font-weight: bold;
+            margin: 15px 0;
+            padding: 10px;
+            border-radius: 5px;
+        }
+        .excellent {
+            color: #2E7D32;
+            background-color: #E8F5E9;
+        }
+        .very-good {
+            color: #388E3C;
+            background-color: #E8F5E9;
+        }
+        .good {
+            color: #689F38;
+            background-color: #F1F8E9;
+        }
+        .fair {
+            color: #F57C00;
+            background-color: #FFF3E0;
+        }
+        .poor {
+            color: #D32F2F;
+            background-color: #FFEBEE;
+        }
+        /* IELTS Band Score */
+        .band-score {
+            font-size: 2rem;
+            font-weight: bold;
+            color: #0066cc;
+            margin: 10px 0;
+        }
+        /* Correct answer highlight */
+        .correct-highlight {
+            background-color: rgba(76, 175, 80, 0.3);
+        }
+        /* Incorrect answer highlight */
+        .incorrect-highlight {
+            background-color: rgba(244, 67, 54, 0.3);
+        }
+        /* Answer comparison section */
+        .answer-comparison {
+            margin-top: 20px;
+            padding: 15px;
+            background-color: #f5f5f5;
+            border-radius: 5px;
+            display: none;
+        }
+        .answer-comparison h3 {
+            margin-top: 0;
+            color: #0066cc;
+        }
+        /* Time spent indicator */
+        .time-spent {
+            font-size: 1rem;
+            color: #666;
+            margin-bottom: 15px;
+            text-align: center;
+        }
+        /* Summary completion styles */
+        .summary-completion-container {
+            margin-top: 20px;
+        }
+        .summary-text p {
+            line-height: 2.5;
+            font-size: 16px;
+        }
+        .summary-drop-zone {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            vertical-align: middle;
+            min-width: 150px;
+            height: 25px;
+            border: 2px dashed #999;
+            border-radius: 4px;
+            margin: 0 5px;
+            padding: 0 5px;
+            transition: all 0.3s ease;
+            color: #aaa;
+            font-weight: bold;
+            position: relative;
+        }
+        .summary-drop-zone.filled {
+            border-color: #4a90e2;
+            background-color: #e3f2fd;
+            color: #333;
+            font-weight: bold;
+            cursor: pointer;
+        }
+        
+        .summary-drop-zone:hover {
+            border-color: #4a90e2;
+            background-color: #f0f8ff;
+        }
+        .summary-drop-zone.active-input {
+            border-color: #4a90e2;
+            box-shadow: none;
+        }
+        .summary-drop-zone .drag-item {
+            font-size: 15px;
+            font-weight: bold;
+            background-color: transparent;
+            border: none;
+            padding: 0;
+            text-align: center;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: move;
+        }
+        
+        .summary-drop-zone.correct {
+            background-color: #e9f7ef;
+            border-color: #28a745;
+            border-style: solid;
+        }
+        
+        .summary-drop-zone.incorrect {
+            background-color: #f8d7da;
+            border-color: #dc3545;
+            border-style: solid;
+        }
+        .summary-feedback {
+            display: inline-block;
+            margin-left: 10px;
+            font-size: 14px;
+        }
+        .summary-feedback.correct {
+            color: #28a745;
+        }
+        .summary-feedback.incorrect {
+            color: #dc3545;
+        }
+        .summary-options-bank {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-top: 20px;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            min-height: 50px;
+        }
+        .summary-options-bank .drag-item {
+            flex-grow: 1;
+            min-width: 100px;
+            text-align: center;
+            padding: 5px 10px;
+            background-color: #f0f0f0;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            cursor: move;
+            user-select: none;
+            transition: all 0.3s ease;
+        }
+        
+        .summary-options-bank .drag-item:hover {
+            background-color: #e0e0e0;
+            transform: translateY(-2px);
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        
+        .summary-options-bank .drag-item.dragging {
+            opacity: 0.5;
+            transform: scale(0.95);
+        }
+        
+        /* New styles for draggable items */
+        .drag-item {
+            touch-action: none; /* Prevent scrolling while dragging on touch devices */
+        }
+        .drag-ghost {
+            opacity: 0.8;
+            transform: rotate(2deg);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+        }
+        .drop-hover {
+            background-color: #e3f2fd !important;
+            border-color: #4a90e2 !important;
+        }
+    </style>
+</head>
+<body>
+    <div class="test-wrapper">
+        <header class="header">
+            <div class="header__logo">
+                <img src="https://d2snzxottmona5.cloudfront.net/releases/3.46.0/images/logo/ielts.svg" alt="IELTS Logo">
+            </div>
+            <div class="header__timer" id="testTimer">00:00</div>
+            <div class="header__icons">
+                <i class="fas fa-wifi header__icon"></i>
+                <i class="fas fa-bell header__icon"></i>
+                <i class="fas fa-cog header__icon" id="settingsButton"></i>
+            </div>
+        </header>
+        
+        <div class="settings-modal" id="settingsModal">
+            <div class="settings-content">
+                <div class="settings-header">
+                    <h2>Options</h2>
+                    <button class="settings-close" id="settingsClose">&times;</button>
+                </div>
+                <div class="settings-body">
+                    <div class="settings-option">
+                        <i class="fas fa-paper-plane"></i>
+                        <span>Go to submission page</span>
+                    </div>
+                    <div class="settings-option" id="contrastOption">
+                        <i class="fas fa-adjust"></i>
+                        <span>Contrast</span>
+                    </div>
+                    <div class="settings-option" id="textSizeOption">
+                        <i class="fas fa-search-plus"></i>
+                        <span>Text size</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="sectionRubric" id="sectionRubric">
+            <h2>Reading Passage 3</h2>
+            <p>You should spend about 20 minutes on Questions 27-40.</p>
+        </div>
+        
+        <div class="test-container">
+            <div class="passage-container" id="passage-container">
+                <div class="highlight-toolbar" id="highlightToolbar">
+                    <button class="highlight-color yellow" data-color="yellow" title="Yellow highlight"></button>
+                    <button class="highlight-color green" data-color="green" title="Green highlight"></button>
+                    <button class="highlight-color pink" data-color="pink" title="Pink highlight"></button>
+                    <button class="highlight-color blue" data-color="blue" title="Blue highlight"></button>
+                    <button class="remove" title="Remove highlight"><i class="fas fa-times"></i></button>
+                </div>
+                
+                <div id="passageContent">
+                    <h2 style="text-align: center;">Yawning</h2>
+                    <p style="text-align: center; font-style: italic;">How and why we yawn still presents problems for researchers in an area which has only recently been opened up to study</p>
+
+                    <p>When Robert R Provine began studying yawning in the 1960s, it was difficult for him to convince research students of the merits of 'yawning science'. Although it may appear quirky to some, Provine's decision to study yawning was a logical extension of his research in developmental neuroscience.</p>
+                    
+                    <p>The verb 'to yawn' is derived from the Old English ganien or ginian, meaning to gape or open wide. But in addition to gaping jaws, yawning has significant features that are easy to observe and analyse. Provine 'collected' yawns to study by using a variation of the contagion response*. He asked people to 'think about yawning' and, once they began to yawn to depress a button and that would record from the start of the yawn to the exhalation at its end.</p>
+                    
+                    <p>Provine's early discoveries can be summarized as follows: the yawn is highly stereotyped but not invariant in its duration and form. It is an excellent example of the instinctive 'fixed action pattern' of classical animal-behavior study, or ethology. It is not a reflex (short-duration, rapid, proportional response to a simple stimulus), but, once started, a yawn progresses with the inevitability of a sneeze. The standard yawn runs its course over about six seconds on average, but its duration can range from about three seconds to much longer than the average. There are no half-yawns: this is an example of the typical intensity of fixed action patterns and a reason why you cannot stifle yawns. Just like a cough, yawns can come in bouts with a highly variable inter-yawn interval, which is generally about 68 seconds but rarely more than 70. There is no relation between yawn frequency and duration: producers of short or long yawns do not compensate by yawning more or less often. Furthermore, Provine's hypotheses about the form and function of yawning can be tested by three informative yawn variants which can be used to look at the roles of the nose, the mouth and the jaws.</p>
+                    
+                    <p><b>i) The closed nose yawn</b><br>
+                    Subjects are asked to pinch their nose closed when they feel themselves start to yawn. Most subjects report being able to perform perfectly normal closed nose yawns. This indicates that the inhalation at the onset of a yawn, and the exhalation at its end, need not involve the nostrils - the mouth provides a sufficient airway.</p>
+                    
+                    <p><b>ii) The clenched teeth yawn</b><br>
+                    Subjects are asked to clench their teeth when they feel themselves start to yawn but allow themselves to inhale normally through their open lips and clenched teeth. This variant gives one the sensation of being stuck mid-yawn. This shows that gaping of the jaws is an essential component of the fixed action pattern of the yawn, and unless it is accomplished, the program (or pattern) will not run to completion. The yawn is also shown to be more than a deep breath, because, unlike normal breathing, inhalation and exhalation cannot be performed so well through the clenched teeth as through the nose.</p>
+                    
+                    <p><b>iii) The nose yawn</b><br>
+                    This variant tests the adequacy of the nasal airway to sustain a yawn. Unlike normal breathing, which can be performed equally well through mouth or nose, yawning is impossible via nasal inhalation alone. As with the clenched teeth yawn, the nose yawn provides the unfulfilling sensation of being stuck in mid-yawn. Exhalation, on the other hand, can be accomplished equally well through nose or mouth. Through this methodology Provine demonstrated that inhalation through the oral airway and the gaping of jaws are necessary for normal yawns. The motor program for yawning will not run to completion without feedback that these parts of the program have been accomplished.</p>
+                    
+                    <p>But yawning is a powerful, generalized movement that involves much more than airway maneuvers and jaw-gaping. When yawning you also stretch your facial muscles, tilt your head back, narrow or close your eyes, produce tears, salivate, open the Eustachian tubes of your middle ear and perform many other, yet unspecified, cardiovascular and respiratory acts. Perhaps the yawn shares components with other behaviour. For example, is the yawn a kind of 'slow sneeze' or is the sneeze a 'fast yawn'? Both share common respiratory and other features including jaw gaping, eye closing and head tilting.</p>
+                    
+                    <p>Yawning and stretching share properties and may be performed together as parts of a global motor complex. Studies by J I P deVries et al. in the early 1980s, charting movement in the developing fetus using ultrasound, observed a link between yawning and stretching. The most extraordinary demonstration of the yawn-stretch linkage occurs in many people paralyzed on one side of their body because of brain damage caused by a stroke. The prominent British neurologist Sir Francis Walshe noted in 1923 that when these people yawn, they are startled and mystified to observe that their otherwise paralyzed arm rises and flexes automatically in what neurologists term an 'associated response'. Yawning apparently activates undamaged, unconsciously controlled connections between the brain and the motor system, causing the paralyzed limb to move. It is not known whether the associated response is a positive prognosis for recovery, nor whether yawning is therapeutic for prevention of muscular deterioration.</p>
+                    
+                    <p>Provine speculated that, in general, yawning may have many functions, and selecting a single function from the available options may be an unrealistic goal. Yawning appears to be associated with a change of behavioral state, switching from one activity to another. Yawning is also a reminder that ancient and unconscious behavior linking us to the animal world lurks beneath the veneer of culture, rationality and language.</p>
+                </div>
+            </div>
+            
+            <div class="divider" id="divider">
+                <div class="divider-handle"></div>
+            </div>
+            
+            <div class="questions-container" id="questions-container">
+                <div class="question">
+                    <div class="question-rubric">
+                        <h3>Questions 27-32</h3>
+                        <p>Complete the summary using the list of words, <strong>A-K,</strong> below.</p>
+                        <p>Drag and drop the correct words into the gaps.</p>
+                    </div>
+                    
+                    <div class="question-content">
+                        <div class="summary-completion-container">
+                             <h4 style="text-align: center;">Provine's early findings on yawns</h4>
+                            <div class="summary-text">
+                                <p>Through his observation of yawns, Provine was able to confirm that <span class="summary-drop-zone" data-q-start="27" data-dnd-group="summary-27-32">27</span> do not exist. Just like a <span class="summary-drop-zone" data-q-start="28" data-dnd-group="summary-27-32">28</span>, yawns cannot be interrupted after they have begun. This is because yawns occur as a <span class="summary-drop-zone" data-q-start="29" data-dnd-group="summary-27-32">29</span> rather than a stimulus response as was previously thought. In measuring the time taken to yawn, Provine found that a typical yawn lasts about <span class="summary-drop-zone" data-q-start="30" data-dnd-group="summary-27-32">30</span>. He also found that it is common for people to yawn a number of times in quick succession with the yawns usually being around <span class="summary-drop-zone" data-q-start="31" data-dnd-group="summary-27-32">31</span> apart. When studying whether length and rate were connected, Provine concluded that people who yawn less do not necessarily produce <span class="summary-drop-zone" data-q-start="32" data-dnd-group="summary-27-32">32</span> to make up for this.</p>
+                            </div>
+                            
+                            <div class="summary-options-bank" id="optionsBank">
+                                <div class="drag-item" draggable="true" data-value="A">form and function</div>
+                                <div class="drag-item" draggable="true" data-value="B">long yawns</div>
+                                <div class="drag-item" draggable="true" data-value="C">3 seconds</div>
+                                <div class="drag-item" draggable="true" data-value="D">fixed action pattern</div>
+                                <div class="drag-item" draggable="true" data-value="E">68 seconds</div>
+                                <div class="drag-item" draggable="true" data-value="F">short yawns</div>
+                                <div class="drag-item" draggable="true" data-value="G">reflex</div>
+                                <div class="drag-item" draggable="true" data-value="H">sneeze</div>
+                                <div class="drag-item" draggable="true" data-value="I">short duration</div>
+                                <div class="drag-item" draggable="true" data-value="J">6 seconds</div>
+                                <div class="drag-item" draggable="true" data-value="K">half-yawns</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="question">
+                    <div class="question-rubric">
+                        <h3>Questions 33-37</h3>
+                        <p>Choose the correct letter, <strong>A, B, C or D.</strong></p>
+                    </div>
+                    
+                    <div class="question-content">
+                        <div class="question-item">
+                            <p><strong>33</strong> What did Provine conclude from his 'closed nose yawn' experiment?</p>
+                            <ul class="question-options">
+                                <li class="mcq-option">
+                                    <input type="radio" name="q33" id="q33-a" value="A">
+                                    <label for="q33-a">A. Ending a yawn requires use of the nostrils.</label>
+                                </li>
+                                <li class="mcq-option">
+                                    <input type="radio" name="q33" id="q33-b" value="B">
+                                    <label for="q33-b">B. You can yawn without breathing through your nose.</label>
+                                </li>
+                                <li class="mcq-option">
+                                    <input type="radio" name="q33" id="q33-c" value="C">
+                                    <label for="q33-c">C. Breathing through the nose produces a silent yawn.</label>
+                                </li>
+                                <li class="mcq-option">
+                                    <input type="radio" name="q33" id="q33-d" value="D">
+                                    <label for="q33-d">D. The role of the nose in yawning needs further investigation.</label>
+                                </li>
+                            </ul>
+                        </div>
+                        
+                        <div class="question-item">
+                            <p><strong>34</strong> Provine's 'clenched teeth yawn' experiment shows that</p>
+                            <ul class="question-options">
+                                <li class="mcq-option">
+                                    <input type="radio" name="q34" id="q34-a" value="A">
+                                    <label for="q34-a">A. yawning is unconnected with fatigue.</label>
+                                </li>
+                                <li class="mcq-option">
+                                    <input type="radio" name="q34" id="q34-b" value="B">
+                                    <label for="q34-b">B. a yawn is the equivalent of a deep intake of breath.</label>
+                                </li>
+                                <li class="mcq-option">
+                                    <input type="radio" name="q34" id="q34-c" value="C">
+                                    <label for="q34-c">C. you have to be able to open your mouth wide to yawn.</label>
+                                </li>
+                                <li class="mcq-option">
+                                    <input type="radio" name="q34" id="q34-d" value="D">
+                                    <label for="q34-d">D. breathing with the teeth together is as efficient as through the nose.</label>
+                                </li>
+                            </ul>
+                        </div>
+                        
+                        <div class="question-item">
+                            <p><strong>35</strong> The 'nose yawn' experiment was used to test whether yawning</p>
+                            <ul class="question-options">
+                                <li class="mcq-option">
+                                    <input type="radio" name="q35" id="q35-a" value="A">
+                                    <label for="q35-a">A. can be stopped after it has started.</label>
+                                </li>
+                                <li class="mcq-option">
+                                    <input type="radio" name="q35" id="q35-b" value="B">
+                                    <label for="q35-b">B. is the result of motor programming.</label>
+                                </li>
+                                <li class="mcq-option">
+                                    <input type="radio" name="q35" id="q35-c" value="C">
+                                    <label for="q35-c">C. involves both inhalation and exhalation.</label>
+                                </li>
+                                <li class="mcq-option">
+                                    <input type="radio" name="q35" id="q35-d" value="D">
+                                    <label for="q35-d">D. can be accomplished only through the nose.</label>
+                                </li>
+                            </ul>
+                        </div>
+
+                        <div class="question-item">
+                            <p><strong>36</strong> In people paralyzed on one side because of brain damage</p>
+                            <ul class="question-options">
+                                <li class="mcq-option">
+                                    <input type="radio" name="q36" id="q36-a" value="A">
+                                    <label for="q36-a">A. yawning may involve only one side of the face.</label>
+                                </li>
+                                <li class="mcq-option">
+                                    <input type="radio" name="q36" id="q36-b" value="B">
+                                    <label for="q36-b">B. the yawning response indicates that recovery is likely.</label>
+                                </li>
+                                <li class="mcq-option">
+                                    <input type="radio" name="q36" id="q36-c" value="C">
+                                    <label for="q36-c">C. movement in a paralysed arm is stimulated by yawning.</label>
+                                </li>
+                                <li class="mcq-option">
+                                    <input type="radio" name="q36" id="q36-d" value="D">
+                                    <label for="q36-d">D. yawning can be used as an example to prevent muscle wasting.</label>
+                                </li>
+                            </ul>
+                        </div>
+                        
+                        <div class="question-item">
+                            <p><strong>37</strong> In the last paragraph, the writer concludes that</p>
+                            <ul class="question-options">
+                                <li class="mcq-option">
+                                    <input type="radio" name="q37" id="q37-a" value="A">
+                                    <label for="q37-a">A. yawning is a sign of boredom.</label>
+                                </li>
+                                <li class="mcq-option">
+                                    <input type="radio" name="q37" id="q37-b" value="B">
+                                    <label for="q37-b">B. we yawn in spite of the development of our species.</label>
+                                </li>
+                                <li class="mcq-option">
+                                    <input type="radio" name="q37" id="q37-c" value="C">
+                                    <label for="q37-c">C. yawning is a more passive activity than we imagine.</label>
+                                </li>
+                                <li class="mcq-option">
+                                    <input type="radio" name="q37" id="q37-d" value="D">
+                                    <label for="q37-d">D. we are stimulated to yawn when our brain activity is low.</label>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="question">
+                    <div class="question-rubric">
+                        <h3>Questions 38-40</h3>
+                        <p>Do the following statements agree with the claims of the writer in Reading Passage 3?</p>
+                        <p>Choose:<br>
+                        <strong>YES</strong> if the statement agrees with the claims of the writer<br>
+                        <strong>NO</strong> if the statement contradicts the claims of the writer<br>
+                        <strong>NOT GIVEN</strong> if it is impossible to say what the writer thinks about this</p>
+                    </div>
+                    
+                    <div class="question-content">
+                        <div class="question-item">
+                            <p><strong>38</strong> Research students were initially reluctant to appreciate the value of Provine's studies.</p>
+                            <ul class="question-options">
+                                <li class="yng-option">
+                                    <input type="radio" name="q38" id="q38-yes" value="YES">
+                                    <label for="q38-yes">YES</label>
+                                </li>
+                                <li class="yng-option">
+                                    <input type="radio" name="q38" id="q38-no" value="NO">
+                                    <label for="q38-no">NO</label>
+                                </li>
+                                <li class="yng-option">
+                                    <input type="radio" name="q38" id="q38-ng" value="NOT GIVEN">
+                                    <label for="q38-ng">NOT GIVEN</label>
+                                </li>
+                            </ul>
+                        </div>
+                        
+                        <div class="question-item">
+                            <p><strong>39</strong> When foetuses yawn and stretch they are learning how to control movement.</p>
+                            <ul class="question-options">
+                                <li class="yng-option">
+                                    <input type="radio" name="q39" id="q39-yes" value="YES">
+                                    <label for="q39-yes">YES</label>
+                                </li>
+                                <li class="yng-option">
+                                    <input type="radio" name="q39" id="q39-no" value="NO">
+                                    <label for="q39-no">NO</label>
+                                </li>
+                                <li class="yng-option">
+                                    <input type="radio" name="q39" id="q39-ng" value="NOT GIVEN">
+                                    <label for="q39-ng">NOT GIVEN</label>
+                                </li>
+                            </ul>
+                        </div>
+                        
+                        <div class="question-item">
+                            <p><strong>40</strong> According to Provine, referring to only one function is probably inadequate to explain why people yawn.</p>
+                            <ul class="question-options">
+                                <li class="yng-option">
+                                    <input type="radio" name="q40" id="q40-yes" value="YES">
+                                    <label for="q40-yes">YES</label>
+                                </li>
+                                <li class="yng-option">
+                                    <input type="radio" name="q40" id="q40-no" value="NO">
+                                    <label for="q40-no">NO</label>
+                                </li>
+                                <li class="yng-option">
+                                    <input type="radio" name="q40" id="q40-ng" value="NOT GIVEN">
+                                    <label for="q40-ng">NOT GIVEN</label>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <footer class="footer">
+            <nav class="nav-row perScorableItem" aria-label="Questions">
+                <div class="footer__questionWrapper selected multiple" role="tablist">
+                    <button role="tab" class="footer__questionNo" data-sectionid="128121930" tabindex="-1">
+                        <span>
+                            <span aria-hidden="true" class="section-prefix">Questions </span>
+                            <span class="sectionNr" aria-hidden="true">27-40</span>
+                        </span>
+                    </button>
+                    <div class="footer__subquestionWrapper">
+                        </div>
+                </div>
+                <button id="deliver-button" aria-label="Review your answers" class="footer__deliverButton">
+                    <i class="fas fa-check"></i> Submit
+                </button>
+            </nav>
+        </footer>
+    </div>
+    <div class="submission-modal" id="submissionModal">
+        <div class="submission-content">
+            <h2 id="submissionTitle">Test Results</h2>
+            <div class="score-display">
+                <div>Your Score:</div>
+                <div class="score-number" id="userScore">0</div>
+                <div class="score-total">out of <span id="totalQuestions">14</span></div>
+                <div class="band-score" id="bandScore">Band: 0.0</div>
+                <div class="performance-rating" id="performanceRating">Poor - Needs Improvement</div>
+            </div>
+            <div class="time-spent" id="timeSpent"></div>
+            <p id="submissionMessage">Here are your answers with the correct solutions:</p>
+            
+            <div class="answers-section">
+                <h3>Your Answers:</h3>
+                <div id="answersList"></div>
+            </div>
+            
+            <div class="submission-buttons">
+                <button class="confirm" id="closeSubmission">Close & Review</button>
+            </div>
+        </div>
+    </div>
+    <div class="answer-comparison" id="answerComparison">
+        <h3>Answer Comparison</h3>
+        <p>Your answers are highlighted below. Correct answers are marked in <span class="correct-highlight">green</span>.</p>
+    </div>
+<script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Timer functionality - Stopwatch (count up)
+            let elapsedSeconds = 0;
+            const timerElement = document.getElementById('testTimer');
+            let testSubmitted = false;
+            let warningShown = false;
+            let userAnswers = {};
+            let startTime = new Date();
+            let resultsShown = false;
+
+            const correctAnswers = {
+                27: "K", 28: "H", 29: "D", 30: "J", 31: "E", 32: "B",
+                33: "B", 34: "C", 35: "D", 36: "C", 37: "B",
+                38: "YES", 39: "NOT GIVEN", 40: "YES"
+            };
+            const totalQuestions = Object.keys(correctAnswers).length;
+
+            // --- START: CORRECTED DRAG AND DROP LOGIC ---
+
+            let draggedItem = null;
+            const dropZones = document.querySelectorAll('.summary-drop-zone');
+            const dragItems = document.querySelectorAll('.drag-item');
+            const optionsBank = document.getElementById('optionsBank');
+            
+            dragItems.forEach(item => {
+                item.addEventListener('dragstart', function(e) {
+                    draggedItem = this;
+                    setTimeout(() => this.classList.add('dragging'), 0);
+                    e.dataTransfer.setData('text/plain', this.dataset.value);
+                    e.dataTransfer.effectAllowed = 'move';
+                });
+                
+                item.addEventListener('dragend', () => {
+                    if (draggedItem) { // Check if it's not null before removing class
+                        draggedItem.classList.remove('dragging');
+                        draggedItem = null;
+                    }
+                });
+            });
+
+            // This function now ONLY handles dropping onto a question blank.
+            const handleDropOnZone = (zone, e) => {
+                e.preventDefault();
+                zone.classList.remove('drop-hover');
+                if (!draggedItem) return;
+
+                const originalParent = draggedItem.parentElement;
+
+                // If the zone already has an item, swap it back to the original parent.
+                if (zone.querySelector('.drag-item')) {
+                    const existingItem = zone.querySelector('.drag-item');
+                    originalParent.appendChild(existingItem);
+                } else if (originalParent.classList.contains('summary-drop-zone')) {
+                    // If the original parent was a question zone, reset it.
+                    originalParent.innerHTML = originalParent.dataset.qStart;
+                    originalParent.classList.remove('filled');
+                    const originalQButton = document.querySelector(`.subQuestion[data-ordernumber="${originalParent.dataset.qStart}"]`);
+                    if (originalQButton) originalQButton.classList.remove('attempted');
+                }
+                
+                // Place the new item in the zone.
+                zone.innerHTML = ''; 
+                zone.appendChild(draggedItem);
+                zone.classList.add('filled');
+
+                const questionNumber = zone.dataset.qStart;
+                const questionButton = document.querySelector(`.subQuestion[data-ordernumber="${questionNumber}"]`);
+                if (questionButton) questionButton.classList.add('attempted');
+            };
+            
+            dropZones.forEach(zone => {
+                zone.addEventListener('dragenter', e => { e.preventDefault(); zone.classList.add('drop-hover'); });
+                zone.addEventListener('dragleave', () => zone.classList.remove('drop-hover'));
+                zone.addEventListener('dragover', e => { e.preventDefault(); e.dataTransfer.dropEffect = 'move'; });
+                zone.addEventListener('drop', e => handleDropOnZone(zone, e));
+            });
+            
+            // This is the NEW, dedicated handler for the options bank.
+            const handleDropOnBank = (bank, e) => {
+                 e.preventDefault();
+                bank.classList.remove('drop-hover');
+                if (!draggedItem) return;
+
+                const originalParent = draggedItem.parentElement;
+
+                // If the item came from a question zone, reset that zone.
+                if (originalParent.classList.contains('summary-drop-zone')) {
+                    originalParent.innerHTML = originalParent.dataset.qStart;
+                    originalParent.classList.remove('filled');
+                    const questionButton = document.querySelector(`.subQuestion[data-ordernumber="${originalParent.dataset.qStart}"]`);
+                    if (questionButton) questionButton.classList.remove('attempted');
+                }
+                
+                // CRITICAL FIX: Just append the item. Do NOT clear the bank's innerHTML.
+                bank.appendChild(draggedItem);
+            };
+
+            optionsBank.addEventListener('dragenter', e => { e.preventDefault(); optionsBank.classList.add('drop-hover'); });
+            optionsBank.addEventListener('dragleave', () => optionsBank.classList.remove('drop-hover'));
+            optionsBank.addEventListener('dragover', e => { e.preventDefault(); e.dataTransfer.dropEffect = 'move'; });
+            optionsBank.addEventListener('drop', e => handleDropOnBank(optionsBank, e));
+
+            // --- END: CORRECTED DRAG AND DROP LOGIC ---
+
+            function updateTimer() {
+                if (testSubmitted) return;
+                const minutes = Math.floor(elapsedSeconds / 60);
+                const seconds = elapsedSeconds % 60;
+                timerElement.textContent = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+                
+                if (elapsedSeconds >= 1200 && !warningShown) { // 20 minute warning
+                    timerElement.classList.add('timer-warning');
+                    warningShown = true;
+                }
+                elapsedSeconds++;
+            }
+
+            function disableAllInputs() {
+                document.querySelectorAll('input[type="radio"]').forEach(input => input.disabled = true);
+                document.getElementById('deliver-button').disabled = true;
+                document.removeEventListener('mouseup', handleTextSelection);
+                
+                document.querySelectorAll('.drag-item').forEach(item => item.draggable = false);
+            }
+            
+            function showSubmissionModal(title, message) {
+                const modal = document.getElementById('submissionModal');
+                document.getElementById('submissionTitle').textContent = title;
+                document.getElementById('submissionMessage').textContent = message;
+                
+                const endTime = new Date();
+                const timeDiff = endTime - startTime;
+                const minutes = Math.floor(timeDiff / 60000);
+                const seconds = Math.floor((timeDiff % 60000) / 1000);
+                document.getElementById('timeSpent').textContent = `Time spent: ${minutes}m ${seconds}s`;
+                
+                const answersList = document.getElementById('answersList');
+                answersList.innerHTML = '';
+                
+                let score = 0;
+                userAnswers = {};
+                
+                for (let i = 27; i <= 40; i++) {
+                    let userAnswer, userAnswerText = '', correctAnswer, isCorrect;
+                    const answerItem = document.createElement('div');
+                    
+                    if (i >= 27 && i <= 32) { // Summary Completion
+                        const dropZone = document.querySelector(`.summary-drop-zone[data-q-start="${i}"]`);
+                        const droppedItem = dropZone ? dropZone.querySelector('.drag-item') : null;
+                        userAnswer = droppedItem ? droppedItem.dataset.value : 'Not answered';
+                        userAnswerText = droppedItem ? ` - ${droppedItem.textContent}` : '';
+                    } else { // MCQ and Y/N/NG
+                        const selectedOption = document.querySelector(`input[name="q${i}"]:checked`);
+                        userAnswer = selectedOption ? selectedOption.value : 'Not answered';
+                    }
+                    
+                    userAnswers[i] = userAnswer;
+                    correctAnswer = correctAnswers[i];
+                    isCorrect = userAnswer === correctAnswer;
+                    
+                    if (isCorrect) score++;
+
+                    let correctAnswerText = '';
+                    if (i >= 27 && i <= 32) {
+                        const correctDragItem = document.querySelector(`.drag-item[data-value="${correctAnswer}"]`);
+                        correctAnswerText = correctDragItem ? ` - ${correctDragItem.textContent}` : '';
+                    }
+                    
+                    answerItem.className = `answer-item ${isCorrect ? 'correct' : 'incorrect'}`;
+                    answerItem.innerHTML = `
+                        <div class="answer-text">Question ${i}: ${userAnswer}${userAnswerText}</div>
+                        <span class="${isCorrect ? 'correct-answer' : 'incorrect-answer'}">(Correct: ${correctAnswer}${correctAnswerText})</span>
+                        <span class="answer-status ${isCorrect ? 'correct-status' : 'incorrect-status'}">${isCorrect ? '✓' : '✗'}</span>
+                    `;
+                    answersList.appendChild(answerItem);
+                }
+                
+                document.getElementById('userScore').textContent = score;
+                document.getElementById('totalQuestions').textContent = totalQuestions;
+                
+                const bandScore = calculateBandScore(score);
+                document.getElementById('bandScore').textContent = `Band: ${bandScore.toFixed(1)}`;
+                
+                let rating, ratingClass;
+                if (score >= 13) { rating = "Excellent!"; ratingClass = "excellent"; } 
+                else if (score >= 11) { rating = "Very Good"; ratingClass = "very-good"; } 
+                else if (score >= 9) { rating = "Good"; ratingClass = "good"; } 
+                else if (score >= 7) { rating = "Fair"; ratingClass = "fair"; } 
+                else { rating = "Poor - Needs Improvement"; ratingClass = "poor"; }
+                
+                const ratingElement = document.getElementById('performanceRating');
+                ratingElement.textContent = rating;
+                ratingElement.className = `performance-rating ${ratingClass}`;
+                
+                modal.style.display = 'flex';
+                resultsShown = true;
+                
+                const submitButton = document.getElementById('deliver-button');
+                submitButton.innerHTML = '<i class="fas fa-eye"></i> Show My Results';
+                submitButton.disabled = false;
+            }
+
+            function calculateBandScore(score) {
+                if (score >= 14) return 9.0;
+                if (score >= 13) return 8.5;
+                if (score >= 12) return 8.0;
+                if (score >= 11) return 7.5;
+                if (score >= 10) return 7.0;
+                if (score >= 9) return 6.5;
+                if (score >= 8) return 6.0;
+                if (score >= 7) return 5.5;
+                if (score >= 6) return 5.0;
+                if (score >= 5) return 4.5;
+                return 4.0;
+            }
+
+            function highlightAnswers() {
+                for (let i = 27; i <= 32; i++) {
+                    const dropZone = document.querySelector(`.summary-drop-zone[data-q-start="${i}"]`);
+                    if (dropZone) {
+                        const userAnswer = userAnswers[i];
+                        const isCorrect = userAnswer === correctAnswers[i];
+                        
+                        const existingFeedback = dropZone.nextElementSibling;
+                        if (existingFeedback && existingFeedback.classList.contains('summary-feedback')) existingFeedback.remove();
+
+                        if (userAnswer !== 'Not answered') {
+                            dropZone.classList.add(isCorrect ? 'correct' : 'incorrect');
+                            if (!isCorrect) {
+                                const correctDragItem = document.querySelector(`.drag-item[data-value="${correctAnswers[i]}"]`);
+                                const correctText = correctDragItem ? correctDragItem.textContent : correctAnswers[i];
+                                const feedback = document.createElement('span');
+                                feedback.className = `summary-feedback incorrect`;
+                                feedback.textContent = `✗ Correct: ${correctText}`;
+                                dropZone.parentNode.insertBefore(feedback, dropZone.nextSibling);
+                            }
+                        }
+                    }
+                }
+                for (let i = 33; i <= 40; i++) {
+                    const userAnswer = userAnswers[i];
+                    const correctAnswer = correctAnswers[i];
+                    
+                    const userOptionEl = document.querySelector(`input[name="q${i}"][value="${userAnswer}"]`);
+                    if (userOptionEl && userAnswer !== correctAnswer) {
+                        userOptionEl.closest('li').classList.add('incorrect-highlight');
+                    }
+                    
+                    const correctOptionEl = document.querySelector(`input[name="q${i}"][value="${correctAnswer}"]`);
+                    if (correctOptionEl) {
+                        correctOptionEl.closest('li').classList.add('correct-highlight');
+                    }
+                }
+                
+                document.getElementById('answerComparison').style.display = 'block';
+            }
+            
+            document.getElementById('deliver-button').addEventListener('click', function() {
+                if (resultsShown) {
+                    document.getElementById('submissionModal').style.display = 'flex';
+                    return;
+                }
+                if (confirm('Are you sure you want to submit your test?')) {
+                    clearInterval(timerInterval);
+                    testSubmitted = true;
+                    disableAllInputs();
+                    showSubmissionModal('Test Submitted', 'Thank you for completing the test.');
+                }
+            });
+            
+            document.getElementById('closeSubmission').addEventListener('click', function() {
+                document.getElementById('submissionModal').style.display = 'none';
+                highlightAnswers();
+            });
+            
+            const timerInterval = setInterval(updateTimer, 1000);
+            
+            const settingsButton = document.getElementById('settingsButton');
+            const settingsModal = document.getElementById('settingsModal');
+            const settingsClose = document.getElementById('settingsClose');
+            settingsButton.addEventListener('click', () => settingsModal.style.display = 'flex');
+            settingsClose.addEventListener('click', () => settingsModal.style.display = 'none');
+            
+            const divider = document.getElementById('divider');
+            const passageContainer = document.getElementById('passage-container');
+            let isDragging = false;
+            divider.addEventListener('mousedown', (e) => {
+                isDragging = true;
+                document.body.style.cursor = 'col-resize';
+                const startX = e.clientX;
+                const startPassageWidth = passageContainer.offsetWidth;
+                
+                function onMouseMove(e) {
+                    if (!isDragging) return;
+                    const newWidth = startPassageWidth + e.clientX - startX;
+                    const containerWidth = document.querySelector('.test-container').offsetWidth;
+                    if (newWidth > containerWidth * 0.2 && newWidth < containerWidth * 0.8) {
+                       passageContainer.style.width = `${newWidth}px`;
+                    }
+                }
+                
+                function onMouseUp() {
+                    isDragging = false;
+                    document.body.style.cursor = '';
+                    document.removeEventListener('mousemove', onMouseMove);
+                    document.removeEventListener('mouseup', onMouseUp);
+                }
+                
+                document.addEventListener('mousemove', onMouseMove);
+                document.addEventListener('mouseup', onMouseUp);
+            });
+            
+            const subQuestionWrapper = document.querySelector('.footer__subquestionWrapper');
+            for (let i = 27; i <= 40; i++) {
+                const button = document.createElement('button');
+                button.className = 'subQuestion';
+                button.dataset.ordernumber = i;
+                button.innerHTML = `<span class="sr-only">Question ${i}</span><span aria-hidden="true">${i}</span>`;
+                subQuestionWrapper.appendChild(button);
+            }
+
+            document.querySelectorAll('.subQuestion').forEach(button => {
+                button.addEventListener('click', function() {
+                    document.querySelectorAll('.subQuestion.active').forEach(btn => btn.classList.remove('active'));
+                    this.classList.add('active');
+                    
+                    const qNum = parseInt(this.dataset.ordernumber);
+                    let targetBlock;
+                    if (qNum <= 32) targetBlock = 0;
+                    else if (qNum <= 37) targetBlock = 1;
+                    else targetBlock = 2;
+                    
+                    document.querySelectorAll('.question')[targetBlock].scrollIntoView({ behavior: 'smooth', block: 'start' });
+                });
+            });
+            
+            const highlightToolbar = document.getElementById('highlightToolbar');
+            function handleTextSelection(e) {
+                if (testSubmitted) return;
+                if (highlightToolbar.contains(e.target)) return;
+
+                const selection = window.getSelection();
+                const selectedText = selection.toString().trim();
+                
+                if (selectedText.length > 0) {
+                    const range = selection.getRangeAt(0);
+                    const contentAreas = document.querySelectorAll('#passageContent, .question-content');
+                    if (!Array.from(contentAreas).some(area => area.contains(range.commonAncestorContainer))) {
+                        highlightToolbar.style.display = 'none';
+                        return;
+                    }
+
+                    const rangeRect = range.getBoundingClientRect();
+                    highlightToolbar.style.display = 'flex';
+                    highlightToolbar.style.top = `${rangeRect.top + window.scrollY - 40}px`;
+                    highlightToolbar.style.left = `${rangeRect.left + window.scrollX + (rangeRect.width / 2)}px`;
+                } else {
+                    highlightToolbar.style.display = 'none';
+                }
+            }
+
+            document.addEventListener('mouseup', handleTextSelection);
+            document.addEventListener('mousedown', (e) => {
+                if (!highlightToolbar.contains(e.target) && window.getSelection().toString().length === 0) {
+                     highlightToolbar.style.display = 'none';
+                }
+            });
+            
+            document.querySelectorAll('.highlight-color').forEach(button => {
+                button.addEventListener('click', () => applyHighlight(button.dataset.color));
+            });
+            document.querySelector('.highlight-toolbar .remove').addEventListener('click', () => removeHighlight());
+
+            function applyHighlight(color) {
+                const selection = window.getSelection();
+                if (selection.rangeCount > 0) {
+                    const range = selection.getRangeAt(0);
+                    const span = document.createElement('span');
+                    span.className = `highlight ${color}`;
+                    try {
+                        range.surroundContents(span);
+                    } catch (e) {
+                        console.error("Highlighting error:", e);
+                    }
+                    selection.removeAllRanges();
+                    highlightToolbar.style.display = 'none';
+                }
+            }
+
+            function removeHighlight() {
+                 const selection = window.getSelection();
+                if (selection.rangeCount > 0) {
+                    const range = selection.getRangeAt(0);
+                    const container = range.commonAncestorContainer;
+                    if (container.nodeType === Node.ELEMENT_NODE && container.classList.contains('highlight')) {
+                        const parent = container.parentNode;
+                        while (container.firstChild) {
+                            parent.insertBefore(container.firstChild, container);
+                        }
+                        parent.removeChild(container);
+                    }
+                    selection.removeAllRanges();
+                    highlightToolbar.style.display = 'none';
+                }
+            }
+            
+            document.querySelectorAll('input[type="radio"]').forEach(input => {
+                input.addEventListener('change', function() {
+                    const questionNumber = this.name.replace('q', '');
+                    const questionButton = document.querySelector(`.subQuestion[data-ordernumber="${questionNumber}"]`);
+                    if (questionButton) questionButton.classList.add('attempted');
+                });
+            });
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,1101 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Flower Power - IELTS Reading Test</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --day-bg: #f8f9fa;
+            --day-text: #212529;
+            --day-primary: #6f42c1;
+            --day-secondary: #e9ecef;
+            --day-highlight: #fff9c4;
+            --day-highlight-blue: #bbdefb;
+            
+            --night-bg: #1a1a2e;
+            --night-text: #e6e6e6;
+            --night-primary: #a78bfa;
+            --night-secondary: #2d3748;
+            --night-highlight: #5a4c08;
+            --night-highlight-blue: #1e3a5f;
+            
+            --sepia-bg: #f5ecd7;
+            --sepia-text: #3c2f2f;
+            --sepia-primary: #8b5a2b;
+            --sepia-secondary: #e4d5b7;
+            --sepia-highlight: #d9c7a5;
+            --sepia-highlight-blue: #c3d0e0;
+            
+            --transition: all 0.3s ease;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: var(--day-bg);
+            color: var(--day-text);
+            transition: var(--transition);
+            line-height: 1.6;
+        }
+
+        body.night-mode {
+            background-color: var(--night-bg);
+            color: var(--night-text);
+        }
+
+        body.sepia-mode {
+            background-color: var(--sepia-bg);
+            color: var(--sepia-text);
+        }
+
+        .container {
+            display: flex;
+            flex-direction: row;
+            height: 100vh;
+            overflow: hidden;
+        }
+
+         (max-width: 992px) {
+            .container {
+                flex-direction: column;
+            }
+        }
+
+        .passage-container, .questions-container {
+            overflow-y: auto;
+            padding: 20px;
+            height: 100%;
+            box-sizing: border-box;
+        }
+
+        .passage-container {
+            width: 50%;
+            border-right: 2px solid;
+            border-color: var(--day-secondary);
+        }
+
+        .night-mode .passage-container {
+            border-color: var(--night-secondary);
+        }
+
+        .sepia-mode .passage-container {
+            border-color: var(--sepia-secondary);
+        }
+
+        .questions-container {
+            width: 50%;
+        }
+
+         (max-width: 992px) {
+            .passage-container, .questions-container {
+                width: 100%;
+                height: 50%;
+                border-right: none;
+                border-bottom: 2px solid var(--day-secondary);
+            }
+            
+            .night-mode .passage-container, .night-mode .questions-container {
+                border-color: var(--night-secondary);
+            }
+            
+            .sepia-mode .passage-container, .sepia-mode .questions-container {
+                border-color: var(--sepia-secondary);
+            }
+        }
+
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 20px;
+            background: linear-gradient(135deg, var(--day-primary) 0%, #8a63d2 100%);
+            color: white;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .night-mode header {
+            background: linear-gradient(135deg, var(--night-primary) 0%, #7c5ac8 100%);
+        }
+
+        .sepia-mode header {
+            background: linear-gradient(135deg, var(--sepia-primary) 0%, #6b4623 100%);
+        }
+
+        .theme-switcher {
+            display: flex;
+            gap: 10px;
+        }
+
+        .theme-btn {
+            background: rgba(255, 255, 255, 0.2);
+            border: none;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: var(--transition);
+        }
+
+        .theme-btn:hover {
+            background: rgba(255, 255, 255, 0.3);
+            transform: scale(1.1);
+        }
+
+        .timer {
+            font-size: 1.2rem;
+            font-weight: bold;
+            background: rgba(0, 0, 0, 0.2);
+            padding: 5px 15px;
+            border-radius: 20px;
+        }
+
+        .timer.warning {
+            color: #ff6b6b;
+            animation: pulse 1s infinite;
+        }
+
+         pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+
+        
+
+        
+
+        h1 {
+            font-size: 1.8rem;
+            margin: 0 0 10px 0;
+            text-align: center;
+        }
+
+        h2 {
+            font-size: 1.4rem;
+            color: var(--day-primary);
+            border-bottom: 2px solid var(--day-primary);
+            padding-bottom: 5px;
+        }
+
+        .night-mode h2 {
+            color: var(--night-primary);
+            border-color: var(--night-primary);
+        }
+
+        .sepia-mode h2 {
+            color: var(--sepia-primary);
+            border-color: var(--sepia-primary);
+        }
+
+        .passage-content {
+            font-size: 1.1rem;
+            line-height: 1.8;
+        }
+
+        .passage-content p {
+            margin-bottom: 15px;
+        }
+
+        .highlight-menu {
+            position: absolute;
+            background: white;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            padding: 5px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            display: flex;
+            z-index: 1000;
+        }
+
+        .highlight-btn {
+            width: 30px;
+            height: 30px;
+            border: none;
+            border-radius: 3px;
+            margin: 0 3px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: var(--transition);
+        }
+
+        .highlight-btn:hover {
+            transform: scale(1.1);
+        }
+
+        .yellow-highlight {
+            background-color: #fff9c4;
+        }
+
+        .blue-highlight {
+            background-color: #bbdefb;
+        }
+
+        .clear-highlight {
+            background-color: #f8f9fa;
+        }
+
+        .question-block {
+            margin-bottom: 25px;
+            padding: 15px;
+            border-radius: 8px;
+            background-color: var(--day-secondary);
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+        }
+
+        .night-mode .question-block {
+            background-color: var(--night-secondary);
+        }
+
+        .sepia-mode .question-block {
+            background-color: var(--sepia-secondary);
+        }
+
+        .question-title {
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+
+        .options-list {
+            list-style: none;
+            padding: 0;
+        }
+
+        .option-item {
+            margin-bottom: 8px;
+            padding: 10px;
+            border-radius: 5px;
+            background-color: rgba(255, 255, 255, 0.7);
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .night-mode .option-item {
+            background-color: rgba(0, 0, 0, 0.2);
+        }
+
+        .sepia-mode .option-item {
+            background-color: rgba(255, 255, 255, 0.5);
+        }
+
+        .option-item:hover {
+            background-color: rgba(111, 66, 193, 0.1);
+        }
+
+        .night-mode .option-item:hover {
+            background-color: rgba(167, 139, 250, 0.2);
+        }
+
+        .sepia-mode .option-item:hover {
+            background-color: rgba(139, 90, 43, 0.1);
+        }
+
+        .option-item.selected {
+            background-color: var(--day-primary);
+            color: white;
+        }
+
+        .night-mode .option-item.selected {
+            background-color: var(--night-primary);
+        }
+
+        .sepia-mode .option-item.selected {
+            background-color: var(--sepia-primary);
+        }
+
+        .input-answer {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            font-size: 1rem;
+            background-color: rgba(255, 255, 255, 0.7);
+            color: var(--day-text);
+            transition: var(--transition);
+        }
+
+        .night-mode .input-answer {
+            background-color: rgba(0, 0, 0, 0.2);
+            border-color: #444;
+            color: var(--night-text);
+        }
+
+        .sepia-mode .input-answer {
+            background-color: rgba(255, 255, 255, 0.5);
+            color: var(--sepia-text);
+        }
+
+        .submit-btn {
+            display: block;
+            width: 100%;
+            padding: 15px;
+            background: linear-gradient(135deg, var(--day-primary) 0%, #8a63d2 100%);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 1.2rem;
+            font-weight: bold;
+            cursor: pointer;
+            margin-top: 20px;
+            transition: var(--transition);
+        }
+
+        .night-mode .submit-btn {
+            background: linear-gradient(135deg, var(--night-primary) 0%, #7c5ac8 100%);
+        }
+
+        .sepia-mode .submit-btn {
+            background: linear-gradient(135deg, var(--sepia-primary) 0%, #6b4623 100%);
+        }
+
+        .submit-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .results-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: var(--day-bg);
+            color: var(--day-text);
+            z-index: 2000;
+            overflow-y: auto;
+            padding: 20px;
+            box-sizing: border-box;
+            display: none;
+        }
+
+        .night-mode .results-container {
+            background-color: var(--night-bg);
+            color: var(--night-text);
+        }
+
+        .sepia-mode .results-container {
+            background-color: var(--sepia-bg);
+            color: var(--sepia-text);
+        }
+
+        .results-header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .score-display {
+            font-size: 2.5rem;
+            font-weight: bold;
+            color: var(--day-primary);
+            margin: 20px 0;
+        }
+
+        .night-mode .score-display {
+            color: var(--night-primary);
+        }
+
+        .sepia-mode .score-display {
+            color: var(--sepia-primary);
+        }
+
+        .result-item {
+            margin-bottom: 15px;
+            padding: 15px;
+            border-radius: 8px;
+            background-color: var(--day-secondary);
+        }
+
+        .night-mode .result-item {
+            background-color: var(--night-secondary);
+        }
+
+        .sepia-mode .result-item {
+            background-color: var(--sepia-secondary);
+        }
+
+        .correct {
+            color: #28a745;
+        }
+
+        .incorrect {
+            color: #dc3545;
+        }
+
+        .close-results {
+            display: block;
+            margin: 20px auto;
+            padding: 10px 25px;
+            background: var(--day-primary);
+            color: white;
+            border: none;
+            border-radius: 5px;
+            font-size: 1.1rem;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .night-mode .close-results {
+            background: var(--night-primary);
+        }
+
+        .sepia-mode .close-results {
+            background: var(--sepia-primary);
+        }
+
+        .close-results:hover {
+            opacity: 0.9;
+            transform: scale(1.05);
+        }
+
+        .answer-reference {
+            font-style: italic;
+            margin-top: 5px;
+            font-size: 0.9rem;
+            color: #6c757d;
+        }
+
+        .night-mode .answer-reference {
+            color: #a0aec0;
+        }
+
+        .sepia-mode .answer-reference {
+            color: #8b7d6b;
+        }
+
+        .drag-handle {
+            position: absolute;
+            width: 5px;
+            background-color: var(--day-primary);
+            cursor: col-resize;
+            height: 100%;
+            right: 0;
+            top: 0;
+        }
+
+        .night-mode .drag-handle {
+            background-color: var(--night-primary);
+        }
+
+        .sepia-mode .drag-handle {
+            background-color: var(--sepia-primary);
+        }
+
+         (max-width: 992px) {
+            .drag-handle {
+                display: none;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="theme-switcher">
+            <button class="theme-btn" id="day-theme" title="Day Mode"><i class="fas fa-sun"></i></button>
+            <button class="theme-btn" id="night-theme" title="Night Mode"><i class="fas fa-moon"></i></button>
+            <button class="theme-btn" id="sepia-theme" title="Sepia Mode"><i class="fas fa-book"></i></button>
+        </div>
+        <div class="timer" id="timer">20:00</div>
+        
+    </header>
+
+    <div class="container">
+        <div class="passage-container">
+            <div class="drag-handle" id="drag-handle"></div>
+            <h1>Flower Power</h1>
+            <div class="passage-content" id="passage-content">
+                <p><strong>Reading Passage 3</strong></p>
+                <p><strong>You should spend about 20 minutes on Questions 27-40, which are based on Reading Passage 3 on pages 11 and 12.</strong></p>
+                <p><strong>Flower Power</strong></p>
+                <p><strong>Why do people give flowers? To offer condolence to those who are grieving. To express gratitude. To ask for forgiveness. There is something undeniably powerful about giving flowers; in fact, few objects provoke such a universal response. In the US alone, the flower industry is now worth about $5bn a year—suggesting, at the very least, that they service a compelling human need.</strong></p>
+                
+                <p><strong>Paragraph A</strong></p>
+                <p>Research at the Department of Psychology at Rutgers State University of New Jersey confirms that flowers are unique among living organisms in their ability to induce changes in our emotional state. As the first part of their research, the Rutgers psychologists studied women in their homes. Each was presented with a variety of gifts such as flowers, fruit, or sweets. The women were unaware that the study was about the effect of gifts on their emotions. They were told that it was a study about their daily moods, and that they would receive a gift in return for taking part. Following the presentation of the gifts, women receiving flowers were assessed as displaying a much more positive mood than those who received other gifts, and this effect lasted for several days. After receiving flowers, participants were more willing to answer questions concerning their social circle and intimate relationships with friends and family. The results suggest that flowers influence our emotional behaviours, as well as having a strong effect on our immediate expression.</p>
+                
+                <p><strong>Paragraph B</strong></p>
+                <p>In the second study, the psychologists observed participants being handed single flowers, or no gift at all, in a constrained and stressful situation—inside an elevator. Contrary to expectations regarding gender differences, both men and women presented with flowers were more likely to smile, to stand closer and to initiate conversation. Several subjects who were initially skeptical about the experiment's purpose then learnt that flowers were also being handed out, and returned to the elevator and demanded a flower. The scientists used elevators for this study precisely because typical behaviour in sparsely occupied elevators is for people to retreat to opposite corners. The subjects who received flowers, however, closed up that space to a considerable extent—indicating that the flowers not only induced a strong positive mood but brought a significant affiliation among people who had never previously met.</p>
+                
+                <p><strong>Paragraph C</strong></p>
+                <p>The third study involved regularly sending flowers to a selected sample of men and women. The researchers found not only a profound elevation of mood but also reliable improvements in other measures of cognitive function, like memory. In this series of experiments, some participants produced such extraordinary emotional displays that the psychologists were totally unprepared for them. Subjects gave spontaneous hugs and kisses to the people who delivered the flowers, and sent invitations to the psychologists to come to their homes for refreshments.</p>
+                
+                <p><strong>Paragraph D</strong></p>
+                <p>Various evolutionary hypotheses attempt to explain the remarkably powerful psychological effect of flowers. One is that our aesthetic preferences for fertile locations and growing things stem from prehistory, when these clues in our environment could mean the difference between starvation and survival. We may have become hardwired to respond positively to flowers because, for early man, finding them in a particular location predicted future food supplies and possibly a better place to rear children. Yet the flaw in this argument is that the showy flowers which humans seem to find most visually attractive are generally found on those plants which yield no edible products.</p>
+                
+                <p><strong>Paragraph E</strong></p>
+                <p>The Rutgers psychologists' findings show that the various physical attributes of flowers combine to directly affect our emotions through multi-channel interactions. We have evolved preferences for the particular colours, textures, patterned symmetries, and specific floral odours which influence our moods. Indeed, previous research has established that popular perfumes, which often have a floral 'top-note', will actually reduce depression. The origins of these inclinations may well be as the evolutionary theories suggest: the patterned symmetries of flowers can be detected easily as a recognisable signal within a wide variety of visual arrays, and a response to certain colour tones is important in finding ripe fruit against a leafy background. But, claim the Rutgers team, these preferences have long been separated from their primary evolutionary use, and become rewarding to us more generally. Thus, plants with preferred colours, shapes and odours—despite having no other products—would therefore be protected and dispersed.</p>
+                
+                <p><strong>Paragraph F</strong></p>
+                <p>The Rutgers study suggests that flowers may have actually evolved to exploit their peculiar impact on humans. The team's theory proposes a plant-human co-evolution, or even domestication, based on the intense emotional rewards that flowers provide. The idea that flowering plants, with no known food or other basic survival value to man, have co-evolved with us by exploiting an emotional niche instead, is very much like the scenario presented for the evolution of dogs. Flowers may be the plant equivalent of 'companion animals'. If this is true, then there is a very real sense in which, when you next give flowers, they are using you just as much as you are using them.</p>
+            </div>
+        </div>
+
+        <div class="questions-container">
+            <h2>Questions 27-40</h2>
+            <p>Reading Passage 3 has six paragraphs, A-F.</p>
+            <p>Choose the correct heading for each paragraph from the list of headings below.</p>
+            <p>Write the correct number, i-viii, in boxes 27-32 on your answer sheet.</p>
+            
+            <div class="question-block">
+                <div class="question-title">List of Headings</div>
+                <ol type="i" class="options-list">
+                    <li>A negative reaction to receiving flowers</li>
+                    <li>Some surprisingly strong responses to flowers</li>
+                    <li>A mutually beneficial relationship?</li>
+                    <li>Becoming more open about personal matters</li>
+                    <li>Some common social functions of flowers</li>
+                    <li>Sensory appeal versus practical purpose of flowers</li>
+                    <li>Bridging the gap between strangers in an enclosed space</li>
+                    <li>An imperfect theory</li>
+                </ol>
+            </div>
+
+            <div class="question-block">
+                <div class="question-title">27. Paragraph A</div>
+                <ul class="options-list" id="q27">
+                    <li class="option-item" data-value="i">i</li>
+                    <li class="option-item" data-value="ii">ii</li>
+                    <li class="option-item" data-value="iii">iii</li>
+                    <li class="option-item" data-value="iv">iv</li>
+                    <li class="option-item" data-value="v">v</li>
+                    <li class="option-item" data-value="vi">vi</li>
+                    <li class="option-item" data-value="vii">vii</li>
+                    <li class="option-item" data-value="viii">viii</li>
+                </ul>
+            </div>
+
+            <div class="question-block">
+                <div class="question-title">28. Paragraph B</div>
+                <ul class="options-list" id="q28">
+                    <li class="option-item" data-value="i">i</li>
+                    <li class="option-item" data-value="ii">ii</li>
+                    <li class="option-item" data-value="iii">iii</li>
+                    <li class="option-item" data-value="iv">iv</li>
+                    <li class="option-item" data-value="v">v</li>
+                    <li class="option-item" data-value="vi">vi</li>
+                    <li class="option-item" data-value="vii">vii</li>
+                    <li class="option-item" data-value="viii">viii</li>
+                </ul>
+            </div>
+
+            <div class="question-block">
+                <div class="question-title">29. Paragraph C</div>
+                <ul class="options-list" id="q29">
+                    <li class="option-item" data-value="i">i</li>
+                    <li class="option-item" data-value="ii">ii</li>
+                    <li class="option-item" data-value="iii">iii</li>
+                    <li class="option-item" data-value="iv">iv</li>
+                    <li class="option-item" data-value="v">v</li>
+                    <li class="option-item" data-value="vi">vi</li>
+                    <li class="option-item" data-value="vii">vii</li>
+                    <li class="option-item" data-value="viii">viii</li>
+                </ul>
+            </div>
+
+            <div class="question-block">
+                <div class="question-title">30. Paragraph D</div>
+                <ul class="options-list" id="q30">
+                    <li class="option-item" data-value="i">i</li>
+                    <li class="option-item" data-value="ii">ii</li>
+                    <li class="option-item" data-value="iii">iii</li>
+                    <li class="option-item" data-value="iv">iv</li>
+                    <li class="option-item" data-value="v">v</li>
+                    <li class="option-item" data-value="vi">vi</li>
+                    <li class="option-item" data-value="vii">vii</li>
+                    <li class="option-item" data-value="viii">viii</li>
+                </ul>
+            </div>
+
+            <div class="question-block">
+                <div class="question-title">31. Paragraph E</div>
+                <ul class="options-list" id="q31">
+                    <li class="option-item" data-value="i">i</li>
+                    <li class="option-item" data-value="ii">ii</li>
+                    <li class="option-item" data-value="iii">iii</li>
+                    <li class="option-item" data-value="iv">iv</li>
+                    <li class="option-item" data-value="v">v</li>
+                    <li class="option-item" data-value="vi">vi</li>
+                    <li class="option-item" data-value="vii">vii</li>
+                    <li class="option-item" data-value="viii">viii</li>
+                </ul>
+            </div>
+
+            <div class="question-block">
+                <div class="question-title">32. Paragraph F</div>
+                <ul class="options-list" id="q32">
+                    <li class="option-item" data-value="i">i</li>
+                    <li class="option-item" data-value="ii">ii</li>
+                    <li class="option-item" data-value="iii">iii</li>
+                    <li class="option-item" data-value="iv">iv</li>
+                    <li class="option-item" data-value="v">v</li>
+                    <li class="option-item" data-value="vi">vi</li>
+                    <li class="option-item" data-value="vii">vii</li>
+                    <li class="option-item" data-value="viii">viii</li>
+                </ul>
+            </div>
+
+            <h2>Questions 33-36</h2>
+            <p>Classify the following statements as referring to:</p>
+            <p>A the first study</p>
+            <p>B the second study</p>
+            <p>C the third study</p>
+            <p>Write the correct letter, A, B, or C, in boxes 33-36 on your answer sheet.</p>
+
+            <div class="question-block">
+                <div class="question-title">33. The study focused on participants' short-term reaction to receiving flowers.</div>
+                <ul class="options-list" id="q33">
+                    <li class="option-item" data-value="A">A</li>
+                    <li class="option-item" data-value="B">B</li>
+                    <li class="option-item" data-value="C">C</li>
+                </ul>
+            </div>
+
+            <div class="question-block">
+                <div class="question-title">34. Participants were deliberately misled as to the aim of the study.</div>
+                <ul class="options-list" id="q34">
+                    <li class="option-item" data-value="A">A</li>
+                    <li class="option-item" data-value="B">B</li>
+                    <li class="option-item" data-value="C">C</li>
+                </ul>
+            </div>
+
+            <div class="question-block">
+                <div class="question-title">35. Receiving flowers had a notable effect on participants' mental capacities.</div>
+                <ul class="options-list" id="q35">
+                    <li class="option-item" data-value="A">A</li>
+                    <li class="option-item" data-value="B">B</li>
+                    <li class="option-item" data-value="C">C</li>
+                </ul>
+            </div>
+
+            <div class="question-block">
+                <div class="question-title">36. Male and female responses were more uniform than expected.</div>
+                <ul class="options-list" id="q36">
+                    <li class="option-item" data-value="A">A</li>
+                    <li class="option-item" data-value="B">B</li>
+                    <li class="option-item" data-value="C">C</li>
+                </ul>
+            </div>
+
+            <h2>Questions 37-40</h2>
+            <p>Complete the summary of paragraph E below.</p>
+            <p>Choose <strong>ONE WORD ONLY</strong> from paragraph E for each answer.</p>
+            <p>Write your answers in boxes 37-40 on your answer sheet.</p>
+
+            <div class="question-block">
+                <div class="question-title">A possible explanation for the appeal of flowers</div>
+                <p>It has been suggested that our intense response to flowers originates in prehistoric times. The presence of flowers might indicate a potential source of 
+                <input type="text" class="input-answer" id="q37" maxlength="15"> in a particular location, and primitive humans would search for such signs when looking for a suitable site to raise their 
+                <input type="text" class="input-answer" id="q38" maxlength="15">. The interpretation of these signs was essential for the survival of our ancestors. However, the problem with this idea is that the plants producing the most attractive flowers do not usually have fruit which is 
+                <input type="text" class="input-answer" id="q39" maxlength="15">.</p>
+            </div>
+
+            <button class="submit-btn" id="submit-btn">Submit Answers</button>
+        </div>
+    </div>
+
+    <div class="results-container" id="results-container">
+        <div class="results-header">
+            <h2>Test Results</h2>
+            <div class="score-display" id="score-display">Score: 0/13</div>
+        </div>
+        
+        <div id="results-content">
+            <!-- Results will be inserted here -->
+        </div>
+        
+        <button class="close-results" id="close-results">Close Results</button>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Theme switching
+            const body = document.body;
+            const dayThemeBtn = document.getElementById('day-theme');
+            const nightThemeBtn = document.getElementById('night-theme');
+            const sepiaThemeBtn = document.getElementById('sepia-theme');
+            
+            dayThemeBtn.addEventListener('click', () => {
+                body.className = '';
+            });
+            
+            nightThemeBtn.addEventListener('click', () => {
+                body.className = 'night-mode';
+            });
+            
+            sepiaThemeBtn.addEventListener('click', () => {
+                body.className = 'sepia-mode';
+            });
+            
+            // Timer functionality
+            const timerElement = document.getElementById('timer');
+            let timeLeft = 20 * 60; // 20 minutes in seconds
+            let timerInterval;
+            
+            function startTimer() {
+                clearInterval(timerInterval);
+                timerInterval = setInterval(updateTimer, 1000);
+            }
+            
+            function updateTimer() {
+                if (timeLeft <= 0) {
+                    clearInterval(timerInterval);
+                    submitAnswers();
+                    return;
+                }
+                
+                timeLeft--;
+                
+                const minutes = Math.floor(timeLeft / 60);
+                const seconds = timeLeft % 60;
+                
+                timerElement.textContent = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+                
+                if (timeLeft === 5 * 60) { // 5 minutes warning
+                    timerElement.classList.add('warning');
+                }
+            }
+            
+            startTimer();
+            
+            // Answer selection
+            const optionItems = document.querySelectorAll('.option-item');
+            optionItems.forEach(item => {
+                item.addEventListener('click', function() {
+                    const parentList = this.parentElement;
+                    const questionId = parentList.id;
+                    
+                    // Remove selected class from all options in this question
+                    parentList.querySelectorAll('.option-item').forEach(opt => {
+                        opt.classList.remove('selected');
+                    });
+                    
+                    // Add selected class to clicked option
+                    this.classList.add('selected');
+                    
+                    // Store the answer
+                    sessionStorage.setItem(questionId, this.getAttribute('data-value'));
+                });
+            });
+            
+            // Text input answers
+            const inputAnswers = document.querySelectorAll('.input-answer');
+            inputAnswers.forEach(input => {
+                input.addEventListener('input', function() {
+                    sessionStorage.setItem(this.id, this.value.trim().toLowerCase());
+                });
+            });
+            
+            // Load saved answers if any
+            function loadSavedAnswers() {
+                optionItems.forEach(item => {
+                    const parentList = item.parentElement;
+                    const questionId = parentList.id;
+                    const savedAnswer = sessionStorage.getItem(questionId);
+                    
+                    if (savedAnswer && item.getAttribute('data-value') === savedAnswer) {
+                        item.classList.add('selected');
+                    }
+                });
+                
+                inputAnswers.forEach(input => {
+                    const savedAnswer = sessionStorage.getItem(input.id);
+                    if (savedAnswer) {
+                        input.value = savedAnswer;
+                    }
+                });
+            }
+            
+            loadSavedAnswers();
+            
+            // Submit button
+            const submitBtn = document.getElementById('submit-btn');
+            submitBtn.addEventListener('click', submitAnswers);
+            
+            // Close results button
+            const closeResultsBtn = document.getElementById('close-results');
+            closeResultsBtn.addEventListener('click', function() {
+                document.getElementById('results-container').style.display = 'none';
+            });
+            
+            // Correct answers
+            const correctAnswers = {
+                q27: 'iv',
+                q28: 'vii',
+                q29: 'ii',
+                q30: 'viii',
+                q31: 'vi',
+                q32: 'iii',
+                q33: 'A',
+                q34: 'A',
+                q35: 'C',
+                q36: 'B',
+                q37: 'food',
+                q38: 'children',
+                q39: 'edible'
+            };
+            
+            // Answer references
+            const answerReferences = {
+                q27: "Reference: Paragraph A - 'After receiving flowers, participants were more willing to answer questions concerning their social circle and intimate relationships'",
+                q28: "Reference: Paragraph B - 'The subjects who received flowers, however, closed up that space to a considerable extent'",
+                q29: "Reference: Paragraph C - 'some participants produced such extraordinary emotional displays that the psychologists were totally unprepared for them'",
+                q30: "Reference: Paragraph D - 'Yet the flaw in this argument is that the showy flowers which humans seem to find most visually attractive are generally found on those plants which yield no edible products'",
+                q31: "Reference: Paragraph E - 'these preferences have long been separated from their primary evolutionary use'",
+                q32: "Reference: Paragraph F - 'flowers may have actually evolved to exploit their peculiar impact on humans' and 'they are using you just as much as you are using them'",
+                q33: "Reference: Paragraph A - 'this effect lasted for several days' (contrasted with immediate effects in other studies)",
+                q34: "Reference: Paragraph A - 'The women were unaware that the study was about the effect of gifts on their emotions. They were told that it was a study about their daily moods'",
+                q35: "Reference: Paragraph C - 'reliable improvements in other measures of cognitive function, like memory'",
+                q36: "Reference: Paragraph B - 'Contrary to expectations regarding gender differences, both men and women presented with flowers were more likely to smile...'",
+                q37: "Reference: Paragraph E - 'response to certain colour tones is important in finding ripe fruit' and Paragraph D - 'predicted future food supplies'",
+                q38: "Reference: Paragraph D - 'possibly a better place to rear children'",
+                q39: "Reference: Paragraph D - 'the showy flowers which humans seem to find most visually attractive are generally found on those plants which yield no edible products'"
+            };
+            
+            // Submit answers function
+            function submitAnswers() {
+                clearInterval(timerInterval);
+                
+                let score = 0;
+                const results = [];
+                
+                // Check multiple choice questions
+                for (let i = 27; i <= 36; i++) {
+                    const questionId = 'q' + i;
+                    const userAnswer = sessionStorage.getItem(questionId) || '';
+                    const isCorrect = userAnswer === correctAnswers[questionId];
+                    
+                    if (isCorrect) score++;
+                    
+                    results.push({
+                        question: i,
+                        userAnswer: userAnswer,
+                        correctAnswer: correctAnswers[questionId],
+                        isCorrect: isCorrect,
+                        reference: answerReferences[questionId]
+                    });
+                }
+                
+                // Check text input questions
+                for (let i = 37; i <= 39; i++) {
+                    const questionId = 'q' + i;
+                    const userAnswer = sessionStorage.getItem(questionId) || '';
+                    const isCorrect = userAnswer === correctAnswers[questionId];
+                    
+                    if (isCorrect) score++;
+                    
+                    results.push({
+                        question: i,
+                        userAnswer: userAnswer,
+                        correctAnswer: correctAnswers[questionId],
+                        isCorrect: isCorrect,
+                        reference: answerReferences[questionId]
+                    });
+                }
+                
+                // Display results
+                displayResults(score, results);
+            }
+            
+            // Display results function
+            function displayResults(score, results) {
+                const scoreDisplay = document.getElementById('score-display');
+                const resultsContent = document.getElementById('results-content');
+                
+                scoreDisplay.textContent = `Score: ${score}/13`;
+                resultsContent.innerHTML = '';
+                
+                results.forEach(result => {
+                    const resultItem = document.createElement('div');
+                    resultItem.className = 'result-item';
+                    
+                    const statusClass = result.isCorrect ? 'correct' : 'incorrect';
+                    const statusIcon = result.isCorrect ? '✓' : '✗';
+                    
+                    resultItem.innerHTML = `
+                        <div><strong>Question ${result.question}:</strong> 
+                        <span class="${statusClass}">${statusIcon} Your answer: ${result.userAnswer || 'Not answered'} 
+                        ${!result.isCorrect ? ` | Correct answer: ${result.correctAnswer}` : ''}</span></div>
+                        <div class="answer-reference">${result.reference}</div>
+                    `;
+                    
+                    resultsContent.appendChild(resultItem);
+                });
+                
+                document.getElementById('results-container').style.display = 'block';
+            }
+            
+            // Text highlighting functionality
+            const passageContent = document.getElementById('passage-content');
+            let highlightMenu = null;
+            
+            function createHighlightMenu() {
+                if (highlightMenu) {
+                    document.body.removeChild(highlightMenu);
+                }
+                
+                highlightMenu = document.createElement('div');
+                highlightMenu.className = 'highlight-menu';
+                highlightMenu.style.display = 'none';
+                
+                const yellowBtn = document.createElement('button');
+                yellowBtn.className = 'highlight-btn yellow-highlight';
+                yellowBtn.title = 'Yellow Highlight';
+                yellowBtn.innerHTML = '<i class="fas fa-highlighter"></i>';
+                yellowBtn.addEventListener('click', () => applyHighlight('#fff9c4'));
+                
+                const blueBtn = document.createElement('button');
+                blueBtn.className = 'highlight-btn blue-highlight';
+                blueBtn.title = 'Blue Highlight';
+                blueBtn.innerHTML = '<i class="fas fa-highlighter"></i>';
+                blueBtn.addEventListener('click', () => applyHighlight('#bbdefb'));
+                
+                const clearBtn = document.createElement('button');
+                clearBtn.className = 'highlight-btn clear-highlight';
+                clearBtn.title = 'Clear Highlight';
+                clearBtn.innerHTML = '<i class="fas fa-eraser"></i>';
+                clearBtn.addEventListener('click', clearHighlight);
+                
+                highlightMenu.appendChild(yellowBtn);
+                highlightMenu.appendChild(blueBtn);
+                highlightMenu.appendChild(clearBtn);
+                
+                document.body.appendChild(highlightMenu);
+            }
+            
+            function showHighlightMenu(x, y) {
+                if (!highlightMenu) createHighlightMenu();
+                
+                highlightMenu.style.display = 'flex';
+                highlightMenu.style.left = `${x}px`;
+                highlightMenu.style.top = `${y}px`;
+            }
+            
+            function hideHighlightMenu() {
+                if (highlightMenu) {
+                    highlightMenu.style.display = 'none';
+                }
+            }
+            
+            function applyHighlight(color) {
+                const selection = window.getSelection();
+                if (!selection.rangeCount) return;
+                
+                const range = selection.getRangeAt(0);
+                const selectedText = range.toString();
+                
+                if (!selectedText.trim()) return;
+                
+                const span = document.createElement('span');
+                span.style.backgroundColor = color;
+                span.textContent = selectedText;
+                
+                range.deleteContents();
+                range.insertNode(span);
+                
+                selection.removeAllRanges();
+                hideHighlightMenu();
+            }
+            
+            function clearHighlight() {
+                const selection = window.getSelection();
+                if (!selection.rangeCount) return;
+                
+                const range = selection.getRangeAt(0);
+                const selectedText = range.toString();
+                
+                if (!selectedText.trim()) return;
+                
+                // Create a text node to replace the highlighted content
+                const textNode = document.createTextNode(selectedText);
+                
+                range.deleteContents();
+                range.insertNode(textNode);
+                
+                selection.removeAllRanges();
+                hideHighlightMenu();
+            }
+            
+            // Event listeners for text highlighting
+            passageContent.addEventListener('mouseup', function(e) {
+                const selection = window.getSelection();
+                const selectedText = selection.toString();
+                
+                if (selectedText.trim()) {
+                    const range = selection.getRangeAt(0);
+                    const rect = range.getBoundingClientRect();
+                    
+                    showHighlightMenu(e.pageX, rect.top + window.scrollY - 40);
+                } else {
+                    hideHighlightMenu();
+                }
+            });
+            
+            document.addEventListener('mousedown', function(e) {
+                if (highlightMenu && !highlightMenu.contains(e.target)) {
+                    hideHighlightMenu();
+                }
+            });
+            
+            // Panel resizing
+            const dragHandle = document.getElementById('drag-handle');
+            const passageContainer = document.querySelector('.passage-container');
+            const questionsContainer = document.querySelector('.questions-container');
+            let isResizing = false;
+            
+            dragHandle.addEventListener('mousedown', function(e) {
+                isResizing = true;
+                document.body.style.cursor = 'col-resize';
+                e.preventDefault();
+            });
+            
+            document.addEventListener('mousemove', function(e) {
+                if (!isResizing) return;
+                
+                const containerWidth = document.querySelector('.container').offsetWidth;
+                const newPassageWidth = (e.pageX / containerWidth) * 100;
+                
+                if (newPassageWidth > 20 && newPassageWidth < 80) {
+                    passageContainer.style.width = `${newPassageWidth}%`;
+                    questionsContainer.style.width = `${100 - newPassageWidth}%`;
+                }
+            });
+            
+            document.addEventListener('mouseup', function() {
+                isResizing = false;
+                document.body.style.cursor = 'default';
+            });
+            
+            // Mobile touch events for resizing
+            dragHandle.addEventListener('touchstart', function(e) {
+                isResizing = true;
+                e.preventDefault();
+            });
+            
+            document.addEventListener('touchmove', function(e) {
+                if (!isResizing) return;
+                
+                const touch = e.touches[0];
+                const containerWidth = document.querySelector('.container').offsetWidth;
+                const newPassageWidth = (touch.pageX / containerWidth) * 100;
+                
+                if (newPassageWidth > 20 && newPassageWidth < 80) {
+                    passageContainer.style.width = `${newPassageWidth}%`;
+                    questionsContainer.style.width = `${100 - newPassageWidth}%`;
+                }
+                
+                e.preventDefault();
+            });
+            
+            document.addEventListener('touchend', function() {
+                isResizing = false;
+            });
+        });
+    </script>
+</body>
+</html>

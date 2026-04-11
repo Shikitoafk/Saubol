@@ -1,0 +1,1035 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>IELTS Reading Test: E-training</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --day-bg: #f8f9fa;
+            --day-text: #212529;
+            --day-primary: #6f42c1;
+            --day-secondary: #e9ecef;
+            --day-highlight: #fff9c4;
+            --day-highlight2: #bbdefb;
+            
+            --night-bg: #1a1a2e;
+            --night-text: #e6e6e6;
+            --night-primary: #a78bfa;
+            --night-secondary: #16213e;
+            --night-highlight: #374151;
+            --night-highlight2: #1e3a8a;
+            
+            --sepia-bg: #f5ecd8;
+            --sepia-text: #3b2c1e;
+            --sepia-primary: #8b5a2b;
+            --sepia-secondary: #e8d9c0;
+            --sepia-highlight: #e3cda5;
+            --sepia-highlight2: #c9af8f;
+            
+            --transition: all 0.3s ease;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: var(--day-bg);
+            color: var(--day-text);
+            transition: var(--transition);
+            line-height: 1.6;
+        }
+
+        body.night-mode {
+            background-color: var(--night-bg);
+            color: var(--night-text);
+        }
+
+        body.sepia-mode {
+            background-color: var(--sepia-bg);
+            color: var(--sepia-text);
+        }
+
+        .container {
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+
+        header {
+            background: linear-gradient(135deg, #6a11cb 0%, #2575fc 100%);
+            color: white;
+            padding: 15px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            position: relative;
+        }
+
+        .header-center {
+            position: absolute;
+            left: 50%;
+            transform: translateX(-50%);
+        }
+
+        
+
+        
+
+        .theme-switcher {
+            display: flex;
+            gap: 10px;
+        }
+
+        .theme-btn {
+            background: rgba(255, 255, 255, 0.2);
+            border: none;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .theme-btn:hover {
+            transform: scale(1.1);
+        }
+
+        .timer {
+            font-size: 1.2rem;
+            font-weight: bold;
+            background: rgba(0, 0, 0, 0.2);
+            padding: 5px 15px;
+            border-radius: 20px;
+        }
+
+        .timer.warning {
+            color: #ff6b6b;
+            animation: pulse 1s infinite;
+        }
+
+         pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+
+        .content {
+            display: flex;
+            flex: 1;
+            overflow: hidden;
+        }
+
+        .passage-container {
+            flex: 1;
+            padding: 20px;
+            overflow-y: auto;
+            border-right: 1px solid #ddd;
+        }
+
+        .night-mode .passage-container {
+            border-right-color: #444;
+        }
+
+        .sepia-mode .passage-container {
+            border-right-color: #c9b18a;
+        }
+
+        .questions-container {
+            flex: 1;
+            padding: 20px;
+            overflow-y: auto;
+        }
+
+        .passage-content {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: white;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+        }
+
+        .night-mode .passage-content {
+            background-color: var(--night-secondary);
+        }
+
+        .sepia-mode .passage-content {
+            background-color: var(--sepia-secondary);
+        }
+
+        .passage-content h1 {
+            color: var(--day-primary);
+            border-bottom: 2px solid var(--day-primary);
+            padding-bottom: 10px;
+            margin-top: 0;
+        }
+
+        .night-mode .passage-content h1 {
+            color: var(--night-primary);
+            border-bottom-color: var(--night-primary);
+        }
+
+        .sepia-mode .passage-content h1 {
+            color: var(--sepia-primary);
+            border-bottom-color: var(--sepia-primary);
+        }
+
+        .passage-content p {
+            margin-bottom: 15px;
+        }
+
+        .highlight-menu {
+            position: absolute;
+            background: white;
+            border-radius: 6px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+            padding: 5px;
+            display: flex;
+            z-index: 1000;
+        }
+
+        .highlight-btn {
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            border: none;
+            margin: 0 3px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: var(--transition);
+        }
+
+        .highlight-btn:hover {
+            transform: scale(1.1);
+        }
+
+        .yellow-highlight {
+            background-color: #fff9c4;
+        }
+
+        .blue-highlight {
+            background-color: #bbdefb;
+        }
+
+        .clear-highlight {
+            background-color: #f8f9fa;
+        }
+
+        .question-section {
+            margin-bottom: 30px;
+        }
+
+        .question-section h2 {
+            color: var(--day-primary);
+            margin-top: 0;
+        }
+
+        .night-mode .question-section h2 {
+            color: var(--night-primary);
+        }
+
+        .sepia-mode .question-section h2 {
+            color: var(--sepia-primary);
+        }
+
+        .question {
+            margin-bottom: 15px;
+            padding: 15px;
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+        }
+
+        .night-mode .question {
+            background-color: var(--night-secondary);
+        }
+
+        .sepia-mode .question {
+            background-color: var(--sepia-secondary);
+        }
+
+        select, input {
+            padding: 8px 12px;
+            border-radius: 6px;
+            border: 1px solid #ddd;
+            background-color: white;
+            color: var(--day-text);
+            font-family: inherit;
+        }
+
+        .night-mode select, .night-mode input {
+            background-color: #2d3748;
+            border-color: #4a5568;
+            color: var(--night-text);
+        }
+
+        .sepia-mode select, .sepia-mode input {
+            background-color: #e8d9c0;
+            border-color: #c9b18a;
+            color: var(--sepia-text);
+        }
+
+        .submit-btn {
+            background: linear-gradient(135deg, #6a11cb 0%, #2575fc 100%);
+            color: white;
+            border: none;
+            padding: 12px 25px;
+            border-radius: 30px;
+            font-size: 1.1rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: var(--transition);
+            display: block;
+            margin: 20px auto;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        .submit-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 10px rgba(0, 0, 0, 0.15);
+        }
+
+        .result-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.7);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 2000;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s ease;
+        }
+
+        .result-modal.show {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        .result-content {
+            background-color: white;
+            width: 90%;
+            max-width: 800px;
+            max-height: 90vh;
+            border-radius: 10px;
+            padding: 30px;
+            overflow-y: auto;
+            position: relative;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+        }
+
+        .night-mode .result-content {
+            background-color: var(--night-secondary);
+        }
+
+        .sepia-mode .result-content {
+            background-color: var(--sepia-secondary);
+        }
+
+        .close-btn {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: #999;
+        }
+
+        .close-btn:hover {
+            color: #333;
+        }
+
+        .night-mode .close-btn:hover {
+            color: #fff;
+        }
+
+        .sepia-mode .close-btn:hover {
+            color: var(--sepia-text);
+        }
+
+        .score-display {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .score-circle {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #6a11cb 0%, #2575fc 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 20px;
+            color: white;
+            font-size: 2rem;
+            font-weight: bold;
+            box-shadow: 0 6px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .answer-feedback {
+            margin-bottom: 20px;
+            padding: 15px;
+            border-radius: 8px;
+            background-color: #f8f9fa;
+        }
+
+        .night-mode .answer-feedback {
+            background-color: #2d3748;
+        }
+
+        .sepia-mode .answer-feedback {
+            background-color: #e8d9c0;
+        }
+
+        .correct {
+            color: #28a745;
+            font-weight: bold;
+        }
+
+        .incorrect {
+            color: #dc3545;
+            font-weight: bold;
+        }
+
+        .answer-reference {
+            font-style: italic;
+            margin-top: 5px;
+            color: #6c757d;
+        }
+
+        .night-mode .answer-reference {
+            color: #a0aec0;
+        }
+
+        .sepia-mode .answer-reference {
+            color: #8b7d6b;
+        }
+
+         (max-width: 992px) {
+            .content {
+                flex-direction: column;
+            }
+            
+            .passage-container {
+                border-right: none;
+                border-bottom: 1px solid #ddd;
+                max-height: 40vh;
+            }
+            
+            .night-mode .passage-container {
+                border-bottom-color: #444;
+            }
+            
+            .sepia-mode .passage-container {
+                border-bottom-color: #c9b18a;
+            }
+        }
+
+        .highlighted-yellow {
+            background-color: #fff9c4;
+            transition: var(--transition);
+        }
+
+        .highlighted-blue {
+            background-color: #bbdefb;
+            transition: var(--transition);
+        }
+
+        .night-mode .highlighted-yellow {
+            background-color: #5a4e1f;
+        }
+
+        .night-mode .highlighted-blue {
+            background-color: #1e3a5f;
+        }
+
+        .sepia-mode .highlighted-yellow {
+            background-color: #e3cda5;
+        }
+
+        .sepia-mode .highlighted-blue {
+            background-color: #c9af8f;
+        }
+
+        .checkbox-group {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            margin-top: 10px;
+        }
+
+        .checkbox-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <div class="theme-switcher">
+                <button class="theme-btn" id="day-theme" title="Day Mode"><i class="fas fa-sun"></i></button>
+                <button class="theme-btn" id="night-theme" title="Night Mode"><i class="fas fa-moon"></i></button>
+                <button class="theme-btn" id="sepia-theme" title="Sepia Mode"><i class="fas fa-book"></i></button>
+            </div>
+            
+            <div class="header-center">
+                
+            </div>
+            
+            <div class="timer" id="timer">20:00</div>
+        </header>
+        
+        <div class="content">
+            <div class="passage-container">
+                <div class="passage-content" id="passage-content">
+                    <h1>Reading Practice</h1>
+                    <h2>E-training</h2>
+                    
+                    <p><strong>A</strong></p>
+                    <p>E-learning is the unifying term to describe the fields of online learning, web-based training, and technology-delivered instruction, which can be a great benefit to corporate e-learning. IBM, for instance, claims that the institution of its e-training program, Basic Blue, whose purpose is to train new managers, saved the company in the range of $200 million in 1999. Cutting the travel expenses required to bring employees and instructors to a central classroom account for the lion's share of the savings. With an online course, employees can learn from any Internet-connected PC, anywhere in the world. Ernst and Young reduced training costs by 35 percent while improving consistency and scalability.</p>
+                    
+                    <p><strong>B</strong></p>
+                    <p>In addition to generally positive economic benefits, other advantages such as convenience, standardized delivery, self-paced learning, and a variety of available content, have made e-learning a high priority for many corporations. E-learning is widely believed to offer flexible "any time, any place" learning. The claim for "any place" is valid in principle and is a great development. Many people can engage with rich learning materials that simply were not possible in a paper of broadcast distance learning era. For teaching specific information and skills, e-training holds great promise. It can be especially effective at helping employees prepare for IT certification programs. E-learning also seems to effectively address topics such as sexual harassment education, safety training and management training – all areas where a clear set of objectives can be identified. Ultimately, training experts recommend a "blended" approach that combines both online and in-person training as the instruction requires. E-learning is not an end-all solution. But if it helps decrease costs and windowless classrooms filled with snoring students, it definitely has its advantages.</p>
+                    
+                    <p><strong>C</strong></p>
+                    <p>Much of the discussion about implementing e-learning has focused on the technology, but as Driscoll and others have reminded us, e-learning is not just about the technology, but also many human factors. As any capable manager knows, teaching employees new skills is critical to a smoothly run business. Having said that, however, the traditional route of classroom instruction runs the risk of being expensive, slow and, oftentimes, ineffective. Perhaps the classroom's greatest disadvantage is the fact that it takes employees out of their jobs. Every minute an employee is sitting in a classroom training session is a minute they're not out on the floor working. It now looks as if there is a way to circumvent these traditional training drawbacks. E-training promises more effective teaching techniques by integrating audio, video, animation, text and interactive materials with the intent of teaching each student at his or her own pace. In addition to higher performance results, there are other immediate benefits to students such as increased time on task, higher levels of motivation, and reduced test anxiety for many learners.</p>
+                    
+                    <p><strong>D</strong></p>
+                    <p>On the other hand, nobody said E-training technology would be cheap. E-training service providers, on the average, charge from $10,000 to $60,000 to develop one hour of online instruction. This price varies depending on the complexity of the training topic and the media used. HTML pages are a little cheaper to develop while streaming-video presentations or flash animations cost more. Course content is just the starting place for the cost. A complete e-learning solution also includes the technology platform (the computers, applications and network connections that are used to deliver the courses). This technology platform, known as a learning management system (LMS), can either be installed onsite or outsourced. Add to that cost the necessary investments in network bandwidth to deliver multimedia courses, and you're left holding one heck of a bill. For the LMS infrastructure and a dozen or so online courses, costs can top $500,000 in the first year. These kinds of costs mean that custom e-training is, for the time being, an option only for large organizations. For those companies that have a large enough staff, the e-training concept pays for itself. Aware of this fact, large companies are investing heavily in online training. Today, over half of the 400-plus courses that Rockwell Collins offers are delivered instantly to its clients in an e-learning format, a change that has reduced its annual training costs by 40%. Many other success stories exist.</p>
+                    
+                    <p><strong>E</strong></p>
+                    <p>E-learning isn't expected to replace the classroom entirely. For one thing, bandwidth limitations are still an issue in presenting multimedia over the Internet. Furthermore, e-training isn't suited to every mode of instruction or topic. For instance, it's rather ineffective imparting cultural values or building teams. If your company has a unique corporate culture is would be difficult to convey that to first-time employees through a computer monitor. Group training sessions are more ideal for these purposes. In addition, there is a perceived loss of research time because of the work involved in developing and teaching online classes. Professor Wallin estimated that it required between 500 and 1,000 person-hours, that is, Wallin-hours, to keep the course at the appropriate level of currency and usefulness. (Distance learning instructors often need technical skills, no matter how advanced the courseware system.) That amounts to between a quarter and half of a person-year. Finally, teaching materials require computer literacy and access to equipment. Any e-Learning system involves basic equipment and a minimum level of computer knowledge in order to perform the tasks required by the system. A student that does not possess these skills, or have access to these tools, cannot succeed in an e-Learning program.</p>
+                    
+                    <p><strong>F</strong></p>
+                    <p>While few people debate the obvious advantages of e-learning, systematic research is needed to confirm that learners are actually acquiring and using the skills that are being taught online, and that e-learning is the best way to achieve the outcomes in a corporate environment. Nowadays, a go-between style of Blended learning, which refers to a mixing of different learning environments, is gaining popularity. It combines traditional face-to-face classroom methods with more modern computer-mediated activities. According to its proponents, the strategy creates a more integrated approach for both instructors and learners. Formerly, technology-based materials played a supporting role in face-to-face instruction. Through a blended learning approach, technology will be more important.</p>
+                </div>
+            </div>
+            
+            <div class="questions-container">
+                <div class="question-section">
+                    <h2>Questions 1-6</h2>
+                    <p>The reading passage has six paragraphs, <strong>A-F</strong><br>
+                    Choose the correct heading for paragraphs <strong>A-F</strong> from the list below.<br>
+                    Write the correct number, <strong>I-xi</strong>, in boxes 1-6 on your answer sheet.</p>
+                    
+                    <p><strong>List of Headings</strong></p>
+                    <ol type="i">
+                        <li>overview of the benefits for application of E-training</li>
+                        <li>IBM's successful choice of training</li>
+                        <li>Future directions and a new style of teaching</li>
+                        <li>learners' achievement and advanced teaching materials</li>
+                        <li>limitations when E-training compares with traditional class</li>
+                        <li>multimedia over the Internet can be a solution</li>
+                        <li>technology can be a huge financial burden</li>
+                        <li>the distance learners outperformed the traditional university learners worldwide</li>
+                        <li>other advantages besides economic consideration</li>
+                        <li>Training offered to help people learn using computers</li>
+                    </ol>
+                    
+                    <div class="question">
+                        <p><strong>1. </strong>
+                            <select id="q1">
+                                <option value="">Select heading</option>
+                                <option value="i">i</option>
+                                <option value="ii">ii</option>
+                                <option value="iii">iii</option>
+                                <option value="iv">iv</option>
+                                <option value="v">v</option>
+                                <option value="vi">vi</option>
+                                <option value="vii">vii</option>
+                                <option value="viii">viii</option>
+                                <option value="ix">ix</option>
+                                <option value="x">x</option>
+                            </select>
+                            Paragraph A
+                        </p>
+                    </div>
+                    
+                    <div class="question">
+                        <p><strong>2. </strong>
+                            <select id="q2">
+                                <option value="">Select heading</option>
+                                <option value="i">i</option>
+                                <option value="ii">ii</option>
+                                <option value="iii">iii</option>
+                                <option value="iv">iv</option>
+                                <option value="v">v</option>
+                                <option value="vi">vi</option>
+                                <option value="vii">vii</option>
+                                <option value="viii">viii</option>
+                                <option value="ix">ix</option>
+                                <option value="x">x</option>
+                            </select>
+                            Paragraph B
+                        </p>
+                    </div>
+                    
+                    <div class="question">
+                        <p><strong>3. </strong>
+                            <select id="q3">
+                                <option value="">Select heading</option>
+                                <option value="i">i</option>
+                                <option value="ii">ii</option>
+                                <option value="iii">iii</option>
+                                <option value="iv">iv</option>
+                                <option value="v">v</option>
+                                <option value="vi">vi</option>
+                                <option value="vii">vii</option>
+                                <option value="viii">viii</option>
+                                <option value="ix">ix</option>
+                                <option value="x">x</option>
+                            </select>
+                            Paragraph C
+                        </p>
+                    </div>
+                    
+                    <div class="question">
+                        <p><strong>4. </strong>
+                            <select id="q4">
+                                <option value="">Select heading</option>
+                                <option value="i">i</option>
+                                <option value="ii">ii</option>
+                                <option value="iii">iii</option>
+                                <option value="iv">iv</option>
+                                <option value="v">v</option>
+                                <option value="vi">vi</option>
+                                <option value="vii">vii</option>
+                                <option value="viii">viii</option>
+                                <option value="ix">ix</option>
+                                <option value="x">x</option>
+                            </select>
+                            Paragraph D
+                        </p>
+                    </div>
+                    
+                    <div class="question">
+                        <p><strong>5. </strong>
+                            <select id="q5">
+                                <option value="">Select heading</option>
+                                <option value="i">i</option>
+                                <option value="ii">ii</option>
+                                <option value="iii">iii</option>
+                                <option value="iv">iv</option>
+                                <option value="v">v</option>
+                                <option value="vi">vi</option>
+                                <option value="vii">vii</option>
+                                <option value="viii">viii</option>
+                                <option value="ix">ix</option>
+                                <option value="x">x</option>
+                            </select>
+                            Paragraph E
+                        </p>
+                    </div>
+                    
+                    <div class="question">
+                        <p><strong>6. </strong>
+                            <select id="q6">
+                                <option value="">Select heading</option>
+                                <option value="i">i</option>
+                                <option value="ii">ii</option>
+                                <option value="iii">iii</option>
+                                <option value="iv">iv</option>
+                                <option value="v">v</option>
+                                <option value="vi">vi</option>
+                                <option value="vii">vii</option>
+                                <option value="viii">viii</option>
+                                <option value="ix">ix</option>
+                                <option value="x">x</option>
+                            </select>
+                            Paragraph F
+                        </p>
+                    </div>
+                </div>
+                
+                <div class="question-section">
+                    <h2>Questions 7-10</h2>
+                    <p>The reading Passage has six paragraphs <strong>A-F</strong><br>
+                    Which paragraph contains the following information?<br>
+                    Write the correct letter <strong>A-F</strong>, in boxes 7-10 on your answer sheet.</p>
+                    
+                    <div class="question">
+                        <p><strong>7. </strong>
+                            <select id="q7">
+                                <option value="">Select paragraph</option>
+                                <option value="A">A</option>
+                                <option value="B">B</option>
+                                <option value="C">C</option>
+                                <option value="D">D</option>
+                                <option value="E">E</option>
+                                <option value="F">F</option>
+                            </select>
+                            Projected Basic Blue in IBM achieved great success.
+                        </p>
+                    </div>
+                    
+                    <div class="question">
+                        <p><strong>8. </strong>
+                            <select id="q8">
+                                <option value="">Select paragraph</option>
+                                <option value="A">A</option>
+                                <option value="B">B</option>
+                                <option value="C">C</option>
+                                <option value="D">D</option>
+                                <option value="E">E</option>
+                                <option value="F">F</option>
+                            </select>
+                            E-learning wins as a priority for many corporations as its flexibility.
+                        </p>
+                    </div>
+                    
+                    <div class="question">
+                        <p><strong>9. </strong>
+                            <select id="q9">
+                                <option value="">Select paragraph</option>
+                                <option value="A">A</option>
+                                <option value="B">B</option>
+                                <option value="C">C</option>
+                                <option value="D">D</option>
+                                <option value="E">E</option>
+                                <option value="F">F</option>
+                            </select>
+                            The combination of traditional and e-training environments may prevail.
+                        </p>
+                    </div>
+                    
+                    <div class="question">
+                        <p><strong>10. </strong>
+                            <select id="q10">
+                                <option value="">Select paragraph</option>
+                                <option value="A">A</option>
+                                <option value="B">B</option>
+                                <option value="C">C</option>
+                                <option value="D">D</option>
+                                <option value="E">E</option>
+                                <option value="F">F</option>
+                            </select>
+                            Example of fast electronic delivery for a company's products to its customers.
+                        </p>
+                    </div>
+                </div>
+                
+                <div class="question-section">
+                    <h2>Questions 11-13</h2>
+                    <p>Choose <strong>THREE</strong> correct letters, among <strong>A-E</strong><br>
+                    Write your answers in boxes <strong>11-13</strong> on your answer sheet.</p>
+                    
+                    <div class="question">
+                        <p>Which <strong>THREE</strong> of the following statements are true of e-learning?</p>
+                        <div class="checkbox-group">
+                            <div class="checkbox-item">
+                                <input type="checkbox" id="optionA" value="A">
+                                <label for="optionA">Technical facilities are hardly obtained.</label>
+                            </div>
+                            <div class="checkbox-item">
+                                <input type="checkbox" id="optionB" value="B">
+                                <label for="optionB">Presenting multimedia over the Internet is restricted due to the bandwidth limit.</label>
+                            </div>
+                            <div class="checkbox-item">
+                                <input type="checkbox" id="optionC" value="C">
+                                <label for="optionC">It is ineffective imparting a unique corporate value to fresh employees.</label>
+                            </div>
+                            <div class="checkbox-item">
+                                <input type="checkbox" id="optionD" value="D">
+                                <label for="optionD">Employees need to block a long time leaving their position attending training.</label>
+                            </div>
+                            <div class="checkbox-item">
+                                <input type="checkbox" id="optionE" value="E">
+                                <label for="optionE">More preparation time is needed to keep the course at a suitable level.</label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <button class="submit-btn" id="submit-btn">Submit Answers</button>
+            </div>
+        </div>
+    </div>
+    
+    <div class="result-modal" id="result-modal">
+        <div class="result-content">
+            <button class="close-btn" id="close-results">&times;</button>
+            <h2>Test Results</h2>
+            
+            <div class="score-display">
+                <div class="score-circle" id="score-circle">0/13</div>
+                <h3 id="score-text">Your Score: 0 out of 13</h3>
+            </div>
+            
+            <div id="answer-feedback">
+                <!-- Results will be inserted here -->
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Theme switching
+            const body = document.body;
+            const dayThemeBtn = document.getElementById('day-theme');
+            const nightThemeBtn = document.getElementById('night-theme');
+            const sepiaThemeBtn = document.getElementById('sepia-theme');
+            
+            dayThemeBtn.addEventListener('click', () => {
+                body.className = '';
+                localStorage.setItem('theme', 'day');
+            });
+            
+            nightThemeBtn.addEventListener('click', () => {
+                body.className = 'night-mode';
+                localStorage.setItem('theme', 'night');
+            });
+            
+            sepiaThemeBtn.addEventListener('click', () => {
+                body.className = 'sepia-mode';
+                localStorage.setItem('theme', 'sepia');
+            });
+            
+            // Load saved theme
+            const savedTheme = localStorage.getItem('theme');
+            if (savedTheme === 'night') {
+                body.className = 'night-mode';
+            } else if (savedTheme === 'sepia') {
+                body.className = 'sepia-mode';
+            }
+            
+            // Timer functionality
+            const timerElement = document.getElementById('timer');
+            let timeLeft = 20 * 60; // 20 minutes in seconds
+            let timerInterval;
+            
+            function startTimer() {
+                clearInterval(timerInterval);
+                timerInterval = setInterval(updateTimer, 1000);
+            }
+            
+            function updateTimer() {
+                const minutes = Math.floor(timeLeft / 60);
+                const seconds = timeLeft % 60;
+                
+                timerElement.textContent = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+                
+                if (timeLeft === 5 * 60) {
+                    timerElement.classList.add('warning');
+                }
+                
+                if (timeLeft === 0) {
+                    clearInterval(timerInterval);
+                    submitAnswers();
+                } else {
+                    timeLeft--;
+                }
+            }
+            
+            startTimer();
+            
+            // Text highlighting functionality
+            const passageContent = document.getElementById('passage-content');
+            let highlightMenu = null;
+            let currentSelection = null;
+            
+            passageContent.addEventListener('mouseup', function(e) {
+                const selection = window.getSelection();
+                if (selection.toString().length > 0) {
+                    showHighlightMenu(e, selection);
+                } else if (highlightMenu) {
+                    removeHighlightMenu();
+                }
+            });
+            
+            document.addEventListener('mousedown', function(e) {
+                if (highlightMenu && !highlightMenu.contains(e.target)) {
+                    removeHighlightMenu();
+                }
+            });
+            
+            function showHighlightMenu(e, selection) {
+                removeHighlightMenu();
+                currentSelection = selection;
+                
+                highlightMenu = document.createElement('div');
+                highlightMenu.className = 'highlight-menu';
+                
+                const yellowBtn = document.createElement('button');
+                yellowBtn.className = 'highlight-btn yellow-highlight';
+                yellowBtn.innerHTML = '<i class="fas fa-highlighter"></i>';
+                yellowBtn.title = 'Yellow Highlight';
+                yellowBtn.addEventListener('click', () => highlightSelection('yellow'));
+                
+                const blueBtn = document.createElement('button');
+                blueBtn.className = 'highlight-btn blue-highlight';
+                blueBtn.innerHTML = '<i class="fas fa-highlighter"></i>';
+                blueBtn.title = 'Blue Highlight';
+                blueBtn.addEventListener('click', () => highlightSelection('blue'));
+                
+                const clearBtn = document.createElement('button');
+                clearBtn.className = 'highlight-btn clear-highlight';
+                clearBtn.innerHTML = '<i class="fas fa-eraser"></i>';
+                clearBtn.title = 'Clear Highlight';
+                clearBtn.addEventListener('click', clearHighlight);
+                
+                highlightMenu.appendChild(yellowBtn);
+                highlightMenu.appendChild(blueBtn);
+                highlightMenu.appendChild(clearBtn);
+                
+                document.body.appendChild(highlightMenu);
+                
+                const rect = selection.getRangeAt(0).getBoundingClientRect();
+                highlightMenu.style.top = `${rect.bottom + window.scrollY + 5}px`;
+                highlightMenu.style.left = `${rect.left + window.scrollX}px`;
+            }
+            
+            function removeHighlightMenu() {
+                if (highlightMenu) {
+                    highlightMenu.remove();
+                    highlightMenu = null;
+                    currentSelection = null;
+                }
+            }
+            
+            function highlightSelection(color) {
+                if (!currentSelection || currentSelection.toString().length === 0) return;
+                
+                const range = currentSelection.getRangeAt(0);
+                const selectedText = range.extractContents();
+                
+                const span = document.createElement('span');
+                span.appendChild(selectedText);
+                span.className = `highlighted-${color}`;
+                
+                range.insertNode(span);
+                
+                // Clear selection and remove menu
+                currentSelection.removeAllRanges();
+                removeHighlightMenu();
+            }
+            
+            function clearHighlight() {
+                if (!currentSelection || currentSelection.toString().length === 0) return;
+                
+                const range = currentSelection.getRangeAt(0);
+                const selectedContent = range.extractContents();
+                
+                // Create a document fragment to hold the content
+                const fragment = document.createDocumentFragment();
+                
+                // Process each node in the selected content
+                const nodes = Array.from(selectedContent.childNodes);
+                nodes.forEach(node => {
+                    if (node.nodeType === Node.ELEMENT_NODE && 
+                        (node.classList.contains('highlighted-yellow') || 
+                         node.classList.contains('highlighted-blue'))) {
+                        // Extract the text content from the highlighted span
+                        const textNode = document.createTextNode(node.textContent);
+                        fragment.appendChild(textNode);
+                    } else {
+                        fragment.appendChild(node.cloneNode(true));
+                    }
+                });
+                
+                range.insertNode(fragment);
+                
+                // Clear selection and remove menu
+                currentSelection.removeAllRanges();
+                removeHighlightMenu();
+            }
+            
+            // Answer submission and evaluation
+            const submitBtn = document.getElementById('submit-btn');
+            const resultModal = document.getElementById('result-modal');
+            const closeResultsBtn = document.getElementById('close-results');
+            const scoreCircle = document.getElementById('score-circle');
+            const scoreText = document.getElementById('score-text');
+            const answerFeedback = document.getElementById('answer-feedback');
+            
+            submitBtn.addEventListener('click', submitAnswers);
+            closeResultsBtn.addEventListener('click', () => {
+                resultModal.classList.remove('show');
+            });
+            
+            function submitAnswers() {
+                clearInterval(timerInterval);
+                
+                const correctAnswers = {
+                    q1: 'i', q2: 'ix', q3: 'iv', q4: 'vii', q5: 'v', q6: 'iii',
+                    q7: 'A', q8: 'B', q9: 'F', q10: 'D',
+                    q11: ['B', 'C', 'E'] // For checkbox questions
+                };
+                
+                let score = 0;
+                let feedbackHTML = '';
+                
+                // Check questions 1-10 (dropdowns)
+                for (let i = 1; i <= 10; i++) {
+                    const userAnswer = document.getElementById(`q${i}`).value;
+                    const isCorrect = userAnswer === correctAnswers[`q${i}`];
+                    
+                    if (isCorrect) score++;
+                    
+                    feedbackHTML += `
+                        <div class="answer-feedback">
+                            <p><strong>Question ${i}:</strong> Your answer: ${userAnswer || 'Not answered'} 
+                            <span class="${isCorrect ? 'correct' : 'incorrect'}">${isCorrect ? '✓ Correct' : '✗ Incorrect'}</span></p>
+                            <p class="answer-reference">Correct answer: ${correctAnswers[`q${i}`]}</p>
+                        </div>
+                    `;
+                }
+                
+                // Check question 11 (checkboxes)
+                const selectedOptions = [];
+                if (document.getElementById('optionA').checked) selectedOptions.push('A');
+                if (document.getElementById('optionB').checked) selectedOptions.push('B');
+                if (document.getElementById('optionC').checked) selectedOptions.push('C');
+                if (document.getElementById('optionD').checked) selectedOptions.push('D');
+                if (document.getElementById('optionE').checked) selectedOptions.push('E');
+                
+                // Check if exactly 3 options are selected and they are the correct ones
+                const isCheckboxCorrect = selectedOptions.length === 3 && 
+                                         selectedOptions.every(opt => correctAnswers.q11.includes(opt)) &&
+                                         correctAnswers.q11.every(opt => selectedOptions.includes(opt));
+                
+                if (isCheckboxCorrect) {
+                    score += 3; // All three correct answers
+                    feedbackHTML += `
+                        <div class="answer-feedback">
+                            <p><strong>Questions 11-13:</strong> Your answers: ${selectedOptions.join(', ')} 
+                            <span class="correct">✓ Correct</span></p>
+                            <p class="answer-reference">Correct answers: B, C, E</p>
+                        </div>
+                    `;
+                } else {
+                    feedbackHTML += `
+                        <div class="answer-feedback">
+                            <p><strong>Questions 11-13:</strong> Your answers: ${selectedOptions.join(', ') || 'None selected'} 
+                            <span class="incorrect">✗ Incorrect</span></p>
+                            <p class="answer-reference">Correct answers: B, C, E</p>
+                        </div>
+                    `;
+                }
+                
+                scoreCircle.textContent = `${score}/13`;
+                scoreText.textContent = `Your Score: ${score} out of 13`;
+                answerFeedback.innerHTML = feedbackHTML;
+                
+                resultModal.classList.add('show');
+            }
+        });
+    </script>
+</body>
+</html>

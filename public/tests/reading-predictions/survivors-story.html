@@ -1,0 +1,864 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>IELTS Reading Test</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --day-bg: #f8f9fa;
+            --day-text: #212529;
+            --day-primary: #4e54c8;
+            --day-secondary: #8f94fb;
+            --day-accent: #ff6b6b;
+            --day-card: #ffffff;
+            --day-border: #dee2e6;
+            
+            --night-bg: #1a1a2e;
+            --night-text: #e6e6e6;
+            --night-primary: #6c63ff;
+            --night-secondary: #4a47cc;
+            --night-accent: #ff6b6b;
+            --night-card: #16213e;
+            --night-border: #374151;
+            
+            --sepia-bg: #f5efe0;
+            --sepia-text: #5c4b37;
+            --sepia-primary: #8b5a2b;
+            --sepia-secondary: #d2b48c;
+            --sepia-accent: #c45525;
+            --sepia-card: #f0e6d2;
+            --sepia-border: #d2b48c;
+            
+            --transition: all 0.3s ease;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            transition: var(--transition);
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            background-color: var(--bg);
+            color: var(--text);
+            overflow-x: hidden;
+        }
+
+        body.day-theme {
+            --bg: var(--day-bg);
+            --text: var(--day-text);
+            --primary: var(--day-primary);
+            --secondary: var(--day-secondary);
+            --accent: var(--day-accent);
+            --card: var(--day-card);
+            --border: var(--day-border);
+        }
+
+        body.night-theme {
+            --bg: var(--night-bg);
+            --text: var(--night-text);
+            --primary: var(--night-primary);
+            --secondary: var(--night-secondary);
+            --accent: var(--night-accent);
+            --card: var(--night-card);
+            --border: var(--night-border);
+        }
+
+        body.sepia-theme {
+            --bg: var(--sepia-bg);
+            --text: var(--sepia-text);
+            --primary: var(--sepia-primary);
+            --secondary: var(--sepia-secondary);
+            --accent: var(--sepia-accent);
+            --card: var(--sepia-card);
+            --border: var(--sepia-border);
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 0;
+            margin-bottom: 20px;
+            border-bottom: 2px solid var(--primary);
+        }
+
+        .logo {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: var(--primary);
+            display: flex;
+            align-items: center;
+        }
+
+        .logo i {
+            margin-right: 10px;
+        }
+
+        .theme-switcher {
+            display: flex;
+            gap: 10px;
+        }
+
+        .theme-btn {
+            padding: 8px 15px;
+            border: none;
+            border-radius: 20px;
+            cursor: pointer;
+            font-weight: 600;
+            background: var(--card);
+            color: var(--text);
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+
+        .theme-btn.active {
+            background: var(--primary);
+            color: white;
+        }
+
+            display: flex;
+            align-items: center;
+            padding: 10px 20px;
+            background: #0088cc;
+            color: white;
+            text-decoration: none;
+            border-radius: 25px;
+            font-weight: 600;
+            box-shadow: 0 4px 8px rgba(0,136,204,0.3);
+        }
+
+            margin-right: 8px;
+        }
+
+        .timer-container {
+            text-align: center;
+            margin-bottom: 20px;
+            padding: 15px;
+            background: var(--card);
+            border-radius: 15px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+        }
+
+        .timer {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--primary);
+        }
+
+        .timer.warning {
+            color: var(--accent);
+            animation: pulse 1s infinite;
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+
+        .test-container {
+            display: flex;
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        @media (max-width: 992px) {
+            .test-container {
+                flex-direction: column;
+            }
+        }
+
+        .passage-container {
+            flex: 1;
+            background: var(--card);
+            border-radius: 15px;
+            padding: 25px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+            overflow-y: auto;
+            max-height: 70vh;
+        }
+
+        .passage-title {
+            color: var(--primary);
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid var(--border);
+        }
+
+        .passage-content {
+            font-size: 1.1rem;
+            line-height: 1.8;
+        }
+
+        .passage-content p {
+            margin-bottom: 15px;
+        }
+
+        .questions-container {
+            flex: 1;
+            background: var(--card);
+            border-radius: 15px;
+            padding: 25px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+            overflow-y: auto;
+            max-height: 70vh;
+        }
+
+        .questions-title {
+            color: var(--primary);
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid var(--border);
+        }
+
+        .question {
+            margin-bottom: 20px;
+            padding: 15px;
+            background: var(--bg);
+            border-radius: 10px;
+            border-left: 4px solid var(--primary);
+        }
+
+        .question-text {
+            margin-bottom: 10px;
+            font-weight: 600;
+        }
+
+        .options {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-top: 10px;
+        }
+
+        .option {
+            padding: 8px 15px;
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: 20px;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .option:hover {
+            background: var(--primary);
+            color: white;
+        }
+
+        .option.selected {
+            background: var(--primary);
+            color: white;
+            border-color: var(--primary);
+        }
+
+        .input-answer {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            background: var(--card);
+            color: var(--text);
+            margin-top: 5px;
+        }
+
+        .submit-btn {
+            display: block;
+            width: 100%;
+            padding: 15px;
+            background: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 1.2rem;
+            font-weight: 600;
+            cursor: pointer;
+            margin-top: 20px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+            transition: var(--transition);
+        }
+
+        .submit-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 12px rgba(0,0,0,0.3);
+        }
+
+        .highlight-menu {
+            position: absolute;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+            padding: 5px;
+            z-index: 1000;
+            display: flex;
+            gap: 5px;
+        }
+
+        .highlight-btn {
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            border: none;
+            cursor: pointer;
+        }
+
+        .highlight-btn.yellow {
+            background: #ffeb3b;
+        }
+
+        .highlight-btn.blue {
+            background: #42a5f5;
+        }
+
+        .highlight-btn.clear {
+            background: #f44336;
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+        }
+
+        .result-container {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: var(--bg);
+            z-index: 2000;
+            overflow-y: auto;
+            padding: 20px;
+        }
+
+        .result-content {
+            max-width: 900px;
+            margin: 0 auto;
+            background: var(--card);
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        }
+
+        .result-title {
+            text-align: center;
+            color: var(--primary);
+            margin-bottom: 20px;
+        }
+
+        .score {
+            text-align: center;
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: var(--primary);
+            margin-bottom: 30px;
+        }
+
+        .result-details {
+            margin-bottom: 30px;
+        }
+
+        .result-item {
+            padding: 15px;
+            margin-bottom: 15px;
+            border-radius: 10px;
+            background: var(--bg);
+        }
+
+        .result-item.correct {
+            border-left: 4px solid #4caf50;
+        }
+
+        .result-item.incorrect {
+            border-left: 4px solid #f44336;
+        }
+
+        .result-question {
+            font-weight: 600;
+            margin-bottom: 5px;
+        }
+
+        .result-answer {
+            margin-bottom: 5px;
+        }
+
+        .result-explanation {
+            font-style: italic;
+            color: var(--text);
+            opacity: 0.8;
+        }
+
+        .restart-btn {
+            display: block;
+            width: 100%;
+            padding: 15px;
+            background: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 1.2rem;
+            font-weight: 600;
+            cursor: pointer;
+            margin-top: 20px;
+        }
+
+        .highlighted {
+            padding: 2px 0;
+        }
+
+        .highlight-yellow {
+            background-color: rgba(255, 235, 59, 0.5);
+        }
+
+        .highlight-blue {
+            background-color: rgba(66, 165, 245, 0.5);
+        }
+    </style>
+</head>
+<body class="day-theme">
+    <div class="container">
+        <header>
+            <div class="logo">
+                <i class="fas fa-book-reader"></i>
+                <span>IELTS Reading Test</span>
+            </div>
+            <div class="theme-switcher">
+                <button class="theme-btn active" data-theme="day">Day</button>
+                <button class="theme-btn" data-theme="night">Night</button>
+                <button class="theme-btn" data-theme="sepia">Sepia</button>
+            </div>
+        </header>
+
+        <div class="timer-container">
+            <div class="timer" id="timer">20:00</div>
+            <div>Time remaining for Passage 1</div>
+        </div>
+
+        <div class="test-container">
+            <div class="passage-container">
+                <h2 class="passage-title">READING PASSAGE 1: A survivor's story</h2>
+                <div class="passage-content" id="passage1">
+                    <p>As an island country with a fauna dominated by birds, New Zealand was once home to an owl species which is now extinct, the laughing owl, named for its distinctive cry. This bird was widespread throughout the islands when European settlers arrived in the middle of the 19th century and it remained in good numbers for some years thereafter. Where other native birds suffered from predation by the Polynesian rat, the laughing owl turned the tables and adapted its diet to include the rodent. It was also capable of catching and killing the other New Zealand owl, the morepork, and even larger birds, such as the weka. However, the laughing owl was wiped out around the beginning of the 20th century. Its demise caused by specimen collectors, habitat changes, and non-native predators including cats and stoats. Surprisingly, it is the smaller owl, the morepork, that has managed to survive until this day.</p>
+                    <p>Speckled dark brown, with yellow eyes and long tails, they are around 29 centimeters long from head to tail and 175 grams in weight. Moreporks have fringes on the edge of their feathers, so they can fly almost silently and not alert potential prey. They have acute hearing and their large eyes are very sensitive to light.</p>
+                    <p>Moreporks nest in tree hollows, in clumps of plants, or in cavities among rocks and roots, in the wild, moreporks usually start nesting in October, although zoo specimens have been recorded nesting in midwinter, possibly stimulated by an ample food supply. The female lays up to three white eggs, which she incubates for 20 to 30 days. During this time, she rarely hunts, and the male brings food to her. Once the chicks hatch, she stays mainly on the nest until the young owls are fully feathered. When hatched, chicks are covered in light grey down, and have their eyes closed. The eyes do not open until the eighth day after hatching. They can fly at around 35 days.</p>
+                    <p>By day, moreporks sleep in roosts. By night, they hunt a variety of animals – mainly large invertebrates including scarab and huhu beetles, moths, caterpillars and spiders. They also take mall birds and mice. They can find suitable food in pine forests as well as native forest. A morepork uses its sharp talons to catch or stun its prey, which it then carries away in its bill. Moreporks are clever hunters, and birds such as robins, grey warblers and fantails can end up as their prey. In the day, these small birds sometimes mob drowsy moreporks and chase them away from their roosts. They force the sleepy predators to search for a more peaceful spot.</p>
+                    <p>Moreporks have proved to be ungracious hosts. Scientists trying to establish a population of plovers on Motuora island in New Zealand's Hauraki Gulf were mystified as to why only two birds survived out of 75 placed there. The culprits turned out to be five pairs of Moreporks that ate or chased away the new arrivals.</p>
+                    <p>Although moreporks are still considered to be relatively common, it is likely that numbers are in gradual decline due to predation and loss of habitat. As the female is a hole-nester, she is vulnerable to predators such as stoats and possums during the breeding season, and eggs and chicks will also be at risk from rats. The use of pesticides is another possible threat to the owls though not a direct one. As moreporks are at the top of the food chain, they could be affected by an accumulative poison by consuming prey that has ingested poison.</p>
+                    <p>The New Zealand Department of Conservation is taking steps to ensure the preservation of New Zealand’s only native owl. The department is involved in measuring the population of moreporks and has put transmitters on a number of birds to determine survival and mortality. As well as being New Zealand’s only native owl, the morepork has symbolic and spiritual importance, so in monitoring the birds it is hoped that the morepork will continue to survive and thrive.</p>
+                    <p>At dusk, the melancholy sound of the morepork can be heard in forests and parks as it calls to other moreporks and claims territory. Its Maori name (ruru) echoes its two-part cry. In the tradition of the Maori people of New Zealand, the morepork, or ruru, was often seen as a careful guardian. A number of sayings referred to the bird’s alertness. As a bird of the night, it was associated with the spirit world. Moreporks were believed to act as messengers to the gods in the heavens, flying along spiritual paths in the sky. They were the mediums used to communicate with the gods. The occasional high, piercing call of the morepork signified bad news, but the lower-pitched and more common ‘ruru’ call heralded good news.</p>
+                </div>
+            </div>
+
+            <div class="questions-container">
+                <h2 class="questions-title">Questions 1-13</h2>
+                
+                <div class="question" id="q1">
+                    <div class="question-text">1. Early European settlers made detailed studies of the morepork.</div>
+                    <div class="options">
+                        <div class="option" data-value="true">TRUE</div>
+                        <div class="option" data-value="false">FALSE</div>
+                        <div class="option" data-value="not-given">NOT GIVEN</div>
+                    </div>
+                </div>
+                
+                <div class="question" id="q2">
+                    <div class="question-text">2. The Polynesian rat had a negative effect on the number of laughing owls.</div>
+                    <div class="options">
+                        <div class="option" data-value="true">TRUE</div>
+                        <div class="option" data-value="false">FALSE</div>
+                        <div class="option" data-value="not-given">NOT GIVEN</div>
+                    </div>
+                </div>
+                
+                <div class="question" id="q3">
+                    <div class="question-text">3. The laughing owl was larger than the morepork.</div>
+                    <div class="options">
+                        <div class="option" data-value="true">TRUE</div>
+                        <div class="option" data-value="false">FALSE</div>
+                        <div class="option" data-value="not-given">NOT GIVEN</div>
+                    </div>
+                </div>
+                
+                <div class="question" id="q4">
+                    <div class="question-text">4. Rats pose a risk to young moreporks.</div>
+                    <div class="options">
+                        <div class="option" data-value="true">TRUE</div>
+                        <div class="option" data-value="false">FALSE</div>
+                        <div class="option" data-value="not-given">NOT GIVEN</div>
+                    </div>
+                </div>
+                
+                <div class="question" id="q5">
+                    <div class="question-text">5. The New Zealand Department of Conservation is hoping to limit the population of moreporks.</div>
+                    <div class="options">
+                        <div class="option" data-value="true">TRUE</div>
+                        <div class="option" data-value="false">FALSE</div>
+                        <div class="option" data-value="not-given">NOT GIVEN</div>
+                    </div>
+                </div>
+                
+                <div class="question" id="q6">
+                    <div class="question-text">6. Other bird species are frightened away when they hear the morepork's cry.</div>
+                    <div class="options">
+                        <div class="option" data-value="true">TRUE</div>
+                        <div class="option" data-value="false">FALSE</div>
+                        <div class="option" data-value="not-given">NOT GIVEN</div>
+                    </div>
+                </div>
+                
+                <div class="question" id="q7">
+                    <div class="question-text">7. In Maori tradition, the low call of the morepork had negative associations.</div>
+                    <div class="options">
+                        <div class="option" data-value="true">TRUE</div>
+                        <div class="option" data-value="false">FALSE</div>
+                        <div class="option" data-value="not-given">NOT GIVEN</div>
+                    </div>
+                </div>
+                
+                <div class="question" id="q8">
+                    <div class="question-text">8. approximately <input type="text" class="input-answer" data-number="8"> in length</div>
+                </div>
+                
+                <div class="question" id="q9">
+                    <div class="question-text">9. nests in trees, plants or spaces in roots and <input type="text" class="input-answer" data-number="9"></div>
+                </div>
+                
+                <div class="question" id="q10">
+                    <div class="question-text">10. transports its prey using its <input type="text" class="input-answer" data-number="10"></div>
+                </div>
+                
+                <div class="question" id="q11">
+                    <div class="question-text">11. can be chased away by other birds during the <input type="text" class="input-answer" data-number="11"></div>
+                </div>
+                
+                <div class="question" id="q12">
+                    <div class="question-text">12. attacked <input type="text" class="input-answer" data-number="12"> that had been introduced to Motuora island</div>
+                </div>
+                
+                <div class="question" id="q13">
+                    <div class="question-text">13. may be exposed to <input type="text" class="input-answer" data-number="13"> in their prey</div>
+                </div>
+                
+                <button class="submit-btn" id="submit-btn">Submit Answers</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="result-container" id="result-container">
+        <div class="result-content">
+            <h2 class="result-title">Test Results</h2>
+            <div class="score" id="score">0/13</div>
+            
+            <div class="result-details" id="result-details">
+                <!-- Results will be inserted here -->
+            </div>
+            
+            <button class="restart-btn" id="restart-btn">Restart Test</button>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Theme switching
+            const themeButtons = document.querySelectorAll('.theme-btn');
+            const body = document.body;
+            
+            themeButtons.forEach(button => {
+                button.addEventListener('click', function() {
+                    const theme = this.getAttribute('data-theme');
+                    body.className = `${theme}-theme`;
+                    
+                    themeButtons.forEach(btn => btn.classList.remove('active'));
+                    this.classList.add('active');
+                });
+            });
+            
+            // Timer functionality
+            const timerElement = document.getElementById('timer');
+            let timeLeft = 20 * 60; // 20 minutes in seconds
+            let timerInterval;
+            
+            function startTimer() {
+                clearInterval(timerInterval);
+                timerInterval = setInterval(updateTimer, 1000);
+            }
+            
+            function updateTimer() {
+                const minutes = Math.floor(timeLeft / 60);
+                const seconds = timeLeft % 60;
+                
+                timerElement.textContent = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+                
+                if (timeLeft === 5 * 60) {
+                    timerElement.classList.add('warning');
+                }
+                
+                if (timeLeft === 0) {
+                    clearInterval(timerInterval);
+                    submitAnswers();
+                } else {
+                    timeLeft--;
+                }
+            }
+            
+            startTimer();
+            
+            // Option selection
+            const options = document.querySelectorAll('.option');
+            options.forEach(option => {
+                option.addEventListener('click', function() {
+                    const question = this.closest('.question');
+                    question.querySelectorAll('.option').forEach(opt => opt.classList.remove('selected'));
+                    this.classList.add('selected');
+                });
+            });
+            
+            // Text highlighting
+            const passageContent = document.getElementById('passage1');
+            let highlightMenu = null;
+            let currentSelection = null;
+            
+            passageContent.addEventListener('mouseup', function(e) {
+                const selection = window.getSelection();
+                if (selection.toString().length > 0) {
+                    showHighlightMenu(e, selection);
+                } else if (highlightMenu) {
+                    removeHighlightMenu();
+                }
+            });
+            
+            document.addEventListener('mousedown', function(e) {
+                if (highlightMenu && !highlightMenu.contains(e.target)) {
+                    removeHighlightMenu();
+                }
+            });
+            
+            function showHighlightMenu(e, selection) {
+                removeHighlightMenu();
+                currentSelection = selection;
+                
+                highlightMenu = document.createElement('div');
+                highlightMenu.className = 'highlight-menu';
+                
+                const yellowBtn = document.createElement('button');
+                yellowBtn.className = 'highlight-btn yellow';
+                yellowBtn.innerHTML = '<i class="fas fa-highlighter"></i>';
+                yellowBtn.addEventListener('click', () => highlightSelection('yellow'));
+                
+                const blueBtn = document.createElement('button');
+                blueBtn.className = 'highlight-btn blue';
+                blueBtn.innerHTML = '<i class="fas fa-highlighter"></i>';
+                blueBtn.addEventListener('click', () => highlightSelection('blue'));
+                
+                const clearBtn = document.createElement('button');
+                clearBtn.className = 'highlight-btn clear';
+                clearBtn.innerHTML = '<i class="fas fa-times"></i>';
+                clearBtn.addEventListener('click', clearHighlight);
+                
+                highlightMenu.appendChild(yellowBtn);
+                highlightMenu.appendChild(blueBtn);
+                highlightMenu.appendChild(clearBtn);
+                
+                document.body.appendChild(highlightMenu);
+                
+                const rect = currentSelection.getRangeAt(0).getBoundingClientRect();
+                highlightMenu.style.left = `${rect.left + window.scrollX}px`;
+                highlightMenu.style.top = `${rect.bottom + window.scrollY + 5}px`;
+            }
+            
+            function removeHighlightMenu() {
+                if (highlightMenu) {
+                    highlightMenu.remove();
+                    highlightMenu = null;
+                    currentSelection = null;
+                }
+            }
+            
+            function highlightSelection(color) {
+                if (!currentSelection || currentSelection.toString().length === 0) return;
+                
+                const range = currentSelection.getRangeAt(0);
+                const selectedText = range.extractContents();
+                
+                const span = document.createElement('span');
+                span.className = `highlighted highlight-${color}`;
+                span.appendChild(selectedText);
+                
+                range.insertNode(span);
+                
+                // Clear selection
+                currentSelection.removeAllRanges();
+                removeHighlightMenu();
+            }
+            
+            function clearHighlight() {
+                if (!currentSelection || currentSelection.toString().length === 0) return;
+                
+                const range = currentSelection.getRangeAt(0);
+                const selectedText = range.extractContents();
+                
+                // Create a document fragment to hold the text without spans
+                const fragment = document.createDocumentFragment();
+                const tempDiv = document.createElement('div');
+                tempDiv.appendChild(selectedText.cloneNode(true));
+                
+                // Remove any highlight spans
+                const highlightedSpans = tempDiv.querySelectorAll('.highlighted');
+                highlightedSpans.forEach(span => {
+                    const parent = span.parentNode;
+                    while (span.firstChild) {
+                        parent.insertBefore(span.firstChild, span);
+                    }
+                    parent.removeChild(span);
+                });
+                
+                fragment.appendChild(tempDiv.firstChild);
+                range.insertNode(fragment);
+                
+                // Clear selection
+                currentSelection.removeAllRanges();
+                removeHighlightMenu();
+            }
+            
+            // Answer submission and evaluation
+            const submitBtn = document.getElementById('submit-btn');
+            const resultContainer = document.getElementById('result-container');
+            const scoreElement = document.getElementById('score');
+            const resultDetails = document.getElementById('result-details');
+            const restartBtn = document.getElementById('restart-btn');
+            
+            // Correct answers
+            const correctAnswers = {
+                1: "not-given",
+                2: "false",
+                3: "true",
+                4: "true",
+                5: "false",
+                6: "not-given",
+                7: "false",
+                8: "29 centimeters",
+                9: "rocks",
+                10: "bill",
+                11: "day",
+                12: "plovers",
+                13: "poison"
+            };
+            
+            const explanations = {
+                1: "The passage mentions European settlers and the laughing owl, but doesn't mention detailed studies of the morepork.",
+                2: "The passage states that the laughing owl adapted its diet to include the Polynesian rat, so it wasn't negatively affected.",
+                3: "The passage says 'Surprisingly, it is the smaller owl, the morepork, that has managed to survive', implying the laughing owl was larger.",
+                4: "The passage states that 'eggs and chicks will also be at risk from rats'.",
+                5: "The passage says the Department of Conservation is 'taking steps to ensure the preservation' of the morepork, not limit its population.",
+                6: "The passage mentions birds chasing moreporks but doesn't say it's because of their cry.",
+                7: "The passage states that the lower-pitched call 'heralded good news', not negative associations.",
+                8: "The passage states they are 'around 29 centimeters long from head to tail'.",
+                9: "The passage mentions 'cavities among rocks and roots'.",
+                10: "The passage says the morepork 'carries away in its bill' its prey.",
+                11: "The passage says 'In the day, these small birds sometimes mob drowsy moreporks'.",
+                12: "The passage mentions scientists trying to establish a population of 'plovers' on Motuora island.",
+                13: "The passage mentions 'accumulative poison' that moreporks could be affected by."
+            };
+            
+            submitBtn.addEventListener('click', submitAnswers);
+            restartBtn.addEventListener('click', restartTest);
+            
+            function submitAnswers() {
+                clearInterval(timerInterval);
+                
+                let score = 0;
+                let resultsHTML = '';
+                
+                // Check True/False/Not Given questions
+                for (let i = 1; i <= 7; i++) {
+                    const questionElement = document.getElementById(`q${i}`);
+                    const selectedOption = questionElement.querySelector('.option.selected');
+                    const userAnswer = selectedOption ? selectedOption.getAttribute('data-value') : 'not-answered';
+                    const isCorrect = userAnswer === correctAnswers[i];
+                    
+                    if (isCorrect) score++;
+                    
+                    resultsHTML += `
+                        <div class="result-item ${isCorrect ? 'correct' : 'incorrect'}">
+                            <div class="result-question">Question ${i}: ${questionElement.querySelector('.question-text').textContent}</div>
+                            <div class="result-answer">Your answer: ${userAnswer}</div>
+                            <div class="result-answer">Correct answer: ${correctAnswers[i]}</div>
+                            <div class="result-explanation">${explanations[i]}</div>
+                        </div>
+                    `;
+                }
+                
+                // Check text input questions
+                for (let i = 8; i <= 13; i++) {
+                    const questionElement = document.getElementById(`q${i}`);
+                    const input = questionElement.querySelector('.input-answer');
+                    const userAnswer = input ? input.value.trim().toLowerCase() : '';
+                    const correctAnswer = correctAnswers[i].toLowerCase();
+                    const isCorrect = userAnswer === correctAnswer;
+                    
+                    if (isCorrect) score++;
+                    
+                    resultsHTML += `
+                        <div class="result-item ${isCorrect ? 'correct' : 'incorrect'}">
+                            <div class="result-question">Question ${i}: ${questionElement.querySelector('.question-text').textContent}</div>
+                            <div class="result-answer">Your answer: ${userAnswer || 'not answered'}</div>
+                            <div class="result-answer">Correct answer: ${correctAnswers[i]}</div>
+                            <div class="result-explanation">${explanations[i]}</div>
+                        </div>
+                    `;
+                }
+                
+                scoreElement.textContent = `${score}/13`;
+                resultDetails.innerHTML = resultsHTML;
+                resultContainer.style.display = 'block';
+                
+                // Scroll to results
+                resultContainer.scrollIntoView({ behavior: 'smooth' });
+            }
+            
+            function restartTest() {
+                // Reset options
+                document.querySelectorAll('.option.selected').forEach(option => {
+                    option.classList.remove('selected');
+                });
+                
+                // Reset inputs
+                document.querySelectorAll('.input-answer').forEach(input => {
+                    input.value = '';
+                });
+                
+                // Remove highlights
+                document.querySelectorAll('.highlighted').forEach(highlight => {
+                    const parent = highlight.parentNode;
+                    while (highlight.firstChild) {
+                        parent.insertBefore(highlight.firstChild, highlight);
+                    }
+                    parent.removeChild(highlight);
+                });
+                
+                // Reset timer
+                timeLeft = 20 * 60;
+                timerElement.classList.remove('warning');
+                startTimer();
+                
+                // Hide results
+                resultContainer.style.display = 'none';
+                
+                // Scroll to top
+                window.scrollTo(0, 0);
+            }
+        });
+    </script>
+</body>
+</html>

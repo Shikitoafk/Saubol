@@ -1,0 +1,1407 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>IELTS Reading Comprehension - Improving Nutrition</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --bg-color: #ffffff;
+            --text-color: #333333;
+            --passage-bg: #f8f9fa;
+            --questions-bg: #ffffff;
+            --border-color: #e0e0e0;
+            --highlight-color: #ffff00;
+            --header-bg: #F8F8F8;
+            --header-text: #333333;
+            --button-bg: #CC0000;
+            --button-hover: #A30000;
+            --correct-color: #28a745;
+            --incorrect-color: #dc3545;
+            --progress-complete: #28a745;
+            --progress-incomplete: #bdbdbd;
+            --timer-bg: #ffebee;
+            --timer-text: #d32f2f;
+            --footer-bg: #f5f5f5;
+            --telegram-color: #0088cc;
+        }
+
+        .night-mode {
+            --bg-color: #121212;
+            --text-color: #e0e0e0;
+            --passage-bg: #1e1e1e;
+            --questions-bg: #1e1e1e;
+            --border-color: #424242;
+            --highlight-color: #cccc00;
+            --header-bg: #1a1a1a;
+            --header-text: #ffffff;
+            --button-bg: #990000;
+            --button-hover: #7a0000;
+            --correct-color: #218838;
+            --incorrect-color: #c82333;
+            --progress-complete: #218838;
+            --progress-incomplete: #616161;
+            --timer-bg: #420000;
+            --timer-text: #ffcdd2;
+            --footer-bg: #121212;
+            --telegram-color: #33a8e0;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            transition: background-color 0.3s, color 0.3s;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            line-height: 1.6;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        header {
+            background-color: var(--header-bg);
+            color: var(--header-text);
+            padding: 12px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            z-index: 100;
+        }
+
+        .header-left {
+            display: flex;
+            align-items: center;
+        }
+
+        .telegram-btn {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            background-color: var(--telegram-color);
+            color: white;
+            text-decoration: none;
+            padding: 8px 15px;
+            border-radius: 50px;
+            font-weight: 600;
+            font-size: 14px;
+            transition: background-color 0.3s, transform 0.2s;
+        }
+
+        .telegram-btn:hover {
+            background-color: #0077b5;
+            transform: translateY(-2px);
+        }
+
+        .header-controls {
+            display: flex;
+            gap: 15px;
+            align-items: center;
+        }
+
+        .timer-container {
+            background-color: var(--timer-bg);
+            color: var(--timer-text);
+            padding: 8px 15px;
+            border-radius: 50px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .timer-controls {
+            display: flex;
+            gap: 8px;
+        }
+
+        .timer-controls button {
+            background: none;
+            border: none;
+            color: var(--timer-text);
+            cursor: pointer;
+            font-size: 16px;
+            padding: 4px;
+            border-radius: 50%;
+            width: 28px;
+            height: 28px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .timer-controls button:hover {
+            background-color: rgba(0,0,0,0.1);
+        }
+        .night-mode .timer-controls button:hover {
+            background-color: rgba(255,255,255,0.2);
+        }
+
+        .mode-toggle {
+            background: none;
+            border: none;
+            color: var(--header-text);
+            cursor: pointer;
+            font-size: 20px;
+            padding: 6px;
+            border-radius: 50%;
+            width: 36px;
+            height: 36px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .mode-toggle:hover {
+            background-color: rgba(0,0,0,0.1);
+        }
+        .night-mode .mode-toggle:hover {
+            background-color: rgba(255,255,255,0.2);
+        }
+
+        main {
+            display: flex;
+            flex: 1;
+            overflow: hidden;
+        }
+
+        .passage-container, .questions-container {
+            height: 100%;
+            overflow-y: auto;
+            padding: 20px;
+        }
+
+        .passage-container {
+            width: 50%;
+            background-color: var(--passage-bg);
+            border-right: 1px solid var(--border-color);
+            position: relative;
+        }
+
+        .questions-container {
+            width: 50%;
+            background-color: var(--questions-bg);
+        }
+
+        .passage-content {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .passage-title {
+            font-size: 24px;
+            font-weight: 700;
+            margin-bottom: 20px;
+            color: var(--text-color);
+            padding-bottom: 10px;
+            border-bottom: 2px solid var(--border-color);
+        }
+
+        .passage-text {
+            font-size: 17px;
+        }
+
+        .question-text {
+            font-size: 17px;
+            line-height: 1.8;
+        }
+
+        .passage-text p {
+            margin-bottom: 20px;
+            text-align: justify;
+        }
+
+        .highlight {
+            background-color: var(--highlight-color);
+            cursor: pointer;
+            position: relative;
+        }
+
+        .highlight-tooltip {
+            position: absolute;
+            background-color: #333;
+            color: white;
+            padding: 5px 10px;
+            border-radius: 4px;
+            font-size: 14px;
+            z-index: 1000;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            top: -30px;
+            left: 50%;
+            transform: translateX(-50%);
+        }
+
+        .section-title {
+            font-size: 18px;
+            font-weight: 600;
+            margin: 25px 0 15px;
+            color: var(--text-color);
+            padding-bottom: 8px;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .question-group {
+            margin-bottom: 30px;
+        }
+
+        .question {
+            margin-bottom: 25px;
+            padding: 15px;
+            border-radius: 8px;
+            background-color: var(--passage-bg);
+            border-left: 4px solid var(--border-color);
+        }
+
+        .question-title {
+            font-weight: 600;
+            margin-bottom: 12px;
+            display: flex;
+            align-items: baseline;
+        }
+
+        .question-number {
+            display: inline-block;
+            width: 28px;
+            height: 28px;
+            background-color: var(--progress-incomplete);
+            color: white;
+            border-radius: 50%;
+            text-align: center;
+            line-height: 28px;
+            margin-right: 10px;
+            font-size: 14px;
+            flex-shrink: 0;
+        }
+
+        .question.answered .question-number {
+            background-color: var(--progress-complete);
+        }
+
+        .options {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            margin-top: 8px;
+        }
+
+        .option {
+            display: flex;
+            align-items: flex-start;
+            cursor: pointer;
+            padding: 5px 0;
+        }
+
+        .option input {
+            margin-right: 10px;
+            margin-top: 3px;
+        }
+
+        .fill-in-the-blank, .question select {
+            background: transparent;
+            border: none;
+            border-bottom: 2px solid var(--text-color);
+            width: 150px;
+            font-family: inherit;
+            font-size: 1em;
+            color: inherit;
+            padding: 0 4px 2px 4px;
+            margin: 0 3px;
+            vertical-align: baseline;
+            text-align: center;
+            outline: none;
+            transition: border-color 0.3s;
+        }
+
+        .fill-in-the-blank:focus, .question select:focus {
+            border-bottom-color: var(--button-bg);
+        }
+
+        .instructions {
+            font-size: 14px;
+            color: #757575;
+            margin-top: 5px;
+            font-style: italic;
+        }
+
+        .true-false-options {
+            display: flex;
+            gap: 15px;
+            margin-top: 10px;
+        }
+
+        .true-false-option {
+            display: flex;
+            align-items: center;
+            cursor: pointer;
+        }
+
+        .true-false-option input {
+            margin-right: 8px;
+        }
+
+        .sentence-completion {
+            margin-bottom: 15px;
+            padding: 10px;
+            background-color: var(--passage-bg);
+            border-radius: 6px;
+        }
+
+        footer {
+            background-color: var(--footer-bg);
+            padding: 15px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-top: 1px solid var(--border-color);
+            box-shadow: 0 -2px 5px rgba(0,0,0,0.05);
+        }
+
+        .progress-container {
+            display: flex;
+            gap: 8px;
+        }
+
+        .progress-item {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            background-color: var(--progress-incomplete);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+
+        .progress-item:hover {
+            transform: scale(1.1);
+        }
+
+        .progress-item.completed {
+            background-color: var(--progress-complete);
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 12px;
+        }
+
+        button {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: background-color 0.3s, border-color 0.3s, color 0.3s;
+        }
+
+        .btn-primary {
+            background-color: var(--button-bg);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background-color: var(--button-hover);
+        }
+
+        .btn-secondary {
+            background-color: transparent;
+            border: 1px solid var(--button-bg);
+            color: var(--button-bg);
+        }
+
+        .btn-secondary:hover {
+            background-color: rgba(204, 0, 0, 0.1);
+        }
+        .night-mode .btn-secondary:hover {
+            background-color: rgba(153, 0, 0, 0.2);
+        }
+
+        .feedback-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.7);
+            z-index: 1000;
+            display: none;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .feedback-container {
+            background-color: var(--passage-bg);
+            width: 90%;
+            max-width: 900px;
+            height: 90%;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+            display: flex;
+            flex-direction: column;
+        }
+
+        .feedback-header {
+            padding: 20px;
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .feedback-title {
+            font-size: 22px;
+            font-weight: 700;
+            color: var(--text-color);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        #close-feedback {
+            font-size: 24px;
+            background: none;
+            border: none;
+            color: var(--text-color);
+            cursor: pointer;
+        }
+
+        .score-display {
+            font-size: 24px;
+            font-weight: 700;
+            margin-left: 10px;
+        }
+
+        .feedback-body {
+            padding: 20px;
+            overflow-y: auto;
+        }
+
+        .feedback-item {
+            margin-bottom: 25px;
+            padding: 15px;
+            border-radius: 8px;
+            background-color: var(--questions-bg);
+        }
+
+        .feedback-question {
+            font-weight: 600;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+        }
+
+        .feedback-answer {
+            margin-bottom: 10px;
+            padding: 8px 12px;
+            border-radius: 4px;
+            background-color: rgba(0,0,0,0.05);
+        }
+
+        .correct {
+            color: var(--correct-color);
+        }
+
+        .incorrect {
+            color: var(--incorrect-color);
+        }
+
+        .feedback-explanation {
+            margin-top: 10px;
+            padding: 10px;
+            border-left: 3px solid var(--button-bg);
+            background-color: rgba(0,0,0,0.03);
+        }
+
+        .feedback-passage {
+            margin-top: 8px;
+            font-style: italic;
+            color: #757575;
+        }
+
+         (max-width: 900px) {
+            main {
+                flex-direction: column;
+            }
+            
+            .passage-container, .questions-container {
+                width: 100%;
+                height: 50%;
+            }
+            
+            .passage-container {
+                border-right: none;
+                border-bottom: 1px solid var(--border-color);
+            }
+            
+            .progress-container {
+                flex-wrap: wrap;
+                max-width: 60%;
+            }
+        }
+
+         (max-width: 600px) {
+            header {
+                flex-direction: column;
+                gap: 10px;
+                padding: 10px;
+            }
+            .header-left, .header-controls {
+                width: 100%;
+                justify-content: center;
+            }
+            .progress-container {
+                max-width: 50%;
+            }
+            .progress-item {
+                width: 26px;
+                height: 26px;
+                font-size: 12px;
+            }
+            footer {
+                flex-direction: column;
+                gap: 15px;
+            }
+            .action-buttons {
+                width: 100%;
+                justify-content: center;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="header-left">
+            
+        </div>
+        <div class="header-controls">
+            <div class="timer-container">
+                <i class="fas fa-clock"></i>
+                <span id="timer">20:00</span>
+                <div class="timer-controls">
+                    <button id="start-timer" title="Start"><i class="fas fa-play"></i></button>
+                    <button id="pause-timer" title="Pause"><i class="fas fa-pause"></i></button>
+                    <button id="reset-timer" title="Reset"><i class="fas fa-redo"></i></button>
+                </div>
+            </div>
+            <button class="mode-toggle" id="night-mode-toggle" title="Toggle Night Mode">
+                <i class="fas fa-moon"></i>
+            </button>
+        </div>
+    </header>
+
+    <main>
+        <div class="passage-container" id="passage-container">
+            <div class="passage-content">
+                <div class="passage-title">Reading Passage: Improving nutrition at a national and international level</div>
+                <div class="passage-text" id="passage-text">
+                    <p>More than 20 countries worldwide now apply some variant of a 'sugar tax'. In the UK, for example, this is imposed on producers of soft drinks that contain 5 grams of sugar or more per 100 millilitres. Various studies show that this can reduce people's consumption of added sugar. After Mexico's government introduced a tax on sweetened drinks in 2014, for instance, sales in 2015 fell by nearly 10%.</p>
+                    
+                    <p>Such 'sticks' – policies that punish food and drink companies for harming people's nutrition – are popular with governments, United Nations agencies, and other institutions. But in my view, a fundamental distrust of industry, which in fact is often justified, means that those trying to fix food systems are missing opportunities to encourage private-sector businesses to do more good things for nutrition, not just fewer bad things. Rather than punishments – policy 'sticks' – could the use of rewards – policy 'carrots' – be more effective in improving people's eating habits?</p>
+                    
+                    <p>Over the past few decades, many of those who work to improve people's nutrition have seen businesses as part of the problem, not as an essential part of the solution. Some of this wariness stems from the scandalous marketing and lobbying techniques used by some producers of sugary drinks, particularly those used to target children. Examples include branding educational materials, embedding advertisements for such drinks in computer games, or using toys to market soft drinks to children in restaurants. Such drinks significantly increase people's risk of developing type 2 diabetes, heart disease and other chronic conditions. Some producers also refuse to take even limited responsibility for the rise in obesity throughout Latin America, Africa and Asia – a trend that correlates with an upswing in the consumption of soft drinks in these regions over the past 15 years.</p>
+                    
+                    <p>Such cases probably explain why policy carrots are rarely deployed, despite numerous studies indicating their potential value. Of the countries that recently informed the World Health Organisation about their policies to promote healthy diets, more than half had increased taxes on unhealthy foods and beverages. Less than one quarter had introduced subsidies to lower the cost of healthier alternatives.</p>
+                    
+                    <p>But businesses are the main investors in the world's food systems. In 2016, Hershey, a chocolate manufacturer, and General Mills, a multinational food production company, each spent more than US$500 million on advertising alone. In 2014, international aid donors spent just $50 million on combating diet-related chronic disease.</p>
+                    
+                    <p>For 25 years, I worked solely in the public sector. I now direct a non-governmental organization that supports public–private approaches to promote the availability, affordability and desirability of nutritious food – the Global Alliance for Improved Nutrition (GAIN). Just 18 months in the job has convinced me that many food producers in the private sector are willing to adjust their businesses to make money and improve people's nutrition at the same time. Some heads of companies have their own reasons, such as diet-related chronic disease in their family. For other companies, dedicating resources to causes such as nutrition can pull in talented and driven employees. Overall, I have been struck by the commitment, knowledge and integrity of many in this newly discovered private-sector 'tribe'.</p>
+                    
+                    <p>Public-private collaborations could improve nutrition in many ways. Marketing and advertising companies can help those in the public sector to improve the effectiveness of media messaging around nutrition. As an example, in 2014, the Indonesian government collaborated with a creative agency in Indonesia, GAIN and the London School of Hygiene and Tropical Medicine. The result was a one-minute video during which a mother gossips about how everyone else is failing to feed their children properly. The use of humour and emotion seemed to work, in contrast to standard government-produced instructions about what people should be eating. An independent evaluation of the campaign indicated that it helped 50% of the 6- to 23-month-old infants in the assessed villages to meet a nutrient adequacy threshold, compared with 36% of infants in the villages where the video was not shown.</p>
+                    
+                    <p>Companies that specialize in food transport or packaging can help to reduce food loss during storage and distribution using relatively low-cost technologies, such as repurposed storage containers. Foods such as fruit and green vegetables spoil easily during transportation, but tend to be higher in micronutrients than longer lasting ones such as cereals. Last year, led by the Lagos state government, we at GAIN connected tomato farmers in Nigeria with commercial suppliers of reusable plastic crates. Studies in Asia have shown that such crates, used in place of wicker baskets, can reduce the loss of fruits and vegetables along the supply chain from 30–50% to 5%.</p>
+                    
+                    <p>Partnerships could even involve companies that aren't in the food sector. Mobile-phone companies, for instance, can send people government-approved text messages about how to eat healthily, or spread links to information about healthy diets. By providing this public service, they attract more customers. Such an approach is being tried in Tanzania, Bangladesh and Ghana with the coordination of more than 300 mobile-phone providers.</p>
+                    
+                    <p>With a mix of public- and private-sector technical and financial assistance, small and medium-sized businesses in, say, horticulture and aquaculture could make their products more available, affordable and profitable. At GAIN we have been working with around 500 such firms to get more nutritious foods (such as beans, fish, peanuts and chicken) into markets in five countries in Africa and Asia, and to make those foods cheaper. Independent evaluations show some achievements. For example, one firm in Kenya has helped to make tilapia fish affordable for 68% of the population in the region where it is operating. Motivated by both carrots and sticks, the industry can produce more – at a lower price.</p>
+                </div>
+            </div>
+        </div>
+        
+        <div class="questions-container" id="questions-container">
+            <div class="section-title">Questions 30-35</div>
+            <div class="instructions">Do the following statements agree with the views of the writer in Reading Passage 3?<br>In boxes 30-35 on your answer sheet, write:<br><strong>YES</strong> if the statement agrees with the views of the writer<br><strong>NO</strong> if the statement contradicts the views of the writer<br><strong>NOT GIVEN</strong> if it is impossible to say what the writer thinks about this</div>
+            <div class="question-group">
+                <div class="question" id="q30">
+                    <div class="question-title">
+                        <div class="question-number">30</div>
+                        <div class="question-text">Distrust of industry may explain why efforts to influence private-sector food producers are avoided.</div>
+                    </div>
+                    <div class="true-false-options">
+                        <label class="true-false-option"><input type="radio" name="q30" value="YES"> YES</label>
+                        <label class="true-false-option"><input type="radio" name="q30" value="NO"> NO</label>
+                        <label class="true-false-option"><input type="radio" name="q30" value="NOT GIVEN"> NOT GIVEN</label>
+                    </div>
+                </div>
+                <div class="question" id="q31">
+                    <div class="question-title">
+                        <div class="question-number">31</div>
+                        <div class="question-text">Food manufacturers should promote their products by using educational materials.</div>
+                    </div>
+                    <div class="true-false-options">
+                        <label class="true-false-option"><input type="radio" name="q31" value="YES"> YES</label>
+                        <label class="true-false-option"><input type="radio" name="q31" value="NO"> NO</label>
+                        <label class="true-false-option"><input type="radio" name="q31" value="NOT GIVEN"> NOT GIVEN</label>
+                    </div>
+                </div>
+                <div class="question" id="q32">
+                    <div class="question-title">
+                        <div class="question-number">32</div>
+                        <div class="question-text">Chronic diseases such as type 2 diabetes have reached dangerous levels among young children.</div>
+                    </div>
+                    <div class="true-false-options">
+                        <label class="true-false-option"><input type="radio" name="q32" value="YES"> YES</label>
+                        <label class="true-false-option"><input type="radio" name="q32" value="NO"> NO</label>
+                        <label class="true-false-option"><input type="radio" name="q32" value="NOT GIVEN"> NOT GIVEN</label>
+                    </div>
+                </div>
+                <div class="question" id="q33">
+                    <div class="question-title">
+                        <div class="question-number">33</div>
+                        <div class="question-text">The claim that in many parts of the world soft drinks have had harmful effects should be questioned.</div>
+                    </div>
+                    <div class="true-false-options">
+                        <label class="true-false-option"><input type="radio" name="q33" value="YES"> YES</label>
+                        <label class="true-false-option"><input type="radio" name="q33" value="NO"> NO</label>
+                        <label class="true-false-option"><input type="radio" name="q33" value="NOT GIVEN"> NOT GIVEN</label>
+                    </div>
+                </div>
+                <div class="question" id="q34">
+                    <div class="question-title">
+                        <div class="question-number">34</div>
+                        <div class="question-text">Chocolate consumption is a major cause of diet-related health problems.</div>
+                    </div>
+                    <div class="true-false-options">
+                        <label class="true-false-option"><input type="radio" name="q34" value="YES"> YES</label>
+                        <label class="true-false-option"><input type="radio" name="q34" value="NO"> NO</label>
+                        <label class="true-false-option"><input type="radio" name="q34" value="NOT GIVEN"> NOT GIVEN</label>
+                    </div>
+                </div>
+                <div class="question" id="q35">
+                    <div class="question-title">
+                        <div class="question-number">35</div>
+                        <div class="question-text">Food producers in the private sector will probably be prepared to change their business practices.</div>
+                    </div>
+                    <div class="true-false-options">
+                        <label class="true-false-option"><input type="radio" name="q35" value="YES"> YES</label>
+                        <label class="true-false-option"><input type="radio" name="q35" value="NO"> NO</label>
+                        <label class="true-false-option"><input type="radio" name="q35" value="NOT GIVEN"> NOT GIVEN</label>
+                    </div>
+                </div>
+            </div>
+
+            <div class="section-title">Questions 36-41</div>
+            <div class="instructions">Complete each sentence with the correct ending, A-I, below.<br>Write the correct letter, A-I, in boxes 36-41 on your answer sheet.</div>
+            <div class="question-group">
+                <div class="sentence-completion">
+                    <div class="question" id="q36">
+                        <div class="question-title">
+                            <div class="question-number">36</div>
+                            <div class="question-text">The imposition of a sugar tax is an example of</div>
+                        </div>
+                        <select name="q36">
+                            <option value="">Select Ending...</option>
+                            <option value="A">A the rising cost of food production.</option>
+                            <option value="B">B a switch to producing healthier products.</option>
+                            <option value="C">C an unacceptable business practice.</option>
+                            <option value="D">D healthy affordable food resulting from commercial involvement.</option>
+                            <option value="E">E a 'stick'.</option>
+                            <option value="F">F the need for young children to have a healthy diet.</option>
+                            <option value="G">G the involvement of non-food companies in improving nutrition.</option>
+                            <option value="H">H a 'carrot'.</option>
+                            <option value="I">I the power of major food manufacturers.</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="sentence-completion">
+                    <div class="question" id="q37">
+                        <div class="question-title">
+                            <div class="question-number">37</div>
+                            <div class="question-text">Including advertisements for sweetened drinks in computer games is an example of</div>
+                        </div>
+                        <select name="q37">
+                            <option value="">Select Ending...</option>
+                            <option value="A">A the rising cost of food production.</option>
+                            <option value="B">B a switch to producing healthier products.</option>
+                            <option value="C">C an unacceptable business practice.</option>
+                            <option value="D">D healthy affordable food resulting from commercial involvement.</option>
+                            <option value="E">E a 'stick'.</option>
+                            <option value="F">F the need for young children to have a healthy diet.</option>
+                            <option value="G">G the involvement of non-food companies in improving nutrition.</option>
+                            <option value="H">H a 'carrot'.</option>
+                            <option value="I">I the power of major food manufacturers.</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="sentence-completion">
+                    <div class="question" id="q38">
+                        <div class="question-title">
+                            <div class="question-number">38</div>
+                            <div class="question-text">The fact that US$500 million was spent by one company on advertising in 2016 illustrates</div>
+                        </div>
+                        <select name="q38">
+                            <option value="">Select Ending...</option>
+                            <option value="A">A the rising cost of food production.</option>
+                            <option value="B">B a switch to producing healthier products.</option>
+                            <option value="C">C an unacceptable business practice.</option>
+                            <option value="D">D healthy affordable food resulting from commercial involvement.</option>
+                            <option value="E">E a 'stick'.</option>
+                            <option value="F">F the need for young children to have a healthy diet.</option>
+                            <option value="G">G the involvement of non-food companies in improving nutrition.</option>
+                            <option value="H">H a 'carrot'.</option>
+                            <option value="I">I the power of major food manufacturers.</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="sentence-completion">
+                    <div class="question" id="q39">
+                        <div class="question-title">
+                            <div class="question-number">39</div>
+                            <div class="question-text">Some businesses wishing to attract good staff might consider</div>
+                        </div>
+                        <select name="q39">
+                            <option value="">Select Ending...</option>
+                            <option value="A">A the rising cost of food production.</option>
+                            <option value="B">B a switch to producing healthier products.</option>
+                            <option value="C">C an unacceptable business practice.</option>
+                            <option value="D">D healthy affordable food resulting from commercial involvement.</option>
+                            <option value="E">E a 'stick'.</option>
+                            <option value="F">F the need for young children to have a healthy diet.</option>
+                            <option value="G">G the involvement of non-food companies in improving nutrition.</option>
+                            <option value="H">H a 'carrot'.</option>
+                            <option value="I">I the power of major food manufacturers.</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="sentence-completion">
+                    <div class="question" id="q40">
+                        <div class="question-title">
+                            <div class="question-number">40</div>
+                            <div class="question-text">Text messages about healthy diets demonstrate</div>
+                        </div>
+                        <select name="q40">
+                            <option value="">Select Ending...</option>
+                            <option value="A">A the rising cost of food production.</option>
+                            <option value="B">B a switch to producing healthier products.</option>
+                            <option value="C">C an unacceptable business practice.</option>
+                            <option value="D">D healthy affordable food resulting from commercial involvement.</option>
+                            <option value="E">E a 'stick'.</option>
+                            <option value="F">F the need for young children to have a healthy diet.</option>
+                            <option value="G">G the involvement of non-food companies in improving nutrition.</option>
+                            <option value="H">H a 'carrot'.</option>
+                            <option value="I">I the power of major food manufacturers.</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="sentence-completion">
+                    <div class="question" id="q41">
+                        <div class="question-title">
+                            <div class="question-number">41</div>
+                            <div class="question-text">Improvements in the farming of tilapia fish in Kenya illustrate</div>
+                        </div>
+                        <select name="q41">
+                            <option value="">Select Ending...</option>
+                            <option value="A">A the rising cost of food production.</option>
+                            <option value="B">B a switch to producing healthier products.</option>
+                            <option value="C">C an unacceptable business practice.</option>
+                            <option value="D">D healthy affordable food resulting from commercial involvement.</option>
+                            <option value="E">E a 'stick'.</option>
+                            <option value="F">F the need for young children to have a healthy diet.</option>
+                            <option value="G">G the involvement of non-food companies in improving nutrition.</option>
+                            <option value="H">H a 'carrot'.</option>
+                            <option value="I">I the power of major food manufacturers.</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+
+            <div class="section-title">Questions 42-46</div>
+            <div class="instructions">Choose the correct letter, A, B, C or D.<br>Write the correct letter in boxes 42-46 on your answer sheet.</div>
+            <div class="question-group">
+                <div class="question" id="q42">
+                    <div class="question-title">
+                        <div class="question-number">42</div>
+                        <div class="question-text">In the fourth paragraph, the writer provides evidence that the majority of countries are using</div>
+                    </div>
+                    <div class="options">
+                        <label class="option"><input type="radio" name="q42" value="A"> A policies which have a negative effect on public health.</label>
+                        <label class="option"><input type="radio" name="q42" value="B"> B taxes as an effective way of changing nutritional habits.</label>
+                        <label class="option"><input type="radio" name="q42" value="C"> C approaches to good nutrition that involve punishment.</label>
+                        <label class="option"><input type="radio" name="q42" value="D"> D new methods to encourage the production of healthy foods.</label>
+                    </div>
+                </div>
+                <div class="question" id="q43">
+                    <div class="question-title">
+                        <div class="question-number">43</div>
+                        <div class="question-text">The writer refers to a video shown in Indonesia to make the point that</div>
+                    </div>
+                    <div class="options">
+                        <label class="option"><input type="radio" name="q43" value="A"> A international cooperation is the best way of improving nutrition.</label>
+                        <label class="option"><input type="radio" name="q43" value="B"> B medical expertise is not necessary for successful communication.</label>
+                        <label class="option"><input type="radio" name="q43" value="C"> C a more formal approach may succeed in improving eating habits.</label>
+                        <label class="option"><input type="radio" name="q43" value="D"> D commercial input can have a beneficial effect on government initiatives.</label>
+                    </div>
+                </div>
+                <div class="question" id="q44">
+                    <div class="question-title">
+                        <div class="question-number">44</div>
+                        <div class="question-text">The writer suggests that transporting food in plastic crates</div>
+                    </div>
+                    <div class="options">
+                        <label class="option"><input type="radio" name="q44" value="A"> A can help to support a healthy diet.</label>
+                        <label class="option"><input type="radio" name="q44" value="B"> B is only suitable for certain types of food.</label>
+                        <label class="option"><input type="radio" name="q44" value="C"> C might increase its cost for the consumer.</label>
+                        <label class="option"><input type="radio" name="q44" value="D"> D may have negative as well as positive effects.</label>
+                    </div>
+                </div>
+                <div class="question" id="q45">
+                    <div class="question-title">
+                        <div class="question-number">45</div>
+                        <div class="question-text">In the final paragraph, the writer explains that GAIN improves people's nutrition by</div>
+                    </div>
+                    <div class="options">
+                        <label class="option"><input type="radio" name="q45" value="A"> A combining support from a range of sources.</label>
+                        <label class="option"><input type="radio" name="q45" value="B"> B giving funds to farmers in different countries.</label>
+                        <label class="option"><input type="radio" name="q45" value="C"> C ensuring companies provide more nutritious food.</label>
+                        <label class="option"><input type="radio" name="q45" value="D"> D raising awareness of which types of food are most nutritious.</label>
+                    </div>
+                </div>
+                <div class="question" id="q46">
+                    <div class="question-title">
+                        <div class="question-number">46</div>
+                        <div class="question-text">What would be the best subheading for this passage?</div>
+                    </div>
+                    <div class="options">
+                        <label class="option"><input type="radio" name="q46" value="A"> A Why governments must take stricter measures</label>
+                        <label class="option"><input type="radio" name="q46" value="B"> B Improving the diets of children around the world</label>
+                        <label class="option"><input type="radio" name="q46" value="C"> C The need to provide incentives as well as punishments</label>
+                        <label class="option"><input type="radio" name="q46" value="D"> D Controlling the power of the multinational food companies</label>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <footer>
+        <div class="progress-container" id="progress-container"></div>
+        <div class="action-buttons">
+            <button class="btn-secondary" id="reset-btn">Reset Answers</button>
+            <button class="btn-primary" id="submit-btn">Submit Answers</button>
+        </div>
+    </footer>
+
+    <div class="feedback-overlay" id="feedback-overlay">
+        <div class="feedback-container" id="feedback-container">
+            <div class="feedback-header">
+                <div class="feedback-title">
+                    <i class="fas fa-chart-bar"></i> Your Results
+                    <span class="score-display" id="score-display">0/17</span>
+                </div>
+                <button id="close-feedback" title="Close"><i class="fas fa-times"></i></button>
+            </div>
+            <div class="feedback-body" id="feedback-body"></div>
+        </div>
+    </div>
+
+    <script>
+        // Timer functionality
+        let timerInterval;
+        let seconds = 1200; // 20 minutes
+        let timerRunning = false;
+
+        const timerDisplay = document.getElementById('timer');
+        const startTimer = document.getElementById('start-timer');
+        const pauseTimer = document.getElementById('pause-timer');
+        const resetTimer = document.getElementById('reset-timer');
+
+        function formatTime(seconds) {
+            const mins = Math.floor(seconds / 60).toString().padStart(2, '0');
+            const secs = (seconds % 60).toString().padStart(2, '0');
+            return `${mins}:${secs}`;
+        }
+
+        function updateTimer() {
+            timerDisplay.textContent = formatTime(seconds);
+            if (seconds <= 0) {
+                clearInterval(timerInterval);
+                timerRunning = false;
+                document.getElementById('submit-btn').click();
+            }
+        }
+
+        startTimer.addEventListener('click', () => {
+            if (!timerRunning) {
+                timerRunning = true;
+                timerInterval = setInterval(() => {
+                    seconds--;
+                    updateTimer();
+                }, 1000);
+            }
+        });
+
+        pauseTimer.addEventListener('click', () => {
+            if (timerRunning) {
+                clearInterval(timerInterval);
+                timerRunning = false;
+            }
+        });
+
+        resetTimer.addEventListener('click', () => {
+            clearInterval(timerInterval);
+            timerRunning = false;
+            seconds = 1200;
+            updateTimer();
+        });
+
+        // Night mode toggle
+        const nightModeToggle = document.getElementById('night-mode-toggle');
+        nightModeToggle.addEventListener('click', () => {
+            document.body.classList.toggle('night-mode');
+            const icon = nightModeToggle.querySelector('i');
+            if (document.body.classList.contains('night-mode')) {
+                icon.classList.remove('fa-moon');
+                icon.classList.add('fa-sun');
+            } else {
+                icon.classList.remove('fa-sun');
+                icon.classList.add('fa-moon');
+            }
+        });
+
+        // Create progress indicators
+        const progressContainer = document.getElementById('progress-container');
+        for (let i = 30; i <= 46; i++) {
+            const progressItem = document.createElement('div');
+            progressItem.className = 'progress-item';
+            progressItem.textContent = i;
+            progressItem.dataset.question = i;
+            progressContainer.appendChild(progressItem);
+            
+            progressItem.addEventListener('click', () => {
+                const questionElement = document.getElementById(`q${i}`);
+                if (questionElement) {
+                    questionElement.scrollIntoView({ behavior: 'smooth' });
+                }
+            });
+        }
+
+        // Text highlighting functionality
+        let highlightTooltip = null;
+        let selectedHighlight = null;
+
+        function handleMouseUp(e) {
+            const container = e.currentTarget;
+            const selection = window.getSelection();
+            if (selection.toString().trim() !== '' && container.contains(selection.anchorNode)) {
+                const range = selection.getRangeAt(0);
+                const rect = range.getBoundingClientRect();
+
+                const startContainer = range.startContainer.nodeType === 3 ? range.startContainer.parentElement : range.startContainer;
+                const endContainer = range.endContainer.nodeType === 3 ? range.endContainer.parentElement : range.endContainer;
+                
+                let parentElement, isPassage;
+                const passageText = document.getElementById('passage-text');
+                const questionsContainer = document.getElementById('questions-container');
+                
+                if (passageText.contains(startContainer) && passageText.contains(endContainer)) {
+                    parentElement = startContainer.closest('p');
+                    isPassage = true;
+                } else if (questionsContainer.contains(startContainer) && questionsContainer.contains(endContainer)) {
+                    parentElement = startContainer.closest('.question-text');
+                    isPassage = false;
+                } else {
+                    alert('Please select text within a single paragraph or question.');
+                    selection.removeAllRanges();
+                    if (highlightTooltip) {
+                        highlightTooltip.remove();
+                        highlightTooltip = null;
+                    }
+                    return;
+                }
+
+                if (!parentElement || startContainer.closest(parentElement.tagName) !== endContainer.closest(parentElement.tagName)) {
+                    alert('Please select text within a single ' + (isPassage ? 'paragraph' : 'question') + '.');
+                    selection.removeAllRanges();
+                    if (highlightTooltip) {
+                        highlightTooltip.remove();
+                        highlightTooltip = null;
+                    }
+                    return;
+                }
+
+                const existingHighlights = parentElement.querySelectorAll('.highlight');
+                let hasOverlap = false;
+
+                existingHighlights.forEach(highlight => {
+                    const highlightRange = document.createRange();
+                    highlightRange.selectNodeContents(highlight);
+                    
+                    const startCompare = range.compareBoundaryPoints(Range.START_TO_START, highlightRange);
+                    const endCompare = range.compareBoundaryPoints(Range.END_TO_END, highlightRange);
+                    const startToEnd = range.compareBoundaryPoints(Range.START_TO_END, highlightRange);
+                    const endToStart = range.compareBoundaryPoints(Range.END_TO_START, highlightRange);
+                    
+                    if (
+                        (startCompare >= 0 && startCompare <= 0 && endCompare >= 0) ||
+                        (endCompare <= 0 && startCompare <= 0 && startToEnd >= 0) ||
+                        (startCompare <= 0 && endCompare >= 0) ||
+                        (startCompare >= 0 && endCompare <= 0)
+                    ) {
+                        hasOverlap = true;
+                    }
+                });
+
+                if (hasOverlap) {
+                    alert('Cannot highlight overlapping elements. Please try a different selection.');
+                    selection.removeAllRanges();
+                    if (highlightTooltip) {
+                        highlightTooltip.remove();
+                        highlightTooltip = null;
+                    }
+                    return;
+                }
+
+                const originalContent = range.cloneContents();
+
+                if (highlightTooltip) {
+                    highlightTooltip.remove();
+                    highlightTooltip = null;
+                }
+
+                highlightTooltip = document.createElement('div');
+                highlightTooltip.className = 'highlight-tooltip';
+                highlightTooltip.innerHTML = '<i class="fas fa-highlighter"></i> Highlight';
+                highlightTooltip.style.position = 'fixed';
+                highlightTooltip.style.top = `${rect.top - 40}px`;
+                highlightTooltip.style.left = `${rect.left}px`;
+                document.body.appendChild(highlightTooltip);
+
+                highlightTooltip.addEventListener('click', () => {
+                    try {
+                        const span = document.createElement('span');
+                        span.className = 'highlight';
+                        span.appendChild(range.extractContents());
+                        range.insertNode(span);
+                        span.addEventListener('click', handleHighlightClick);
+                        selection.removeAllRanges();
+                        highlightTooltip.remove();
+                        highlightTooltip = null;
+                        parentElement.normalize();
+                    } catch (error) {
+                        console.error('Error applying highlight:', error);
+                        alert('Failed to apply highlight. Restoring original text.');
+                        range.deleteContents();
+                        range.insertNode(originalContent.cloneNode(true));
+                        parentElement.normalize();
+                        if (highlightTooltip) {
+                            highlightTooltip.remove();
+                            highlightTooltip = null;
+                        }
+                    }
+                });
+            }
+        }
+
+        function handleHighlightClick(e) {
+            if (selectedHighlight && selectedHighlight !== e.target) {
+                selectedHighlight.classList.remove('selected-highlight');
+            }
+            selectedHighlight = e.target;
+            selectedHighlight.classList.toggle('selected-highlight');
+
+            if (highlightTooltip) {
+                highlightTooltip.remove();
+                highlightTooltip = null;
+            }
+
+            highlightTooltip = document.createElement('div');
+            highlightTooltip.className = 'highlight-tooltip';
+            highlightTooltip.innerHTML = '<i class="fas fa-eraser"></i> Unhighlight';
+            highlightTooltip.style.position = 'absolute';
+            highlightTooltip.style.top = '-30px';
+            highlightTooltip.style.left = '50%';
+            highlightTooltip.style.transform = 'translateX(-50%)';
+            e.target.appendChild(highlightTooltip);
+
+            highlightTooltip.addEventListener('click', () => {
+                const parent = e.target.parentNode;
+                try {
+                    while (e.target.firstChild) {
+                        parent.insertBefore(e.target.firstChild, e.target);
+                    }
+                    parent.removeChild(e.target);
+                    parent.normalize();
+                    if (highlightTooltip) {
+                        highlightTooltip.remove();
+                        highlightTooltip = null;
+                    }
+                    selectedHighlight = null;
+                } catch (error) {
+                    console.error('Error removing highlight:', error);
+                    alert('Failed to remove highlight. Please try again.');
+                }
+            });
+        }
+
+        document.getElementById('passage-text').addEventListener('mouseup', handleMouseUp);
+        document.getElementById('questions-container').addEventListener('mouseup', handleMouseUp);
+
+        document.addEventListener('mousedown', (e) => {
+            if (highlightTooltip && !highlightTooltip.contains(e.target) && e.target.className !== 'highlight') {
+                highlightTooltip.remove();
+                highlightTooltip = null;
+                if (selectedHighlight) {
+                    selectedHighlight.classList.remove('selected-highlight');
+                    selectedHighlight = null;
+                }
+                window.getSelection().removeAllRanges();
+            }
+        });
+
+        // Track answered questions
+        const questions = document.querySelectorAll('.question');
+        const progressItems = document.querySelectorAll('.progress-item');
+
+        function updateProgress() {
+            let answeredCount = 0;
+            
+            questions.forEach((question, index) => {
+                const questionNumber = index + 30;
+                let answered = false;
+                
+                if (questionNumber <= 35) {
+                    const checkedRadio = question.querySelector('input[type="radio"]:checked');
+                    answered = checkedRadio !== null;
+                } else if (questionNumber <= 41) {
+                    const select = question.querySelector('select');
+                    answered = select.value !== '';
+                } else {
+                    const checkedRadio = question.querySelector('input[type="radio"]:checked');
+                    answered = checkedRadio !== null;
+                }
+                
+                if (answered) {
+                    question.classList.add('answered');
+                    if (progressItems[index]) {
+                        progressItems[index].classList.add('completed');
+                    }
+                    answeredCount++;
+                } else {
+                    question.classList.remove('answered');
+                    if (progressItems[index]) {
+                        progressItems[index].classList.remove('completed');
+                    }
+                }
+            });
+            
+            return answeredCount;
+        }
+
+        document.querySelectorAll('select, input[type="radio"]').forEach(input => {
+            input.addEventListener('change', updateProgress);
+        });
+
+        // Reset button
+        document.getElementById('reset-btn').addEventListener('click', () => {
+            document.querySelectorAll('select').forEach(select => {
+                select.value = '';
+            });
+            
+            document.querySelectorAll('input[type="radio"]').forEach(radio => {
+                radio.checked = false;
+            });
+            
+            document.querySelectorAll('.highlight').forEach(highlight => {
+                const parent = highlight.parentNode;
+                try {
+                    while (highlight.firstChild) {
+                        parent.insertBefore(highlight.firstChild, highlight);
+                    }
+                    parent.removeChild(highlight);
+                    parent.normalize();
+                } catch (error) {
+                    console.error('Error resetting highlights:', error);
+                    alert('Failed to reset highlights. Please try again.');
+                }
+            });
+            
+            updateProgress();
+            document.getElementById('feedback-overlay').style.display = 'none';
+        });
+
+        // Submit and Feedback functionality
+        const feedbackOverlay = document.getElementById('feedback-overlay');
+        const closeFeedbackBtn = document.getElementById('close-feedback');
+
+        document.getElementById('submit-btn').addEventListener('click', () => {
+            pauseTimer.click();
+            
+            const answers = {
+                30: 'YES', 31: 'NO', 32: 'NOT GIVEN', 33: 'NO', 34: 'NOT GIVEN', 35: 'YES',
+                36: 'E', 37: 'C', 38: 'I', 39: 'H', 40: 'G', 41: 'D',
+                42: 'C', 43: 'D', 44: 'A', 45: 'A', 46: 'C'
+            };
+            
+            const explanations = {
+                30: "The writer states that 'a fundamental distrust of industry... means that those trying to fix food systems are missing opportunities'.",
+                31: "The writer criticizes the use of educational materials for marketing sugary drinks to children, so would not agree that manufacturers should do this.",
+                32: "While the writer mentions children being targeted by marketing, there's no information about dangerous levels of chronic diseases among young children.",
+                33: "The writer clearly states that soft drinks have harmful effects and provides evidence, so would not question this claim.",
+                34: "The writer mentions chocolate manufacturers but doesn't state that chocolate consumption is a major cause of health problems.",
+                35: "The writer says 'many food producers in the private sector are willing to adjust their businesses'.",
+                36: "The sugar tax is described as a 'stick' - a punishment policy.",
+                37: "Including ads in computer games is given as an example of 'scandalous marketing techniques' - an unacceptable business practice.",
+                38: "The $500 million advertising spend illustrates the financial power of major food manufacturers.",
+                39: "The writer mentions that dedicating resources to nutrition can help attract talented employees - this is a 'carrot' approach.",
+                40: "Text messages about healthy diets show the involvement of non-food companies (mobile-phone companies) in improving nutrition.",
+                41: "The tilapia fish example shows healthy affordable food resulting from commercial involvement.",
+                42: "The fourth paragraph shows most countries use taxes (punishment/sticks) rather than subsidies (carrots).",
+                43: "The Indonesian video example shows how commercial creative input improved the effectiveness of a government nutrition campaign.",
+                44: "Using plastic crates reduces food loss, making nutritious foods like fruits and vegetables more available, thus supporting healthy diets.",
+                45: "GAIN works with 'a mix of public- and private-sector technical and financial assistance' - combining support from various sources.",
+                46: "The main theme is the need for both incentives (carrots) and punishments (sticks) to improve nutrition."
+            };
+            
+            const passageReferences = {
+                30: "a fundamental distrust of industry, which in fact is often justified, means that those trying to fix food systems are missing opportunities",
+                31: "Examples include branding educational materials... particularly those used to target children",
+                32: "No specific information about dangerous levels of chronic diseases among young children",
+                33: "Such drinks significantly increase people's risk of developing type 2 diabetes, heart disease and other chronic conditions",
+                34: "Mention of Hershey chocolate manufacturer but no claim about chocolate being a major cause of health problems",
+                35: "many food producers in the private sector are willing to adjust their businesses to make money and improve people's nutrition",
+                36: "Such 'sticks' – policies that punish food and drink companies",
+                37: "embedding advertisements for such drinks in computer games... scandalous marketing techniques",
+                38: "Hershey... and General Mills... each spent more than US$500 million on advertising alone",
+                39: "dedicating resources to causes such as nutrition can pull in talented and driven employees",
+                40: "Mobile-phone companies, for instance, can send people government-approved text messages about how to eat healthily",
+                41: "one firm in Kenya has helped to make tilapia fish affordable for 68% of the population",
+                42: "more than half had increased taxes on unhealthy foods and beverages. Less than one quarter had introduced subsidies",
+                43: "The use of humour and emotion seemed to work, in contrast to standard government-produced instructions",
+                44: "such crates... can reduce the loss of fruits and vegetables along the supply chain from 30–50% to 5%",
+                45: "With a mix of public- and private-sector technical and financial assistance",
+                46: "Rather than punishments – policy 'sticks' – could the use of rewards – policy 'carrots' – be more effective"
+            };
+            
+            let correctCount = 0;
+            const feedbackBody = document.getElementById('feedback-body');
+            feedbackBody.innerHTML = '';
+            
+            // Check questions 30-35 (Yes/No/Not Given)
+            for (let i = 30; i <= 35; i++) {
+                const checkedRadio = document.querySelector(`input[name="q${i}"]:checked`);
+                const userAnswer = checkedRadio ? checkedRadio.value : '';
+                const isCorrect = userAnswer === answers[i];
+                
+                if (isCorrect) correctCount++;
+                
+                const feedbackItem = document.createElement('div');
+                feedbackItem.className = 'feedback-item';
+                feedbackItem.innerHTML = `
+                    <div class="feedback-question">
+                        <span class="${isCorrect ? 'correct' : 'incorrect'}">Question ${i}:</span>
+                        ${isCorrect ? `<i class="fas fa-check correct" style="margin-left: 5px;"></i>` : `<i class="fas fa-times incorrect" style="margin-left: 5px;"></i>`}
+                    </div>
+                    <div class="feedback-answer">
+                        <strong>Your answer:</strong> ${userAnswer || 'Not answered'}<br>
+                        ${!isCorrect ? `<strong>Correct answer:</strong> ${answers[i]}` : ''}
+                    </div>
+                    <div class="feedback-explanation">
+                        <strong>Explanation:</strong> ${explanations[i]}
+                    </div>
+                    <div class="feedback-passage">
+                        <strong>Relevant passage:</strong> ${passageReferences[i] !== "No specific information about dangerous levels of chronic diseases among young children" && passageReferences[i] !== "Mention of Hershey chocolate manufacturer but no claim about chocolate being a major cause of health problems" ? `"${passageReferences[i]}"` : passageReferences[i]}
+                    </div>
+                `;
+                feedbackBody.appendChild(feedbackItem);
+            }
+            
+            // Check questions 36-41 (sentence completion)
+            for (let i = 36; i <= 41; i++) {
+                const select = document.querySelector(`select[name="q${i}"]`);
+                const userAnswer = select.value;
+                const isCorrect = userAnswer === answers[i];
+                
+                if (isCorrect) correctCount++;
+                
+                const feedbackItem = document.createElement('div');
+                feedbackItem.className = 'feedback-item';
+                feedbackItem.innerHTML = `
+                    <div class="feedback-question">
+                        <span class="${isCorrect ? 'correct' : 'incorrect'}">Question ${i}:</span>
+                        ${isCorrect ? `<i class="fas fa-check correct" style="margin-left: 5px;"></i>` : `<i class="fas fa-times incorrect" style="margin-left: 5px;"></i>`}
+                    </div>
+                    <div class="feedback-answer">
+                        <strong>Your answer:</strong> ${userAnswer || 'Not answered'}<br>
+                        ${!isCorrect ? `<strong>Correct answer:</strong> ${answers[i]} - ${document.querySelector(`select[name="q${i}"] option[value="${answers[i]}"]`).textContent}` : ''}
+                    </div>
+                    <div class="feedback-explanation">
+                        <strong>Explanation:</strong> ${explanations[i]}
+                    </div>
+                    <div class="feedback-passage">
+                        <strong>Relevant passage:</strong> "${passageReferences[i]}"
+                    </div>
+                `;
+                feedbackBody.appendChild(feedbackItem);
+            }
+            
+            // Check questions 42-46 (multiple choice)
+            for (let i = 42; i <= 46; i++) {
+                const checkedRadio = document.querySelector(`input[name="q${i}"]:checked`);
+                const userAnswer = checkedRadio ? checkedRadio.value : '';
+                const isCorrect = userAnswer === answers[i];
+                
+                if (isCorrect) correctCount++;
+                
+                const feedbackItem = document.createElement('div');
+                feedbackItem.className = 'feedback-item';
+                feedbackItem.innerHTML = `
+                    <div class="feedback-question">
+                        <span class="${isCorrect ? 'correct' : 'incorrect'}">Question ${i}:</span>
+                        ${isCorrect ? `<i class="fas fa-check correct" style="margin-left: 5px;"></i>` : `<i class="fas fa-times incorrect" style="margin-left: 5px;"></i>`}
+                    </div>
+                    <div class="feedback-answer">
+                        <strong>Your answer:</strong> ${userAnswer || 'Not answered'}<br>
+                        ${!isCorrect ? `<strong>Correct answer:</strong> ${answers[i]} - ${document.querySelector(`input[name="q${i}"][value="${answers[i]}"]`).parentElement.textContent.trim()}` : ''}
+                    </div>
+                    <div class="feedback-explanation">
+                        <strong>Explanation:</strong> ${explanations[i]}
+                    </div>
+                    <div class="feedback-passage">
+                        <strong>Relevant passage:</strong> "${passageReferences[i]}"
+                    </div>
+                `;
+                feedbackBody.appendChild(feedbackItem);
+            }
+            
+            document.getElementById('score-display').textContent = `${correctCount}/17`;
+            feedbackOverlay.style.display = 'flex';
+        });
+
+        closeFeedbackBtn.addEventListener('click', () => {
+            feedbackOverlay.style.display = 'none';
+        });
+
+        feedbackOverlay.addEventListener('click', (e) => {
+            if (e.target === feedbackOverlay) {
+                feedbackOverlay.style.display = 'none';
+            }
+        });
+
+        // Initialize timer display and progress
+        updateProgress();
+        updateTimer();
+    </script>
+</body>
+</html>

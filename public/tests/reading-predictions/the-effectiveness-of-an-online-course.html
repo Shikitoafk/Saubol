@@ -1,0 +1,652 @@
+<script type="text/javascript">
+        var gk_isXlsx = false;
+        var gk_xlsxFileLookup = {};
+        var gk_fileData = {};
+        function filledCell(cell) {
+          return cell !== '' && cell != null;
+        }
+        function loadFileData(filename) {
+        if (gk_isXlsx && gk_xlsxFileLookup[filename]) {
+            try {
+                var workbook = XLSX.read(gk_fileData[filename], { type: 'base64' });
+                var firstSheetName = workbook.SheetNames[0];
+                var worksheet = workbook.Sheets[firstSheetName];
+
+                // Convert sheet to JSON to filter blank rows
+                var jsonData = XLSX.utils.sheet_to_json(worksheet, { header: 1, blankrows: false, defval: '' });
+                // Filter out blank rows (rows where all cells are empty, null, or undefined)
+                var filteredData = jsonData.filter(row => row.some(filledCell));
+
+                // Heuristic to find the header row by ignoring rows with fewer filled cells than the next row
+                var headerRowIndex = filteredData.findIndex((row, index) =>
+                  row.filter(filledCell).length >= filteredData[index + 1]?.filter(filledCell).length
+                );
+                // Fallback
+                if (headerRowIndex === -1 || headerRowIndex > 25) {
+                  headerRowIndex = 0;
+                }
+
+                // Convert filtered JSON back to CSV
+                var csv = XLSX.utils.aoa_to_sheet(filteredData.slice(headerRowIndex)); // Create a new sheet from filtered array of arrays
+                csv = XLSX.utils.sheet_to_csv(csv, { header: 1 });
+                return csv;
+            } catch (e) {
+                console.error(e);
+                return "";
+            }
+        }
+        return gk_fileData[filename] || "";
+        }
+        </script><!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Reading Passage: Effectiveness of Online Courses</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f6f8;
+            color: #333;
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 20px auto;
+            padding: 20px;
+            background: #fff;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            display: grid;
+            grid-template-columns: 1fr 5px 1fr;
+            gap: 0;
+            height: calc(100vh - 80px);
+        }
+
+        header {
+            background-color: #007BFF;
+            color: white;
+            padding: 10px; /* Reduced from 15px */
+            text-align: center;
+            border-radius: 8px 8px 0 0;
+            grid-column: 1 / -1;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            width: 100%;
+        }
+
+        .header-title {
+            flex: 1;
+            text-align: center;
+        }
+
+        header h1 {
+            margin: 0;
+            font-size: 1.5em; /* Reduced from 1.8em */
+        }
+
+        /* Telegram Button Styles */
+        #telegram-btn {
+            background-color: #0088cc;
+            color: white;
+            padding: 8px 15px;
+            border-radius: 5px;
+            text-decoration: none;
+            font-size: 0.7em;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            transition: background-color 0.3s ease;
+            font-weight: normal;
+            margin-left: auto;
+        }
+
+        #telegram-btn:hover {
+            background-color: #0077b3;
+        }
+
+        .article-content {
+            padding: 20px;
+            overflow-y: auto;
+            max-height: calc(100vh - 120px);
+        }
+
+        .questions-section {
+            padding: 20px;
+            overflow-y: auto;
+            max-height: calc(100vh - 120px);
+        }
+
+        .divider {
+            background: #ddd;
+            cursor: col-resize;
+            width: 5px;
+            height: 100%;
+        }
+
+        .questions-section h2 {
+            color: #007BFF;
+            border-bottom: 2px solid #ddd;
+            padding-bottom: 10px;
+        }
+
+        .question {
+            margin: 20px 0;
+        }
+
+        .question p {
+            margin: 0 0 10px;
+            font-weight: bold;
+        }
+
+        .question label {
+            display: block;
+            margin: 5px 0;
+        }
+
+        .question input[type="radio"] {
+            margin-right: 10px;
+        }
+
+        .question select {
+            padding: 8px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            font-size: 1em;
+        }
+
+        #submit-btn {
+            background-color: #007BFF;
+            color: white;
+            padding: 12px 25px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 1.1em;
+            font-weight: bold;
+            transition: background-color 0.3s ease;
+            margin: 20px 0;
+            display: block;
+        }
+
+        #submit-btn:hover {
+            background-color: #0056b3;
+        }
+
+        #results-area {
+            display: none;
+            margin-top: 20px;
+            padding: 20px;
+            background-color: #e3f2fd;
+            border: 2px solid #90caf9;
+            border-radius: 8px;
+        }
+
+        #results-area h3 {
+            margin-top: 0;
+        }
+
+        #results-area ul {
+            padding-left: 20px;
+        }
+
+        #results-area li {
+            margin-bottom: 10px;
+        }
+
+        #highlighter-popup {
+            position: absolute;
+            background-color: #333;
+            color: white;
+            padding: 5px 10px;
+            border-radius: 5px;
+            display: none;
+            z-index: 2000;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.5);
+        }
+
+        #highlighter-popup button {
+            background: none;
+            border: none;
+            color: white;
+            cursor: pointer;
+            padding: 5px;
+            font-size: 1em;
+        }
+
+        mark {
+            background-color: #FFD700;
+            padding: 2px 0;
+            border-radius: 2px;
+            cursor: pointer;
+        }
+
+        @media (max-width: 800px) {
+            .container {
+                grid-template-columns: 1fr;
+                grid-template-rows: auto auto auto;
+                height: auto;
+            }
+
+            .divider {
+                display: none;
+            }
+
+            .article-content, .questions-section {
+                max-height: none;
+            }
+
+            header {
+                flex-direction: column;
+                gap: 10px;
+            }
+
+            #telegram-btn {
+                margin-left: 0;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <div class="header-content">
+                
+                <div class="header-title">
+                    <h1>Reading Passage 3</h1>
+                </div>
+                <div style="width: 100px;"></div> <!-- Spacer for balance -->
+            </div>
+        </header>
+
+        <section class="article-content">
+            <p><strong>You should spend about 20 minutes on Questions 27–40, which are based on Reading Passage 3.</strong></p>
+            <h2>The effectiveness of an online course</h2>
+            <p>As access to the internet has continued to grow, web-based learning has continued to expand. With approximately half of the households in the United States (or 150 million people) connected to the internet, an estimated 2 million students are taking post-secondary courses that are fully delivered online. Millions of other students at all educational levels (primary, secondary, post-secondary) participate in online courses. However, the effectiveness of online courses, particularly in relation to individual student needs, perceptions, and outcomes, is sometimes questioned.</p>
+            <p>Common elements for learning in a typical classroom environment are the social and community interactions between student and teacher, and student and student. The ability to ask a question, to share an opinion with a fellow student, or to disagree with the point of view in a reading assignment are all fundamental learning activities. However, effective web-based learning requires adjustments on the part of students and teachers for successful interactions to occur, for example. Many online courses provide students and faculty, and students and students, with the ability to interact with each other via an electronic bulletin or discussion board.</p>
+            <p>While most studies show a link between interaction and satisfaction in web-based courses, some observers have cautioned that this is not always the case. Ruberg, Taylor, and Moore, for example, observe that in order to interact successfully, students must adjust to the non-linear nature of web-based learning. Typical face-to-face situations tend to be linear, focusing on a single discussion thread, whereas web-based learning sessions can be electronic bulletin board discussions and have multiple interactions progressing simultaneously. Students respond to a question, not only to the teacher but also to other students, depending on their interest and point of view.</p>
+            <p>Sproul and Kiesler caution about discussions based on misinformation that continue because an online instructor cannot necessarily immediately correct or clarify a comment. As a result, students need to be aware of the potential for information overload in online learning, where discussions tend to be more complex than face-to-face situations. With more information from many sources, students need to be more attentive to both the whole and part of a discussion. Herbert Simon, an economist, cautions that "a wealth of information creates a poverty of attention."</p>
+            <p>In examinations of interaction, the concept of presence, or a sense of being in a place and belonging to a group, has received attention. It is generally assumed that when a student is physically present in a face-to-face course, he or she has a sense of belonging to the class or group enrolled in the course, and this sense of belonging is greater than that experienced on an online course. He or she listens to the discussion and may choose to raise a hand to comment, answer, or ask a question. Furthermore, this same student may develop a relationship with other students in the class and discuss topics related to the class during a break. However, this is an assumption and not always true. For a variety of reasons, some students can also feel alienated in a face-to-face class and not feel part of a group.</p>
+            <p>The idea of presence has been redefined in relation to an online course. The simplest definition of presence for an online course refers to a student's sense of being registered and belonging in a course, and the ability to interact with students and an instructor even though physical contact is not available. However, as this concept is studied, the definition is expanding to include telepresence, cognitive presence, social presence, teaching presence, and other terms of presence. The term 'community' is related to presence and refers to a group of individuals who belong to a social unit, such as students in a class. In an online course, how, when, where, and with whom discussions occur is often left to the students' inquiry, social attitudes of learners, and communities that may have evolved.</p>
+            <p>As the definition of presence has expanded, a distinction between mediated interaction and presence, emphasizing that they are not the same. Interaction may indicate presence, but it is also possible for a student to interact by posting a message on an electronic bulletin board while not necessarily feeling that he or she is part of a group or a class.</p>
+            <p>A study conducted by Professor Anthony Picciano used questionnaires to determine students' attitudes in relation to their interactions and sense of purpose in online courses. In addition, an attempt was made to go beyond student perceptions of interaction and performance and to include perceptions of social presence, as well as actual participation in class activities. In addition, data was collected on performance measures that related specifically to course objectives. While much of the research, including this study, supports the strong relationship between students' perception of interaction and perceived learning, the results of the study indicated that the relationship of actual measures of interaction and performance is mixed.</p>
+            <p>The success of many online courses is dependent upon the nature of student-to-student and student-to-faculty interaction. However, how interaction affects learning outcomes and what the relationships between the two are, is in need of further study.</p>
+        </section>
+
+        <div class="divider"></div>
+
+        <section class="questions-section">
+            <h2>Questions 27–31</h2>
+            <p>Choose the correct letter, A, B, C, or D.</p>
+            <p>Write the correct letter in boxes 27–31 on your answer sheet.</p>
+            <div class="question" data-question="q27">
+                <p>27. Which of the following is mentioned in the article in relation to classroom-based learning?</p>
+                <label><input type="radio" name="q27" value="A"> A the development of academic skills</label>
+                <label><input type="radio" name="q27" value="B"> B the documenting of information</label>
+                <label><input type="radio" name="q27" value="C"> C the completion of assignments</label>
+                <label><input type="radio" name="q27" value="D"> D the exchange of ideas</label>
+            </div>
+            <div class="question" data-question="q28">
+                <p>28. Ruberg, Taylor and Moore point out that web-based learning requires learners to</p>
+                <label><input type="radio" name="q28" value="A"> A think sequentially.</label>
+                <label><input type="radio" name="q28" value="B"> B research different points of view.</label>
+                <label><input type="radio" name="q28" value="C"> C internet resources to other students.</label>
+                <label><input type="radio" name="q28" value="D"> D follow more than one discussion at a time.</label>
+            </div>
+            <div class="question" data-question="q29">
+                <p>29. What problem did Sproull and Kiesler identify with online discussions?</p>
+                <label><input type="radio" name="q29" value="A"> A Online discussions demand less attention than face-to-face ones.</label>
+                <label><input type="radio" name="q29" value="B"> B Teachers have difficulty monitoring the length of comments.</label>
+                <label><input type="radio" name="q29" value="C"> C Face-to-face interactions between students are lost.</label>
+                <label><input type="radio" name="q29" value="D"> D There is a delay in giving feedback to students.</label>
+            </div>
+            <div class="question" data-question="q30">
+                <p>30. The writer refers to the concept of online presence as</p>
+                <label><input type="radio" name="q30" value="A"> A listening to a discussion.</label>
+                <label><input type="radio" name="q30" value="B"> B a feeling of being part of a group.</label>
+                <label><input type="radio" name="q30" value="C"> C posting ideas on an electronic bulletin board.</label>
+                <label><input type="radio" name="q30" value="D"> D having a good relationship with other students.</label>
+            </div>
+            <div class="question" data-question="q31">
+                <p>31. What was a focus of Anthony Picciano's study?</p>
+                <label><input type="radio" name="q31" value="A"> A to examine the relationship between presence and course outcomes</label>
+                <label><input type="radio" name="q31" value="B"> B to analyse the differences between online and classroom.</label>
+                <label><input type="radio" name="q31" value="C"> C to analyse the importance of being present in a class-based environment</label>
+                <label><input type="radio" name="q31" value="D"> D to demonstrate that online courses are not generally effective</label>
+            </div>
+
+            <h2>Questions 32–36</h2>
+            <p>Do the following statements agree with the claims of the writer in Reading Passage 3?</p>
+            <p>In boxes 32–36 on your answer sheet, write:</p>
+            <p>YES if the statement agrees with the claims of the writer</p>
+            <p>NO if the statement contradicts the claims of the writer</p>
+            <p>NOT GIVEN if it is impossible to say what the writer's view is</p>
+            <div class="question" data-question="q32">
+                <p>32. The ability of online courses to meet an individual participant's needs is unclear.</p>
+                <label><input type="radio" name="q32" value="YES"> YES</label>
+                <label><input type="radio" name="q32" value="NO"> NO</label>
+                <label><input type="radio" name="q32" value="NOT GIVEN"> NOT GIVEN</label>
+            </div>
+            <div class="question" data-question="q33">
+                <p>33. Researchers caution against building strong online relationships.</p>
+                <label><input type="radio" name="q33" value="YES"> YES</label>
+                <label><input type="radio" name="q33" value="NO"> NO</label>
+                <label><input type="radio" name="q33" value="NOT GIVEN"> NOT GIVEN</label>
+            </div>
+            <div class="question" data-question="q34">
+                <p>34. Common assumptions about the benefits of face-to-face courses have proved to be correct.</p>
+                <label><input type="radio" name="q34" value="YES"> YES</label>
+                <label><input type="radio" name="q34" value="NO"> NO</label>
+                <label><input type="radio" name="q34" value="NOT GIVEN"> NOT GIVEN</label>
+            </div>
+            <div class="question" data-question="q35">
+                <p>35. The meaning of presence is still being clarified.</p>
+                <label><input type="radio" name="q35" value="YES"> YES</label>
+                <label><input type="radio" name="q35" value="NO"> NO</label>
+                <label><input type="radio" name="q35" value="NOT GIVEN"> NOT GIVEN</label>
+            </div>
+            <div class="question" data-question="q36">
+                <p>36. Research on the impacts of interaction on learning outcomes has produced consistent results.</p>
+                <label><input type="radio" name="q36" value="YES"> YES</label>
+                <label><input type="radio" name="q36" value="NO"> NO</label>
+                <label><input type="radio" name="q36" value="NOT GIVEN"> NOT GIVEN</label>
+            </div>
+
+            <h2>Questions 37–40</h2>
+            <p>Complete each sentence with the correct ending, A–F, below.</p>
+            <p>Write the correct letter, A–F, in boxes 37–40 on your answer sheet.</p>
+            <div class="question" data-question="q37">
+                <p>37. The ability to succeed in an online course</p>
+                <select name="q37">
+                    <option value="">Select</option>
+                    <option value="A">A</option>
+                    <option value="B">B</option>
+                    <option value="C">C</option>
+                    <option value="D">D</option>
+                    <option value="E">E</option>
+                    <option value="F">F</option>
+                </select>
+            </div>
+            <div class="question" data-question="q38">
+                <p>38. The need to be mindful of the source of comments in an online discussion</p>
+                <select name="q38">
+                    <option value="">Select</option>
+                    <option value="A">A</option>
+                    <option value="B">B</option>
+                    <option value="C">C</option>
+                    <option value="D">D</option>
+                    <option value="E">E</option>
+                    <option value="F">F</option>
+                </select>
+            </div>
+            <div class="question" data-question="q39">
+                <p>39. In online courses, it is presence, rather than interaction, that</p>
+                <select name="q39">
+                    <option value="">Select</option>
+                    <option value="A">A</option>
+                    <option value="B">B</option>
+                    <option value="C">C</option>
+                    <option value="D">D</option>
+                    <option value="E">E</option>
+                    <option value="F">F</option>
+                </select>
+            </div>
+            <div class="question" data-question="q40">
+                <p>40. The relationship between interaction and learning achievement</p>
+                <select name="q40">
+                    <option value="">Select</option>
+                    <option value="A">A</option>
+                    <option value="B">B</option>
+                    <option value="C">C</option>
+                    <option value="D">D</option>
+                    <option value="E">E</option>
+                    <option value="F">F</option>
+                </select>
+            </div>
+            <p>A is dependent on adapting to unfamiliar interaction formats.</p>
+            <p>B is key in determining whether a student has a sense of belonging in the course.</p>
+            <p>C is key in deciding whether students will require more study time.</p>
+            <p>D is essential to excel in study and scholarship.</p>
+            <p>E is key in determining where a student feels they have learned something from a course.</p>
+            <p>F is important for determining their validity.</p>
+
+            <button id="submit-btn">Submit Answers</button>
+            <div id="results-area"></div>
+        </section>
+
+        <div id="highlighter-popup">
+            <button id="highlight-btn">Highlight</button>
+            <button id="remove-highlight-btn">Remove Highlight</button>
+        </div>
+    </div>
+
+    <script>
+    document.addEventListener('DOMContentLoaded', () => {
+        console.log('DOM loaded, initializing...');
+
+        const answerKey = {
+            q27: "D", q28: "D", q29: "D", q30: "B", q31: "A",
+            q32: "YES", q33: "NOT GIVEN", q34: "NO", q35: "YES", q36: "NO",
+            q37: "A", q38: "F", q39: "B", q40: "E"
+        };
+
+        const submitBtn = document.getElementById('submit-btn');
+        const resultsArea = document.getElementById('results-area');
+        const questionsWrapper = document.querySelector('.questions-section');
+        let submitted = false;
+
+        // Verify DOM elements
+        if (!submitBtn) console.error('Submit button not found');
+        if (!resultsArea) console.error('Results area not found');
+        if (!questionsWrapper) console.error('Questions wrapper not found');
+
+        // Resizable divider
+        const divider = document.querySelector('.divider');
+        let isDragging = false;
+
+        if (divider) {
+            divider.addEventListener('mousedown', (e) => {
+                isDragging = true;
+                document.body.style.cursor = 'col-resize';
+                console.log('Divider drag started');
+            });
+
+            document.addEventListener('mousemove', (e) => {
+                if (isDragging) {
+                    const container = document.querySelector('.container');
+                    const rect = container.getBoundingClientRect();
+                    const x = e.clientX - rect.left;
+                    const totalWidth = rect.width;
+                    const leftWidth = Math.max(200, Math.min(x, totalWidth - 200));
+                    container.style.gridTemplateColumns = `${leftWidth}px 5px 1fr`;
+                    console.log(`Divider moved, leftWidth=${leftWidth}px`);
+                }
+            });
+
+            document.addEventListener('mouseup', () => {
+                if (isDragging) {
+                    isDragging = false;
+                    document.body.style.cursor = 'default';
+                    console.log('Divider drag ended');
+                }
+            });
+        } else {
+            console.error('Divider not found');
+        }
+
+        // Highlighting
+        const highlighterPopup = document.getElementById('highlighter-popup');
+        const highlightBtn = document.getElementById('highlight-btn');
+        const removeHighlightBtn = document.getElementById('remove-highlight-btn');
+        let currentSelection = null;
+        let currentMark = null;
+
+        const showPopup = (x, y, isMarked) => {
+            highlighterPopup.style.left = `${x}px`;
+            highlighterPopup.style.top = `${y}px`;
+            highlighterPopup.style.display = 'block';
+            highlightBtn.style.display = isMarked ? 'none' : 'inline-block';
+            removeHighlightBtn.style.display = isMarked ? 'inline-block' : 'none';
+        };
+
+        document.querySelectorAll('.article-content, .questions-section').forEach(area => {
+            area.addEventListener('mouseup', (e) => {
+                const selection = window.getSelection();
+                if (selection.toString().trim().length > 0 && !highlighterPopup.contains(e.target)) {
+                    currentSelection = selection.getRangeAt(0);
+                    showPopup(e.pageX + 5, e.pageY + 5, false);
+                    console.log('Text selected, showing highlight popup');
+                }
+            });
+            area.addEventListener('click', (e) => {
+                if (e.target.tagName === 'MARK') {
+                    currentMark = e.target;
+                    showPopup(e.pageX + 5, e.pageY + 5, true);
+                    console.log('Clicked highlighted text, showing remove highlight popup');
+                }
+            });
+        });
+
+        highlightBtn.addEventListener('click', () => {
+            if (currentSelection) {
+                try {
+                    const mark = document.createElement('mark');
+                    mark.appendChild(currentSelection.extractContents());
+                    currentSelection.insertNode(mark);
+                    highlighterPopup.style.display = 'none';
+                    window.getSelection().removeAllRanges();
+                    console.log('Text highlighted');
+                } catch (error) {
+                    console.error('Highlighting error:', error);
+                    highlighterPopup.style.display = 'none';
+                }
+            }
+        });
+
+        removeHighlightBtn.addEventListener('click', () => {
+            if (currentMark) {
+                const parent = currentMark.parentNode;
+                while (currentMark.firstChild) {
+                    parent.insertBefore(currentMark.firstChild, currentMark);
+                }
+                parent.removeChild(currentMark);
+                parent.normalize();
+                highlighterPopup.style.display = 'none';
+                console.log('Highlight removed');
+            }
+        });
+
+        document.addEventListener('mousedown', (e) => {
+            if (!highlighterPopup.contains(e.target) && window.getSelection().toString().length === 0) {
+                highlighterPopup.style.display = 'none';
+            }
+        });
+
+        // Submission
+        if (submitBtn) {
+            submitBtn.addEventListener('click', () => {
+                console.log('Submit button clicked');
+                if (submitted) {
+                    console.log('Submission already completed');
+                    return;
+                }
+                if (!confirm("Are you sure you want to submit your answers? This action cannot be undone.")) {
+                    console.log('Submission cancelled by user');
+                    return;
+                }
+
+                console.log('Starting submission process...');
+                submitted = true;
+
+                let score = 0;
+                let incorrectAnswers = [];
+                const questions = document.querySelectorAll('.question[data-question]');
+
+                questions.forEach(question => {
+                    const questionId = question.dataset.question;
+                    const correctAnswer = answerKey[questionId];
+                    let userAnswer = '';
+
+                    try {
+                        if (questionId >= 'q27' && questionId <= 'q36') {
+                            const input = question.querySelector(`input[name="${questionId}"]:checked`);
+                            if (input) {
+                                userAnswer = input.value.trim().toUpperCase();
+                            }
+                        } else {
+                            const select = question.querySelector(`select[name="${questionId}"]`);
+                            if (select) {
+                                userAnswer = select.value.trim().toUpperCase();
+                            }
+                        }
+                        console.log(`Q${questionId}: userAnswer=${userAnswer}, correctAnswer=${correctAnswer}`);
+
+                        if (userAnswer === correctAnswer.toUpperCase() && userAnswer !== '') {
+                            score++;
+                            console.log(`Q${questionId}: Correct, score=${score}`);
+                        } else {
+                            console.log(`Q${questionId}: Incorrect`);
+                            incorrectAnswers.push({
+                                number: questionId.replace('q', ''),
+                                user: userAnswer || "No answer",
+                                correct: correctAnswer
+                            });
+                        }
+
+                        question.querySelectorAll('input, select').forEach(el => {
+                            el.disabled = true;
+                            console.log(`Q${questionId}: Input/select disabled`);
+                        });
+                    } catch (error) {
+                        console.error(`Error processing Q${questionId}:`, error);
+                    }
+                });
+
+                try {
+                    if (!resultsArea) throw new Error('Results area not found');
+                    let resultsHTML = `<h3>Results</h3>`;
+                    resultsHTML += `<p><strong>Your Score:</strong> ${score}/${questions.length}</p>`;
+
+                    if (incorrectAnswers.length > 0) {
+                        resultsHTML += '<h4>Incorrect Answers Review:</h4><ul>';
+                        incorrectAnswers.forEach(item => {
+                            resultsHTML += `<li><strong>Question ${item.number}:</strong> You answered "<em>${item.user}</em>". The correct answer is "<strong>${item.correct}</strong>".</li>`;
+                        });
+                        resultsHTML += '</ul>';
+                    } else {
+                        resultsHTML += '<p style="color: green; font-weight: bold;">🎉 Congratulations! All answers are correct!</p>';
+                    }
+
+                    console.log('Rendering results:', resultsHTML);
+                    resultsArea.innerHTML = resultsHTML;
+                    resultsArea.style.display = 'block';
+                    submitBtn.style.display = 'none';
+                    console.log('Results displayed, submit button hidden');
+
+                    if (questionsWrapper) {
+                        questionsWrapper.scrollTo({ top: questionsWrapper.scrollHeight, behavior: 'smooth' });
+                        console.log('Scrolled to results');
+                    } else {
+                        console.error('Questions wrapper not found for scrolling');
+                    }
+                } catch (error) {
+                    console.error('Error displaying results:', error);
+                }
+            });
+        } else {
+            console.error('Submit button not found, cannot attach event listener');
+        }
+    });
+    </script>
+</body>
+</html>

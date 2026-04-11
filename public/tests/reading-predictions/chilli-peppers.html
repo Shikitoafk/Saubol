@@ -1,0 +1,619 @@
+<script type="text/javascript">
+        var gk_isXlsx = false;
+        var gk_xlsxFileLookup = {};
+        var gk_fileData = {};
+        function filledCell(cell) {
+          return cell !== '' && cell != null;
+        }
+        function loadFileData(filename) {
+        if (gk_isXlsx && gk_xlsxFileLookup[filename]) {
+            try {
+                var workbook = XLSX.read(gk_fileData[filename], { type: 'base64' });
+                var firstSheetName = workbook.SheetNames[0];
+                var worksheet = workbook.Sheets[firstSheetName];
+
+                // Convert sheet to JSON to filter blank rows
+                var jsonData = XLSX.utils.sheet_to_json(worksheet, { header: 1, blankrows: false, defval: '' });
+                // Filter out blank rows (rows where all cells are empty, null, or undefined)
+                var filteredData = jsonData.filter(row => row.some(filledCell));
+
+                // Heuristic to find the header row by ignoring rows with fewer filled cells than the next row
+                var headerRowIndex = filteredData.findIndex((row, index) =>
+                  row.filter(filledCell).length >= filteredData[index + 1]?.filter(filledCell).length
+                );
+                // Fallback
+                if (headerRowIndex === -1 || headerRowIndex > 25) {
+                  headerRowIndex = 0;
+                }
+
+                // Convert filtered JSON back to CSV
+                var csv = XLSX.utils.aoa_to_sheet(filteredData.slice(headerRowIndex)); // Create a new sheet from filtered array of arrays
+                csv = XLSX.utils.sheet_to_csv(csv, { header: 1 });
+                return csv;
+            } catch (e) {
+                console.error(e);
+                return "";
+            }
+        }
+        return gk_fileData[filename] || "";
+        }
+        </script><!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>IELTS Reading Practice — Passage 1: Chilli Peppers</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    :root {
+      --border: #e0e0e0;
+      --ink: #222;
+      --muted: #666;
+      --accent: #4a90e2;
+      --ok: #28a745;
+      --bad: #dc3545;
+      --bg: #fff;
+    }
+    body {
+      font-family: Inter, system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+      background: var(--bg);
+      color: var(--ink);
+      line-height: 1.55;
+      font-size: 16px;
+    }
+    .header {
+      position: sticky; top: 0; z-index: 10;
+      background: #fff; border-bottom: 1px solid var(--border);
+      height: 60px; display: flex; align-items: center; justify-content: space-between;
+      padding: 10px 16px;
+    }
+    .brand { font-weight: 700; }
+    .test-info { display: flex; align-items: center; gap: 16px; }
+    .timer { font-variant-numeric: tabular-nums; font-weight: 700; }
+    .timer-controls { display: flex; align-items: center; gap: 8px; }
+    .iconbtn { width: 32px; height: 32px; border-radius: 50%; border: 1px solid var(--border); background: #f7f7f7; cursor: pointer; display: grid; place-items: center; }
+    .iconbtn:hover { background: #efefef; }
+    .main { height: calc(100vh - 60px); display: flex; }
+    .panel { padding: 18px 20px 110px; overflow: auto; flex: 1; }
+    .resizer {
+      width: 10px;
+      background: #f3f3f3;
+      cursor: col-resize;
+      position: relative;
+      flex-shrink: 0;
+      border-left: 1px solid #ddd;
+      border-right: 1px solid #ddd;
+    }
+    .resizer::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="10" height="40" viewBox="0 0 10 40"><g fill="%23888"><rect x="4" y="10" width="2" height="4"/><rect x="4" y="18" width="2" height="4"/><rect x="4" y="26" width="2" height="4"/></g></svg>') center/8px 32px no-repeat;
+    }
+    .resizer:hover {
+      background: #e8e8e8;
+    }
+    .reading-passage h4 { font-size: 22px; margin: 6px 0 12px; text-align: center; }
+    .reading-passage .kicker { text-align: center; color: var(--muted); margin-bottom: 10px; }
+    .reading-passage p { margin: 0 0 1rem 0; text-align: justify; }
+    .questions .qgroup { margin-bottom: 34px; }
+    .question { margin: 14px 0 22px; padding: 12px; border: 1px solid transparent; border-radius: 8px; }
+    .question .stem { display: flex; gap: 10px; align-items: flex-start; }
+    .qnum { font-weight: 800; border: 2px solid #bbb; border-radius: 6px; padding: 2px 8px; min-width: 36px; text-align: center; }
+    .options { margin-top: 10px; display: grid; gap: 8px; }
+    .opt label { display: flex; align-items: center; gap: 10px; cursor: pointer; }
+    .opt input[type="radio"] { transform: scale(1.15); accent-color: var(--accent); }
+    .gapline { display: inline-block; min-width: 120px; padding: 2px 6px; border: none; border-bottom: 2px solid #333; text-align: center; font-weight: 700; }
+    .question.correct { background: #e9f7ef; border-color: var(--ok); }
+    .question.incorrect { background: #f8d7da; border-color: var(--bad); }
+    .footer {
+      position: fixed; inset: auto 0 0 0; height: 84px; background: #fff; border-top: 1px solid var(--border);
+      display: flex; align-items: center; gap: 16px; padding: 10px 16px; z-index: 10;
+    }
+    .pager { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+    .chip { width: 34px; height: 34px; border-radius: 6px; border: 1px solid #ccc; background: #fff; font-weight: 600; cursor: pointer; display: grid; place-items: center; }
+    .chip.answered { background: #eef2ff; border-color: #c7d2fe; }
+    .chip.active { background: var(--accent); border-color: var(--accent); color: #fff; }
+    .deliver { margin-left: auto; min-width: 180px; padding: 12px 18px; border-radius: 8px; border: 1px solid #ccc; background: #f5f5f5; font-weight: 700; cursor: pointer; }
+    .deliver:hover { background: #ececec; }
+    .modal { position: fixed; inset: 0; background: rgba(0,0,0,.55); display: none; align-items: center; justify-content: center; z-index: 50; }
+    .modal.show { display: flex; }
+    .card { background: #fff; border-radius: 12px; width: min(720px, 92vw); max-height: 84vh; overflow: auto; padding: 20px; box-shadow: 0 20px 60px rgba(0,0,0,.15); }
+    .summary { background: #f8f9fa; border: 1px solid var(--border); border-radius: 10px; padding: 14px; margin: 10px 0 18px; }
+    .result-row { display: grid; grid-template-columns: 64px 1fr auto; gap: 10px; align-items: center; padding: 8px 10px; border-radius: 8px; margin-bottom: 6px; }
+    .result-row.ok { background: #e9f7ef; }
+    .result-row.ng { background: #f8d7da; }
+    .result-row .rnum { font-weight: 800; }
+    .close { margin-top: 10px; padding: 10px 16px; border: 0; background: var(--accent); color: #fff; border-radius: 8px; cursor: pointer; }
+    .highlight-toolbar {
+      position: fixed;
+      background: #fff;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.15);
+      padding: 8px;
+      display: none;
+      gap: 8px;
+      z-index: 1000;
+      user-select: none;
+      pointer-events: auto;
+    }
+    .highlight-toolbar button {
+      padding: 6px 12px;
+      border-radius: 6px;
+      border: 0;
+      cursor: pointer;
+      font-weight: 600;
+      font-size: 14px;
+      white-space: nowrap;
+      user-select: none;
+    }
+    .highlight-toolbar .highlight-btn { background: var(--accent); color: #fff; }
+    .highlight-toolbar .highlight-btn:hover { background: #357abd; }
+    .highlight-toolbar .remove-btn { background: var(--bad); color: #fff; }
+    .highlight-toolbar .remove-btn:hover { background: #c82333; }
+    .highlight-toolbar .clear-all-btn { background: #ff6b35; color: #fff; }
+    .highlight-toolbar .clear-all-btn:hover { background: #e55a2b; }
+    .highlight {
+      background: #ffff00;
+      cursor: pointer;
+      padding: 1px 2px;
+      border-radius: 2px;
+      user-select: text;
+    }
+    .highlight:hover {
+      background: #ffeb3b;
+    }
+    .meta { color: var(--muted); font-size: 14px; text-align: center; margin-bottom: 12px; }
+    .goto { display: flex; align-items: center; gap: 6px; }
+    .goto input { width: 84px; padding: 6px 8px; border: 1px solid var(--border); border-radius: 8px; }
+    
+    
+  </style>
+</head>
+<body>
+  <header class="header">
+    <div class="brand">IELTS Reading Practice</div>
+    <div class="test-info">
+      <div class="timer" id="timer">60:00</div>
+      <div class="timer-controls">
+        <button class="iconbtn" id="pause-btn" title="Pause/Resume">❚❚</button>
+        <button class="iconbtn" id="reset-btn" title="Reset timer">↺</button>
+      </div>
+      <div class="goto">
+        <span>Go to Q:</span>
+        <input type="number" id="goto-input" min="1" max="13" placeholder="1" />
+        <button class="iconbtn" id="goto-btn" title="Go">→</button>
+      </div>
+      
+    </div>
+  </header>
+  <div class="main" id="main">
+    <section class="panel reading-passage" id="passage">
+      <div class="meta">READING PASSAGE 1 • You should spend about 20 minutes on Questions 1–13.</div>
+      <h4>Chilli Peppers</h4>
+      <p class="kicker" style="font-style: italic;">For thousands of years, humans have taken painful pleasure from adding chillies to their food, harnessing their unique properties for health and culinary benefits.</p>
+      <p>For thousands of years, humans have taken painful pleasure from adding chillies (also known as peppers or chilli peppers) to their food. A study published in the British Medical Journal in 2015 indicated that a diet filled with spices - including chillies - was beneficial for health. The study, which was carried out by scientists at the Chinese Academy of Medical Sciences, tracked the health of nearly half a million participants in China for several years. They found that participants who ate spicy food once or twice a week had a mortality rate 10% lower than those who ate spicy food less than once a week. Risk of death reduced still further for people who ate spicy food six or seven days a week. Chilli peppers were the most commonly used spice among the sample, and those who ate fresh chilli had a lower probability of death from cancer, heart disease, and diabetes.</p>
+      <p>The health-promoting properties of chillies can be found in capsaicin, which is the odourless, colourless chemical compound that makes chillies hot. Inside a chilli there are yellow stalks that attach the seeds to its sides and in many types of chilli, this is the location of capsaicin, but there are several varieties where this is not the case. The heat of a chilli is measured in Scoville heat units, which is the number of times a sample of dissolved dried chilli must be diluted by its own weight in sugar water before it loses its heat. For a green bell pepper this is zero. But habanero peppers have a Scoville value of between 100,000 and 350,000. For pure capsaicin the figure is 16 million. Pure capsaicin can be bought on the internet, though its use as a food additive is banned in the European Union. The use of chilli peppers as weapons dates back to pre-Columbian times (before 1492), when, it is said, Mayans burned rows of them to create a stinging smokescreen to protect themselves from their enemies. The Aztecs also put chilli on their teeth to kill toothache pain, and the use of capsaicin as a pain reliever continues today.</p>
+      <p>Joshua Tewksbury, a natural historian at the University of Washington, thinks the burning sensation we experience when we come into contact with chillies is an evolutionary trick. 'We're not actually being damaged by the capsaicin the way we would be if we were touching a stove, but our brain thinks we are,' he says, adding that all mammals experience the same sensation but that birds do not. 'They can eat chillies like popcorn and they don't feel the heat.' In this way, Tewksbury suggests, the plant evolved to repel animals that might crush its seeds with their teeth, but not ones that would help spread them.</p>
+      <p>Chillies also fight bacteria. This was of great value in the days before refrigeration, when, particularly in the tropics, people were vulnerable to bacteria that could harm them directly or cause their food to spoil. Chillies kill or inhibit 75% of such bacteria. That may just explain the spice's world-conquering success. Just two or three years after the explorer Christopher Columbus brought chilli seeds back to Europe from the New World in 1493, Portuguese merchants took the plants to Asia, where they would transform the cuisine. People in hot countries are said to use more chilli because it makes them generate a lot of sweat, which cools them down. But in 1998, researchers at Cornell University pointed out that the greater use of spices in countries such as India, Thailand, and China was likely to be linked to the antibacterial function. By studying books filled with recipes from all over the world, the researchers found that spices including chilli were more likely to be used close to the equator, and were also used more in valleys with high levels of humidity than on high plateaux.</p>
+      <p>Capsaicin has even been suggested as a potential weight-loss tool. Research conducted by the University of Wyoming on mice that had been fed a high-fat diet found that the substance increased the metabolism of the animals, causing them to burn more energy and preventing weight gain. In another study, researchers at the University of Adelaide found that certain receptors that interact with capsaicin and are located inside the stomach play a role in sensing when you are full. Previous studies on humans seem to back the idea that eating spicy food may curb our appetite.</p>
+      <p>Capsaicin is a natural painkiller. Capsaicin creams and patches are available in chemists to ease pain. But it's only recently that we have come to understand how something that causes pain can ease it too. Capsaicin binds to the pain receptor TRPV1, which our brains also use to detect changes in temperature - that's why we think chillies are hot. But after being overstimulated the neurons stop responding, killing the pain. This process involves the release of endorphins, which can give us a 'rush' not unlike the feeling we have when we have done some exercise. This may explain why some people believe that hot food is addictive.</p>
+      <div class="highlight-toolbar" id="highlight-toolbar">
+        <button class="highlight-btn" id="highlight-btn">Highlight</button>
+        <button class="remove-btn" id="remove-highlight-btn" style="display: none;">Remove This</button>
+        <button class="clear-all-btn" id="clear-all-btn">Clear All</button>
+      </div>
+    </section>
+    <div class="resizer" id="resizer" role="separator" aria-orientation="vertical" aria-label="Resize panels"></div>
+    <section class="panel questions" id="questions">
+      <div class="qgroup" id="tf-block">
+        <p><strong>Questions 1–7</strong></p>
+        <p>Do the following statements agree with the information given in Reading Passage 1?</p>
+        <p>In boxes 1–7 on your answer sheet, write</p>
+        <p><strong>TRUE</strong> if the statement agrees with the information<br />
+           <strong>FALSE</strong> if the statement contradicts the information<br />
+           <strong>NOT GIVEN</strong> if there is no information on this</p>
+        <div class="question" id="qwrap-1">
+          <div class="stem"><span class="qnum">1</span><span>The study done by the Chinese Academy of Medical Sciences looked at eating habits in several countries.</span></div>
+          <div class="options">
+            <div class="opt"><label><input type="radio" name="q1" value="TRUE" /> TRUE</label></div>
+            <div class="opt"><label><input type="radio" name="q1" value="FALSE" /> FALSE</label></div>
+            <div class="opt"><label><input type="radio" name="q1" value="NOT GIVEN" /> NOT GIVEN</label></div>
+          </div>
+        </div>
+        <div class="question" id="qwrap-2">
+          <div class="stem"><span class="qnum">2</span><span>Eating fresh chillies can decrease the likelihood of dying from certain serious illnesses.</span></div>
+          <div class="options">
+            <div class="opt"><label><input type="radio" name="q2" value="TRUE" /> TRUE</label></div>
+            <div class="opt"><label><input type="radio" name="q2" value="FALSE" /> FALSE</label></div>
+            <div class="opt"><label><input type="radio" name="q2" value="NOT GIVEN" /> NOT GIVEN</label></div>
+          </div>
+        </div>
+        <div class="question" id="qwrap-3">
+          <div class="stem"><span class="qnum">3</span><span>Capsaicin is found in the same place in all chilli varieties.</span></div>
+          <div class="options">
+            <div class="opt"><label><input type="radio" name="q3" value="TRUE" /> TRUE</label></div>
+            <div class="opt"><label><input type="radio" name="q3" value="FALSE" /> FALSE</label></div>
+            <div class="opt"><label><input type="radio" name="q3" value="NOT GIVEN" /> NOT GIVEN</label></div>
+          </div>
+        </div>
+        <div class="question" id="qwrap-4">
+          <div class="stem"><span class="qnum">4</span><span>Habanero peppers are the hottest known peppers.</span></div>
+          <div class="options">
+            <div class="opt"><label><input type="radio" name="q4" value="TRUE" /> TRUE</label></div>
+            <div class="opt"><label><input type="radio" name="q4" value="FALSE" /> FALSE</label></div>
+            <div class="opt"><label><input type="radio" name="q4" value="NOT GIVEN" /> NOT GIVEN</label></div>
+          </div>
+        </div>
+        <div class="question" id="qwrap-5">
+          <div class="stem"><span class="qnum">5</span><span>Pure capsaicin is licensed for use in food products in the European Union.</span></div>
+          <div class="options">
+            <div class="opt"><label><input type="radio" name="q5" value="TRUE" /> TRUE</label></div>
+            <div class="opt"><label><input type="radio" name="q5" value="FALSE" /> FALSE</label></div>
+            <div class="opt"><label><input type="radio" name="q5" value="NOT GIVEN" /> NOT GIVEN</label></div>
+          </div>
+        </div>
+        <div class="question" id="qwrap-6">
+          <div class="stem"><span class="qnum">6</span><span>The Aztecs were the first to use capsaicin as a pain killer.</span></div>
+          <div class="options">
+            <div class="opt"><label><input type="radio" name="q6" value="TRUE" /> TRUE</label></div>
+            <div class="opt"><label><input type="radio" name="q6" value="FALSE" /> FALSE</label></div>
+            <div class="opt"><label><input type="radio" name="q6" value="NOT GIVEN" /> NOT GIVEN</label></div>
+          </div>
+        </div>
+        <div class="question" id="qwrap-7">
+          <div class="stem"><span class="qnum">7</span><span>Birds have different physical responses to eating chillies to those of mammals.</span></div>
+          <div class="options">
+            <div class="opt"><label><input type="radio" name="q7" value="TRUE" /> TRUE</label></div>
+            <div class="opt"><label><input type="radio" name="q7" value="FALSE" /> FALSE</label></div>
+            <div class="opt"><label><input type="radio" name="q7" value="NOT GIVEN" /> NOT GIVEN</label></div>
+          </div>
+        </div>
+      </div>
+      <div class="qgroup" id="gap-block">
+        <p><strong>Questions 8–13</strong></p>
+        <p>Complete the notes below.</p>
+        <p>Choose <strong>ONE WORD ONLY</strong> from the passage for each answer.</p>
+        <p>Write your answers in boxes 8–13 on your answer sheet.</p>
+        <br />
+        <p style="text-align: center;"><strong>The health benefits of chilli</strong></p>
+        <p><em>Using chilli to fight bacteria</em></p>
+        <ul style="list-style: disc; margin-left: 22px;">
+          <li>Chilli’s ability to fight germs was very significant before the invention of <input class="gapline" id="q8" placeholder="8" />.</li>
+          <li>It was thought that chilli was eaten because it causes bodies to produce <input class="gapline" id="q9" placeholder="9" /> which reduces body heat.</li>
+          <li>Books of <input class="gapline" id="q10" placeholder="10" /> from around the world show chilli is more commonly used in certain geographical areas.</li>
+          <li>Chilli is most likely to be used in valleys with a lot of humidity.</li>
+        </ul>
+        <p style="margin-top: 10px;"><em>Using chilli for weight loss</em></p>
+        <ul style="list-style: disc; margin-left: 22px;">
+          <li>The University of Wyoming found that chilli raised the mice’s <input class="gapline" id="q11" placeholder="11" />.</li>
+          <li>The University of Adelaide found that receptors in the <input class="gapline" id="q12" placeholder="12" /> react with chilli to indicate when you’ve had enough to eat.</li>
+        </ul>
+        <p style="margin-top: 10px;"><em>Using chilli as pain relief</em></p>
+        <ul style="list-style: disc; margin-left: 22px;">
+          <li>It reacts with the part of our brain that notices a difference in temperature.</li>
+          <li>The sensation we have when eating chilli is similar to the one we have after <input class="gapline" id="q13" placeholder="13" />.</li>
+        </ul>
+      </div>
+    </section>
+  </div>
+  <footer class="footer">
+    <div class="pager" id="pager"></div>
+    <div class="goto">
+      <span class="attempt" id="attempted">(0/13)</span>
+    </div>
+    <button class="deliver" id="submit-btn">Submit Test</button>
+  </footer>
+  <div class="modal" id="results-modal" aria-modal="true" role="dialog" aria-labelledby="res-title">
+    <div class="card">
+      <h2 id="res-title">Test Results</h2>
+      <div class="summary">
+        <p>Score: <strong><span id="final-score">0</span>/13</strong></p>
+        <p>Percentage: <strong><span id="final-percentage">0</span>%</strong></p>
+      </div>
+      <div id="results-details"></div>
+      <button class="close" id="close-modal">Close</button>
+    </div>
+  </div>
+  <script>
+    // ===== Config =====
+    const TOTAL_QUESTIONS = 13;
+    const correctAnswers = {
+      1: 'FALSE',
+      2: 'TRUE',
+      3: 'FALSE',
+      4: 'NOT GIVEN',
+      5: 'FALSE',
+      6: 'NOT GIVEN',
+      7: 'TRUE',
+      8: 'refrigeration',
+      9: 'sweat',
+      10: 'recipes',
+      11: 'metabolism',
+      12: 'stomach',
+      13: 'exercise'
+    };
+    // ===== State =====
+    let isTimerRunning = true;
+    let timeRemaining = 60 * 60; // 60 mins
+    let current = 1;
+    const $ = (sel, ctx = document) => ctx.querySelector(sel);
+    const $$ = (sel, ctx = document) => Array.from(ctx.querySelectorAll(sel));
+    // ===== Timer =====
+    function renderTimer() {
+      const m = Math.floor(timeRemaining / 60).toString().padStart(2, '0');
+      const s = (timeRemaining % 60).toString().padStart(2, '0');
+      $('#timer').textContent = `${m}:${s}`;
+    }
+    function tick() {
+      if (isTimerRunning && timeRemaining > 0) {
+        timeRemaining--; renderTimer();
+        if (timeRemaining === 0) submit();
+      }
+    }
+    setInterval(tick, 1000);
+    // ===== Pager =====
+    function buildPager() {
+      const pager = $('#pager');
+      pager.innerHTML = '';
+      for (let i = 1; i <= TOTAL_QUESTIONS; i++) {
+        const b = document.createElement('button');
+        b.className = 'chip';
+        b.textContent = i;
+        b.dataset.q = i;
+        b.addEventListener('click', () => goTo(i));
+        pager.appendChild(b);
+      }
+      syncPager();
+    }
+    function syncPager() {
+      $$('#pager .chip').forEach(btn => {
+        const q = Number(btn.dataset.q);
+        btn.classList.toggle('active', q === current);
+        const answered = isAnswered(q);
+        btn.classList.toggle('answered', answered);
+      });
+      $('#attempted').textContent = `(${countAnswered()}/${TOTAL_QUESTIONS})`;
+    }
+    function goTo(n) {
+      current = Math.min(Math.max(1, n), TOTAL_QUESTIONS);
+      const anchor = document.getElementById((current <= 13 ? `qwrap-${current}` : `q${current}`));
+      if (anchor) anchor.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      syncPager();
+    }
+    // ===== Answers / storage =====
+    const KEY = 'ielts_chilli_peppers_v1';
+    function save() {
+      const data = {};
+      for (let i = 1; i <= 7; i++) {
+        const sel = $(`input[name="q${i}"]:checked`);
+        data[i] = sel ? sel.value : '';
+      }
+      for (let i = 8; i <= 13; i++) {
+        data[i] = $(`#q${i}`)?.value || '';
+      }
+      localStorage.setItem(KEY, JSON.stringify(data));
+    }
+    function load() {
+      try {
+        const data = JSON.parse(localStorage.getItem(KEY) || '{}');
+        for (let i = 1; i <= 7; i++) {
+          if (data[i]) {
+            const r = $(`input[name="q${i}"][value="${data[i]}"]`);
+            if (r) r.checked = true;
+          }
+        }
+        for (let i = 8; i <= 13; i++) {
+          const input = $(`#q${i}`);
+          if (data[i]) {
+            input.value = data[i];
+          }
+          updatePlaceholder(input);
+        }
+      } catch {}
+      syncPager();
+    }
+    function isAnswered(i) {
+      if (i <= 7) return !!$(`input[name="q${i}"]:checked`);
+      const v = $(`#q${i}`)?.value || '';
+      return v.trim() !== '';
+    }
+    function countAnswered() {
+      let c = 0; for (let i = 1; i <= TOTAL_QUESTIONS; i++) if (isAnswered(i)) c++; return c;
+    }
+    // ===== Submit / scoring =====
+    function norm(s) { return (s || '').trim().toLowerCase(); }
+    function submit() {
+      let score = 0; const rows = [];
+      $$('.question').forEach(q => q.classList.remove('correct','incorrect'));
+      for (let i = 1; i <= 7; i++) {
+        const picked = $(`input[name="q${i}"]:checked`);
+        const ans = picked ? picked.value : '';
+        const ok = ans === correctAnswers[i];
+        if (ok) score++;
+        const wrap = document.getElementById(`qwrap-${i}`);
+        wrap.classList.add(ok ? 'correct' : 'incorrect');
+        rows.push({ n: i, user: ans || 'Not answered', corr: correctAnswers[i], ok });
+      }
+      for (let i = 8; i <= 13; i++) {
+        const user = $(`#q${i}`).value || '';
+        const ok = norm(user) === norm(correctAnswers[i]);
+        if (ok) score++;
+        rows.push({ n: i, user: user || 'Not answered', corr: correctAnswers[i], ok });
+      }
+      $('#final-score').textContent = score;
+      $('#final-percentage').textContent = Math.round((score / TOTAL_QUESTIONS) * 100);
+      const details = rows.sort((a, b) => a.n - b.n).map(r => `
+        <div class="result-row ${r.ok ? 'ok' : 'ng'}">
+          <div class="rnum">Q${r.n}</div>
+          <div>Your answer: <strong>"${r.user}"</strong></div>
+          <div>Correct: <strong>${r.corr}</strong></div>
+        </div>`).join('');
+      $('#results-details').innerHTML = details;
+      $('#results-modal').classList.add('show');
+      save();
+      syncPager();
+    }
+    // ===== Highlighting System =====
+    let currentSelection = null;
+    let selectedHighlight = null;
+    let selectionTimeout = null;
+    const toolbar = document.getElementById('highlight-toolbar');
+    const highlightBtn = document.getElementById('highlight-btn');
+    const removeBtn = document.getElementById('remove-highlight-btn');
+    const clearAllBtn = document.getElementById('clear-all-btn');
+    toolbar.addEventListener('mousedown', (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+    });
+    document.addEventListener('mousedown', (e) => {
+      if (toolbar.contains(e.target) || e.target.classList.contains('highlight')) {
+        return;
+      }
+      const passageArea = document.getElementById('passage');
+      const questionsArea = document.getElementById('questions');
+      if (!passageArea.contains(e.target) && !questionsArea.contains(e.target)) {
+        hideToolbar();
+      }
+    });
+    document.addEventListener('mouseup', (e) => {
+      if (selectionTimeout) {
+        clearTimeout(selectionTimeout);
+      }
+      if (e.target.classList.contains('highlight')) {
+        selectedHighlight = e.target;
+        showToolbarForHighlight(e);
+        return;
+      }
+      const sel = window.getSelection();
+      if (sel.toString().trim() && document.getElementById('passage').contains(sel.anchorNode)) {
+        currentSelection = sel;
+        selectionTimeout = setTimeout(() => {
+          showToolbarForSelection(e);
+        }, 100);
+      }
+    });
+    function showToolbarForSelection(e) {
+      if (!currentSelection || !currentSelection.rangeCount) return;
+      const range = currentSelection.getRangeAt(0);
+      const rect = range.getBoundingClientRect();
+      if (rect.width === 0 || rect.height === 0) return;
+      toolbar.style.display = 'flex';
+      toolbar.style.top = (rect.top + window.scrollY - toolbar.offsetHeight - 8) + 'px';
+      toolbar.style.left = (rect.left + window.scrollX + rect.width / 2 - toolbar.offsetWidth / 2) + 'px';
+      highlightBtn.style.display = 'block';
+      removeBtn.style.display = 'none';
+    }
+    function showToolbarForHighlight(e) {
+      const rect = selectedHighlight.getBoundingClientRect();
+      toolbar.style.display = 'flex';
+      toolbar.style.top = (rect.top + window.scrollY - toolbar.offsetHeight - 8) + 'px';
+      toolbar.style.left = (rect.left + window.scrollX + rect.width / 2 - toolbar.offsetWidth / 2) + 'px';
+      highlightBtn.style.display = 'none';
+      removeBtn.style.display = 'block';
+    }
+    function hideToolbar() {
+      toolbar.style.display = 'none';
+      currentSelection = null;
+      selectedHighlight = null;
+    }
+    highlightBtn.addEventListener('click', () => {
+      if (currentSelection) {
+        const range = currentSelection.getRangeAt(0);
+        const span = document.createElement('span');
+        span.className = 'highlight';
+        span.textContent = currentSelection.toString();
+        range.deleteContents();
+        range.insertNode(span);
+        currentSelection.removeAllRanges();
+        hideToolbar();
+      }
+    });
+    removeBtn.addEventListener('click', () => {
+      if (selectedHighlight) {
+        const parent = selectedHighlight.parentNode;
+        parent.replaceChild(document.createTextNode(selectedHighlight.textContent), selectedHighlight);
+        hideToolbar();
+      }
+    });
+    clearAllBtn.addEventListener('click', () => {
+      const highlights = document.querySelectorAll('.highlight');
+      highlights.forEach(hl => {
+        const parent = hl.parentNode;
+        parent.replaceChild(document.createTextNode(hl.textContent), hl);
+      });
+      hideToolbar();
+    });
+    // ===== Resizer =====
+    let isResizing = false;
+    const resizer = $('#resizer');
+    resizer.addEventListener('mousedown', (e) => {
+      isResizing = true;
+      document.body.style.cursor = 'col-resize';
+      document.body.style.userSelect = 'none';
+      e.preventDefault();
+    });
+    document.addEventListener('mousemove', (e) => {
+      if (!isResizing) return;
+      const main = $('#main');
+      const left = $('#passage');
+      const right = $('#questions');
+      const totalWidth = main.offsetWidth;
+      const leftWidth = e.clientX - left.getBoundingClientRect().left;
+      const rightWidth = totalWidth - leftWidth - resizer.offsetWidth;
+      if (leftWidth > 200 && rightWidth > 200) {
+        left.style.flex = `0 0 ${leftWidth}px`;
+        right.style.flex = `0 0 ${rightWidth}px`;
+      }
+    });
+    document.addEventListener('mouseup', () => {
+      isResizing = false;
+      document.body.style.cursor = '';
+      document.body.style.userSelect = '';
+    });
+    // ===== Placeholder =====
+    function updatePlaceholder(input) {
+      if (input.value.trim()) {
+        input.placeholder = '';
+      } else {
+        input.placeholder = input.id.replace('q', '');
+      }
+    }
+    // ===== Event listeners =====
+    $('#pause-btn').addEventListener('click', () => {
+      isTimerRunning = !isTimerRunning;
+      $('#pause-btn').textContent = isTimerRunning ? '❚❚' : '▶';
+    });
+    $('#reset-btn').addEventListener('click', () => {
+      isTimerRunning = false;
+      timeRemaining = 60 * 60;
+      renderTimer();
+      $('#pause-btn').textContent = '▶';
+    });
+    $('#submit-btn').addEventListener('click', submit);
+    $('#close-modal').addEventListener('click', () => {
+      $('#results-modal').classList.remove('show');
+    });
+    $('#goto-btn').addEventListener('click', () => {
+      const n = Number($('#goto-input').value);
+      if (n >= 1 && n <= TOTAL_QUESTIONS) goTo(n);
+    });
+    $('#goto-input').addEventListener('keydown', (e) => {
+      if (e.key === 'Enter') $('#goto-btn').click();
+    });
+    $$('input[type="radio"]').forEach(r => {
+      r.addEventListener('change', () => { save(); syncPager(); });
+    });
+    $$('.gapline').forEach(inp => {
+      inp.addEventListener('input', () => { save(); syncPager(); });
+      inp.addEventListener('focus', () => inp.placeholder = '');
+      inp.addEventListener('blur', () => updatePlaceholder(inp));
+    });
+    // ===== Init =====
+    buildPager();
+    load();
+    renderTimer();
+  </script>
+</body>
+</html>

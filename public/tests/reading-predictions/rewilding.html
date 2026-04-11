@@ -1,0 +1,1054 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>IELTS Reading Test: Rewilding</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary: #4caf50;
+            --primary-light: #80e27e;
+            --secondary: #2e7d32;
+            --accent: #ff9800;
+            --text: #263238;
+            --text-light: #546e7a;
+            --bg: #f1f8e9;
+            --card-bg: #ffffff;
+            --shadow: rgba(76, 175, 80, 0.15);
+            --success: #66bb6a;
+            --warning: #ffa726;
+            --error: #ef5350;
+            
+            --day-bg: #f1f8e9;
+            --day-text: #263238;
+            --day-card: #ffffff;
+            
+            --night-bg: #1a1c1a;
+            --night-text: #e8f5e9;
+            --night-card: #2a2d2a;
+            
+            --sepia-bg: #f5f0e6;
+            --sepia-text: #4e4b45;
+            --sepia-card: #faf5eb;
+            
+            --transition: all 0.3s ease;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            transition: var(--transition);
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--bg);
+            color: var(--text);
+            line-height: 1.6;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        .theme-day {
+            --bg: var(--day-bg);
+            --text: var(--day-text);
+            --card-bg: var(--day-card);
+        }
+
+        .theme-night {
+            --bg: var(--night-bg);
+            --text: var(--night-text);
+            --card-bg: var(--night-card);
+        }
+
+        .theme-sepia {
+            --bg: var(--sepia-bg);
+            --text: var(--sepia-text);
+            --card-bg: var(--sepia-card);
+        }
+
+        header {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: white;
+            padding: 15px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 4px 12px var(--shadow);
+            z-index: 100;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-weight: 700;
+            font-size: 1.4rem;
+        }
+
+        .logo i {
+            color: var(--accent);
+        }
+
+        .header-controls {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .telegram-button {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            background: linear-gradient(135deg, #0088cc, #00a8ff);
+            color: white;
+            padding: 10px 16px;
+            border-radius: 50px;
+            text-decoration: none;
+            font-weight: 600;
+            box-shadow: 0 4px 10px rgba(0, 136, 204, 0.3);
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .telegram-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 14px rgba(0, 136, 204, 0.4);
+        }
+
+        .theme-selector {
+            display: flex;
+            gap: 8px;
+            background: rgba(255, 255, 255, 0.2);
+            padding: 6px;
+            border-radius: 50px;
+        }
+
+        .theme-button {
+            width: 36px;
+            height: 36px;
+            border: none;
+            border-radius: 50%;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.1rem;
+            background: rgba(255, 255, 255, 0.3);
+            color: white;
+        }
+
+        .theme-button:hover {
+            transform: scale(1.1);
+        }
+
+        .timer {
+            background: rgba(255, 255, 255, 0.2);
+            padding: 8px 16px;
+            border-radius: 50px;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .timer.warning {
+            animation: pulse 1s infinite;
+            background: rgba(255, 107, 107, 0.3);
+        }
+
+        @keyframes pulse {
+            0% { opacity: 1; }
+            50% { opacity: 0.7; }
+            100% { opacity: 1; }
+        }
+
+        .main-container {
+            display: flex;
+            flex: 1;
+            padding: 20px;
+            gap: 20px;
+            overflow: hidden;
+        }
+
+        .passage-container, .questions-container {
+            background-color: var(--card-bg);
+            border-radius: 16px;
+            padding: 25px;
+            box-shadow: 0 8px 20px var(--shadow);
+            overflow-y: auto;
+        }
+
+        .passage-container {
+            flex: 1.2;
+        }
+
+        .questions-container {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+        }
+
+        h2 {
+            color: var(--primary);
+            margin-bottom: 15px;
+            font-size: 1.8rem;
+        }
+
+        h3 {
+            color: var(--secondary);
+            margin: 20px 0 10px;
+            font-size: 1.4rem;
+        }
+
+        p {
+            margin-bottom: 15px;
+        }
+
+        .highlight-menu {
+            position: absolute;
+            background: var(--card-bg);
+            border-radius: 12px;
+            padding: 8px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.15);
+            z-index: 1000;
+            display: flex;
+            gap: 8px;
+            transform: translateY(-100%);
+        }
+
+        .highlight-menu button {
+            width: 36px;
+            height: 36px;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.1rem;
+            transition: transform 0.2s;
+        }
+
+        .highlight-menu button:hover {
+            transform: scale(1.1);
+        }
+
+        .highlight-yellow {
+            background-color: #ffeb3b;
+        }
+
+        .highlight-blue {
+            background-color: #2196f3;
+            color: white;
+        }
+
+        .question {
+            margin-bottom: 25px;
+            padding: 20px;
+            border-radius: 12px;
+            background-color: rgba(76, 175, 80, 0.05);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .question::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 5px;
+            height: 100%;
+            background: linear-gradient(to bottom, var(--primary), var(--secondary));
+        }
+
+        .question p {
+            margin-bottom: 10px;
+        }
+
+        .question select, .question input {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid rgba(76, 175, 80, 0.2);
+            border-radius: 10px;
+            background-color: var(--card-bg);
+            color: var(--text);
+            font-size: 1rem;
+            margin-top: 8px;
+        }
+
+        .question select:focus, .question input:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(76, 175, 80, 0.2);
+        }
+
+        .options-container {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            margin-top: 10px;
+        }
+
+        .option {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 10px;
+            border-radius: 8px;
+            background-color: rgba(76, 175, 80, 0.05);
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+
+        .option:hover {
+            background-color: rgba(76, 175, 80, 0.1);
+        }
+
+        .option input[type="radio"] {
+            margin: 0;
+            width: 18px;
+            height: 18px;
+        }
+
+        .submit-btn {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: white;
+            border: none;
+            padding: 16px;
+            border-radius: 12px;
+            font-size: 1.2rem;
+            font-weight: 600;
+            cursor: pointer;
+            margin-top: 20px;
+            box-shadow: 0 5px 15px var(--shadow);
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .submit-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px var(--shadow);
+        }
+
+        .result-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: var(--card-bg);
+            z-index: 1000;
+            overflow-y: auto;
+            padding: 30px;
+            display: none;
+        }
+
+        .result-header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .score {
+            font-size: 2.5rem;
+            font-weight: 800;
+            margin: 20px 0;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .answer-feedback {
+            margin-bottom: 20px;
+            padding: 20px;
+            border-radius: 12px;
+        }
+
+        .correct {
+            background-color: rgba(102, 187, 106, 0.15);
+            border-left: 5px solid var(--success);
+        }
+
+        .incorrect {
+            background-color: rgba(239, 83, 80, 0.15);
+            border-left: 5px solid var(--error);
+        }
+
+        .close-results {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 50px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            display: block;
+            margin: 30px auto;
+            box-shadow: 0 5px 15px var(--shadow);
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .close-results:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px var(--shadow);
+        }
+
+        @media (max-width: 968px) {
+            .main-container {
+                flex-direction: column;
+            }
+            
+            .passage-container, .questions-container {
+                margin-bottom: 20px;
+            }
+            
+            header {
+                flex-wrap: wrap;
+            }
+            
+            .header-controls {
+                flex-wrap: wrap;
+                justify-content: center;
+                margin-top: 10px;
+            }
+        }
+
+        @media (max-width: 576px) {
+            .header-controls {
+                flex-direction: column;
+                align-items: stretch;
+            }
+            
+            .theme-selector {
+                justify-content: center;
+            }
+            
+            .telegram-button {
+                justify-content: center;
+            }
+        }
+
+        /* Custom scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: rgba(76, 175, 80, 0.1);
+            border-radius: 10px;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: var(--primary-light);
+            border-radius: 10px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: var(--primary);
+        }
+
+        /* Floating elements for decoration */
+        .floating {
+            position: absolute;
+            border-radius: 50%;
+            opacity: 0.1;
+            z-index: -1;
+        }
+
+        .float-1 {
+            width: 200px;
+            height: 200px;
+            background: var(--primary);
+            top: 10%;
+            left: 5%;
+            animation: float 15s infinite ease-in-out;
+        }
+
+        .float-2 {
+            width: 150px;
+            height: 150px;
+            background: var(--secondary);
+            bottom: 15%;
+            right: 5%;
+            animation: float 12s infinite ease-in-out reverse;
+        }
+
+        .float-3 {
+            width: 100px;
+            height: 100px;
+            background: var(--accent);
+            top: 50%;
+            left: 80%;
+            animation: float 10s infinite ease-in-out;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0) rotate(0deg); }
+            50% { transform: translateY(-20px) rotate(10deg); }
+        }
+    </style>
+</head>
+<body class="theme-day">
+    <div class="floating float-1"></div>
+    <div class="floating float-2"></div>
+    <div class="floating float-3"></div>
+
+    <header>
+        <div class="logo">
+            <i class="fas fa-leaf"></i>
+            <span>IELTS Reading: Rewilding</span>
+        </div>
+        <div class="header-controls">
+            <div class="theme-selector">
+                <button class="theme-button" id="day-theme" title="Day Mode"><i class="fas fa-sun"></i></button>
+                <button class="theme-button" id="night-theme" title="Night Mode"><i class="fas fa-moon"></i></button>
+                <button class="theme-button" id="sepia-theme" title="Sepia Mode"><i class="fas fa-feather"></i></button>
+            </div>
+            
+            <div class="timer" id="timer">
+                <i class="fas fa-clock"></i>
+                <span>20:00</span>
+            </div>
+        </div>
+    </header>
+
+    <div class="main-container">
+        <div class="passage-container" id="passage">
+            <h2>READING PASSAGE 3</h2>
+            <p><em>You should spend about 20 minutes on Questions 27-40, which are based on Reading Passage 3 below.</em></p>
+            
+            <h3>REWILDING</h3>
+            <p><em>Ecologist Derek Gow looks at the challenges of 'rewilding' – restoring areas of land to the wild and reintroducing their original animal species</em></p>
+            
+            <p>In Holland they have developed a creative landscape philosophy called 'New Nature', and the most iconic illustration of this is the site called the Oostvaardersplassen, near Amsterdam. Here, throughout 6,000 enclosed hectares, feral Heck bulls excavate amphibian ponds with their hooves and horns, while stags and stallions battle fiercely for possession of herds of females. These creatures present a living vision that many 'rewilders' adore. Although this project may present a primeval impression, in reality it is a completely artificial though courageous creation, limited by fences, budgets, an adjacent main railway line, surrounding land users and fickle political support. Less than a lifetime ago the landscape these 'wild' herbivores now occupy was the bed of the North Sea.</p>
+            
+            <p>Despite the contention that surrounds such projects, the Oostvaardersplassen has produced some inspirational results. Spoonbills have returned to breed in ever increasing numbers, creating a surplus population which has overlapped back into Britain. Sea eagles have raised their first nestlings in centuries, nourished by the ample supply of deer that the site affords. Projects of this type, which restore key species or re-engineer landscapes to allow natural processes such as seasonal flooding or forest fires to reoccur, have demonstrated that when nature is given free rein, the results which arise can be truly spectacular. Are we, however, prepared to live in landscapes where these processes, even if appropriately modified, become part of our own experience?</p>
+            
+            <p>While space is without a doubt one of the biggest obstacles facing rewilders, a range of structural, social and cultural issues can also conspire to hinder change. As an example, I have been involved with the restoration of the Eurasian beaver – a large rodent that builds complex structures from wood, stones and mud across rivers – in Britain since the early 1990s. Although they once had a world range which extended from Britain to China and numbered tens of millions, beavers were hunted virtually to extinction by humans as a result of an insatiable demand for their fur, scent glands and meat. They have been widely reintroduced throughout much of their former European range as an awareness of their critical function in the creation of wetland habitats has developed. Beaver-generated landscapes also play a significant part in the retention and purification of water.</p>
+            
+            <p>There is an abundance of entirely suitable beaver habitat available in Britain, and despite the fact that occasional conflicts will arise between beavers' engineering activities and human land use, European experience again demonstrates quite ably that these conflicts are manageable. Despite this well-established knowledge, the restoration of beavers in Britain has proven to be a pitifully slow process. Political apathy and indifference have coupled with the total lack of knowledge of opponents who simply want no change to the status quo. The official trials in Scotland and England have focused on the creation of tiny populations which remain extremely fragile.</p>
+            
+            <p>If a species as benevolent as the beaver presents a significant challenge, then how much more difficult will it be to restore predators? While science and experience may dictate that wolves pose no significant threat to humans, their tentative re-colonisation of many western European countries over the course of the last few decades has often evoked a primal response. Farmers' groups have trapped them in pits in France and burnt them to death; hunters have poisoned them for killing 'their' deer; kindergarten teachers have implored forest authorities to remove them from the landscape to ensure that this medieval menace does not lurk in the dark when their tiny children go to school on a winter's morning. Attitude change, it would seem, is a slow and painful process, one not easily turned round by knowledge.</p>
+            
+            <p>Any start to rewilding is therefore likely to be humble. Despite a measured approach, it is probable that fishermen and their strident support groups may not welcome the addition of the pelican, a 15kg water bird, to the large number of predators which they already detest. The scientific community may dislike the pragmatism required on a semi-industrial scale to restore small species to remake the base of essential food chains if newly available habitats emerge. Many farmers, despite the sums they would be paid, will not wish to see their once-drained bogs rehydrated, their dead animals consumed by sea eagles or their pastures revert to scrub.</p>
+            
+            <p>In the end it comes down to changing patterns. We have moulded the landscapes of the world as a species to suit our own passing needs, predilections and pleasures. While change is commonly opposed on whatever basis arises, change is nevertheless a constant in life. It is likely that 'rewilding' or 'New Nature' – call it what you will – could become a base movement which affords a fresh opportunity to approach nature conservation in a fashion which will, over time, be all the more rewarding for the surprises it presents.</p>
+        </div>
+
+        <div class="questions-container">
+            <div class="question">
+                <p><strong>Questions 27 – 31</strong></p>
+                <p>Choose the correct letter, A, B, C or D.</p>
+                
+                <p>27. What does the writer say about the Oostvaardersplassen in the first paragraph?</p>
+                <div class="options-container">
+                    <label class="option">
+                        <input type="radio" name="q27" value="A">
+                        <span>A It is not a typical example of a successful rewilding project.</span>
+                    </label>
+                    <label class="option">
+                        <input type="radio" name="q27" value="B">
+                        <span>B It is not an ecologically sustainable project in the long term.</span>
+                    </label>
+                    <label class="option">
+                        <input type="radio" name="q27" value="C">
+                        <span>C It is not a true reconstruction of how the area originally was.</span>
+                    </label>
+                    <label class="option">
+                        <input type="radio" name="q27" value="D">
+                        <span>D It is not faithful to the principles of its underlying philosophy.</span>
+                    </label>
+                </div>
+                
+                <p>28. What is the writer's attitude towards the Oostvaardersplassen?</p>
+                <div class="options-container">
+                    <label class="option">
+                        <input type="radio" name="q28" value="A">
+                        <span>A admiration for what it has achieved</span>
+                    </label>
+                    <label class="option">
+                        <input type="radio" name="q28" value="B">
+                        <span>B disappointment over its inevitable limitations</span>
+                    </label>
+                    <label class="option">
+                        <input type="radio" name="q28" value="C">
+                        <span>C optimism that the project will be imitated elsewhere</span>
+                    </label>
+                    <label class="option">
+                        <input type="radio" name="q28" value="D">
+                        <span>D concern about the choice of species introduced there</span>
+                    </label>
+                </div>
+                
+                <p>29. What point about beavers is emphasised in the third paragraph?</p>
+                <div class="options-container">
+                    <label class="option">
+                        <input type="radio" name="q29" value="A">
+                        <span>A Their numbers are falling dramatically.</span>
+                    </label>
+                    <label class="option">
+                        <input type="radio" name="q29" value="B">
+                        <span>B They play a key role within local ecosystems.</span>
+                    </label>
+                    <label class="option">
+                        <input type="radio" name="q29" value="C">
+                        <span>C They require a very specific kind of habitat in order to survive.</span>
+                    </label>
+                    <label class="option">
+                        <input type="radio" name="q29" value="D">
+                        <span>D There are environmental problems associated with their reintroduction.</span>
+                    </label>
+                </div>
+                
+                <p>30. The writer refers to beavers in the fourth paragraph in order to provide an</p>
+                <div class="options-container">
+                    <label class="option">
+                        <input type="radio" name="q30" value="A">
+                        <span>A indication of the likely resistance to the reintroduction of other species.</span>
+                    </label>
+                    <label class="option">
+                        <input type="radio" name="q30" value="B">
+                        <span>B illustration of a species that urgently needs to be restored to its habitat.</span>
+                    </label>
+                    <label class="option">
+                        <input type="radio" name="q30" value="C">
+                        <span>C example of some lessons learnt about how not to try to reintroduce species.</span>
+                    </label>
+                    <label class="option">
+                        <input type="radio" name="q30" value="D">
+                        <span>D example of a species whose restoration has faced more problems than most.</span>
+                    </label>
+                </div>
+                
+                <p>31. By putting inverted commas ' ' around the word 'their' in line 49, the writer suggests that</p>
+                <div class="options-container">
+                    <label class="option">
+                        <input type="radio" name="q31" value="A">
+                        <span>A he has some sympathy for the hunters' situation.</span>
+                    </label>
+                    <label class="option">
+                        <input type="radio" name="q31" value="B">
+                        <span>B there is some doubt as to who the deer belong to.</span>
+                    </label>
+                    <label class="option">
+                        <input type="radio" name="q31" value="C">
+                        <span>C restoration of wolves caused harm to local wildlife.</span>
+                    </label>
+                    <label class="option">
+                        <input type="radio" name="q31" value="D">
+                        <span>D the hunters have no right to claim ownership of the deer.</span>
+                    </label>
+                </div>
+            </div>
+
+            <div class="question">
+                <p><strong>Questions 32 – 36</strong></p>
+                <p>Complete the summary using the list of words, A-H, below.</p>
+                <p>Write the correct letter, A-H, in boxes 32-36 below.</p>
+                
+                <p><strong>Problems of Rewilding Projects</strong></p>
+                <p>Rewilding projects have to deal with numerous challenges. For example, the reintroduction of beavers to Britain has faced 
+                <select id="q32">
+                    <option value="">Select</option>
+                    <option value="A">A advice</option>
+                    <option value="B">B ignorance</option>
+                    <option value="C">C danger</option>
+                    <option value="D">D wildlife</option>
+                    <option value="E">E damage</option>
+                    <option value="F">F prejudice</option>
+                    <option value="G">G evidence</option>
+                    <option value="H">H disinterest</option>
+                </select>
+                from government ministers together with 
+                <select id="q33">
+                    <option value="">Select</option>
+                    <option value="A">A advice</option>
+                    <option value="B">B ignorance</option>
+                    <option value="C">C danger</option>
+                    <option value="D">D wildlife</option>
+                    <option value="E">E damage</option>
+                    <option value="F">F prejudice</option>
+                    <option value="G">G evidence</option>
+                    <option value="H">H disinterest</option>
+                </select>
+                on the part of opponents to the scheme. Where wolves have been reintroduced in western Europe, there has been widespread 
+                <select id="q34">
+                    <option value="">Select</option>
+                    <option value="A">A advice</option>
+                    <option value="B">B ignorance</option>
+                    <option value="C">C danger</option>
+                    <option value="D">D wildlife</option>
+                    <option value="E">E damage</option>
+                    <option value="F">F prejudice</option>
+                    <option value="G">G evidence</option>
+                    <option value="H">H disinterest</option>
+                </select>
+                against these animals among local people, despite clear 
+                <select id="q35">
+                    <option value="">Select</option>
+                    <option value="A">A advice</option>
+                    <option value="B">B ignorance</option>
+                    <option value="C">C danger</option>
+                    <option value="D">D wildlife</option>
+                    <option value="E">E damage</option>
+                    <option value="F">F prejudice</option>
+                    <option value="G">G evidence</option>
+                    <option value="H">H disinterest</option>
+                </select>
+                that the species poses virtually no 
+                <select id="q36">
+                    <option value="">Select</option>
+                    <option value="A">A advice</option>
+                    <option value="B">B ignorance</option>
+                    <option value="C">C danger</option>
+                    <option value="D">D wildlife</option>
+                    <option value="E">E damage</option>
+                    <option value="F">F prejudice</option>
+                    <option value="G">G evidence</option>
+                    <option value="H">H disinterest</option>
+                </select>
+                to them.</p>
+            </div>
+
+            <div class="question">
+                <p><strong>Questions 37 – 40</strong></p>
+                <p>Do the following statements agree with the claims of the writer in the text?</p>
+                <p>In boxes 37-40 below, write</p>
+                
+                <p>37. Beaver restoration in Britain is being held back by a lack of appropriate land.</p>
+                <select id="q37">
+                    <option value="">Select</option>
+                    <option value="YES">YES</option>
+                    <option value="NO">NO</option>
+                    <option value="NOT GIVEN">NOT GIVEN</option>
+                </select>
+                
+                <p>38. Scientists have tried to persuade local residents of the benefits of restoring wolves.</p>
+                <select id="q38">
+                    <option value="">Select</option>
+                    <option value="YES">YES</option>
+                    <option value="NO">NO</option>
+                    <option value="NOT GIVEN">NOT GIVEN</option>
+                </select>
+                
+                <p>39. Financial incentives will encourage most farmers to welcome rewilding on their land.</p>
+                <select id="q39">
+                    <option value="">Select</option>
+                    <option value="YES">YES</option>
+                    <option value="NO">NO</option>
+                    <option value="NOT GIVEN">NOT GIVEN</option>
+                </select>
+                
+                <p>40. The results of rewilding will be unpredictable.</p>
+                <select id="q40">
+                    <option value="">Select</option>
+                    <option value="YES">YES</option>
+                    <option value="NO">NO</option>
+                    <option value="NOT GIVEN">NOT GIVEN</option>
+                </select>
+            </div>
+
+            <button class="submit-btn" id="submit-btn">
+                <i class="fas fa-paper-plane"></i> Submit Answers
+            </button>
+        </div>
+    </div>
+
+    <div class="result-container" id="result-container">
+        <div class="result-header">
+            <h2>Test Results</h2>
+            <div class="score" id="score"></div>
+        </div>
+        
+        <div id="answer-feedback"></div>
+        
+        <button class="close-results" id="close-results">
+            <i class="fas fa-times"></i> Close Results
+        </button>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Theme switching
+            document.getElementById('day-theme').addEventListener('click', function() {
+                document.body.className = 'theme-day';
+            });
+            
+            document.getElementById('night-theme').addEventListener('click', function() {
+                document.body.className = 'theme-night';
+            });
+            
+            document.getElementById('sepia-theme').addEventListener('click', function() {
+                document.body.className = 'theme-sepia';
+            });
+            
+            // Timer functionality
+            const timerElement = document.getElementById('timer');
+            let timeLeft = 20 * 60; // 20 minutes in seconds
+            let timerInterval;
+            
+            function startTimer() {
+                timerInterval = setInterval(function() {
+                    timeLeft--;
+                    
+                    const minutes = Math.floor(timeLeft / 60);
+                    const seconds = timeLeft % 60;
+                    
+                    timerElement.querySelector('span').textContent = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+                    
+                    if (timeLeft === 5 * 60) { // 5 minutes left
+                        timerElement.classList.add('warning');
+                    }
+                    
+                    if (timeLeft <= 0) {
+                        clearInterval(timerInterval);
+                        submitAnswers();
+                    }
+                }, 1000);
+            }
+            
+            startTimer();
+            
+            // Text highlighting functionality
+            const passageElement = document.getElementById('passage');
+            let highlightMenu = null;
+            let currentSelection = null;
+            
+            passageElement.addEventListener('mouseup', function(e) {
+                const selection = window.getSelection();
+                if (!selection.isCollapsed) {
+                    currentSelection = selection;
+                    showHighlightMenu(e);
+                }
+            });
+            
+            document.addEventListener('mousedown', function(e) {
+                if (highlightMenu && !highlightMenu.contains(e.target)) {
+                    hideHighlightMenu();
+                }
+            });
+            
+            function showHighlightMenu(e) {
+                hideHighlightMenu();
+                
+                highlightMenu = document.createElement('div');
+                highlightMenu.className = 'highlight-menu';
+                
+                const yellowBtn = document.createElement('button');
+                yellowBtn.classList.add('highlight-yellow');
+                yellowBtn.innerHTML = '<i class="fas fa-highlighter"></i>';
+                yellowBtn.title = 'Yellow Highlight';
+                yellowBtn.addEventListener('click', function() {
+                    highlightSelection('highlight-yellow');
+                });
+                
+                const blueBtn = document.createElement('button');
+                blueBtn.classList.add('highlight-blue');
+                blueBtn.innerHTML = '<i class="fas fa-highlighter"></i>';
+                blueBtn.title = 'Blue Highlight';
+                blueBtn.addEventListener('click', function() {
+                    highlightSelection('highlight-blue');
+                });
+                
+                const clearBtn = document.createElement('button');
+                clearBtn.innerHTML = '<i class="fas fa-eraser"></i>';
+                clearBtn.title = 'Clear Highlight';
+                clearBtn.addEventListener('click', function() {
+                    removeHighlight();
+                });
+                
+                highlightMenu.appendChild(yellowBtn);
+                highlightMenu.appendChild(blueBtn);
+                highlightMenu.appendChild(clearBtn);
+                
+                document.body.appendChild(highlightMenu);
+                
+                // Position the menu near the selection
+                const rect = currentSelection.getRangeAt(0).getBoundingClientRect();
+                highlightMenu.style.top = `${rect.top + window.scrollY - 50}px`;
+                highlightMenu.style.left = `${rect.left + window.scrollX}px`;
+            }
+            
+            function hideHighlightMenu() {
+                if (highlightMenu) {
+                    document.body.removeChild(highlightMenu);
+                    highlightMenu = null;
+                }
+            }
+            
+            function highlightSelection(className) {
+                if (currentSelection && currentSelection.rangeCount > 0) {
+                    const range = currentSelection.getRangeAt(0);
+                    const selectedText = range.toString();
+                    
+                    if (selectedText.trim().length > 0) {
+                        const span = document.createElement('span');
+                        span.className = className;
+                        
+                        try {
+                            range.surroundContents(span);
+                        } catch (e) {
+                            // If surrounding fails, try extracting and inserting
+                            range.extractContents();
+                            span.appendChild(document.createTextNode(selectedText));
+                            range.insertNode(span);
+                        }
+                    }
+                }
+                
+                hideHighlightMenu();
+                window.getSelection().removeAllRanges();
+            }
+            
+            function removeHighlight() {
+                if (currentSelection && currentSelection.rangeCount > 0) {
+                    const range = currentSelection.getRangeAt(0);
+                    const parent = range.startContainer.parentNode;
+                    
+                    if (parent.classList.contains('highlight-yellow') || 
+                        parent.classList.contains('highlight-blue')) {
+                        const text = parent.textContent;
+                        const textNode = document.createTextNode(text);
+                        parent.parentNode.replaceChild(textNode, parent);
+                    }
+                }
+                
+                hideHighlightMenu();
+                window.getSelection().removeAllRanges();
+            }
+            
+            // Answer submission and evaluation
+            document.getElementById('submit-btn').addEventListener('click', submitAnswers);
+            document.getElementById('close-results').addEventListener('click', function() {
+                document.getElementById('result-container').style.display = 'none';
+            });
+            
+            function submitAnswers() {
+                clearInterval(timerInterval);
+                
+                // Correct answers
+                const correctAnswers = {
+                    q27: 'C',
+                    q28: 'A',
+                    q29: 'B',
+                    q30: 'A',
+                    q31: 'D',
+                    q32: 'H',
+                    q33: 'B',
+                    q34: 'F',
+                    q35: 'G',
+                    q36: 'C',
+                    q37: 'NO',
+                    q38: 'NOT GIVEN',
+                    q39: 'NO',
+                    q40: 'YES'
+                };
+                
+                // User answers
+                const userAnswers = {};
+                
+                // Get answers for multiple choice questions
+                for (let i = 27; i <= 31; i++) {
+                    const selectedOption = document.querySelector(`input[name="q${i}"]:checked`);
+                    userAnswers[`q${i}`] = selectedOption ? selectedOption.value : '';
+                }
+                
+                // Get answers for dropdown questions
+                for (let i = 32; i <= 40; i++) {
+                    const element = document.getElementById(`q${i}`);
+                    if (element) {
+                        userAnswers[`q${i}`] = element.value;
+                    }
+                }
+                
+                // Calculate score
+                let score = 0;
+                const totalQuestions = Object.keys(correctAnswers).length;
+                
+                for (const question in correctAnswers) {
+                    if (userAnswers[question] === correctAnswers[question]) {
+                        score++;
+                    }
+                }
+                
+                // Display results
+                document.getElementById('score').textContent = `Score: ${score}/${totalQuestions}`;
+                
+                const feedbackContainer = document.getElementById('answer-feedback');
+                feedbackContainer.innerHTML = '';
+                
+                for (const question in correctAnswers) {
+                    const isCorrect = userAnswers[question] === correctAnswers[question];
+                    const feedbackElement = document.createElement('div');
+                    feedbackElement.className = `answer-feedback ${isCorrect ? 'correct' : 'incorrect'}`;
+                    
+                    let questionText = '';
+                    if (question.startsWith('q2') && parseInt(question.substring(1)) <= 31) {
+                        // Questions 27-31
+                        const num = parseInt(question.substring(1));
+                        questionText = `Question ${num}: `;
+                        const questions = [
+                            "What does the writer say about the Oostvaardersplassen in the first paragraph?",
+                            "What is the writer's attitude towards the Oostvaardersplassen?",
+                            "What point about beavers is emphasised in the third paragraph?",
+                            "The writer refers to beavers in the fourth paragraph in order to provide an",
+                            "By putting inverted commas ' ' around the word 'their' in line 49, the writer suggests that"
+                        ];
+                        questionText += questions[num - 27];
+                    } else if (question.startsWith('q3') && parseInt(question.substring(1)) <= 36) {
+                        // Questions 32-36
+                        const num = parseInt(question.substring(1));
+                        questionText = `Question ${num}: Summary completion`;
+                    } else {
+                        // Questions 37-40
+                        const num = parseInt(question.substring(1));
+                        questionText = `Question ${num}: `;
+                        const questions = [
+                            "Beaver restoration in Britain is being held back by a lack of appropriate land.",
+                            "Scientists have tried to persuade local residents of the benefits of restoring wolves.",
+                            "Financial incentives will encourage most farmers to welcome rewilding on their land.",
+                            "The results of rewilding will be unpredictable."
+                        ];
+                        questionText += questions[num - 37];
+                    }
+                    
+                    feedbackElement.innerHTML = `
+                        <p><strong>${questionText}</strong></p>
+                        <p>Your answer: ${userAnswers[question] || 'No answer'}</p>
+                        <p>Correct answer: ${correctAnswers[question]}</p>
+                        ${!isCorrect ? `<p>Explanation: ${getExplanation(question)}</p>` : ''}
+                    `;
+                    
+                    feedbackContainer.appendChild(feedbackElement);
+                }
+                
+                document.getElementById('result-container').style.display = 'block';
+            }
+            
+            function getExplanation(questionId) {
+                const explanations = {
+                    q27: "The text states that the Oostvaardersplassen is 'a completely artificial though courageous creation' and that 'less than a lifetime ago the landscape these 'wild' herbivores now occupy was the bed of the North Sea', indicating it's not a true reconstruction.",
+                    q28: "The writer mentions 'inspirational results' and 'spectacular' outcomes, showing admiration for what the project has achieved.",
+                    q29: "The text emphasizes beavers' 'critical function in the creation of wetland habitats' and their role in 'retention and purification of water'.",
+                    q30: "The writer uses beavers as an example to show the difficulties in reintroduction, suggesting that other species would face similar or greater resistance.",
+                    q31: "The inverted commas around 'their' suggest the writer questions the hunters' claim of ownership over the deer.",
+                    q32: "The text mentions 'political apathy and indifference', which corresponds to 'disinterest'.",
+                    q33: "The text mentions 'total lack of knowledge of opponents', which corresponds to 'ignorance'.",
+                    q34: "The negative reactions to wolves described in the text represent 'prejudice' against these animals.",
+                    q35: "The text mentions that 'science and experience may dictate that wolves pose no significant threat', indicating there is 'evidence'.",
+                    q36: "The text states that wolves pose 'no significant threat to humans', meaning no 'danger'.",
+                    q37: "The text states 'There is an abundance of entirely suitable beaver habitat available in Britain', contradicting the statement.",
+                    q38: "The text doesn't mention scientists trying to persuade local residents about wolf restoration.",
+                    q39: "The text states 'Many farmers, despite the sums they would be paid, will not wish to see...', indicating financial incentives won't work for most.",
+                    q40: "The text mentions 'the surprises it presents', indicating results will be unpredictable."
+                };
+                
+                return explanations[questionId] || "No explanation available.";
+            }
+        });
+    </script>
+</body>
+</html>

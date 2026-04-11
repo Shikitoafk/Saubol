@@ -1,0 +1,331 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Reading Passage 1 — Roman shipbuilding and navigation</title>
+<style>
+  :root{--brand:#2563eb;--ink:#111827;--bg:#f7f7fb;--ok:#16a34a;--bad:#dc2626;--muted:#6b7280}
+  *{box-sizing:border-box}
+  body{margin:0;font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;background:var(--bg);color:#111}
+  .container{display:flex;gap:20px;max-width:1200px;margin:0 auto;padding:20px 20px 96px}
+  .card{background:#fff;border-radius:12px;box-shadow:0 4px 14px rgba(0,0,0,.08);padding:20px;overflow:auto;max-height:90vh}
+  .passage{flex:1}
+  .questions{flex:1}
+  h1{color:var(--ink);border-bottom:2px solid var(--brand);padding-bottom:10px;margin:0 0 14px}
+  h2{color:var(--brand);margin:22px 0 10px}
+  h3{margin:8px 0 0}
+  .muted{color:var(--muted)}
+
+  /* Timer */
+  .timerWrap{position:fixed;top:16px;right:16px;display:flex;align-items:center;gap:8px;z-index:10}
+  .timer{background:var(--brand);color:#fff;padding:10px 14px;border-radius:8px;font-weight:700}
+  .tbtn{border:1px solid #e5e7eb;background:#fff;color:#111;padding:8px 10px;border-radius:8px;cursor:pointer}
+
+  /* Questions */
+  .qsection{margin:14px 0 6px}
+  .qblock{padding:14px;border:1px solid #e5e7eb;border-radius:12px;margin:12px 0}
+  .qhead{font-weight:600;margin-bottom:8px}
+  .options{margin-top:8px}
+  .options label{display:block;margin:6px 0}
+  select,input[type="text"]{padding:8px;border-radius:8px;border:1px solid #e5e7eb;width:100%;max-width:520px}
+  .submit{background:var(--brand);color:#fff;border:0;padding:12px 18px;border-radius:8px;cursor:pointer;font-size:16px;margin-top:16px}
+  .submit:hover{filter:brightness(.95)}
+
+  /* Results */
+  .results{display:none;margin-top:18px;background:#f8f9fa;border-radius:10px;padding:16px}
+  .results ul{list-style:none;padding:0;margin:8px 0 0}
+  .results li{margin:6px 0;padding:8px;border-radius:8px}
+  .results li.ok{background:#ecfdf5;color:#065f46}
+  .results li.bad{background:#fef2f2;color:#991b1b}
+  .results .meta{font-size:13px;color:var(--muted)}
+
+  /* Footer chips */
+  .footerNav{position:fixed;left:0;right:0;bottom:0;background:#fff;border-top:1px solid #e5e7eb;padding:10px 12px;display:flex;flex-wrap:wrap;gap:8px;align-items:center;z-index:9}
+  .chip{border:1px solid #d1d5db;background:#fff;color:#111;padding:6px 10px;border-radius:999px;cursor:pointer;font-size:14px}
+  .chip.answered{border-color:#9ca3af;background:#f3f4f6}
+
+  .summary-box{background:#f8f9fa;padding:20px;border-radius:8px;margin:15px 0;border-left:4px solid var(--brand)}
+</style>
+</head>
+<body>
+  <div class="timerWrap">
+    <div class="timer" id="timer">20:00</div>
+    <button class="tbtn" id="pauseBtn">⏸️ Pause</button>
+    <button class="tbtn" id="resumeBtn" disabled>▶️ Resume</button>
+  </div>
+
+  <div class="container">
+    <div class="card passage">
+      <h1>Reading Passage 1</h1>
+      <div class="muted">You should spend about 20 minutes on Questions 1–13, which are based on Reading Passage 1 below.</div>
+
+      <h2>Roman shipbuilding and navigation</h2>
+
+      <p>Shipbuilding today is based on science and ships are built using computers and sophisticated tools. Shipbuilding in ancient Rome, however, was more of an art relying on estimation, inherited techniques and personal experience. The Romans were not traditionally sailors but mostly land-based people, who learned to build ships from the people that they conquered, namely the Greeks and the Egyptians.</p>
+
+      <p>There are a few surviving written documents that give descriptions and representations of ancient Roman ships, including the sails and rigging. Excavated vessels also provide some clues about ancient shipbuilding techniques. Studies of these have taught us that ancient Roman shipbuilders built the outer hull first, then proceeded with the frame and the rest of the ship. Planks used to build the outer hull were initially sewn together. Starting from c. 6th century BCE, they were fixed using a method called mortise and tenon, whereby one plank locked into another without the need for stitching. Then in the first centuries of the current era, Mediterranean shipbuilders shifted to another shipbuilding method, still in use today, which consisted of building the frame first and then proceeding with the hull and the other components of the ship. This method was more systematic and dramatically shortened ship construction times. The ancient Romans built large merchant ships and warships whose size and technology were unequalled until the 16th century CE.</p>
+
+      <p>Warships were built to be lightweight and very speedy. They had to be able to sail near the coast, which is why they had no ballast or excess load and were built with a long, narrow hull. They did not sink when damaged and often would lie crippled on the sea's surface following naval battles. They had a bronze battering ram, which was used to pierce the timber hulls or break the oars of enemy vessels. Warships used both wind (sails) and human power (oarsmen) and were therefore very fast. Eventually, Rome's navy became the largest and most powerful in the Mediterranean, and the Romans had control over what they therefore called <em>Mare Nostrum</em> meaning 'our sea'.</p>
+
+      <p>There were many kinds of warship. The 'trireme' was the dominant warship from the 7th to 4th century BCE. It had rowers in the top, middle and lower levels, and approximately 50 rowers in each bank. The rowers at the bottom had the most uncomfortable position as they were under the other rowers and were exposed to the water entering through the oar-holes. It is worth noting that contrary to popular perception, rowers were not slaves but mostly Roman citizens enrolled in the military. The trireme was superseded by larger ships with even more rowers.</p>
+
+      <p>Merchant ships were built to transport lots of cargo over long distances and at a reasonable cost. They had a wider hull, double planking and a solid interior for added stability. Unlike warships, their V-shaped hull was deep underwater, meaning that they could not sail too close to the coast. They usually had two huge side rudders located off the stern and controlled by a small tiller bar connected to a system of cables. They had from one to three masts with large square sails and a small triangular sail at the bow. Just like warships, merchant ships used oarsmen, but coordinating the hundreds of rowers in both types of ship was not an easy task. In order to assist them, music would be played on an instrument, and oars would then keep time with this.</p>
+
+      <p>The cargo on merchant ships included raw materials (e.g. iron bars, copper, marble and granite), and agricultural products (e.g. grain from Egypt's Nile valley). During the Empire, Rome was a huge city by ancient standards of about one million inhabitants. Goods from all over the world would come to the city through the port of Pozzuoli situated west of the bay of Naples in Italy and through the gigantic port of Ostia situated at the mouth of the Tiber River. Large merchant ships would approach the destination port and, just like today, be intercepted by a number of towboats that would drag them to the quay.</p>
+
+      <p>The time of travel along the many sailing routes could vary widely. Navigation in ancient Rome did not rely on sophisticated instruments such as compasses but on experience, local knowledge and observation of natural phenomena. In conditions of good visibility, seamen in the Mediterranean often had the mainland or islands in sight, which greatly facilitated navigation. They sailed by noting their position relative to a succession of recognisable landmarks. When weather conditions were not good or where land was no longer visible, Roman mariners estimated directions from the pole star or, with less accuracy, from the Sun at noon. They also estimated directions relative to the wind and swell. Overall, shipping in ancient Roman times resembled shipping today with large vessels regularly crossing the seas and bringing supplies from their Empire.</p>
+    </div>
+
+    <div class="card questions">
+      <h1>Questions</h1>
+      <div id="qroot"></div>
+      <button class="submit" id="submitBtn">Submit Answers</button>
+      <div class="results" id="results">
+        <h2>Your Results</h2>
+        <div id="score" class="meta"></div>
+        <ul id="answers"></ul>
+      </div>
+    </div>
+  </div>
+
+  <div class="footerNav" id="footerNav"></div>
+
+<script>
+const CONFIG = {
+  title: "READING PASSAGE 1 — Roman shipbuilding and navigation",
+  subtitle: "You should spend about 20 minutes on Questions 1–13.",
+  durationMinutes: 20,
+  showFooterNavigator: true,
+
+  sections: [
+    {
+      type: "truefalse",
+      heading: "Questions 1–5",
+      instructions: [
+        "Do the following statements agree with the information given in Reading Passage 1?",
+        "In boxes 1–5 on your answer sheet, write",
+        "TRUE if the statement agrees with the information",
+        "FALSE if the statement contradicts the information",
+        "NOT GIVEN if there is no information on this"
+      ],
+      items: [
+        { id: 1, text: "The Romans' shipbuilding skills were passed on to the Greeks and the Egyptians.", correct: "FALSE" },
+        { id: 2, text: "Skilled craftsmen were needed for the mortise and tenon method of fixing planks.", correct: "NOT GIVEN" },
+        { id: 3, text: "The later practice used by Mediterranean shipbuilders involved building the hull before the frame.", correct: "FALSE" },
+        { id: 4, text: "The Romans called the Mediterranean Sea Mare Nostrum because they dominated its use.", correct: "TRUE" },
+        { id: 5, text: "Most rowers on ships were people from the Roman army.", correct: "TRUE" }
+      ]
+    },
+    {
+      type: "summary",
+      heading: "Questions 6–13",
+      instructions: [
+        "Complete the summary below.",
+        "Choose ONE WORD ONLY from the passage for each answer.",
+        "Write your answers in boxes 6–13 on your answer sheet."
+      ],
+      summaryTitle: "Warships and merchant ships",
+      summaryContent: "Warships were designed so that they were 6____ and moved quickly. They often remained afloat after battles and were able to sail close to land as they lacked any additional weight. A battering ram made of 7____ was included in the design for attacking and damaging the timber and oars of enemy ships. Warships, such as the 'trireme', had rowers on three different 8____.\n\nUnlike warships, merchant ships had a broad 9____ that lay far below the surface of the sea. Merchant ships were steered through the water with the help of large rudders and a tiller bar. They had both square and 10____ sails. On merchant ships and warships, 11____ was used to ensure rowers moved their oars in and out of the water at the same time.\n\nQuantities of agricultural goods such as 12____ were transported by merchant ships to two main ports in Italy. The ships were pulled to the shore by 13____. When the weather was clear and they could see islands or land, sailors used landmarks that they knew to help them navigate their route.",
+      items: [
+        { id: 6, correct: "lightweight" },
+        { id: 7, correct: "bronze" },
+        { id: 8, correct: "levels" },
+        { id: 9, correct: "hull" },
+        { id: 10, correct: "triangular" },
+        { id: 11, correct: "music" },
+        { id: 12, correct: "grain" },
+        { id: 13, correct: "towboats" }
+      ]
+    }
+  ]
+};
+
+// Render functions
+const qroot = document.getElementById('qroot');
+const navIds = [];
+const answersMap = {};
+
+function sectionHeader(t){ 
+  const h=document.createElement('h2'); 
+  h.className='qsection'; 
+  h.textContent=t; 
+  return h; 
+}
+
+function renderTrueFalse(sec){
+  qroot.appendChild(sectionHeader(sec.heading));
+  (sec.instructions||[]).forEach(tx=>{ 
+    const p=document.createElement('p'); 
+    p.className='muted'; 
+    p.textContent=tx; 
+    qroot.appendChild(p); 
+  });
+  
+  sec.items.forEach(it=>{
+    const b=document.createElement('div'); 
+    b.className='qblock'; 
+    b.id=`anchor-${it.id}`;
+    const opts=['TRUE','FALSE','NOT GIVEN'].map(opt=>`<label><input type="radio" name="q${it.id}" value="${opt}"> ${opt}</label>`).join('');
+    b.innerHTML=`<div class="qhead"><strong>${it.id}.</strong> ${it.text}</div><div class="options">${opts}</div>`;
+    qroot.appendChild(b); 
+    navIds.push(it.id); 
+    answersMap[it.id]=it.correct||'';
+  });
+}
+
+function renderSummary(sec){
+  qroot.appendChild(sectionHeader(sec.heading));
+  (sec.instructions||[]).forEach(tx=>{ 
+    const p=document.createElement('p'); 
+    p.className='muted'; 
+    p.textContent=tx; 
+    qroot.appendChild(p); 
+  });
+
+  const summaryDiv = document.createElement('div');
+  summaryDiv.className = 'summary-box';
+  summaryDiv.innerHTML = `
+    <div class="qhead"><strong>${sec.summaryTitle}</strong></div>
+    <div style="white-space: pre-line; line-height: 1.6; margin-top: 15px;">
+      ${sec.summaryContent}
+    </div>
+  `;
+  qroot.appendChild(summaryDiv);
+  
+  sec.items.forEach(it=>{
+    navIds.push(it.id); 
+    answersMap[it.id]=it.correct||'';
+  });
+}
+
+// Build UI
+CONFIG.sections.forEach(sec=>{
+  if (sec.type==='truefalse') renderTrueFalse(sec);
+  if (sec.type==='summary') renderSummary(sec);
+});
+
+// Footer navigation
+const footerNav=document.getElementById('footerNav');
+if(CONFIG.showFooterNavigator){
+  footerNav.innerHTML='<strong class="muted">Questions:</strong>';
+  [...new Set(navIds)].sort((a,b)=>a-b).forEach(id=>{
+    const chip=document.createElement('button'); 
+    chip.className='chip'; 
+    chip.id=`chip-${id}`; 
+    chip.textContent=id;
+    chip.addEventListener('click',()=>{ 
+      document.getElementById(`anchor-${id}`).scrollIntoView({behavior:'smooth',block:'center'}); 
+    });
+    footerNav.appendChild(chip);
+  });
+}
+
+function markChipAnswered(id, answered){
+  const chip=document.getElementById(`chip-${id}`); 
+  if(chip) chip.classList.toggle('answered', !!answered);
+}
+
+document.addEventListener('change',(e)=>{
+  const m=String(e.target.name||e.target.id||'').match(/q(\d+)/);
+  const id=m?+m[1]:null; 
+  if(!id) return;
+  const answered=(e.target.type==='radio') ? (!!document.querySelector(`input[name='q${id}']:checked`))
+                 : (e.target.value.trim().length>0);
+  markChipAnswered(id, answered);
+});
+
+// Timer functionality
+let timeLeft=CONFIG.durationMinutes*60;
+const timer=document.getElementById('timer');
+const pauseBtn=document.getElementById('pauseBtn');
+const resumeBtn=document.getElementById('resumeBtn');
+let paused=false, iv;
+
+const fmt=s=>`${String(Math.floor(s/60)).padStart(2,'0')}:${String(s%60).padStart(2,'0')}`;
+
+function startTick(){ 
+  if(iv) clearInterval(iv);
+  iv=setInterval(()=>{ 
+    if(paused) return; 
+    timer.textContent=fmt(timeLeft); 
+    if(timeLeft<=0){ 
+      clearInterval(iv); 
+      alert("Time's up! Submitting."); 
+      submit(); 
+    } 
+    timeLeft--; 
+  },1000);
+}
+
+timer.textContent=fmt(timeLeft); 
+startTick();
+
+pauseBtn.addEventListener('click',()=>{ 
+  paused=true; 
+  pauseBtn.disabled=true; 
+  resumeBtn.disabled=false; 
+});
+
+resumeBtn.addEventListener('click',()=>{ 
+  paused=false; 
+  pauseBtn.disabled=false; 
+  resumeBtn.disabled=true; 
+});
+
+// Submit functionality
+document.getElementById('submitBtn').addEventListener('click', submit);
+
+function submit(){
+  paused=true; 
+  pauseBtn.disabled=true; 
+  resumeBtn.disabled=false;
+  
+  let total=0, graded=0, correctCount=0;
+  const itemsOut=[];
+  const ids=Object.keys(answersMap);
+
+  ids.forEach(key=>{
+    const ans=answersMap[key];
+    const label=key;
+    let user='';
+    
+    const picked=document.querySelector(`input[name="q${key}"]:checked`);
+    if(picked){ 
+      user=picked.value; 
+    } else if(document.getElementById('q'+key)){ 
+      user=document.getElementById('q'+key).value; 
+    }
+    
+    const shown=user||'No answer';
+
+    if(String(ans).trim()===''){
+      total++; 
+      itemsOut.push({label, status:'— not graded —', user:shown, correct:'(no key)'}); 
+      return; 
+    }
+
+    total++; 
+    graded++;
+    const ok = shown.trim().toLowerCase() === String(ans).trim().toLowerCase();
+    if(ok) correctCount++;
+    itemsOut.push({
+      label, 
+      status: ok? '✓ Correct' : '✗ Incorrect', 
+      user:shown, 
+      correct:String(ans)
+    });
+  });
+
+  document.getElementById('score').innerHTML = `Graded ${graded} of ${total} • Score: ${correctCount}/${graded}`;
+  document.getElementById('answers').innerHTML = itemsOut.map(it=>
+    `<li class="${/Correct/.test(it.status)?'ok':'bad'}">Q${it.label}: ${it.status} — Your: <b>${it.user}</b> | Correct: <b>${it.correct}</b></li>`
+  ).join('');
+  
+  const r=document.getElementById('results'); 
+  r.style.display='block'; 
+  r.scrollIntoView({behavior:'smooth'});
+}
+</script>
+</body>
+</html>

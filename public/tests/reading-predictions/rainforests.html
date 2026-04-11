@@ -1,0 +1,396 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Reading Passage 1 – Rainforests</title>
+<style>
+  :root{--brand:#2563eb;--ink:#111827;--bg:#f7f7fb;--ok:#16a34a;--bad:#dc2626;--muted:#6b7280}
+  *{box-sizing:border-box}
+  body{margin:0;font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;background:var(--bg);color:#111}
+  .container{display:flex;gap:20px;max-width:1200px;margin:0 auto;padding:20px 20px 96px}
+  .card{background:#fff;border-radius:12px;box-shadow:0 4px 14px rgba(0,0,0,.08);padding:20px;overflow:auto;max-height:90vh}
+  .passage{flex:1}
+  .questions{flex:1}
+  h1{color:var(--ink);border-bottom:2px solid var(--brand);padding-bottom:10px;margin:0 0 14px}
+  h2{color:var(--brand);margin:22px 0 10px}
+  h3{margin:8px 0 0}
+  .muted{color:var(--muted)}
+
+  /* Timer */
+  .timerWrap{position:fixed;top:16px;right:16px;display:flex;align-items:center;gap:8px;z-index:10}
+  .timer{background:var(--brand);color:#fff;padding:10px 14px;border-radius:8px;font-weight:700}
+  .tbtn{border:1px solid #e5e7eb;background:#fff;color:#111;padding:8px 10px;border-radius:8px;cursor:pointer}
+
+  /* Questions */
+  .qsection{margin:14px 0 6px}
+  .qblock{padding:14px;border:1px solid #e5e7eb;border-radius:12px;margin:12px 0}
+  .qhead{font-weight:600;margin-bottom:8px}
+  .options{margin-top:8px}
+  .options label{display:block;margin:6px 0}
+  select,input[type="text"]{padding:8px;border-radius:8px;border:1px solid #e5e7eb;width:100%;max-width:520px}
+  .submit{background:var(--brand);color:#fff;border:0;padding:12px 18px;border-radius:8px;cursor:pointer;font-size:16px;margin-top:16px}
+  .submit:hover{filter:brightness(.95)}
+
+  /* Results */
+  .results{display:none;margin-top:18px;background:#f8f9fa;border-radius:10px;padding:16px}
+  .results ul{list-style:none;padding:0;margin:8px 0 0}
+  .results li{margin:6px 0;padding:8px;border-radius:8px}
+  .results li.ok{background:#ecfdf5;color:#065f46}
+  .results li.bad{background:#fef2f2;color:#991b1b}
+  .results .meta{font-size:13px;color:var(--muted)}
+
+  /* Footer chips */
+  .footerNav{position:fixed;left:0;right:0;bottom:0;background:#fff;border-top:1px solid #e5e7eb;padding:10px 12px;display:flex;flex-wrap:wrap;gap:8px;align-items:center;z-index:9}
+  .chip{border:1px solid #d1d5db;background:#fff;color:#111;padding:6px 10px;border-radius:999px;cursor:pointer;font-size:14px}
+  .chip.answered{border-color:#9ca3af;background:#f3f4f6}
+
+  /* Highlights */
+  .palette{position:fixed;background:#fff;padding:8px;border-radius:8px;box-shadow:0 2px 10px rgba(0,0,0,.12);display:none;z-index:9}
+  .hbtn{background:var(--brand);color:#fff;border:0;padding:6px 10px;border-radius:6px;margin:4px 4px 0 0;cursor:pointer}
+  .highlight{background:yellow}
+
+  
+</style>
+</head>
+<body>
+  <div class="timerWrap">
+    <div class="timer" id="timer">20:00</div>
+    <button class="tbtn" id="pauseBtn">⏸️ Pause</button>
+    <button class="tbtn" id="resumeBtn" disabled>▶️ Resume</button>
+  </div>
+
+  <!-- Highlight palettes -->
+  <div class="palette" id="pPalette">
+    <button class="hbtn" data-color="yellow">Yellow</button>
+    <button class="hbtn" data-color="lightgreen">Green</button>
+    <button class="hbtn" data-color="lightblue">Blue</button>
+    <button class="hbtn" data-color="pink">Pink</button>
+    <button class="hbtn" data-color="orange">Orange</button>
+    <button class="hbtn" id="clearPMarks">Clear</button>
+  </div>
+  <div class="palette" id="qPalette">
+    <button class="hbtn" data-color="yellow">Yellow</button>
+    <button class="hbtn" data-color="lightgreen">Green</button>
+    <button class="hbtn" data-color="lightblue">Blue</button>
+    <button class="hbtn" data-color="pink">Pink</button>
+    <button class="hbtn" data-color="orange">Orange</button>
+    <button class="hbtn" id="clearQMarks">Clear</button>
+  </div>
+
+  <div class="container">
+    <div class="card passage" id="passageCard">
+      <h1 id="title">Reading Passage 1</h1>
+      <div id="subtitle" class="muted">You should spend about 20 minutes on Questions 1–14 which are based on Reading Passage 1 below.</div>
+
+      <div id="passage">
+        <p>Adults and children are frequently confronted with statements about the alarming rate of loss of tropical rainforests. For example, one graphic illustration to which children might readily relate is the estimate that rainforests are being destroyed at a rate equivalent to one thousand football fields every forty minutes – about the duration of a normal classroom period. In the face of the frequent and often vivid media coverage, it is likely that children will have formed ideas about rainforests – what and where they are, why they are important, what endangers them – independent of any formal tuition. It is also possible that some of these ideas will be mistaken.</p>
+
+        <p>Many studies have shown that children harbour misconceptions about 'pure', curriculum science. These misconceptions do not remain isolated but become incorporated into a multifaceted, but organised, conceptual framework, making it and the component ideas, some of which are erroneous, more robust but also accessible to modification. These ideas may be developed by children absorbing ideas through the popular media. Sometimes this information may be erroneous. It seems schools may not be providing an opportunity for children to re-express their ideas and so have them tested and refined by teachers and their peers.</p>
+
+        <p>Despite the extensive coverage in the popular media of the destruction of rainforests, little formal information is available about children's ideas in this area. The aim of the present study is to start to provide such information, to help teachers design their educational strategies to build upon correct ideas and to displace misconceptions and to plan programmes in environmental studies in their schools.</p>
+
+        <p>The study surveys children's scientific knowledge and attitudes to rainforests. Secondary school children were asked to complete a questionnaire containing five open-form questions. The most frequent responses to the first question were descriptions which are self-evident from the term 'rainforest'. Some children described them as damp, wet or hot. The second question concerned the geographical location of rainforests. The commonest responses were continents or countries: Africa (given by 43% of children), South America (30%), Brazil (25%). Some children also gave more general locations, such as being near the Equator.</p>
+
+        <p>Responses to question three concerned the importance of rainforests. The dominant idea, raised by 64% of the pupils, was that rainforests provide animals with habitats. Fewer students responded that rainforests provide plant habitats, and even fewer mentioned the indigenous populations of rainforests. More girls (70%) than boys (60%) raised the idea of rainforest as animal habitats.</p>
+
+        <p>Similarly, but at a lower level, more girls (13%) than boys (5%) said that rainforests provided human habitats. These observations are generally consistent with our previous studies of pupils' views about the use and conservation of rainforests, in which girls were shown to be more sympathetic to animals and expressed views which seem to place an intrinsic value on non-human animal life.</p>
+
+        <p>The fourth question concerned the causes of the destruction of rainforests. Perhaps encouragingly, more than half of the pupils (59%) identified that it is human activities which are destroying rainforests, some personalising the responsibility by the use of terms such as 'we are'. About 18% of the pupils referred specifically to logging activity.</p>
+
+        <p>One misconception, expressed by some 10% of the pupils, was that acid rain is responsible for rainforest destruction; a similar proportion said that pollution is destroying rainforests. Here, children are confusing rainforest destruction with damage to the forests of Western Europe by these factors. While two fifths of the students provided the information that the rainforests provide oxygen, in some cases this response also embraced the misconception that rainforest destruction would reduce atmospheric oxygen, making the atmosphere incompatible with human life on Earth.</p>
+
+        <p>In answer to the final question about the importance of rainforest conservation, the majority of children simply said that we need rainforests to survive. Only a few of the pupils (6%) mentioned that rainforest destruction may contribute to global warming. This is surprising considering the high level of media coverage on this issue. Some children expressed the idea that the conservation of rainforests is not important.</p>
+
+        <p>The results of this study suggest that certain ideas predominate in the thinking of children about rainforests. Pupils' responses indicate some misconceptions in basic scientific knowledge of rainforests' ecosystems such as their ideas about rainforests as habitats for animals, plants and humans and the relationship between climatic change and destruction of rainforests.</p>
+
+        <p>Pupils did not volunteer ideas that suggested that they appreciated the complexity of causes of rainforest destruction. In other words, they gave no indication of an appreciation of either the range of ways in which rainforests are important or the complex social, economic and political factors which drive the activities which are destroying the rainforests. One encouragement is that the results of similar studies about other environmental issues suggest that older children seem to acquire the ability to appreciate, value and evaluate conflicting views. Environmental education offers an arena in which these skills can be developed, which is essential for these children as future decision-makers.</p>
+      </div>
+    </div>
+
+    <div class="card questions">
+      <h1>Questions</h1>
+      <div id="qroot"></div>
+      <button class="submit" id="submitBtn">Submit Answers</button>
+      <div class="results" id="results">
+        <h2>Your Results</h2>
+        <div id="score" class="meta"></div>
+        <ul id="answers"></ul>
+      </div>
+    </div>
+  </div>
+
+  <div class="footerNav" id="footerNav"></div>
+  
+
+<script>
+/* =======================
+   CONFIG
+   ======================= */
+const CONFIG = {
+  title: "READING PASSAGE 1 – Rainforests",
+  subtitle: "You should spend about 20 minutes on Questions 1–14.",
+  durationMinutes: 20,
+  
+  showFooterNavigator: true,
+
+  sections: [
+    /* 1–8 True/False/Not Given */
+    {
+      type: "tfng",
+      heading: "Questions 1–8",
+      instructions: [
+        "Do the following statements agree with the information given in Reading Passage 1?",
+        "TRUE if the statement agrees with the information",
+        "FALSE if the statement contradicts the information", 
+        "NOT GIVEN if there is no information on this"
+      ],
+      items: [
+        { id: 1, text: "The plight of the rainforests has largely been ignored by the media.", correct: "FALSE" },
+        { id: 2, text: "Children only accept opinions on rainforests that they encounter in their classrooms.", correct: "FALSE" },
+        { id: 3, text: "It has been suggested that children hold mistaken views about the 'pure' science that they study at school.", correct: "TRUE" },
+        { id: 4, text: "The fact that children's ideas about science form part of a larger framework of ideas means that it is easier to change them.", correct: "FALSE" },
+        { id: 5, text: "The study involved asking children a number of yes/no questions such as 'Are there any rainforests in Africa?'", correct: "FALSE" },
+        { id: 6, text: "Girls are more likely than boys to hold mistaken views about the rainforests' destruction.", correct: "NOT GIVEN" },
+        { id: 7, text: "The study reported here follows on from a series of studies that have looked at children's understanding of rainforests.", correct: "TRUE" },
+        { id: 8, text: "A second study has been planned to investigate primary school children's ideas about rainforests.", correct: "NOT GIVEN" }
+      ]
+    },
+
+    /* 9–13 Multiple choice matching */
+    {
+      type: "match_list",
+      heading: "Questions 9–13",
+      instructions: [
+        "The box below gives a list of responses A–P to the questionnaire discussed in Reading Passage 1.",
+        "Answer the following questions by choosing the correct responses A–P."
+      ],
+      options: {
+        A: "There is a complicated combination of reasons for the loss of the rainforests.",
+        B: "The rainforests are being destroyed by the same things that are destroying the forests of Western Europe.",
+        C: "Rainforests are located near the Equator.",
+        D: "Brazil is home to the rainforests.",
+        E: "Without rainforests some animals would have nowhere to live.",
+        F: "Rainforests are important habitats for a lot of plants.",
+        G: "People are responsible for the loss of the rainforests.",
+        H: "The rainforests are a source of oxygen.",
+        I: "Rainforests are of consequence for a number of different reasons.",
+        J: "As the rainforests are destroyed, the world gets warmer.",
+        K: "Without rainforests there would not be enough oxygen in the air.",
+        L: "There are people for whom the rainforests are home.",
+        M: "Rainforests are found in Africa.",
+        N: "Rainforests are not really important to human life.",
+        O: "The destruction of the rainforests is the direct result of logging activity.",
+        P: "Humans depend on the rainforests for their continuing existence."
+      },
+      items: [
+        { id: 9, text: "What was the children's most frequent response when asked where the rainforests were?", correct: "M" },
+        { id: 10, text: "What was the most common response to the question about the importance of the rainforests?", correct: "E" },
+        { id: 11, text: "What did most children give as the reason for the loss of the rainforests?", correct: "G" },
+        { id: 12, text: "Why did most children think it important for the rainforests to be protected?", correct: "P" },
+        { id: 13, text: "Which of the responses is cited as unexpectedly uncommon, given the amount of time spent on the issue by the newspapers and television?", correct: "J" }
+      ]
+    },
+
+    /* 14 MCQ */
+    {
+      type: "mcq",
+      heading: "Question 14",
+      instructions: ["Choose the correct letter, A, B, C, D or E."],
+      items: [
+        { id: 14, text: "Which of the following is the most suitable title for Reading Passage 1?", options:{
+          A:"The development of a programme in environmental studies within a science curriculum",
+          B:"Children's ideas about the rainforests and the implications for course design",
+          C:"The extent to which children have been misled by the media concerning the rainforests",
+          D:"How to collect, collate and describe the ideas of secondary school children",
+          E:"The importance of the rainforests and the reasons for their destruction"
+        }, correct: "B" }
+      ]
+    }
+  ]
+};
+
+/* =======================
+   RENDER
+   ======================= */
+document.getElementById('title').textContent = CONFIG.title;
+document.getElementById('subtitle').textContent = CONFIG.subtitle || '';
+
+const qroot = document.getElementById('qroot');
+const navIds = [];
+const answersMap = {};
+
+function sectionHeader(t){ const h=document.createElement('h2'); h.className='qsection'; h.textContent=t; return h; }
+
+/* True/False/Not Given renderer */
+function renderTFNG(sec){
+  qroot.appendChild(sectionHeader(sec.heading));
+  (sec.instructions||[]).forEach(tx=>{ const p=document.createElement('p'); p.className='muted'; p.textContent=tx; qroot.appendChild(p); });
+  sec.items.forEach(it=>{
+    const b=document.createElement('div'); b.className='qblock'; b.id=`anchor-${it.id}`;
+    const opts=['TRUE','FALSE','NOT GIVEN'].map(opt=>`<label><input type="radio" name="q${it.id}" value="${opt}"> ${opt}</label>`).join('');
+    b.innerHTML=`<div class="qhead"><strong>${it.id}.</strong> ${it.text}</div><div class="options">${opts}</div>`;
+    qroot.appendChild(b); navIds.push(it.id); answersMap[it.id]=it.correct||'';
+  });
+}
+
+/* MCQ renderer */
+function renderMCQ(sec){
+  qroot.appendChild(sectionHeader(sec.heading));
+  (sec.instructions||[]).forEach(tx=>{ const p=document.createElement('p'); p.className='muted'; p.textContent=tx; qroot.appendChild(p); });
+  sec.items.forEach(it=>{
+    const b=document.createElement('div'); b.className='qblock'; b.id=`anchor-${it.id}`;
+    const opts=Object.entries(it.options).map(([k,v])=>`<label><input type="radio" name="q${it.id}" value="${k}"> ${k}. ${v}</label>`).join('');
+    b.innerHTML=`<div class="qhead"><strong>${it.id}.</strong> ${it.text}</div><div class="options">${opts}</div>`;
+    qroot.appendChild(b); navIds.push(it.id); answersMap[it.id]=it.correct||'';
+  });
+}
+
+/* Match List renderer (select A–P) */
+function renderMatchList(sec){
+  qroot.appendChild(sectionHeader(sec.heading));
+  (sec.instructions||[]).forEach(tx=>{ const p=document.createElement('p'); p.className='muted'; p.textContent=tx; qroot.appendChild(p); });
+
+  const legend=document.createElement('div'); legend.className='qblock';
+  legend.innerHTML = `<div class="qhead"><strong>Response Options</strong></div>
+    <div class="options">${Object.entries(sec.options).map(([k,v])=>`<div><b>${k}</b> — ${v}</div>`).join('')}</div>`;
+  qroot.appendChild(legend);
+
+  sec.items.forEach(it=>{
+    const b=document.createElement('div'); b.className='qblock'; b.id=`anchor-${it.id}`;
+    const sel=`<select id="q${it.id}" name="q${it.id}">
+      <option value="">—</option>${Object.keys(sec.options).map(k=>`<option value="${k}">${k}</option>`).join('')}
+    </select>`;
+    b.innerHTML=`<div class="qhead"><strong>${it.id}.</strong> ${it.text}</div><div class="options">${sel}</div>`;
+    qroot.appendChild(b); navIds.push(it.id); answersMap[it.id]=it.correct||'';
+  });
+}
+
+/* Build UI */
+CONFIG.sections.forEach(sec=>{
+  if (sec.type==='mcq') renderMCQ(sec);
+  if (sec.type==='tfng') renderTFNG(sec);
+  if (sec.type==='match_list') renderMatchList(sec);
+});
+
+/* Footer chips */
+const footerNav=document.getElementById('footerNav');
+(function(){
+  if(!CONFIG.showFooterNavigator){ footerNav.style.display='none'; return; }
+  footerNav.innerHTML='<strong class="muted">Questions:</strong>';
+  [...new Set(navIds)].sort((a,b)=>a-b).forEach(id=>{
+    const chip=document.createElement('button'); chip.className='chip'; chip.id=`chip-${id}`; chip.textContent=id;
+    chip.addEventListener('click',()=>{ document.getElementById(`anchor-${id}`).scrollIntoView({behavior:'smooth',block:'center'}); });
+    footerNav.appendChild(chip);
+  });
+})();
+function markChipAnswered(id, answered){
+  const chip=document.getElementById(`chip-${id}`); if(chip) chip.classList.toggle('answered', !!answered);
+}
+document.addEventListener('change',(e)=>{
+  const m=String(e.target.name||e.target.id||'').match(/q(\d+)/);
+  const id=m?+m[1]:null; if(!id) return;
+  const answered=(e.target.type==='radio') ? (!!document.querySelector(`input[name='q${id}']:checked`))
+                 : (e.target.value.trim().length>0);
+  markChipAnswered(id, answered);
+});
+
+/* Timer */
+let timeLeft=Math.max(1,+CONFIG.durationMinutes||20)*60;
+const timer=document.getElementById('timer');
+const pauseBtn=document.getElementById('pauseBtn');
+const resumeBtn=document.getElementById('resumeBtn');
+let paused=false, iv;
+const fmt=s=>`${String(Math.floor(s/60)).padStart(2,'0')}:${String(s%60).padStart(2,'0')}`;
+function startTick(){ if(iv) clearInterval(iv);
+  iv=setInterval(()=>{ if(paused) return; timer.textContent=fmt(timeLeft); if(timeLeft<=0){ clearInterval(iv); alert("Time's up! Submitting."); submit(); } timeLeft--; },1000);
+}
+timer.textContent=fmt(timeLeft); startTick();
+pauseBtn.addEventListener('click',()=>{ paused=true; pauseBtn.disabled=true; resumeBtn.disabled=false; });
+resumeBtn.addEventListener('click',()=>{ paused=false; pauseBtn.disabled=false; resumeBtn.disabled=true; });
+
+/* Submit & grading */
+document.getElementById('submitBtn').addEventListener('click', submit);
+function submit(){
+  paused=true; pauseBtn.disabled=true; resumeBtn.disabled=false;
+  let total=0, graded=0, correctCount=0;
+  const itemsOut=[];
+  const ids=Object.keys(answersMap);
+
+  ids.forEach(key=>{
+    const ans=answersMap[key];
+    const label=key;
+    let user='';
+    const picked=document.querySelector(`input[name="q${key}"]:checked`);
+    if(picked){ user=picked.value; }
+    else if(document.getElementById('q'+key)){ user=document.getElementById('q'+key).value; }
+    const shown=user||'No answer';
+
+    if(String(ans).trim()===''){ total++; itemsOut.push({label, status:'— not graded —', user:shown, correct:'(no key)'}); return; }
+
+    total++; graded++;
+    const ok = shown.trim().toUpperCase() === String(ans).trim().toUpperCase();
+    if(ok) correctCount++;
+    itemsOut.push({label, status: ok? '✓ Correct' : '✗ Incorrect', user:shown, correct:String(ans)});
+  });
+
+  document.getElementById('score').innerHTML = `Graded ${graded} of ${total} • Score: ${correctCount}/${graded}`;
+  document.getElementById('answers').innerHTML = itemsOut.map(it=>`<li class="${/Correct/.test(it.status)?'ok':'bad'}">Q${it.label}: ${it.status} — Your: <b>${it.user}</b> | Correct: <b>${it.correct}</b></li>`).join('');
+  const r=document.getElementById('results'); r.style.display='block'; r.scrollIntoView({behavior:'smooth'});
+}
+
+/* Highlights */
+const passageCard=document.getElementById('passageCard');
+const pPalette=document.getElementById('pPalette');
+passageCard.addEventListener('mouseup',(e)=>{
+  const sel=window.getSelection(); if(!sel||sel.toString().trim().length===0) return;
+  if(!passageCard.contains(sel.getRangeAt(0).commonAncestorContainer)) return;
+  const r=passageCard.getBoundingClientRect(), x=Math.min(e.clientX-r.left,r.width-10), y=Math.max(0,e.clientY-r.top-40);
+  pPalette.style.left=(r.left+x)+'px'; pPalette.style.top=(r.top+y)+'px'; pPalette.style.display='block';
+});
+document.addEventListener('mousedown',(e)=>{ if(!pPalette.contains(e.target)) pPalette.style.display='none'; });
+pPalette.querySelectorAll('.hbtn[data-color]').forEach(btn=>{
+  btn.addEventListener('click',()=>{ markSelection(btn.dataset.color, passageCard); pPalette.style.display='none'; });
+});
+document.getElementById('clearPMarks').addEventListener('click',()=>{
+  passageCard.querySelectorAll('span.highlight').forEach(n=>{ const p=n.parentNode; while(n.firstChild) p.insertBefore(n.firstChild,n); p.removeChild(n); p.normalize(); });
+  pPalette.style.display='none';
+});
+
+/* Questions highlight */
+const qCard=document.querySelector('.card.questions');
+const qPalette=document.getElementById('qPalette');
+qCard.addEventListener('mouseup',(e)=>{
+  const sel=window.getSelection(); if(!sel||sel.toString().trim().length===0) return;
+  if(!qCard.contains(sel.getRangeAt(0).commonAncestorContainer)) return;
+  const node = sel.getRangeAt(0).commonAncestorContainer.nodeType===1 ? sel.getRangeAt(0).commonAncestorContainer : sel.getRangeAt(0).commonAncestorContainer.parentNode;
+  if (node.closest && node.closest('input,textarea,select')) return;
+  const r=qCard.getBoundingClientRect(), x=Math.min(e.clientX-r.left,r.width-10), y=Math.max(0,e.clientY-r.top-40);
+  qPalette.style.left=(r.left+x)+'px'; qPalette.style.top=(r.top+y)+'px'; qPalette.style.display='block';
+});
+document.addEventListener('mousedown',(e)=>{ if(!qPalette.contains(e.target)) qPalette.style.display='none'; });
+qPalette.querySelectorAll('.hbtn[data-color]').forEach(btn=>{
+  btn.addEventListener('click',()=>{ markSelection(btn.dataset.color, qCard); qPalette.style.display='none'; });
+});
+document.getElementById('clearQMarks').addEventListener('click',()=>{
+  qCard.querySelectorAll('span.highlight').forEach(n=>{ const p=n.parentNode; while(n.firstChild) p.insertBefore(n.firstChild,n); p.removeChild(n); p.normalize(); });
+  qPalette.style.display='none';
+});
+
+/* Helper */
+function markSelection(color, scope){
+  const sel=window.getSelection(); if(!sel||!sel.rangeCount) return;
+  const range=sel.getRangeAt(0);
+  if(!scope.contains(range.commonAncestorContainer)) return;
+  const container=range.commonAncestorContainer.nodeType===1? range.commonAncestorContainer : range.commonAncestorContainer.parentNode;
+  if (container.closest && container.closest('input, textarea, select')) return;
+  const frag=range.extractContents();
+  const span=document.createElement('span'); span.className='highlight'; span.style.backgroundColor=color; span.appendChild(frag);
+  range.insertNode(span); sel.removeAllRanges();
+}
+
+/* TG button */
+
+</script>
+</body>
+</html>

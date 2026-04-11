@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Reading Passage 2 — Children's comprehension of television advertising</title>
+<style>
+  :root{--brand:#2563eb;--ink:#111827;--bg:#f7f7fb;--ok:#16a34a;--bad:#dc2626;--muted:#6b7280}
+  *{box-sizing:border-box}
+  body{margin:0;font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;background:var(--bg);color:#111}
+  .container{display:flex;gap:20px;max-width:1200px;margin:0 auto;padding:20px 20px 96px}
+  .card{background:#fff;border-radius:12px;box-shadow:0 4px 14px rgba(0,0,0,.08);padding:20px;overflow:auto;max-height:90vh}
+  .passage{flex:1}
+  .questions{flex:1}
+  h1{color:var(--ink);border-bottom:2px solid var(--brand);padding-bottom:10px;margin:0 0 14px}
+  h2{color:var(--brand);margin:22px 0 10px}
+  h3{margin:8px 0 0}
+  .muted{color:var(--muted)}
+
+  /* Timer */
+  .timerWrap{position:fixed;top:16px;right:16px;display:flex;align-items:center;gap:8px;z-index:10}
+  .timer{background:var(--brand);color:#fff;padding:10px 14px;border-radius:8px;font-weight:700}
+  .tbtn{border:1px solid #e5e7eb;background:#fff;color:#111;padding:8px 10px;border-radius:8px;cursor:pointer}
+
+  /* Questions */
+  .qsection{margin:14px 0 6px}
+  .qblock{padding:14px;border:1px solid #e5e7eb;border-radius:12px;margin:12px 0}
+  .qhead{font-weight:600;margin-bottom:8px}
+  .options{margin-top:8px}
+  .options label{display:block;margin:6px 0}
+  select,input[type="text"]{padding:8px;border-radius:8px;border:1px solid #e5e7eb;width:100%;max-width:520px}
+  .submit{background:var(--brand);color:#fff;border:0;padding:12px 18px;border-radius:8px;cursor:pointer;font-size:16px;margin-top:16px}
+  .submit:hover{filter:brightness(.95)}
+
+  /* Results */
+  .results{display:none;margin-top:18px;background:#f8f9fa;border-radius:10px;padding:16px}
+  .results ul{list-style:none;padding:0;margin:8px 0 0}
+  .results li{margin:6px 0;padding:8px;border-radius:8px}
+  .results li.ok{background:#ecfdf5;color:#065f46}
+  .results li.bad{background:#fef2f2;color:#991b1b}
+  .results .meta{font-size:13px;color:var(--muted)}
+
+  /* Footer chips */
+  .footerNav{position:fixed;left:0;right:0;bottom:0;background:#fff;border-top:1px solid #e5e7eb;padding:10px 12px;display:flex;flex-wrap:wrap;gap:8px;align-items:center;z-index:9}
+  .chip{border:1px solid #d1d5db;background:#fff;color:#111;padding:6px 10px;border-radius:999px;cursor:pointer;font-size:14px}
+  .chip.answered{border-color:#9ca3af;background:#f3f4f6}
+
+  /* Highlights */
+  .palette{position:fixed;background:#fff;padding:8px;border-radius:8px;box-shadow:0 2px 10px rgba(0,0,0,.12);display:none;z-index:9}
+  .hbtn{background:var(--brand);color:#fff;border:0;padding:6px 10px;border-radius:6px;margin:4px 4px 0 0;cursor:pointer}
+  .highlight{background:yellow}
+
+  .tg{position:fixed;bottom:96px;right:16px;background:#0088cc;color:#fff;border:0;padding:12px 16px;border-radius:9999px;display:flex;align-items:center;gap:8px;cursor:pointer;box-shadow:0 8px 20px rgba(0,136,204,.35)}
+</style>
+</head>
+<body>
+  <div class="timerWrap">
+    <div class="timer" id="timer">20:00</div>
+    <button class="tbtn" id="pauseBtn">⏸️ Pause</button>
+    <button class="tbtn" id="resumeBtn" disabled>▶️ Resume</button>
+  </div>
+
+  <!-- Highlight palettes -->
+  <div class="palette" id="pPalette">
+    <button class="hbtn" data-color="yellow">Yellow</button>
+    <button class="hbtn" data-color="lightgreen">Green</button>
+    <button class="hbtn" data-color="lightblue">Blue</button>
+    <button class="hbtn" data-color="pink">Pink</button>
+    <button class="hbtn" data-color="orange">Orange</button>
+    <button class="hbtn" id="clearPMarks">Clear</button>
+  </div>
+  <div class="palette" id="qPalette">
+    <button class="hbtn" data-color="yellow">Yellow</button>
+    <button class="hbtn" data-color="lightgreen">Green</button>
+    <button class="hbtn" data-color="lightblue">Blue</button>
+    <button class="hbtn" data-color="pink">Pink</button>
+    <button class="hbtn" data-color="orange">Orange</button>
+    <button class="hbtn" id="clearQMarks">Clear</button>
+  </div>
+
+  <div class="container">
+    <div class="card passage" id="passageCard">
+      <h1 id="title"></h1>
+      <div id="subtitle" class="muted"></div>
+
+      <div id="passage">
+        <h2>Reading Passage 2</h2>
+        <h3>Children's comprehension of television advertising</h3>
+
+        <h3>A</h3>
+        <p>In 1874, long before the advent of television, the English Parliament passed a law to protect children 'from their own lack of experience and from the wiles of pushing tradesmen and moneylenders' (James, 1965). The act is one of the earliest governmental policies to address children's vulnerability to commercial exploitation and was produced before major corporations earned huge profits by marketing products directly to children. Yet the issues underlying this 19th-century policy remain much the same in the 21st century.</p>
+
+        <h3>B</h3>
+        <p>Television has long been the predominant medium that advertisers have chosen for marketing products to children. It is estimated that the average child sees more than 40,000 television commercials a year, most of which are 15 to 30 seconds in length (Kunkel, 2001). According to another estimate, children aged 14 years and under make $424 billion in direct purchases and influence $4190 billion in family purchases, underscoring the high stakes involved (McNeal, 1998). In addition, companies now recognize that brand loyalty built at an early age may reap economic rewards over a child's lifetime (McNeal, 1987).</p>
+
+        <h3>C</h3>
+        <p>A number of factors have contributed to an unprecedented growth in both the amount and type of advertising directed at children. First and foremost among these are changes in the media environment. In decades past, television programming targeted at children was limited and relegated to time slots unpopular with their parents, such as Saturday mornings (Turow, 1981). Today, the number channels received in the average US home has escalated with the diffusion of cable television and satellite technologies. In this new multichannel era, there are numerous national program services devoted exclusively to children. Naturally, these channels deliver significant amounts of child-oriented marketing messages. Although parents may be pleased that their youngsters can now watch children's programming at any hour of the day they may not recognize that such viewing opportunities entail much greater exposure to advertising than any previous generation of youth has experienced.</p>
+
+        <h3>D</h3>
+        <p>Approximately 80% of all advertising targeted at children falls within four product categories: toys, cereals, candies, and fast-food restaurants (Kunkel et al, 1992). Commercials are highly effective at employing specific features designed to attract children's attention. For example, they use the strategy of introducing unique sound effects and rapidly moving images (Greer et al, 1982). The other most common persuasive strategy employed in advertising to children is to associate product with playfulness and happiness, rather than to provide any actual product-related information (Kunkel et al, 1992). For example, a commercial featuring Ronald McDonald dancing, singing and smiling in McDonald's restaurants without any mention of the actual food products available reflects a playful or happy theme. This strategy is also found frequently with cereal ads, which often include cartoon characters to help children identify the product. In contrast, most commercials fail to mention even the major grain used in each cereal.</p>
+
+        <h3>E</h3>
+        <p>Another common feature of advertising to children is the use of product disclosures such as 'batteries not included' or 'each part sold separately. Studies make clear that young children do not comprehend the intended meaning of these disclaimers. For example, fewer than one in four kindergarten through second grade children could grasp the meaning of 'some assembly required' in a commercial. In contrast, the use of child-friendly language such as 'you have to put it together' more than doubled the proportion of children who understood the qualifying message (Lieber et al, 1977). The phrase 'part of a balanced breakfast' is also a frequent disclosure included in most cereal ads to combat the concern that sugared cereal holds little nutritional value for children. Research shows that most children below age 7 years have no idea what the term 'balanced breakfast' means (Palmer & McDowell, 1981). Rather than informing young viewers about the importance of a nutritious breakfast, this common disclaimer actually leaves many children with the misimpression that cereal alone is sufficient for a meal. This pattern of employing creative terminology in advertising content so as to obscure certain information that might be unhelpful to the sponsor is a long standing practice that often misleads the consumer (Geis, 1982).</p>
+
+        <h3>F</h3>
+        <p>Very young children do not recognize that there are two fundamentally different categories of television content: programs and commercials. Most children below the age under 4 or 5 exhibit low awareness of the concept of commercials, frequently explaining them as if they were a scene in the program itself. Once this confusion diminishes, children first recognize the difference between programs and commercials based on either affective ('commercials are funnier than TV programs') or perceptual ('commercials are short and programs are long') cues (Blatt et al, 1972).</p>
+
+        <h3>G</h3>
+        <p>Although most children's programs indicate that a commercial break is coming (e.g. by saying 'We'll be right back after these messages'), research reveals that these 'separators' generally do not help children to recognize advertising content (Palmer & McDowell, 1979). This likely occurs because they are not perceptually distinct from the adjacent programming that surrounds them; in fact, many separators feature characters that appear in the same show that the commercial has just interrupted. When an ad includes one of the characters featured in a program, this is known as host-selling. This type of advertising makes the task of discriminating between program and commercial content particularly difficult for young children (Kunkel, 1988) and is thus restricted in the US by the Federal Communications Commission during children's programs.</p>
+
+        <h3>H</h3>
+        <p>In sum, because young children lack the cognitive skills and abilities of older children and adults, they do not comprehend commercial messages in the same way as more mature audiences, and are therefore uniquely susceptible to advertising influence.</p>
+      </div>
+    </div>
+
+    <div class="card questions">
+      <h1>Questions</h1>
+      <div id="qroot"></div>
+      <button class="submit" id="submitBtn">Submit Answers</button>
+      <div class="results" id="results">
+        <h2>Your Results</h2>
+        <div id="score" class="meta"></div>
+        <ul id="answers"></ul>
+      </div>
+    </div>
+  </div>
+
+  <div class="footerNav" id="footerNav"></div>
+  
+
+
+</body>
+</html>

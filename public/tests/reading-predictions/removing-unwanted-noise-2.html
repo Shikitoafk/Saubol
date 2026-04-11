@@ -1,0 +1,1109 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>IELTS Reading Test - Removing Unwanted Noise</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --day-bg: #f8f9fa;
+            --day-text: #212529;
+            --day-primary: #007bff;
+            --day-secondary: #6c757d;
+            --day-highlight-yellow: rgba(255, 255, 0, 0.3);
+            --day-highlight-blue: rgba(0, 123, 255, 0.3);
+            --day-panel: #ffffff;
+            --day-border: #dee2e6;
+            
+            --night-bg: #121212;
+            --night-text: #e0e0e0;
+            --night-primary: #bb86fc;
+            --night-secondary: #a0a0a0;
+            --night-highlight-yellow: rgba(255, 255, 0, 0.5);
+            --night-highlight-blue: rgba(30, 144, 255, 0.5);
+            --night-panel: #1e1e1e;
+            --night-border: #2d2d2d;
+            
+            --sepia-bg: #f4ecd8;
+            --sepia-text: #5a4a42;
+            --sepia-primary: #a67c52;
+            --sepia-secondary: #8a7866;
+            --sepia-highlight-yellow: rgba(204, 173, 108, 0.4);
+            --sepia-highlight-blue: rgba(118, 159, 203, 0.4);
+            --sepia-panel: #e6d9bc;
+            --sepia-border: #c4b5a3;
+            
+            --current-bg: var(--day-bg);
+            --current-text: var(--day-text);
+            --current-primary: var(--day-primary);
+            --current-secondary: var(--day-secondary);
+            --current-highlight-yellow: var(--day-highlight-yellow);
+            --current-highlight-blue: var(--day-highlight-blue);
+            --current-panel: var(--day-panel);
+            --current-border: var(--day-border);
+            
+            --transition-speed: 0.3s;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--current-bg);
+            color: var(--current-text);
+            margin: 0;
+            padding: 0;
+            transition: background-color var(--transition-speed), color var(--transition-speed);
+            line-height: 1.6;
+        }
+
+        .container {
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+
+        header {
+            background-color: var(--current-primary);
+            color: white;
+            padding: 1rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            position: relative;
+            z-index: 100;
+        }
+
+        .header-center {
+            position: absolute;
+            left: 50%;
+            transform: translateX(-50%);
+        }
+
+        .telegram-btn {
+            background-color: #0088cc;
+            color: white;
+            padding: 0.5rem 1rem;
+            border-radius: 50px;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-weight: bold;
+            transition: all 0.2s;
+        }
+
+        .telegram-btn:hover {
+            background-color: #006da3;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
+
+        .theme-selector {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .theme-btn {
+            background: var(--current-panel);
+            border: 1px solid var(--current-border);
+            border-radius: 50%;
+            width: 30px;
+            height: 30px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s;
+        }
+
+        .theme-btn:hover {
+            transform: scale(1.1);
+        }
+
+        .theme-day {
+            background: linear-gradient(135deg, #ffcc00 0%, #ffcc00 50%, #66ccff 50%, #66ccff 100%);
+        }
+
+        .theme-night {
+            background: linear-gradient(135deg, #2c3e50 0%, #2c3e50 50%, #34495e 50%, #34495e 100%);
+        }
+
+        .theme-sepia {
+            background: linear-gradient(135deg, #d2b48c 0%, #d2b48c 50%, #bc9a6a 50%, #bc9a6a 100%);
+        }
+
+        .timer {
+            background-color: var(--current-panel);
+            padding: 0.5rem 1rem;
+            border-radius: 50px;
+            font-weight: bold;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .timer.warning {
+            animation: pulse 1s infinite;
+            color: #dc3545;
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+
+        .content {
+            display: flex;
+            flex: 1;
+            overflow: hidden;
+        }
+
+        @media (max-width: 992px) {
+            .content {
+                flex-direction: column;
+            }
+        }
+
+        .passage-container {
+            flex: 1;
+            overflow-y: auto;
+            padding: 1.5rem;
+            border-right: 1px solid var(--current-border);
+        }
+
+        .questions-container {
+            flex: 1;
+            overflow-y: auto;
+            padding: 1.5rem;
+            background-color: var(--current-panel);
+        }
+
+        .passage {
+            max-width: 800px;
+            margin: 0 auto;
+            background-color: var(--current-panel);
+            padding: 2rem;
+            border-radius: 10px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+        }
+
+        .passage h2 {
+            color: var(--current-primary);
+            margin-top: 0;
+            border-bottom: 2px solid var(--current-primary);
+            padding-bottom: 0.5rem;
+        }
+
+        .passage p {
+            margin-bottom: 1rem;
+            position: relative;
+            z-index: 1;
+        }
+
+        .highlight-menu {
+            position: absolute;
+            background: var(--current-panel);
+            border: 1px solid var(--current-border);
+            border-radius: 6px;
+            padding: 0.5rem;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+            display: flex;
+            gap: 0.5rem;
+            z-index: 1000;
+        }
+
+        .highlight-btn {
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            border: none;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s;
+        }
+
+        .highlight-btn:hover {
+            transform: scale(1.1);
+        }
+
+        .yellow-btn {
+            background-color: #ffd700;
+        }
+
+        .blue-btn {
+            background-color: #87ceeb;
+        }
+
+        .clear-btn {
+            background-color: #f8f9fa;
+            border: 1px solid #dee2e6;
+        }
+
+        .highlight-yellow {
+            background-color: var(--current-highlight-yellow);
+            border-radius: 3px;
+            padding: 0 2px;
+        }
+
+        .highlight-blue {
+            background-color: var(--current-highlight-blue);
+            border-radius: 3px;
+            padding: 0 2px;
+        }
+
+        .question {
+            margin-bottom: 1.5rem;
+            padding: 1rem;
+            border-radius: 8px;
+            background-color: var(--current-bg);
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+        }
+
+        .question h3 {
+            margin-top: 0;
+            color: var(--current-primary);
+        }
+
+        .options {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+            margin-top: 0.5rem;
+        }
+
+        .option {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.5rem;
+            border-radius: 5px;
+            transition: background-color 0.2s;
+            cursor: pointer;
+        }
+
+        .option:hover {
+            background-color: rgba(0, 0, 0, 0.05);
+        }
+
+        .option input {
+            cursor: pointer;
+        }
+
+        .text-input {
+            padding: 0.5rem;
+            border: 1px solid var(--current-border);
+            border-radius: 4px;
+            background-color: var(--current-panel);
+            color: var(--current-text);
+            width: 200px;
+        }
+
+        .submit-btn {
+            background-color: var(--current-primary);
+            color: white;
+            border: none;
+            padding: 0.75rem 1.5rem;
+            border-radius: 50px;
+            font-size: 1.1rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: block;
+            margin: 2rem auto;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .submit-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+        }
+
+        .results {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: var(--current-bg);
+            color: var(--current-text);
+            padding: 2rem;
+            overflow-y: auto;
+            z-index: 1000;
+            display: none;
+        }
+
+        .results-content {
+            max-width: 800px;
+            margin: 0 auto;
+            background-color: var(--current-panel);
+            padding: 2rem;
+            border-radius: 10px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+        }
+
+        .results h2 {
+            color: var(--current-primary);
+            text-align: center;
+            margin-top: 0;
+        }
+
+        .score {
+            text-align: center;
+            font-size: 2rem;
+            margin: 1rem 0;
+            font-weight: bold;
+        }
+
+        .answer {
+            padding: 1rem;
+            margin: 1rem 0;
+            border-radius: 8px;
+            border-left: 4px solid var(--current-secondary);
+        }
+
+        .correct {
+            border-left-color: #28a745;
+            background-color: rgba(40, 167, 69, 0.1);
+        }
+
+        .incorrect {
+            border-left-color: #dc3545;
+            background-color: rgba(220, 53, 69, 0.1);
+        }
+
+        .close-results {
+            background-color: var(--current-primary);
+            color: white;
+            border: none;
+            padding: 0.75rem 1.5rem;
+            border-radius: 50px;
+            font-size: 1.1rem;
+            cursor: pointer;
+            display: block;
+            margin: 2rem auto 0;
+        }
+
+        .night-mode {
+            --current-bg: var(--night-bg);
+            --current-text: var(--night-text);
+            --current-primary: var(--night-primary);
+            --current-secondary: var(--night-secondary);
+            --current-highlight-yellow: var(--night-highlight-yellow);
+            --current-highlight-blue: var(--night-highlight-blue);
+            --current-panel: var(--night-panel);
+            --current-border: var(--night-border);
+        }
+
+        .sepia-mode {
+            --current-bg: var(--sepia-bg);
+            --current-text: var(--sepia-text);
+            --current-primary: var(--sepia-primary);
+            --current-secondary: var(--sepia-secondary);
+            --current-highlight-yellow: var(--sepia-highlight-yellow);
+            --current-highlight-blue: var(--sepia-highlight-blue);
+            --current-panel: var(--sepia-panel);
+            --current-border: var(--sepia-border);
+        }
+
+        .section-title {
+            font-weight: bold;
+            margin-top: 1.5rem;
+            margin-bottom: 0.5rem;
+            color: var(--current-primary);
+        }
+
+        /* Matching headings specific styles */
+        .headings-list {
+            background-color: var(--current-bg);
+            padding: 1rem;
+            border-radius: 8px;
+            margin-bottom: 1.5rem;
+            border: 1px solid var(--current-border);
+        }
+
+        .headings-list ol {
+            padding-left: 1.5rem;
+            margin: 0;
+        }
+
+        .headings-list li {
+            margin-bottom: 0.5rem;
+            padding: 0.3rem;
+            border-radius: 4px;
+            transition: background-color 0.2s;
+        }
+
+        .headings-list li:hover {
+            background-color: rgba(0, 0, 0, 0.05);
+        }
+
+        .matching-question {
+            display: flex;
+            align-items: center;
+            margin-bottom: 1rem;
+            padding: 0.8rem;
+            background-color: var(--current-panel);
+            border-radius: 8px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+        }
+
+        .matching-question select {
+            padding: 0.5rem;
+            border: 1px solid var(--current-border);
+            border-radius: 4px;
+            background-color: var(--current-bg);
+            color: var(--current-text);
+            margin-left: 1rem;
+            min-width: 200px;
+        }
+
+        .question-palette {
+            position: sticky;
+            top: 1rem;
+            background-color: var(--current-panel);
+            padding: 1rem;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            margin-bottom: 1.5rem;
+        }
+
+        .question-palette h3 {
+            margin-top: 0;
+            color: var(--current-primary);
+            text-align: center;
+            border-bottom: 1px solid var(--current-border);
+            padding-bottom: 0.5rem;
+        }
+
+        .question-buttons {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+            justify-content: center;
+            margin-top: 1rem;
+        }
+
+        .question-btn {
+            width: 35px;
+            height: 35px;
+            border-radius: 50%;
+            border: 1px solid var(--current-border);
+            background-color: var(--current-bg);
+            color: var(--current-text);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .question-btn.answered {
+            background-color: #28a745;
+            color: white;
+            border-color: #28a745;
+        }
+
+        .question-btn.current {
+            border: 2px solid var(--current-primary);
+            transform: scale(1.1);
+        }
+
+        .question-btn:hover {
+            transform: scale(1.1);
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <div class="theme-selector">
+                <button class="theme-btn theme-day" title="Day Mode" onclick="setTheme('day')"><i class="fas fa-sun"></i></button>
+                <button class="theme-btn theme-night" title="Night Mode" onclick="setTheme('night')"><i class="fas fa-moon"></i></button>
+                <button class="theme-btn theme-sepia" title="Sepia Mode" onclick="setTheme('sepia')"><i class="fas fa-book"></i></button>
+            </div>
+            
+            <div class="header-center">
+                
+            </div>
+            
+            <div class="timer" id="timer">
+                <i class="fas fa-clock"></i> <span id="time">20:00</span>
+            </div>
+        </header>
+        
+        <div class="content">
+            <div class="passage-container">
+                <div class="passage" id="passage">
+                    <h2>REMOVING UNWANTED NOISE</h2>
+                    
+                    <div class="section-title">Section A</div>
+                    <p>A noisy restaurant, a busy road, or a windy day are all situations that can be intensely frustrating for the hearing impaired when trying to understand what other people are saying. Some 10 million people in the UK suffer from hearing difficulties and, helpful as hearing aids are, those who wear them often complain that background noise continues to interfere with their understanding. But what if hearing aid wearers could choose to filter out all the troublesome sounds and focus just on the voices they want to hear?</p>
+                    <p>Engineer Dr Richard Turner believes that this is fast becoming a possibility. He is developing a system that identifies the distracting noise and 'rubs it out'. 'The poor performance in noise of current hearing devices is a major reason why six million people in the UK who would benefit from hearing aids do not use them,' he said. Moreover, as the population ages, a greater number of people will be hindered by the inability to hear clearly. In addition, hearing-impaired patients who have been fitted with cochlear implants – devices implanted to help those whose auditory hair cells have died – suffer from similar limitations.</p>
+                    
+                    <div class="section-title">Section B</div>
+                    <p>The solution lies in the statistics of sound, as Turner explained: 'Many interfering noises are immediately recognisable. Raindrops patter on a surface, a fire crackles, talkers babble at a party and the wind howls. But what makes these different noises sound the way they do? No two rain sounds are identical because the precise arrangement of falling water droplets is never repeated. Nonetheless, there must be statistical similarities in the sounds of these raindrops compared with, say, the crackle of a fire.' He believes that for this reason, the brain may be able to group similar types of sounds together based on their specific characteristics.</p>
+                    <p>Turner and his colleagues have analysed this process mathematically and then developed algorithms that mimic what the brain is doing. The mathematical system that they have developed is capable of being 'trained' – a process that uses new methods from the field of machine learning – so that it can recognise new sounds. 'Rather surprisingly, it seems that a relatively small set of statistics is sufficient to describe a large number of sounds' he says. Crucially, the system that Turner and his team have come up with is capable of telling the difference between speech and other types of sound.</p>
+                    
+                    <div class="section-title">Section C</div>
+                    <p>'What we can now do is to erase background noise and pass these cleaned-up sounds to a listener to improve their perception in difficult surroundings,' said Turner. The idea is that future devices will have several different modes in which they can operate. These might include a mode for travelling in a car or on a train, a mode for places like a noisy party or a busy restaurant, a mode that can be used outdoors in windy weather, and so on. The device might intelligently select an appropriate mode based on the characteristics of the incoming sound.</p>
+                    
+                    <div class="section-title">Section D</div>
+                    <p>'In a sense we are developing the technology to underpin intelligent hearing devices,' said Turner. An additional possibility would be for users to override the selection made by the device and select a processing mode based upon what sorts of noise they wish to erase. They could even guide the processing on their device using an interface on a mobile phone through wireless communication. Turner anticipates that his team will need two more years of simulating the effect of modifications that clean up sound before they start to work with device specialists. 'If these preliminary tests go well, then we'll be looking to work with hearing device companies to try to adapt their processing in order to incorporate these machine learning techniques.'</p>
+                    
+                    <div class="section-title">Section E</div>
+                    <p>At present, people with tinnitus sometimes use environmental sound generators as a distraction from the ringing in their ears. But such generators offer only a limited selection of sounds – a gently flowing stream, waves lapping on the seashore, or leaves rustling. With the new technology, individual patients could select the best sound to distract them from their tinnitus.</p>
+                    
+                    <div class="section-title">Section F</div>
+                    <p>The technology not only holds promise for helping the hearing impaired, but it also has the potential to improve phone calls – anyone who has ever tried to hold a conversation with someone phoning from a crowded room will recognise the possible benefits of such a facility. Systems that can deal with unwanted audio content would also be welcomed by the increasing numbers of people using video-sharing websites. For example, a video containing a conversation that takes place by a busy roadside on a windy day could be made more intelligible by isolating the speech from the noises – users could even be offered the chance to de-noise their video during the upload process.</p>
+                </div>
+            </div>
+            
+            <div class="questions-container">
+                <div class="question-palette">
+                    <h3>Question Palette</h3>
+                    <div class="timer">
+                        <i class="fas fa-clock"></i> <span id="palette-time">20:00</span>
+                    </div>
+                    <div class="question-buttons">
+                        <div class="question-btn" data-question="14">14</div>
+                        <div class="question-btn" data-question="15">15</div>
+                        <div class="question-btn" data-question="16">16</div>
+                        <div class="question-btn" data-question="17">17</div>
+                        <div class="question-btn" data-question="18">18</div>
+                        <div class="question-btn" data-question="19">19</div>
+                        <div class="question-btn" data-question="20">20</div>
+                        <div class="question-btn" data-question="21">21</div>
+                        <div class="question-btn" data-question="22">22</div>
+                        <div class="question-btn" data-question="23">23</div>
+                        <div class="question-btn" data-question="24">24</div>
+                        <div class="question-btn" data-question="25">25</div>
+                        <div class="question-btn" data-question="26">26</div>
+                    </div>
+                </div>
+                
+                <h2>Questions 14-26</h2>
+                
+                <div class="question" id="q14">
+                    <h3>Questions 14-19</h3>
+                    <p>The text has six sections, A–F. Choose the correct heading for each section from the list of headings below.</p>
+                    
+                    <div class="headings-list">
+                        <ol>
+                            <li>i How hearing loss may be caused by certain types of sounds</li>
+                            <li>ii Uses for Turner's research in media and communications</li>
+                            <li>iii Creating a model for the classification of sounds</li>
+                            <li>iv Potential developments that still require further research</li>
+                            <li>v A drawback in the help currently available to those with hearing problems</li>
+                            <li>vi Providing the hearing-impaired with training in new technology</li>
+                            <li>vii A more effective way to take attention away from a hearing problem</li>
+                            <li>viii Analysing the sounds produced in the process of speaking</li>
+                            <li>ix The possibility of a hearing aid that can adjust itself to different environments</li>
+                        </ol>
+                    </div>
+                    
+                    <div class="matching-question">
+                        <span>14. Paragraph A</span>
+                        <select id="q14_select">
+                            <option value="">Select heading</option>
+                            <option value="i">i</option>
+                            <option value="ii">ii</option>
+                            <option value="iii">iii</option>
+                            <option value="iv">iv</option>
+                            <option value="v">v</option>
+                            <option value="vi">vi</option>
+                            <option value="vii">vii</option>
+                            <option value="viii">viii</option>
+                            <option value="ix">ix</option>
+                        </select>
+                    </div>
+                    
+                    <div class="matching-question">
+                        <span>15. Paragraph B</span>
+                        <select id="q15_select">
+                            <option value="">Select heading</option>
+                            <option value="i">i</option>
+                            <option value="ii">ii</option>
+                            <option value="iii">iii</option>
+                            <option value="iv">iv</option>
+                            <option value="v">v</option>
+                            <option value="vi">vi</option>
+                            <option value="vii">vii</option>
+                            <option value="viii">viii</option>
+                            <option value="ix">ix</option>
+                        </select>
+                    </div>
+                    
+                    <div class="matching-question">
+                        <span>16. Paragraph C</span>
+                        <select id="q16_select">
+                            <option value="">Select heading</option>
+                            <option value="i">i</option>
+                            <option value="ii">ii</option>
+                            <option value="iii">iii</option>
+                            <option value="iv">iv</option>
+                            <option value="v">v</option>
+                            <option value="vi">vi</option>
+                            <option value="vii">vii</option>
+                            <option value="viii">viii</option>
+                            <option value="ix">ix</option>
+                        </select>
+                    </div>
+                    
+                    <div class="matching-question">
+                        <span>17. Paragraph D</span>
+                        <select id="q17_select">
+                            <option value="">Select heading</option>
+                            <option value="i">i</option>
+                            <option value="ii">ii</option>
+                            <option value="iii">iii</option>
+                            <option value="iv">iv</option>
+                            <option value="v">v</option>
+                            <option value="vi">vi</option>
+                            <option value="vii">vii</option>
+                            <option value="viii">viii</option>
+                            <option value="ix">ix</option>
+                        </select>
+                    </div>
+                    
+                    <div class="matching-question">
+                        <span>18. Paragraph E</span>
+                        <select id="q18_select">
+                            <option value="">Select heading</option>
+                            <option value="i">i</option>
+                            <option value="ii">ii</option>
+                            <option value="iii">iii</option>
+                            <option value="iv">iv</option>
+                            <option value="v">v</option>
+                            <option value="vi">vi</option>
+                            <option value="vii">vii</option>
+                            <option value="viii">viii</option>
+                            <option value="ix">ix</option>
+                        </select>
+                    </div>
+                    
+                    <div class="matching-question">
+                        <span>19. Paragraph F</span>
+                        <select id="q19_select">
+                            <option value="">Select heading</option>
+                            <option value="i">i</option>
+                            <option value="ii">ii</option>
+                            <option value="iii">iii</option>
+                            <option value="iv">iv</option>
+                            <option value="v">v</option>
+                            <option value="vi">vi</option>
+                            <option value="vii">vii</option>
+                            <option value="viii">viii</option>
+                            <option value="ix">ix</option>
+                        </select>
+                    </div>
+                </div>
+                
+                <div class="question" id="q20">
+                    <h3>Questions 20-23</h3>
+                    <p>Complete the summary below. Choose NO MORE THAN TWO WORDS from the passage for each answer.</p>
+                    <p>Improving the performance of hearing aids</p>
+                    <p>At present, many people find their hearing aids do not work well when there is background noise. This also applies to people without hearing aids who have had implants fitted to help with hearing loss. Dr Richard Turner is looking for a solution to this problem. Although sounds are never <input type="text" class="text-input" id="q20_input" name="q20">, he believes they do share some similarities. He and his colleagues have worked on a mathematical system using <input type="text" class="text-input" id="q21_input" name="q21"> which replicate how we hear sounds. To allow this system to be 'trained', they have applied procedures used in machine learning and found that many different sounds can be described using a limited number of <input type="text" class="text-input" id="q22_input" name="q22"> They have now developed a system that can distinguish <input type="text" class="text-input" id="q23_input" name="q23"> from other sounds.</p>
+                </div>
+                
+                <div class="question" id="q24">
+                    <h3>Questions 24-26</h3>
+                    <p>Choose the correct letter, A, B, C or D.</p>
+                    
+                    <div class="question">
+                        <p><strong>24</strong> Turner's team are now planning a new development involving a device which could</p>
+                        <div class="options">
+                            <div class="option">
+                                <input type="radio" id="q24_a" name="q24" value="a">
+                                <label for="q24_a">A allow sound to be heard at a greater distance.</label>
+                            </div>
+                            <div class="option">
+                                <input type="radio" id="q24_b" name="q24" value="b">
+                                <label for="q24_b">B adapt itself to different kinds of background noise.</label>
+                            </div>
+                            <div class="option">
+                                <input type="radio" id="q24_c" name="q24" value="c">
+                                <label for="q24_c">C allow a user to remove all types of sound completely.</label>
+                            </div>
+                            <div class="option">
+                                <input type="radio" id="q24_d" name="q24" value="d">
+                                <label for="q24_d">D adapt itself to disorders involving other senses.</label>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="question">
+                        <p><strong>25</strong> In section E, a stream, waves and leaves are examples of the sounds that tinnitus sufferers</p>
+                        <div class="options">
+                            <div class="option">
+                                <input type="radio" id="q25_a" name="q25" value="a">
+                                <label for="q25_a">A can currently use to help their condition.</label>
+                            </div>
+                            <div class="option">
+                                <input type="radio" id="q25_b" name="q25" value="b">
+                                <label for="q25_b">B might choose to use if they were available.</label>
+                            </div>
+                            <div class="option">
+                                <input type="radio" id="q25_c" name="q25" value="c">
+                                <label for="q25_c">C hear in their ears as a result of their condition.</label>
+                            </div>
+                            <div class="option">
+                                <input type="radio" id="q25_d" name="q25" value="d">
+                                <label for="q25_d">D find to be the most natural solutions to their problem.</label>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="question">
+                        <p><strong>26</strong> The writer refers to 'a busy roadside on a windy day' in section F to illustrate that</p>
+                        <div class="options">
+                            <div class="option">
+                                <input type="radio" id="q26_a" name="q26" value="a">
+                                <label for="q26_a">A unwanted noise could be erased from video recordings.</label>
+                            </div>
+                            <div class="option">
+                                <input type="radio" id="q26_b" name="q26" value="b">
+                                <label for="q26_b">B some environments are difficult for the hearing-impaired.</label>
+                            </div>
+                            <div class="option">
+                                <input type="radio" id="q26_c" name="q26" value="c">
+                                <label for="q26_c">C when noises are combined in a video they are difficult to erase.</label>
+                            </div>
+                            <div class="option">
+                                <input type="radio" id="q26_d" name="q26" value="d">
+                                <label for="q26_d">D people must cooperate in order to learn how to apply the technology</label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <button class="submit-btn" onclick="submitAnswers()">Submit Answers</button>
+            </div>
+        </div>
+    </div>
+    
+    <div class="results" id="results">
+        <div class="results-content">
+            <h2>Test Results</h2>
+            <div class="score" id="score"></div>
+            
+            <div id="answers">
+                <!-- Results will be inserted here -->
+            </div>
+            
+            <button class="close-results" onclick="closeResults()">Close Results</button>
+        </div>
+    </div>
+    
+    <script>
+        // Theme switching
+        function setTheme(theme) {
+            document.body.classList.remove('night-mode', 'sepia-mode');
+            
+            if (theme === 'night') {
+                document.body.classList.add('night-mode');
+            } else if (theme === 'sepia') {
+                document.body.classList.add('sepia-mode');
+            }
+            
+            // Save theme preference
+            localStorage.setItem('theme', theme);
+        }
+        
+        // Load saved theme
+        const savedTheme = localStorage.getItem('theme');
+        if (savedTheme) {
+            setTheme(savedTheme);
+        }
+        
+        // Timer functionality
+        let timeLeft = 20 * 60; // 20 minutes in seconds
+        const timerElement = document.getElementById('timer');
+        const timeDisplay = document.getElementById('time');
+        const paletteTimeDisplay = document.getElementById('palette-time');
+        
+        function updateTimer() {
+            const minutes = Math.floor(timeLeft / 60);
+            const seconds = timeLeft % 60;
+            
+            timeDisplay.textContent = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+            paletteTimeDisplay.textContent = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+            
+            if (timeLeft === 5 * 60) {
+                timerElement.classList.add('warning');
+            }
+            
+            if (timeLeft <= 0) {
+                clearInterval(timerInterval);
+                submitAnswers();
+            } else {
+                timeLeft--;
+            }
+        }
+        
+        const timerInterval = setInterval(updateTimer, 1000);
+        
+        // Text highlighting
+        let highlightMenu = null;
+        let lastSelection = null;
+        
+        function createHighlightMenu() {
+            if (highlightMenu) {
+                document.body.removeChild(highlightMenu);
+            }
+            
+            highlightMenu = document.createElement('div');
+            highlightMenu.className = 'highlight-menu';
+            highlightMenu.style.display = 'none';
+            
+            const yellowBtn = document.createElement('button');
+            yellowBtn.className = 'highlight-btn yellow-btn';
+            yellowBtn.innerHTML = '<i class="fas fa-highlighter"></i>';
+            yellowBtn.title = 'Yellow Highlight';
+            yellowBtn.onclick = () => applyHighlight('yellow');
+            
+            const blueBtn = document.createElement('button');
+            blueBtn.className = 'highlight-btn blue-btn';
+            blueBtn.innerHTML = '<i class="fas fa-highlighter"></i>';
+            blueBtn.title = 'Blue Highlight';
+            blueBtn.onclick = () => applyHighlight('blue');
+            
+            const clearBtn = document.createElement('button');
+            clearBtn.className = 'highlight-btn clear-btn';
+            clearBtn.innerHTML = '<i class="fas fa-eraser"></i>';
+            clearBtn.title = 'Clear Highlight';
+            clearBtn.onclick = clearHighlight;
+            
+            highlightMenu.appendChild(yellowBtn);
+            highlightMenu.appendChild(blueBtn);
+            highlightMenu.appendChild(clearBtn);
+            
+            document.body.appendChild(highlightMenu);
+            
+            return highlightMenu;
+        }
+        
+        function getSelectedText() {
+            if (window.getSelection) {
+                return window.getSelection();
+            } else if (document.selection) {
+                return document.selection.createRange();
+            }
+            return null;
+        }
+        
+        function showHighlightMenu(x, y) {
+            if (!highlightMenu) {
+                highlightMenu = createHighlightMenu();
+            }
+            
+            highlightMenu.style.display = 'flex';
+            highlightMenu.style.top = (y - highlightMenu.offsetHeight - 10) + 'px';
+            highlightMenu.style.left = (x - highlightMenu.offsetWidth / 2) + 'px';
+        }
+        
+        function hideHighlightMenu() {
+            if (highlightMenu) {
+                highlightMenu.style.display = 'none';
+            }
+        }
+        
+        function applyHighlight(color) {
+            if (!lastSelection) return;
+            
+            const range = lastSelection.getRangeAt(0);
+            const selectedText = range.toString();
+            if (!selectedText.trim()) return;
+            
+            const span = document.createElement('span');
+            span.className = `highlight-${color}`;
+            
+            try {
+                span.appendChild(range.extractContents());
+                range.insertNode(span);
+            } catch (e) {
+                console.error("Error applying highlight:", e);
+            }
+            
+            // Clear selection
+            if (window.getSelection) {
+                window.getSelection().removeAllRanges();
+            }
+            
+            hideHighlightMenu();
+            lastSelection = null;
+        }
+        
+        function clearHighlight() {
+            if (!lastSelection) return;
+            
+            const range = lastSelection.getRangeAt(0);
+            let node = range.startContainer;
+            
+            // Traverse up to find highlight element
+            while (node !== document && node !== null) {
+                if (node.nodeType === Node.ELEMENT_NODE) {
+                    if (node.classList.contains('highlight-yellow') || node.classList.contains('highlight-blue')) {
+                        // Replace with text node
+                        const text = document.createTextNode(node.textContent);
+                        node.parentNode.replaceChild(text, node);
+                        break;
+                    }
+                }
+                node = node.parentNode;
+            }
+            
+            // Clear selection
+            if (window.getSelection) {
+                window.getSelection().removeAllRanges();
+            }
+            
+            hideHighlightMenu();
+            lastSelection = null;
+        }
+        
+        document.addEventListener('mouseup', (e) => {
+            const selection = getSelectedText();
+            if (!selection || selection.toString().trim() === '') {
+                hideHighlightMenu();
+                return;
+            }
+            
+            lastSelection = selection;
+            showHighlightMenu(e.pageX, e.pageY);
+        });
+        
+        document.addEventListener('mousedown', (e) => {
+            if (highlightMenu && !highlightMenu.contains(e.target)) {
+                hideHighlightMenu();
+            }
+        });
+        
+        // Question navigation
+        const questionButtons = document.querySelectorAll('.question-btn');
+        questionButtons.forEach(btn => {
+            btn.addEventListener('click', () => {
+                const questionId = btn.getAttribute('data-question');
+                const questionElement = document.getElementById(`q${questionId}`);
+                if (questionElement) {
+                    questionElement.scrollIntoView({ behavior: 'smooth' });
+                    
+                    // Update current question indicator
+                    questionButtons.forEach(b => b.classList.remove('current'));
+                    btn.classList.add('current');
+                }
+            });
+        });
+        
+        // Mark questions as answered when interacted with
+        const inputs = document.querySelectorAll('input, select');
+        inputs.forEach(input => {
+            input.addEventListener('change', () => {
+                // Find which question this input belongs to
+                let questionId = null;
+                if (input.id.includes('q14') || input.id.includes('q15') || 
+                    input.id.includes('q16') || input.id.includes('q17') || 
+                    input.id.includes('q18') || input.id.includes('q19')) {
+                    questionId = input.id.replace('_select', '').replace('q', '');
+                } else if (input.id.includes('q20') || input.id.includes('q21') || 
+                          input.id.includes('q22') || input.id.includes('q23')) {
+                    questionId = input.id.replace('_input', '').replace('q', '');
+                } else if (input.name.includes('q24') || input.name.includes('q25') || 
+                          input.name.includes('q26')) {
+                    questionId = input.name.replace('q', '');
+                }
+                
+                if (questionId) {
+                    const questionBtn = document.querySelector(`.question-btn[data-question="${questionId}"]`);
+                    if (questionBtn && input.value !== '') {
+                        questionBtn.classList.add('answered');
+                    }
+                }
+            });
+        });
+        
+        // Answer submission and scoring
+        const correctAnswers = {
+            q14: 'v',
+            q15: 'iii',
+            q16: 'ix',
+            q17: 'iv',
+            q18: 'vii',
+            q19: 'ii',
+            q20: 'repeated',
+            q21: 'algorithms',
+            q22: 'statistics',
+            q23: 'speech',
+            q24: 'b',
+            q25: 'a',
+            q26: 'a'
+        };
+        
+        const answerLocations = {
+            q14: "Section A: 'those who wear them often complain that background noise continues to interfere with their understanding'",
+            q15: "Section B: 'developed algorithms that mimic what the brain is doing' and 'a relatively small set of statistics is sufficient to describe a large number of sounds'",
+            q16: "Section C: 'future devices will have several different modes in which they can operate' and 'The device might intelligently select an appropriate mode'",
+            q17: "Section D: 'need two more years of simulating the effect of modifications' and 'preliminary tests'",
+            q18: "Section E: 'individual patients could select the best sound to distract them from their tinnitus'",
+            q19: "Section F: 'improve phone calls' and 'video-sharing websites'",
+            q20: "Section B: 'No two rain sounds are identical because the precise arrangement of falling water droplets is never repeated'",
+            q21: "Section B: 'developed algorithms that mimic what the brain is doing'",
+            q22: "Section B: 'a relatively small set of statistics is sufficient to describe a large number of sounds'",
+            q23: "Section B: 'telling the difference between speech and other types of sound'",
+            q24: "Section C: 'The device might intelligently select an appropriate mode based on the characteristics of the incoming sound'",
+            q25: "Section E: 'people with tinnitus sometimes use environmental sound generators as a distraction from the ringing in their ears. But such generators offer only a limited selection of sounds – a gently flowing stream, waves lapping on the seashore, or leaves rustling'",
+            q26: "Section F: 'a video containing a conversation that takes place by a busy roadside on a windy day could be made more intelligible by isolating the speech from the noises'"
+        };
+        
+        function submitAnswers() {
+            clearInterval(timerInterval);
+            
+            let score = 0;
+            const totalQuestions = Object.keys(correctAnswers).length;
+            const answersContainer = document.getElementById('answers');
+            answersContainer.innerHTML = '';
+            
+            for (const question in correctAnswers) {
+                let userAnswer = '';
+                
+                if (question === 'q14' || question === 'q15' || question === 'q16' || 
+                    question === 'q17' || question === 'q18' || question === 'q19') {
+                    const selectElement = document.getElementById(`${question}_select`);
+                    userAnswer = selectElement ? selectElement.value : '';
+                } else if (question === 'q20' || question === 'q21' || question === 'q22' || question === 'q23') {
+                    userAnswer = document.getElementById(`${question}_input`).value.trim().toLowerCase();
+                } else {
+                    const selectedOption = document.querySelector(`input[name="${question}"]:checked`);
+                    userAnswer = selectedOption ? selectedOption.value : '';
+                }
+                
+                const isCorrect = userAnswer === correctAnswers[question];
+                if (isCorrect) score++;
+                
+                const answerDiv = document.createElement('div');
+                answerDiv.className = `answer ${isCorrect ? 'correct' : 'incorrect'}`;
+                
+                answerDiv.innerHTML = `
+                    <p><strong>Question ${question.toUpperCase()}:</strong> ${isCorrect ? 'Correct' : 'Incorrect'}</p>
+                    <p>Your answer: ${userAnswer || 'Not answered'}</p>
+                    <p>Correct answer: ${correctAnswers[question]}</p>
+                    <p>Location in text: ${answerLocations[question]}</p>
+                `;
+                
+                answersContainer.appendChild(answerDiv);
+            }
+            
+            document.getElementById('score').textContent = `Score: ${score}/${totalQuestions}`;
+            document.getElementById('results').style.display = 'block';
+        }
+        
+        function closeResults() {
+            document.getElementById('results').style.display = 'none';
+        }
+    </script>
+</body>
+</html>

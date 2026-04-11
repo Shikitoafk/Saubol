@@ -1,0 +1,1311 @@
+<script type="text/javascript">
+        var gk_isXlsx = false;
+        var gk_xlsxFileLookup = {};
+        var gk_fileData = {};
+        function filledCell(cell) {
+          return cell !== '' && cell != null;
+        }
+        function loadFileData(filename) {
+        if (gk_isXlsx && gk_xlsxFileLookup[filename]) {
+            try {
+                var workbook = XLSX.read(gk_fileData[filename], { type: 'base64' });
+                var firstSheetName = workbook.SheetNames[0];
+                var worksheet = workbook.Sheets[firstSheetName];
+
+                // Convert sheet to JSON to filter blank rows
+                var jsonData = XLSX.utils.sheet_to_json(worksheet, { header: 1, blankrows: false, defval: '' });
+                // Filter out blank rows (rows where all cells are empty, null, or undefined)
+                var filteredData = jsonData.filter(row => row.some(filledCell));
+
+                // Heuristic to find the header row by ignoring rows with fewer filled cells than the next row
+                var headerRowIndex = filteredData.findIndex((row, index) =>
+                  row.filter(filledCell).length >= filteredData[index + 1]?.filter(filledCell).length
+                );
+                // Fallback
+                if (headerRowIndex === -1 || headerRowIndex > 25) {
+                  headerRowIndex = 0;
+                }
+
+                // Convert filtered JSON back to CSV
+                var csv = XLSX.utils.aoa_to_sheet(filteredData.slice(headerRowIndex)); // Create a new sheet from filtered array of arrays
+                csv = XLSX.utils.sheet_to_csv(csv, { header: 1 });
+                return csv;
+            } catch (e) {
+                console.error(e);
+                return "";
+            }
+        }
+        return gk_fileData[filename] || "";
+        }
+        </script><!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>IELTS Reading Test - The Growing Industry of Background Music</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        /* Main styles */
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: Arial, sans-serif;
+            overflow: hidden;
+            background-color: #f0f8ff; /* Pale blue background */
+        }
+        .test-wrapper {
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+        }
+        .test-container {
+            display: flex;
+            flex: 1;
+            overflow: hidden;
+        }
+        /* Header styles */
+        .header {
+            background-color: #fff;
+            border-bottom: 1px solid #ddd;
+            padding: 10px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .header__logo img {
+            height: 40px;
+        }
+        .header__timer {
+            font-size: 1.2rem;
+            font-weight: bold;
+            color: #333;
+            background-color: #e6f2ff; /* Lighter blue for timer */
+            padding: 5px 15px;
+            border-radius: 20px;
+            border: 1px solid #ddd;
+            transition: all 0.3s ease;
+        }
+        .header__icons {
+            display: flex;
+            gap: 15px;
+            align-items: center;
+        }
+        .header__icon {
+            font-size: 1.2rem;
+            color: #666;
+            cursor: pointer;
+        }
+        .telegram-button {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            background-color: #0088cc;
+            color: white;
+            padding: 6px 12px;
+            border-radius: 20px;
+            text-decoration: none;
+            font-size: 0.9rem;
+            font-weight: bold;
+            transition: background-color 0.3s ease;
+        }
+        .telegram-button:hover {
+            background-color: #0077b3;
+        }
+        /* Settings Modal */
+        .settings-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: rgba(0,0,0,0.7);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+        }
+        .settings-content {
+            background-color: white;
+            width: 90%;
+            max-width: 500px;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+        }
+        .settings-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 20px;
+            border-bottom: 1px solid #ddd;
+            background-color: #f0f8ff;
+        }
+        .settings-header h2 {
+            margin: 0;
+            font-size: 1.2rem;
+        }
+        .settings-close {
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: #666;
+        }
+        .settings-body {
+            padding: 20px;
+        }
+        .settings-option {
+            display: flex;
+            align-items: center;
+            padding: 10px 0;
+            border-bottom: 1px solid #eee;
+            cursor: pointer;
+        }
+        .settings-option:last-child {
+            border-bottom: none;
+        }
+        .settings-option i {
+            margin-right: 15px;
+            width: 20px;
+            text-align: center;
+            color: #2a6c96;
+        }
+        .settings-option span {
+            flex: 1;
+        }
+        .sectionRubric {
+            margin: 1em;
+            width: calc(100% - 4em - 3px);
+            border-radius: 4px;
+            padding: 0.75em 1em;
+            background: white;
+            border: 1px solid #d5d5d5;
+        }
+        .sectionRubric h2, .sectionRubric p {
+            margin: 0;
+        }
+        .sectionRubric h2 {
+            font-size: 1rem;
+            margin-bottom: 0.25em;
+        }
+        /* Passage container */
+        .passage-container {
+            width: 45%;
+            height: 100%;
+            overflow-y: auto;
+            padding: 20px;
+            box-sizing: border-box;
+            background-color: #f0f8ff; /* Pale blue */
+            position: relative;
+            -webkit-user-select: text;
+            user-select: text;
+        }
+        /* Questions container */
+        .questions-container {
+            flex: 1;
+            overflow-y: auto;
+            padding: 20px;
+            box-sizing: border-box;
+            background-color: #f0f8ff; /* Pale blue */
+            -webkit-user-select: text;
+            user-select: text;
+        }
+        /* Highlight styles */
+        .highlight {
+            position: relative;
+            border-radius: 2px;
+            padding: 0 1px;
+            margin: 0 -1px;
+        }
+        .highlight.yellow {
+            background-color: rgba(255, 255, 0, 0.3);
+        }
+        .highlight.green {
+            background-color: rgba(0, 255, 0, 0.3);
+        }
+        .highlight.pink {
+            background-color: rgba(255, 105, 180, 0.3);
+        }
+        .highlight.blue {
+            background-color: rgba(0, 191, 255, 0.3);
+        }
+        .highlight-toolbar {
+            position: fixed;
+            background: white;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+            display: none;
+            z-index: 1000;
+            padding: 5px;
+            transform: translate(-50%, -100%);
+            margin-top: -5px;
+        }
+        .highlight-toolbar button {
+            background: none;
+            border: none;
+            width: 24px;
+            height: 24px;
+            cursor: pointer;
+            margin: 0 2px;
+            border-radius: 3px;
+        }
+        .highlight-toolbar button:hover {
+            background: #f0f0f0;
+        }
+        .highlight-toolbar button.remove {
+            color: #ff0000;
+        }
+        /* Divider styling */
+        .divider {
+            width: 10px;
+            background: #ddd;
+            cursor: col-resize;
+            position: relative;
+        }
+        .divider-handle {
+            width: 4px;
+            height: 40px;
+            background: #999;
+            border-radius: 2px;
+            position: absolute;
+            top: 50%;
+            left: 3px;
+            transform: translateY(-50%);
+        }
+        /* Question styling */
+        .question {
+            margin-bottom: 30px;
+        }
+        .question-rubric {
+            margin-bottom: 15px;
+            font-weight: bold;
+        }
+        .question-options {
+            list-style-type: none;
+            padding: 0;
+        }
+        .question-options li {
+            margin: 10px 0;
+            display: flex;
+            align-items: center;
+        }
+        /* Matching questions */
+        .matching-option {
+            display: flex;
+            align-items: center;
+            margin: 5px 0;
+        }
+        .matching-option select {
+            min-width: 50px;
+            padding: 5px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            margin-left: 10px;
+        }
+        /* Summary completion styles */
+        .summary-completion-container {
+            margin-top: 20px;
+        }
+        .summary-text p {
+            line-height: 2.5;
+            font-size: 16px;
+        }
+        .summary-input {
+            width: 150px;
+            padding: 5px;
+            border: 2px dashed #999;
+            border-radius: 4px;
+            margin: 0 5px;
+            font-size: 15px;
+            font-weight: bold;
+            background-color: #e3f2fd;
+        }
+        .summary-input.correct {
+            border-color: #28a745;
+            background-color: #e9f7ef;
+            border-style: solid;
+        }
+        .summary-input.incorrect {
+            border-color: #dc3545;
+            background-color: #f8d7da;
+            border-style: solid;
+        }
+        .summary-feedback {
+            display: inline-block;
+            margin-left: 10px;
+            font-size: 14px;
+        }
+        .summary-feedback.correct {
+            color: #28a745;
+        }
+        .summary-feedback.incorrect {
+            color: #dc3545;
+        }
+        /* Footer styles */
+        .footer {
+            background: #f5f5f5;
+            border-top: 1px solid #ddd;
+            padding: 10px;
+        }
+        .nav-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        .footer__questionWrapper {
+            display: flex;
+            align-items: center;
+        }
+        .footer__questionNo {
+            background: none;
+            border: none;
+            padding: 5px 10px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+        .footer__subquestionWrapper {
+            display: flex;
+            flex-wrap: wrap;
+            margin-left: 10px;
+        }
+        .subQuestion {
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            border: 1px solid #ccc;
+            background: #f0f0f0;
+            margin: 2px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #666;
+        }
+        .subQuestion.active {
+            background: #0066cc;
+            color: white;
+            border-color: #0066cc;
+        }
+        .subQuestion.attempted {
+            background: #0066cc;
+            color: white;
+        }
+        .footer__deliverButton {
+            background: #0066cc;
+            color: white;
+            border: none;
+            padding: 8px 15px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+        .footer__deliverButton:disabled {
+            background: #cccccc;
+            cursor: not-allowed;
+        }
+        .sr-only {
+            position: absolute;
+            width: 1px;
+            height: 1px;
+            padding: 0;
+            margin: -1px;
+            overflow: hidden;
+            clip: rect(0, 0, 0, 0);
+            white-space: nowrap;
+            border-width: 0;
+        }
+        /* Highlight color buttons */
+        .highlight-color {
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            display: inline-block;
+            margin: 0 2px;
+            cursor: pointer;
+            border: 1px solid #ccc;
+        }
+        .highlight-color.yellow { background-color: #ffff00; }
+        .highlight-color.green { background-color: #00ff00; }
+        .highlight-color.pink { background-color: #ff69b4; }
+        .highlight-color.blue { background-color: #00bfff; }
+        /* Time warning styles */
+        .timer-warning {
+            color: #ff0000;
+            animation: blink 1s infinite;
+        }
+        @keyframes blink {
+            0% { opacity: 1; }
+            50% { opacity: 0.5; }
+            100% { opacity: 1; }
+        }
+        /* Submission modal styles */
+        .submission-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: rgba(0,0,0,0.8);
+            z-index: 2000;
+            justify-content: center;
+            align-items: center;
+        }
+        .submission-content {
+            background-color: white;
+            width: 80%;
+            max-width: 800px;
+            border-radius: 10px;
+            padding: 30px;
+            box-shadow: 0 5px 30px rgba(0,0,0,0.5);
+            max-height: 80vh;
+            overflow-y: auto;
+        }
+        .submission-content h2 {
+            margin-top: 0;
+            color: #0066cc;
+            border-bottom: 2px solid #0066cc;
+            padding-bottom: 10px;
+        }
+        .submission-content p {
+            margin-bottom: 20px;
+            color: #333;
+        }
+        .answers-section {
+            margin-top: 20px;
+        }
+        .answers-section h3 {
+            color: #0066cc;
+            margin-bottom: 15px;
+        }
+        .answer-item {
+            padding: 10px;
+            margin-bottom: 8px;
+            border-radius: 4px;
+            border-left: 4px solid #ddd;
+            background-color: #f9f9f9;
+        }
+        .answer-item.correct {
+            border-left-color: #4CAF50;
+            background-color: #f0fff0;
+        }
+        .answer-item.incorrect {
+            border-left-color: #f44336;
+            background-color: #fff0f0;
+        }
+        .answer-text {
+            font-weight: bold;
+        }
+        .correct-answer {
+            color: #4CAF50;
+            margin-left: 10px;
+        }
+        .incorrect-answer {
+            color: #f44336;
+            margin-left: 10px;
+        }
+        .answer-status {
+            float: right;
+            margin-left: 15px;
+        }
+        .correct-status {
+            color: #4CAF50;
+        }
+        .incorrect-status {
+            color: #f44336;
+        }
+        .submission-buttons {
+            margin-top: 25px;
+            text-align: right;
+            clear: both;
+        }
+        .submission-buttons button {
+            padding: 8px 15px;
+            margin-left: 10px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+        .submission-buttons .confirm {
+            background: #0066cc;
+            color: white;
+            border: none;
+        }
+        /* Disabled state */
+        input:disabled, select:disabled {
+            background-color: #f5f5f5;
+            cursor: not-allowed;
+        }
+        /* Score display styles */
+        .score-display {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        .score-number {
+            font-size: 3rem;
+            font-weight: bold;
+            color: #0066cc;
+            margin: 10px 0;
+        }
+        .score-total {
+            font-size: 1.5rem;
+            color: #666;
+        }
+        .performance-rating {
+            font-size: 1.5rem;
+            font-weight: bold;
+            margin: 15px 0;
+            padding: 10px;
+            border-radius: 5px;
+        }
+        .excellent {
+            color: #2E7D32;
+            background-color: #E8F5E9;
+        }
+        .very-good {
+            color: #388E3C;
+            background-color: #E8F5E9;
+        }
+        .good {
+            color: #689F38;
+            background-color: #F1F8E9;
+        }
+        .fair {
+            color: #F57C00;
+            background-color: #FFF3E0;
+        }
+        .poor {
+            color: #D32F2F;
+            background-color: #FFEBEE;
+        }
+        /* IELTS Band Score */
+        .band-score {
+            font-size: 2rem;
+            font-weight: bold;
+            color: #0066cc;
+            margin: 10px 0;
+        }
+        /* Correct answer highlight */
+        .correct-highlight {
+            background-color: rgba(76, 175, 80, 0.3);
+            padding: 2px;
+            border-radius: 2px;
+        }
+        /* Incorrect answer highlight */
+        .incorrect-highlight {
+            background-color: rgba(244, 67, 54, 0.3);
+            padding: 2px;
+            border-radius: 2px;
+        }
+        /* Answer comparison section */
+        .answer-comparison {
+            margin-top: 20px;
+            padding: 15px;
+            background-color: #f5f5f5;
+            border-radius: 5px;
+            display: none;
+        }
+        .answer-comparison h3 {
+            margin-top: 0;
+            color: #0066cc;
+        }
+        /* Time spent indicator */
+        .time-spent {
+            font-size: 1rem;
+            color: #666;
+            margin-bottom: 15px;
+            text-align: center;
+        }
+        /* Dropdown answer display */
+        .dropdown-answer {
+            display: inline-block;
+            margin-left: 10px;
+            font-weight: normal;
+        }
+        .dropdown-answer.correct {
+            color: #4CAF50;
+        }
+        .dropdown-answer.incorrect {
+            color: #f44336;
+        }
+    </style>
+</head>
+<body>
+    <div class="test-wrapper">
+        <!-- Header with Timer -->
+        <header class="header">
+            <div class="header__logo">
+                <img src="https://d2snzxottmona5.cloudfront.net/releases/3.46.0/images/logo/ielts.svg" alt="IELTS Logo">
+            </div>
+            <div class="header__timer" id="testTimer">00:00</div>
+            <div class="header__icons">
+                
+                <i class="fas fa-wifi header__icon"></i>
+                <i class="fas fa-bell header__icon"></i>
+                <i class="fas fa-cog header__icon" id="settingsButton"></i>
+            </div>
+        </header>
+
+        <!-- Settings Modal -->
+        <div class="settings-modal" id="settingsModal">
+            <div class="settings-content">
+                <div class="settings-header">
+                    <h2>Options</h2>
+                    <button class="settings-close" id="settingsClose">&times;</button>
+                </div>
+                <div class="settings-body">
+                    <div class="settings-option">
+                        <i class="fas fa-paper-plane"></i>
+                        <span>Go to submission page</span>
+                    </div>
+                    <div class="settings-option" id="contrastOption">
+                        <i class="fas fa-adjust"></i>
+                        <span>Contrast</span>
+                    </div>
+                    <div class="settings-option" id="textSizeOption">
+                        <i class="fas fa-search-plus"></i>
+                        <span>Text size</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Section Rubric -->
+        <div class="sectionRubric" id="sectionRubric">
+            <h2>Part 2</h2>
+            <p>Read the text and answer questions 17-32.</p>
+        </div>
+
+        <div class="test-container">
+            <!-- Passage Section -->
+            <div class="passage-container" id="passage-container">
+                <div class="highlight-toolbar" id="highlightToolbar">
+                    <button class="highlight-color yellow" data-color="yellow" title="Yellow highlight"></button>
+                    <button class="highlight-color green" data-color="green" title="Green highlight"></button>
+                    <button class="highlight-color pink" data-color="pink" title="Pink highlight"></button>
+                    <button class="highlight-color blue" data-color="blue" title="Blue highlight"></button>
+                    <button class="remove" title="Remove highlight"><i class="fas fa-times"></i></button>
+                </div>
+
+                <div id="passageContent">
+                    <h2 style="text-align: center;">The growing industry of background music</h2>
+                    <p style="text-align: center; font-style: italic;">The background music industry has become more sophisticated and more influential than many people realise.</p>
+                    <p><strong>A</strong> Music can be surprisingly powerful, even when it is played in the background and is barely noticeable. Over recent decades, creating background music has become a booming industry. Researchers have found that music played in commercial settings can have an impact on how much time we think has passed while waiting in a queue, how engaged customers are with sales staff, and even how sweet or bitter food tastes.</p>
+                    <p><strong>B</strong> Rob Wood is the founder of Music Concierge in the UK, a company that chooses background music for businesses. Some clients hire Wood because they want to influence behaviour, others seek to create a certain atmosphere, culture or ambience. The core of a music consultant's work is creating distinct, cohesive musical identities for brands. In 2018, Wood worked on music for a new hotel. His brief was to produce distinct playlists for separate areas: the lobby, the restaurant and the gym. The hotel manager explained every detail: the build materials, the history, and a prediction of the average restaurant bill. Much of Wood's job involves taking abstract suggestions and turning them into music. A large amount of intuition is also required. It is a complex process and part of his job is comprehending what businesses really want, which can be very demanding. It is sometimes hard to know whether he should deliver something that will precisely match expectations or pleasantly surprise them.</p>
+                    <p><strong>C</strong> In the 1920s, George Owen Squier, a former US army officer, developed a new way to transmit audio through wires. His idea led to the creation of Wired Music (renamed Muzak), which enabled businesses to play music throughout offices and commercial premises. In its early days, Muzak sold itself on the basis that its music would enhance job performance. Its programme for offices and factories played classical recordings in 15-minute sequences, alternated with silence. Each time the music sequence resumed, it rose in intensity. Muzak set the template for background music that would persist for decades. In terms of distribution, Muzak used wires to convey its music; the company sent a bulky cartridge to its customers through the post and it was then played through a specially designed device. In the 1970s, the introduction of affordable multi-deck tape players suddenly made it easy for businesses to choose and play music continuously. The CD was the first digital format for music and, by the late 1990s, it had enabled background music companies to develop digital libraries where tracks could be organised according to preference. But that was just a taste of the new world of infinite choice that was to come.</p>
+                    <p><strong>D</strong> Despite technological advances, it's the influence that background music has on customer behaviour which is driving its growth. Psychologists believe that music influences consumers in two main ways. The first is physical; numerous studies have confirmed that we often subconsciously match what we are doing to what we hear. For instance, one study found that diners chewed faster when higher-tempo music was played. The second approach focuses on the associations that music can trigger. Another study revealed that diners in a cafeteria were willing to part with more money when classical music was played in the background than when there was none at all. One explanation, researchers suggested, was that diners associated classical music with quality.</p>
+                    <p><strong>E</strong> However, it is the inoffensive nature of this kind of background music that creates some of the industry's fiercest critics. A UK group, Pipedown, founded by Nigel Rodgers, campaigns 'for freedom from unwanted music in public places'. The group claims that such music is impossible to escape and adds to the overall levels of noise pollution in public. 'You're not going for a special sort of atmosphere, you're just going to do your shopping,' Rodgers said. One of Pipedown's boldest claims is that there is 'no genuine evidence' that background music increases sales. Opinions vary on this question, although most professionals do not share Pipedown's position. Adrian North, a psychology professor at Curtin University in Perth, Australia, argues that small purchases are where it is most possible to influence consumers. He conducted a study that found that customers were more likely to choose either French or German wine, depending on which of the respective countries' music they heard, something he contrasted with a decision like buying a car where music would not have such an impact.</p>
+                    <p><strong>F</strong> Others argue that it makes more sense to think about the influence of background music in terms of subtle, long-term benefits, rather than immediate impact on sales. Rhonda Hadi, marketing professor at Oxford University, UK, believes companies that provide an experience, such as flights or accommodation, can reap the greatest rewards. She believes that people 'rely on any cues they can to gauge the quality of the service that they've received'. Companies have capitalised on the sweeping changes to the world of retail in recent years. Many businesses are no longer just functional places to buy things, they are presented as an experience. Since 2008, streaming music via the internet has become the way most people listen to music. For background music companies, streaming is both a threat and an opportunity. On the one hand, companies can select and tailor the music they deliver to businesses with greater speed, flexibility and precision than ever before. On the other hand, access to vast music libraries has made everyone a music specialist. However, Richard Hampson at Imagesound believes a real-life curator is indispensable. He emphasises the intuitive side to his job. 'It's always been about feel and human touch,' he argues. 'Human taste is really important.'</p>
+                </div>
+            </div>
+
+            <!-- Draggable Divider -->
+            <div class="divider" id="divider">
+                <div class="divider-handle"></div>
+            </div>
+
+            <!-- Questions Section -->
+            <div class="questions-container" id="questions-container">
+                <!-- Questions 17-22 - Matching Information -->
+                <div class="question">
+                    <div class="question-rubric">
+                        <h3>Questions 17-22</h3>
+                        <p>Reading Passage 2 has six paragraphs, <strong>A-F</strong>.</p>
+                        <p>Which paragraph contains the following information?</p>
+                        <p>Write the correct letter, <strong>A-F</strong>, in boxes <strong>17-22</strong> on your answer sheet.</p>
+                        <p><strong>NB</strong> You may use any letter more than once.</p>
+                    </div>
+                    <div class="question-content">
+                        <div class="question-item">
+                            <p><span class="question-number">17</span> details of how modern developments have created positive and negative consequences for the industry</p>
+                            <div class="matching-option">
+                                <select name="q17" id="q17">
+                                    <option value="">--</option>
+                                    <option value="A">A</option>
+                                    <option value="B">B</option>
+                                    <option value="C">C</option>
+                                    <option value="D">D</option>
+                                    <option value="E">E</option>
+                                    <option value="F">F</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="question-item">
+                            <p><span class="question-number">18</span> an account of opposition to the use of background music</p>
+                            <div class="matching-option">
+                                <select name="q18" id="q18">
+                                    <option value="">--</option>
+                                    <option value="A">A</option>
+                                    <option value="B">B</option>
+                                    <option value="C">C</option>
+                                    <option value="D">D</option>
+                                    <option value="E">E</option>
+                                    <option value="F">F</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="question-item">
+                            <p><span class="question-number">19</span> a comparison of customer spending patterns with and without background music</p>
+                            <div class="matching-option">
+                                <select name="q19" id="q19">
+                                    <option value="">--</option>
+                                    <option value="A">A</option>
+                                    <option value="B">B</option>
+                                    <option value="C">C</option>
+                                    <option value="D">D</option>
+                                    <option value="E">E</option>
+                                    <option value="F">F</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="question-item">
+                            <p><span class="question-number">20</span> a mention of how background music can make shoppers more responsive to shop assistants</p>
+                            <div class="matching-option">
+                                <select name="q20" id="q20">
+                                    <option value="">--</option>
+                                    <option value="A">A</option>
+                                    <option value="B">B</option>
+                                    <option value="C">C</option>
+                                    <option value="D">D</option>
+                                    <option value="E">E</option>
+                                    <option value="F">F</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="question-item">
+                            <p><span class="question-number">21</span> details of a project which required different music in various parts of a building</p>
+                            <div class="matching-option">
+                                <select name="q21" id="q21">
+                                    <option value="">--</option>
+                                    <option value="A">A</option>
+                                    <option value="B">B</option>
+                                    <option value="C">C</option>
+                                    <option value="D">D</option>
+                                    <option value="E">E</option>
+                                    <option value="F">F</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="question-item">
+                            <p><span class="question-number">22</span> a mention of how the pace of the music influences how quickly food is consumed</p>
+                            <div class="matching-option">
+                                <select name="q22" id="q22">
+                                    <option value="">--</option>
+                                    <option value="A">A</option>
+                                    <option value="B">B</option>
+                                    <option value="C">C</option>
+                                    <option value="D">D</option>
+                                    <option value="E">E</option>
+                                    <option value="F">F</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Questions 23-27 - Matching Statements to Experts -->
+                <div class="question">
+                    <div class="question-rubric">
+                        <h3>Questions 23-27</h3>
+                        <p>Look at the following statements (Questions <strong>23-27</strong>) and the list of people below.</p>
+                        <p>Match each statement with the correct person, <strong>A-E</strong>.</p>
+                        <p>Write the correct letter, <strong>A-E</strong>, in boxes <strong>23-27</strong> on your answer sheet.</p>
+                    </div>
+                    <div class="question-content">
+                        <div class="question-item">
+                            <p><span class="question-number">23</span> It is difficult to understand a client's specific wish.</p>
+                            <div class="matching-option">
+                                <select name="q23" id="q23">
+                                    <option value="">--</option>
+                                    <option value="A">A</option>
+                                    <option value="B">B</option>
+                                    <option value="C">C</option>
+                                    <option value="D">D</option>
+                                    <option value="E">E</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="question-item">
+                            <p><span class="question-number">24</span> Background music is especially beneficial to the tourism industry.</p>
+                            <div class="matching-option">
+                                <select name="q24" id="q24">
+                                    <option value="">--</option>
+                                    <option value="A">A</option>
+                                    <option value="B">B</option>
+                                    <option value="C">C</option>
+                                    <option value="D">D</option>
+                                    <option value="E">E</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="question-item">
+                            <p><span class="question-number">25</span> Background music has more effect on people who are spending less.</p>
+                            <div class="matching-option">
+                                <select name="q25" id="q25">
+                                    <option value="">--</option>
+                                    <option value="A">A</option>
+                                    <option value="B">B</option>
+                                    <option value="C">C</option>
+                                    <option value="D">D</option>
+                                    <option value="E">E</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="question-item">
+                            <p><span class="question-number">26</span> A creative music expert is crucial for businesses choosing background music.</p>
+                            <div class="matching-option">
+                                <select name="q26" id="q26">
+                                    <option value="">--</option>
+                                    <option value="A">A</option>
+                                    <option value="B">B</option>
+                                    <option value="C">C</option>
+                                    <option value="D">D</option>
+                                    <option value="E">E</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="question-item">
+                            <p><span class="question-number">27</span> Buying goods does not require a particular environment.</p>
+                            <div class="matching-option">
+                                <select name="q27" id="q27">
+                                    <option value="">--</option>
+                                    <option value="A">A</option>
+                                    <option value="B">B</option>
+                                    <option value="C">C</option>
+                                    <option value="D">D</option>
+                                    <option value="E">E</option>
+                                </select>
+                            </div>
+                        </div>
+                        <h3>List of Experts</h3>
+                        <p><strong>A</strong> Rob Wood</p>
+                        <p><strong>B</strong> Nigel Rodgers</p>
+                        <p><strong>C</strong> Adrian North</p>
+                        <p><strong>D</strong> Rhonda Hadi</p>
+                        <p><strong>E</strong> Richard Hampson</p>
+                    </div>
+                </div>
+
+                <!-- Questions 28-32 - Summary Completion -->
+                <div class="question">
+                    <div class="question-rubric">
+                        <h3>Questions 28-32</h3>
+                        <p>Complete the summary below.</p>
+                        <p>Choose <strong>ONE WORD ONLY</strong> from the passage for each answer.</p>
+                        <p>Write your answers in boxes <strong>28-32</strong> on your answer sheet.</p>
+                    </div>
+                    <div class="summary-completion-container">
+                        <div class="summary-text">
+                            <p>The history of background music</p>
+                            <p>In the 1920s, George Owen Squier, a former US army officer, invented a system for transmitting audio through <input type="text" class="summary-input" id="q28" maxlength="20">. This led to the creation of Muzak, which initially sold itself by claiming that its music would improve workers' <input type="text" class="summary-input" id="q29" maxlength="20">. The company played classical music in 15-minute periods, separated by intervals of <input type="text" class="summary-input" id="q30" maxlength="20">. The music became more intense each time it started again. In the 1970s, the multi-deck <input type="text" class="summary-input" id="q31" maxlength="20"> player made it possible for businesses to play music without stopping. The CD was the first <input type="text" class="summary-input" id="q32" maxlength="20"> format for music, and by the late 1990s, background music companies had developed digital libraries.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Footer with Navigation -->
+        <footer class="footer">
+            <div class="nav-row">
+                <div class="footer__questionWrapper">
+                    <button class="footer__questionNo" id="prevQuestion" disabled>Previous</button>
+                    <div class="footer__subquestionWrapper" id="questionNav">
+                        <!-- Question navigation will be generated here -->
+                    </div>
+                    <button class="footer__questionNo" id="nextQuestion">Next</button>
+                </div>
+                <button class="footer__deliverButton" id="submitButton">Submit</button>
+            </div>
+        </footer>
+    </div>
+
+    <!-- Submission Modal -->
+    <div class="submission-modal" id="submissionModal">
+        <div class="submission-content">
+            <h2>Submit Your Answers</h2>
+            <p>Are you sure you want to submit your answers? You will not be able to make any changes after submission.</p>
+            <div class="answers-section" id="answersSummary">
+                <!-- Answers summary will be generated here -->
+            </div>
+            <div class="submission-buttons">
+                <button class="confirm" id="confirmSubmit">Submit Answers</button>
+                <button id="cancelSubmit">Cancel</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Timer functionality
+        let startTime = Date.now();
+        let timerInterval;
+
+        function updateTimer() {
+            const elapsed = Date.now() - startTime;
+            const minutes = Math.floor(elapsed / 60000);
+            const seconds = Math.floor((elapsed % 60000) / 1000);
+            document.getElementById('testTimer').textContent = 
+                `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+            
+            // Add warning class when time exceeds 20 minutes
+            if (minutes >= 20) {
+                document.getElementById('testTimer').classList.add('timer-warning');
+            }
+        }
+
+        // Start the timer
+        timerInterval = setInterval(updateTimer, 1000);
+
+        // Settings modal functionality
+        document.getElementById('settingsButton').addEventListener('click', function() {
+            document.getElementById('settingsModal').style.display = 'flex';
+        });
+
+        document.getElementById('settingsClose').addEventListener('click', function() {
+            document.getElementById('settingsModal').style.display = 'none';
+        });
+
+        // Close modal when clicking outside
+        window.addEventListener('click', function(event) {
+            if (event.target === document.getElementById('settingsModal')) {
+                document.getElementById('settingsModal').style.display = 'none';
+            }
+            if (event.target === document.getElementById('submissionModal')) {
+                document.getElementById('submissionModal').style.display = 'none';
+            }
+        });
+
+        // Highlight functionality
+        let currentSelection = null;
+
+        document.addEventListener('mouseup', function() {
+            const selection = window.getSelection();
+            if (selection.toString().trim() !== '') {
+                const range = selection.getRangeAt(0);
+                const rect = range.getBoundingClientRect();
+                
+                // Position the toolbar above the selection
+                const toolbar = document.getElementById('highlightToolbar');
+                toolbar.style.display = 'block';
+                toolbar.style.left = `${rect.left + window.scrollX + rect.width / 2}px`;
+                toolbar.style.top = `${rect.top + window.scrollY - 40}px`;
+                
+                currentSelection = range;
+            }
+        });
+
+        // Highlight color buttons
+        document.querySelectorAll('.highlight-color').forEach(button => {
+            button.addEventListener('click', function() {
+                if (currentSelection) {
+                    const color = this.getAttribute('data-color');
+                    const span = document.createElement('span');
+                    span.className = `highlight ${color}`;
+                    span.textContent = currentSelection.toString();
+                    
+                    currentSelection.deleteContents();
+                    currentSelection.insertNode(span);
+                    
+                    // Clear selection
+                    window.getSelection().removeAllRanges();
+                    document.getElementById('highlightToolbar').style.display = 'none';
+                    currentSelection = null;
+                }
+            });
+        });
+
+        // Remove highlight
+        document.querySelector('.highlight-toolbar .remove').addEventListener('click', function() {
+            if (currentSelection) {
+                const parent = currentSelection.startContainer.parentNode;
+                if (parent.classList.contains('highlight')) {
+                    const text = document.createTextNode(parent.textContent);
+                    parent.parentNode.replaceChild(text, parent);
+                }
+                
+                window.getSelection().removeAllRanges();
+                document.getElementById('highlightToolbar').style.display = 'none';
+                currentSelection = null;
+            }
+        });
+
+        // Divider functionality
+        const divider = document.getElementById('divider');
+        const passageContainer = document.getElementById('passage-container');
+        const questionsContainer = document.getElementById('questions-container');
+        let isResizing = false;
+
+        divider.addEventListener('mousedown', function(e) {
+            isResizing = true;
+            document.body.style.cursor = 'col-resize';
+            e.preventDefault();
+        });
+
+        document.addEventListener('mousemove', function(e) {
+            if (!isResizing) return;
+            
+            const containerWidth = document.querySelector('.test-container').offsetWidth;
+            const newPassageWidth = (e.clientX / containerWidth) * 100;
+            
+            if (newPassageWidth > 20 && newPassageWidth < 80) {
+                passageContainer.style.width = `${newPassageWidth}%`;
+                questionsContainer.style.width = `${100 - newPassageWidth}%`;
+            }
+        });
+
+        document.addEventListener('mouseup', function() {
+            isResizing = false;
+            document.body.style.cursor = 'default';
+        });
+
+        // Question navigation
+        const questionNav = document.getElementById('questionNav');
+        const questions = document.querySelectorAll('.question');
+        
+        questions.forEach((question, index) => {
+            const subQuestion = document.createElement('div');
+            subQuestion.className = 'subQuestion';
+            subQuestion.textContent = index + 1;
+            subQuestion.addEventListener('click', function() {
+                question.scrollIntoView({ behavior: 'smooth' });
+            });
+            questionNav.appendChild(subQuestion);
+        });
+
+        // Previous/Next buttons
+        document.getElementById('prevQuestion').addEventListener('click', function() {
+            const currentQuestion = getCurrentQuestionIndex();
+            if (currentQuestion > 0) {
+                questions[currentQuestion - 1].scrollIntoView({ behavior: 'smooth' });
+            }
+        });
+
+        document.getElementById('nextQuestion').addEventListener('click', function() {
+            const currentQuestion = getCurrentQuestionIndex();
+            if (currentQuestion < questions.length - 1) {
+                questions[currentQuestion + 1].scrollIntoView({ behavior: 'smooth' });
+            }
+        });
+
+        function getCurrentQuestionIndex() {
+            const scrollTop = questionsContainer.scrollTop;
+            let currentIndex = 0;
+            let minDistance = Infinity;
+            
+            questions.forEach((question, index) => {
+                const distance = Math.abs(question.offsetTop - scrollTop);
+                if (distance < minDistance) {
+                    minDistance = distance;
+                    currentIndex = index;
+                }
+            });
+            
+            return currentIndex;
+        }
+
+        // Update navigation on scroll
+        questionsContainer.addEventListener('scroll', function() {
+            const currentQuestion = getCurrentQuestionIndex();
+            
+            // Update active question in navigation
+            document.querySelectorAll('.subQuestion').forEach((sub, index) => {
+                sub.classList.toggle('active', index === currentQuestion);
+            });
+            
+            // Update Previous/Next buttons
+            document.getElementById('prevQuestion').disabled = currentQuestion === 0;
+            document.getElementById('nextQuestion').disabled = currentQuestion === questions.length - 1;
+        });
+
+        // Submit functionality
+        document.getElementById('submitButton').addEventListener('click', function() {
+            // Show submission modal
+            document.getElementById('submissionModal').style.display = 'flex';
+            
+            // Generate answers summary
+            const answersSummary = document.getElementById('answersSummary');
+            answersSummary.innerHTML = '<h3>Your Answers</h3>';
+            
+            // Add each answer to the summary
+            for (let i = 17; i <= 32; i++) {
+                const answerItem = document.createElement('div');
+                answerItem.className = 'answer-item';
+                
+                let answerValue = '';
+                if (i <= 27) {
+                    const select = document.getElementById(`q${i}`);
+                    answerValue = select.value || '--';
+                } else {
+                    const input = document.getElementById(`q${i}`);
+                    answerValue = input.value || '--';
+                }
+                
+                answerItem.innerHTML = `
+                    <strong>Question ${i}:</strong> 
+                    <span class="answer-text">${answerValue}</span>
+                `;
+                answersSummary.appendChild(answerItem);
+            }
+        });
+
+        document.getElementById('cancelSubmit').addEventListener('click', function() {
+            document.getElementById('submissionModal').style.display = 'none';
+        });
+
+        document.getElementById('confirmSubmit').addEventListener('click', function() {
+            // Stop the timer
+            clearInterval(timerInterval);
+            
+            // Calculate score and show results
+            calculateScore();
+            
+            // Close modal
+            document.getElementById('submissionModal').style.display = 'none';
+        });
+
+        // Score calculation
+        function calculateScore() {
+            // Correct answers
+            const correctAnswers = {
+                '17': 'F', '18': 'E', '19': 'D', '20': 'A', '21': 'B', '22': 'D',
+                '23': 'A', '24': 'D', '25': 'C', '26': 'E', '27': 'B',
+                '28': 'wires', '29': 'performance', '30': 'silence', '31': 'tape', '32': 'digital'
+            };
+            
+            let score = 0;
+            const totalQuestions = 16;
+            
+            // Check answers and update UI
+            for (let i = 17; i <= 32; i++) {
+                let userAnswer = '';
+                
+                if (i <= 27) {
+                    const select = document.getElementById(`q${i}`);
+                    userAnswer = select.value.toUpperCase();
+                    select.disabled = true;
+                    
+                    // Add correct/incorrect styling
+                    if (userAnswer === correctAnswers[i]) {
+                        score++;
+                        select.parentNode.classList.add('correct');
+                    } else {
+                        select.parentNode.classList.add('incorrect');
+                        // Show correct answer
+                        const correctSpan = document.createElement('span');
+                        correctSpan.className = 'correct-answer';
+                        correctSpan.textContent = `Correct: ${correctAnswers[i]}`;
+                        select.parentNode.appendChild(correctSpan);
+                    }
+                } else {
+                    const input = document.getElementById(`q${i}`);
+                    userAnswer = input.value.trim().toLowerCase();
+                    input.disabled = true;
+                    
+                    if (userAnswer === correctAnswers[i]) {
+                        score++;
+                        input.classList.add('correct');
+                    } else {
+                        input.classList.add('incorrect');
+                        // Show correct answer
+                        const correctSpan = document.createElement('span');
+                        correctSpan.className = 'correct-answer';
+                        correctSpan.textContent = `Correct: ${correctAnswers[i]}`;
+                        input.parentNode.appendChild(correctSpan);
+                    }
+                }
+            }
+            
+            // Calculate IELTS band score
+            const bandScore = calculateBandScore(score);
+            
+            // Create results modal
+            const resultsModal = document.createElement('div');
+            resultsModal.className = 'submission-modal';
+            resultsModal.style.display = 'flex';
+            resultsModal.innerHTML = `
+                <div class="submission-content">
+                    <h2>Test Results</h2>
+                    <div class="score-display">
+                        <div class="time-spent">Time spent: ${document.getElementById('testTimer').textContent}</div>
+                        <div class="score-number">${score}/${totalQuestions}</div>
+                        <div class="score-total">Correct Answers</div>
+                        <div class="band-score">IELTS Band: ${bandScore}</div>
+                        <div class="performance-rating ${getPerformanceRating(score)}">${getPerformanceText(score)}</div>
+                    </div>
+                    <div class="answers-section">
+                        <h3>Answer Details</h3>
+                        ${generateAnswerDetails(correctAnswers)}
+                    </div>
+                    <div class="submission-buttons">
+                        <button class="confirm" onclick="this.closest('.submission-modal').remove()">Close</button>
+                    </div>
+                </div>
+            `;
+            document.body.appendChild(resultsModal);
+        }
+
+        function calculateBandScore(score) {
+            // Convert to IELTS band score (approximate conversion)
+            if (score >= 15) return '9.0';
+            if (score >= 14) return '8.5';
+            if (score >= 13) return '8.0';
+            if (score >= 12) return '7.5';
+            if (score >= 11) return '7.0';
+            if (score >= 10) return '6.5';
+            if (score >= 9) return '6.0';
+            if (score >= 8) return '5.5';
+            if (score >= 7) return '5.0';
+            if (score >= 6) return '4.5';
+            return '4.0';
+        }
+
+        function getPerformanceRating(score) {
+            if (score >= 14) return 'excellent';
+            if (score >= 12) return 'very-good';
+            if (score >= 10) return 'good';
+            if (score >= 8) return 'fair';
+            return 'poor';
+        }
+
+        function getPerformanceText(score) {
+            if (score >= 14) return 'Excellent! You have a strong understanding of the text.';
+            if (score >= 12) return 'Very Good! You understood most of the passage.';
+            if (score >= 10) return 'Good effort. You grasped the main ideas.';
+            if (score >= 8) return 'Fair. Review the passage and questions.';
+            return 'Needs improvement. Practice more reading tests.';
+        }
+
+        function generateAnswerDetails(correctAnswers) {
+            let details = '';
+            for (let i = 17; i <= 32; i++) {
+                let userAnswer = '';
+                
+                if (i <= 27) {
+                    const select = document.getElementById(`q${i}`);
+                    userAnswer = select.value.toUpperCase() || '--';
+                } else {
+                    const input = document.getElementById(`q${i}`);
+                    userAnswer = input.value.trim() || '--';
+                }
+                
+                const isCorrect = userAnswer.toLowerCase() === correctAnswers[i].toLowerCase();
+                
+                details += `
+                    <div class="answer-item ${isCorrect ? 'correct' : 'incorrect'}">
+                        <strong>Question ${i}:</strong> 
+                        <span class="answer-text">Your answer: ${userAnswer}</span>
+                        ${!isCorrect ? `<span class="correct-answer">Correct: ${correctAnswers[i]}</span>` : ''}
+                        <span class="answer-status ${isCorrect ? 'correct-status' : 'incorrect-status'}">
+                            ${isCorrect ? '✓' : '✗'}
+                        </span>
+                    </div>
+                `;
+            }
+            return details;
+        }
+
+        // Initialize question navigation
+        document.querySelectorAll('.subQuestion')[0].classList.add('active');
+    </script>
+</body>
+</html>

@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Reading Passage 2 – The fascinating world of attine ants</title>
+<style>
+  :root{--brand:#2563eb;--ink:#111827;--bg:#f7f7fb;--ok:#16a34a;--bad:#dc2626;--muted:#6b7280}
+  *{box-sizing:border-box}
+  body{margin:0;font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;background:var(--bg);color:#111}
+  .container{display:flex;gap:20px;max-width:1200px;margin:0 auto;padding:20px 20px 96px}
+  .card{background:#fff;border-radius:12px;box-shadow:0 4px 14px rgba(0,0,0,.08);padding:20px;overflow:auto;max-height:90vh}
+  .passage{flex:1}
+  .questions{flex:1}
+  h1{color:var(--ink);border-bottom:2px solid var(--brand);padding-bottom:10px;margin:0 0 14px}
+  h2{color:var(--brand);margin:22px 0 10px}
+  h3{margin:8px 0 0}
+  .muted{color:var(--muted)}
+
+  /* Timer */
+  .timerWrap{position:fixed;top:16px;right:16px;display:flex;align-items:center;gap:8px;z-index:10}
+  .timer{background:var(--brand);color:#fff;padding:10px 14px;border-radius:8px;font-weight:700}
+  .tbtn{border:1px solid #e5e7eb;background:#fff;color:#111;padding:8px 10px;border-radius:8px;cursor:pointer}
+
+  /* Telegram button in header */
+  .tgHeader{position:fixed;top:16px;left:16px;background:#0088cc;color:#fff;border:0;padding:10px 16px;border-radius:8px;display:flex;align-items:center;gap:8px;cursor:pointer;z-index:10;font-size:14px;font-weight:600}
+  .tgHeader:hover{filter:brightness(.95)}
+
+  /* Questions */
+  .qsection{margin:14px 0 6px}
+  .qblock{padding:14px;border:1px solid #e5e7eb;border-radius:12px;margin:12px 0}
+  .qhead{font-weight:600;margin-bottom:8px}
+  .options{margin-top:8px}
+  .options label{display:block;margin:6px 0}
+  select,input[type="text"]{padding:8px;border-radius:8px;border:1px solid #e5e7eb;width:100%;max-width:520px}
+  .submit{background:var(--brand);color:#fff;border:0;padding:12px 18px;border-radius:8px;cursor:pointer;font-size:16px;margin-top:16px}
+  .submit:hover{filter:brightness(.95)}
+
+  /* Results */
+  .results{display:none;margin-top:18px;background:#f8f9fa;border-radius:10px;padding:16px}
+  .results ul{list-style:none;padding:0;margin:8px 0 0}
+  .results li{margin:6px 0;padding:8px;border-radius:8px}
+  .results li.ok{background:#ecfdf5;color:#065f46}
+  .results li.bad{background:#fef2f2;color:#991b1b}
+  .results .meta{font-size:13px;color:var(--muted)}
+
+  /* Footer chips */
+  .footerNav{position:fixed;left:0;right:0;bottom:0;background:#fff;border-top:1px solid #e5e7eb;padding:10px 12px;display:flex;flex-wrap:wrap;gap:8px;align-items:center;z-index:9}
+  .chip{border:1px solid #d1d5db;background:#fff;color:#111;padding:6px 10px;border-radius:999px;cursor:pointer;font-size:14px}
+  .chip.answered{border-color:#9ca3af;background:#f3f4f6}
+
+  /* Highlights */
+  .palette{position:fixed;background:#fff;padding:8px;border-radius:8px;box-shadow:0 2px 10px rgba(0,0,0,.12);display:none;z-index:9}
+  .hbtn{background:var(--brand);color:#fff;border:0;padding:6px 10px;border-radius:6px;margin:4px 4px 0 0;cursor:pointer}
+  .highlight{background:yellow}
+
+  .tg{position:fixed;bottom:96px;right:16px;background:#0088cc;color:#fff;border:0;padding:12px 16px;border-radius:9999px;display:flex;align-items:center;gap:8px;cursor:pointer;box-shadow:0 8px 20px rgba(0,136,204,.35)}
+</style>
+</head>
+<body>
+  <!-- Telegram button in header -->
+  
+
+  <div class="timerWrap">
+    <div class="timer" id="timer">20:00</div>
+    <button class="tbtn" id="pauseBtn">⏸️ Pause</button>
+    <button class="tbtn" id="resumeBtn" disabled>▶️ Resume</button>
+  </div>
+
+  <!-- Highlight palettes -->
+  <div class="palette" id="pPalette">
+    <button class="hbtn" data-color="yellow">Yellow</button>
+    <button class="hbtn" data-color="lightgreen">Green</button>
+    <button class="hbtn" data-color="lightblue">Blue</button>
+    <button class="hbtn" data-color="pink">Pink</button>
+    <button class="hbtn" data-color="orange">Orange</button>
+    <button class="hbtn" id="clearPMarks">Clear</button>
+  </div>
+  <div class="palette" id="qPalette">
+    <button class="hbtn" data-color="yellow">Yellow</button>
+    <button class="hbtn" data-color="lightgreen">Green</button>
+    <button class="hbtn" data-color="lightblue">Blue</button>
+    <button class="hbtn" data-color="pink">Pink</button>
+    <button class="hbtn" data-color="orange">Orange</button>
+    <button class="hbtn" id="clearQMarks">Clear</button>
+  </div>
+
+  <div class="container">
+    <div class="card passage" id="passageCard">
+      <h1 id="title">Reading Passage 2</h1>
+      <div id="subtitle" class="muted">You should spend about 20 minutes on Questions 14–26 which are based on Reading Passage 2 below.</div>
+
+      <div id="passage">
+        <h2>The fascinating world of attine ants</h2>
+        <p class="muted">Nicholas Wade examines leaf-cutter ants and their amazing agriculture</p>
+        
+        <p><strong>A.</strong> Leaf-cutting ants and their fungus (fungus an organism such as a mushroom which obtains its food from decaying material) 'farm' are a marvel of nature and perhaps the best-known example of symbiosis- the mutual dependence of two species. ants cultivate a mushroom – like fungus in 'farms'. Both the ants and their so-called 'agriculture have been extensively studied over the years, but recent research has uncovered intriguing new findings. Ants invented agriculture 50 million years before people did, and the leaf-cutters, members of the large attine ant family, practice the most sophisticated example of it. They grow their fungus in underground chambers that can reach the size of a football. A single leaf-cutter nest may contain a thousand such chambers, embedded in an underground metropolis up to 18 feet deep, and support a society of more than a million ants.</p>
+
+        <p><strong>B.</strong> These ant communities are the dominant plant-eaters of the Neotropics, the region comprising South and Central America, Mexico and the Caribbean. Biologists believe 15 percent of the leaf production of tropical forests disappears down the nests of leaf cutter ants. In the nest, the leaves are shredded and added to the fungus, which digests the leaves and is in turn eaten by the ants. The attine ants' achievement is remarkable because it allows them to consume, courtesy of their mushroom's digestive powers, the harvest of tropical forests whose leaves are laden with poisonous chemicals.</p>
+
+        <p><strong>C.</strong> There are more than 200 known species of the attine ant tribe, divided into 12 groups, or genera. The leaf-cutters usefresh vegetation; the other groups, known as the lower attines because their nests are smaller and their techniques more primitive, feed their gardens with similar leaves which have fallen on the ground and insects that lie on the forest floor. Lower attine ants are all a sillar size. However, leaf-cutter worker ants come in made-to-fit sizes – large ants to saw off leaves, medium ones to shred them, and miniature workers to seed them with fungus and clean off alien growths.</p>
+
+        <p><strong>D.</strong> In 1994, biologists from the United States Department of Agriculture analyzed the DNA of ant funguses. They found the leaf-cutters' fungus was descended from a single pure strain, propagated for at least 23 million years. However, the funguses grown by lower attine ants fell into four different groups, as if the ants had domesticated wild funguses at least four times in evolutionary history. What could be driving these two patterns of fungus gardening, the pure clone cultivation of the leaf-cutters and multiple varieties of the lower attines?</p>
+
+        <p><strong>E.</strong> The answer has been suggested by Cameron Currie of University of Toronto, it. The pure strain of fungus grown by the leaf-cutters, it seemed to him, resembled the single crops grown by humans to the exclusion of all others, such as potato growing. These 'monocultures, which lack the genetic diversity to respond to changing environmental threats, are particularly vulnerable to parasites – organisms which live and feed on their host, often causing harm.</p>
+
+        <p><strong>F.</strong> Currie felt there had to be a parasite in the ant-fungus system. But a century of ant research did not provide any evidence for his idea. Textbooks describe how leaf-cutter ants scrupulously weed their gardens of all foreign organisms. "People kept telling me, the ants keep their gardens free of parasites, " said Currie. Nevertheless, after three years of sifting through attine ant gardens, Currie discovered several alien organisms, particularly a family of parasitic molds called 'Escovopsis'.</p>
+
+        <p><strong>G.</strong> Escovopsis is a deadly disease that can devastate a fungus garden in a couple of days. It blooms like a white cloud which envelops the whole garden. Other ants won't go near it and the ants associated with the garden just starve to death. Evidently, the ants usually manage to keep Escovopsis and other parasites under control. Nevertheless, with any lapse in control Escovopsis will quickly burst forth. Although new leaf-cutter gardens start off free of Escovopsis, within two years some 60 percent become infected.</p>
+
+        <p><strong>H.</strong> The discovery of Escovopsis's role brings a new level of understanding to the evolution of the attine ants. In the last decade, evolutionary biologists have been increasingly aware of the role of parasites as driving forces in evolution. With Curries's work, there is now a possible reason for the different varieties of fungus in the lower attine mushroom gardens- to stay one step ahead of the relentless Escovopsis. Interestingly, the leaf-cutters had in general fewer alien molds in their gardens than the lower attines, yet more Escovopsis infections. Clearly, the price they pay for cultivating a pure variety of fungus is a higher risk from Escovopsis.</p>
+
+        <p><strong>I.</strong> So how do attine ants keep this parasite under control? People have known for a hundred years that ants have a whitish growth on their body surface. It was thought to be wax but, after examining it under a microscope, Currie discovered a specialized patch on the ants' bodies that harbors a particular kind of bacterium, one well known to the pharmaceutical industry and the source of half the antibiotics used in medicine. This bacterium is potent poisoner of Escovopsis inhibiting its growth and suppressing spore formation. Astoundingly, the leaf-cutter ants are accomplishing feats beyond the power of humans: they are growing a monocultural crop year after year without disaster, and they are using an antibiotic apparently so wisely that, unlike people, they are not provoking antibiotic resistance in the target disease-producing organism.</p>
+      </div>
+    </div>
+
+    <div class="card questions">
+      <h1>Questions</h1>
+      <div id="qroot"></div>
+      <button class="submit" id="submitBtn">Submit Answers</button>
+      <div class="results" id="results">
+        <h2>Your Results</h2>
+        <div id="score" class="meta"></div>
+        <ul id="answers"></ul>
+      </div>
+    </div>
+  </div>
+
+  <div class="footerNav" id="footerNav"></div>
+  
+
+
+</body>
+</html>

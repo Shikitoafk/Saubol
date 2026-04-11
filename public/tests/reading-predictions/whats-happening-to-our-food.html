@@ -1,0 +1,941 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>IELTS Reading Test</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary: #8a5cea;
+            --primary-light: #b18cfa;
+            --secondary: #ff7ae5;
+            --accent: #5ce1e6;
+            --text: #3a3a5c;
+            --text-light: #6c6c8c;
+            --bg: #f8f9ff;
+            --card-bg: #ffffff;
+            --shadow: rgba(138, 92, 234, 0.15);
+            --success: #6dd68d;
+            --warning: #ffb267;
+            --error: #ff6b6b;
+            
+            --day-bg: #f8f9ff;
+            --day-text: #3a3a5c;
+            --day-card: #ffffff;
+            
+            --night-bg: #1a1a2a;
+            --night-text: #e6e6fa;
+            --night-card: #2a2a3a;
+            
+            --sepia-bg: #f9f3e9;
+            --sepia-text: #5b4636;
+            --sepia-card: #f4e9d8;
+            
+            --transition: all 0.3s ease;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            transition: var(--transition);
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--bg);
+            color: var(--text);
+            line-height: 1.6;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        .theme-day {
+            --bg: var(--day-bg);
+            --text: var(--day-text);
+            --card-bg: var(--day-card);
+        }
+
+        .theme-night {
+            --bg: var(--night-bg);
+            --text: var(--night-text);
+            --card-bg: var(--night-card);
+        }
+
+        .theme-sepia {
+            --bg: var(--sepia-bg);
+            --text: var(--sepia-text);
+            --card-bg: var(--sepia-card);
+        }
+
+        header {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: white;
+            padding: 15px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 4px 12px var(--shadow);
+            z-index: 100;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-weight: 700;
+            font-size: 1.4rem;
+        }
+
+        .logo i {
+            color: var(--accent);
+        }
+
+        .header-controls {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .telegram-button {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            background: linear-gradient(135deg, #0088cc, #00a8ff);
+            color: white;
+            padding: 10px 16px;
+            border-radius: 50px;
+            text-decoration: none;
+            font-weight: 600;
+            box-shadow: 0 4px 10px rgba(0, 136, 204, 0.3);
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .telegram-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 14px rgba(0, 136, 204, 0.4);
+        }
+
+        .theme-selector {
+            display: flex;
+            gap: 8px;
+            background: rgba(255, 255, 255, 0.2);
+            padding: 6px;
+            border-radius: 50px;
+        }
+
+        .theme-button {
+            width: 36px;
+            height: 36px;
+            border: none;
+            border-radius: 50%;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.1rem;
+            background: rgba(255, 255, 255, 0.3);
+            color: white;
+        }
+
+        .theme-button:hover {
+            transform: scale(1.1);
+        }
+
+        .timer {
+            background: rgba(255, 255, 255, 0.2);
+            padding: 8px 16px;
+            border-radius: 50px;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .timer.warning {
+            animation: pulse 1s infinite;
+            background: rgba(255, 107, 107, 0.3);
+        }
+
+        @keyframes pulse {
+            0% { opacity: 1; }
+            50% { opacity: 0.7; }
+            100% { opacity: 1; }
+        }
+
+        .main-container {
+            display: flex;
+            flex: 1;
+            padding: 20px;
+            gap: 20px;
+            overflow: hidden;
+        }
+
+        .passage-container, .questions-container {
+            background-color: var(--card-bg);
+            border-radius: 16px;
+            padding: 25px;
+            box-shadow: 0 8px 20px var(--shadow);
+            overflow-y: auto;
+        }
+
+        .passage-container {
+            flex: 1.2;
+        }
+
+        .questions-container {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+        }
+
+        h2 {
+            color: var(--primary);
+            margin-bottom: 15px;
+            font-size: 1.8rem;
+        }
+
+        h3 {
+            color: var(--secondary);
+            margin: 20px 0 10px;
+            font-size: 1.4rem;
+        }
+
+        p {
+            margin-bottom: 15px;
+        }
+
+        .highlight-menu {
+            position: absolute;
+            background: var(--card-bg);
+            border-radius: 12px;
+            padding: 8px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.15);
+            z-index: 1000;
+            display: flex;
+            gap: 8px;
+            transform: translateY(-100%);
+        }
+
+        .highlight-menu button {
+            width: 36px;
+            height: 36px;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.1rem;
+            transition: transform 0.2s;
+        }
+
+        .highlight-menu button:hover {
+            transform: scale(1.1);
+        }
+
+        .highlight-yellow {
+            background-color: #ffeb3b;
+        }
+
+        .highlight-blue {
+            background-color: #2196f3;
+            color: white;
+        }
+
+        .question {
+            margin-bottom: 25px;
+            padding: 20px;
+            border-radius: 12px;
+            background-color: rgba(138, 92, 234, 0.05);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .question::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 5px;
+            height: 100%;
+            background: linear-gradient(to bottom, var(--primary), var(--secondary));
+        }
+
+        .question p {
+            margin-bottom: 10px;
+        }
+
+        .question select, .question input {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid rgba(138, 92, 234, 0.2);
+            border-radius: 10px;
+            background-color: var(--card-bg);
+            color: var(--text);
+            font-size: 1rem;
+            margin-top: 8px;
+        }
+
+        .question select:focus, .question input:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(138, 92, 234, 0.2);
+        }
+
+        .submit-btn {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: white;
+            border: none;
+            padding: 16px;
+            border-radius: 12px;
+            font-size: 1.2rem;
+            font-weight: 600;
+            cursor: pointer;
+            margin-top: 20px;
+            box-shadow: 0 5px 15px var(--shadow);
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .submit-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px var(--shadow);
+        }
+
+        .result-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: var(--card-bg);
+            z-index: 1000;
+            overflow-y: auto;
+            padding: 30px;
+            display: none;
+        }
+
+        .result-header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .score {
+            font-size: 2.5rem;
+            font-weight: 800;
+            margin: 20px 0;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .answer-feedback {
+            margin-bottom: 20px;
+            padding: 20px;
+            border-radius: 12px;
+        }
+
+        .correct {
+            background-color: rgba(109, 214, 141, 0.15);
+            border-left: 5px solid var(--success);
+        }
+
+        .incorrect {
+            background-color: rgba(255, 107, 107, 0.15);
+            border-left: 5px solid var(--error);
+        }
+
+        .close-results {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 50px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            display: block;
+            margin: 30px auto;
+            box-shadow: 0 5px 15px var(--shadow);
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .close-results:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px var(--shadow);
+        }
+
+        @media (max-width: 968px) {
+            .main-container {
+                flex-direction: column;
+            }
+            
+            .passage-container, .questions-container {
+                margin-bottom: 20px;
+            }
+            
+            header {
+                flex-wrap: wrap;
+            }
+            
+            .header-controls {
+                flex-wrap: wrap;
+                justify-content: center;
+                margin-top: 10px;
+            }
+        }
+
+        @media (max-width: 576px) {
+            .header-controls {
+                flex-direction: column;
+                align-items: stretch;
+            }
+            
+            .theme-selector {
+                justify-content: center;
+            }
+            
+            .telegram-button {
+                justify-content: center;
+            }
+        }
+
+        /* Custom scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: rgba(138, 92, 234, 0.1);
+            border-radius: 10px;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: var(--primary-light);
+            border-radius: 10px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: var(--primary);
+        }
+
+        /* Floating elements for decoration */
+        .floating {
+            position: absolute;
+            border-radius: 50%;
+            opacity: 0.1;
+            z-index: -1;
+        }
+
+        .float-1 {
+            width: 200px;
+            height: 200px;
+            background: var(--primary);
+            top: 10%;
+            left: 5%;
+            animation: float 15s infinite ease-in-out;
+        }
+
+        .float-2 {
+            width: 150px;
+            height: 150px;
+            background: var(--secondary);
+            bottom: 15%;
+            right: 5%;
+            animation: float 12s infinite ease-in-out reverse;
+        }
+
+        .float-3 {
+            width: 100px;
+            height: 100px;
+            background: var(--accent);
+            top: 50%;
+            left: 80%;
+            animation: float 10s infinite ease-in-out;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0) rotate(0deg); }
+            50% { transform: translateY(-20px) rotate(10deg); }
+        }
+    </style>
+</head>
+<body class="theme-day">
+    <div class="floating float-1"></div>
+    <div class="floating float-2"></div>
+    <div class="floating float-3"></div>
+
+    <header>
+        <div class="logo">
+            <i class="fas fa-book-open"></i>
+            <span>IELTS Reading Test</span>
+        </div>
+        <div class="header-controls">
+            <div class="theme-selector">
+                <button class="theme-button" id="day-theme" title="Day Mode"><i class="fas fa-sun"></i></button>
+                <button class="theme-button" id="night-theme" title="Night Mode"><i class="fas fa-moon"></i></button>
+                <button class="theme-button" id="sepia-theme" title="Sepia Mode"><i class="fas fa-feather"></i></button>
+            </div>
+            
+            <div class="timer" id="timer">
+                <i class="fas fa-clock"></i>
+                <span>20:00</span>
+            </div>
+        </div>
+    </header>
+
+    <div class="main-container">
+        <div class="passage-container" id="passage">
+            <h2>READING PASSAGE 2</h2>
+            <p><em>You should spend about 20 minutes on Questions 14-26, which are based on Reading Passage 2 below.</em></p>
+            
+            <h3>WHAT'S HAPPENING TO OUR FOOD?</h3>
+            <p><em>Is the way we produce and process food making it less nourishing than in our grandparents' day?</em></p>
+            
+            <p><strong>A</strong> We now know a lot about what food does to the body and the importance of a healthy diet. But what if modern intensive farming methods have affected the mineral and vitamin content of what we eat? Donald Davis, at the University of Texas, has found notable declines in nutrients in crops including tomatoes, eggplants and squash. Davis blames agricultural practices that emphasise quantity over quality. High-yielding crops produce more food, more rapidly, but they can't make or absorb nutrients at the same pace, so the nutrition is diluted. 'It's like taking a glass of orange juice and adding water to it. If you do that, the concentration of nutrients that was in the original juice drops,' he says. But the idea that modern farming produces less nourishing crops remains controversial, since nutrient levels can vary widely according to the variety of plant, the year of harvest and the time of harvest.</p>
+            
+            <p><strong>B</strong> But intensive farming has also led to a huge increase in food supply, which has undoubtedly had a positive effect on our diet and health. 'Evidence suggests that some nutrients have fallen, particularly trace elements such as copper in vegetables,' says Paul Finglas, at the Institute of Food Research in Norwich. 'Foods are now bred for yield, and not necessarily nutritional composition. But I don't think that is a problem, because we eat a wider range of foods today than we did 10 years ago, let alone 40 years ago'. Eric Decker, professor of food science at the University of Massachusetts in Amherst, agrees. If nutrients are declining, the losses are insignificant, he says. 'Over the last century, lifespans have got longer, people are bigger and stronger, and a lot of that has to do with the food supply being better.' Even Davis agrees that any differences in nutrient levels are relatively small. 'Despite their declines, fruit and vegetables are still our richest source of many nutrients, and you can make up for it by eating more,' he says. 'But we know that many people don't get the recommended amounts of nutrients such as iron, magnesium, and calcium. They aren't overt deficiencies in the usual sense, but they increase susceptibility to lots of different problems.'</p>
+            
+            <p><strong>C</strong> In addition to changes in its production, food is being transported for ever-increasing distances. Fruit and vegetables in supermarkets might look shiny and fresh, but often they were picked several days earlier. Some nutrients, particularly vitamin C and folic acid, begin to deteriorate as soon as picking happens, but manufacturers can take action to minimise this. 'Lots of these reactions are driven by enzymes,' says Carol Wagstaff, from the University of Reading, UK, who points out that chilling is the best way of slowing down such reactions. That said, if you are choosing between organic fruit or vegetables from a distant country or locally grown, non-organic ones, always opt for home-grown, she says. 'From a nutritional standpoint, go for the shortest possible supply chain rather than the production method.' Many kinds of mass-produced fruit and veg – most famously tomatoes – are harvested unripe before being transported to supermarkets. Wagstaff agrees that this may cause some loss of flavor, compared with a tomato that you have grown at home, and left on the plant until it's absolutely ready to eat. 'But there's no way you could do that at a commercial transported through a typical supply chain,' she says. In addition, each method of shipping and storing foods has different effects on the compounds they contain. Vitamin C, for example, breaks down in the dark, whereas glucosinolates – found in vegetables like cabbage – deplete in the light.</p>
+            
+            <p><strong>D</strong> Surprisingly, frozen fruit and vegetables are often nutritionally better than fresh. 'Frozen peas are much more nutritious than those you buy ready to shell,' says Catherine Collins, principal dietician at St George's Hospital in London. What's more, frozen foods often have fewer additives. 'Freezing is a preservative,' she says. Similarly, processing has become a maligned word in the context of food, but there are some cases where it enhances a food's health benefits. For example, lycopene – a compound tomatoes are rich in, and which has been shown to protect against certain diseases – is much more readily absorbed by humans from tomato paste than fresh tomatoes. A recent trend is the sale of 'fresh-cut' fruit and vegetables – peeled potatoes, ready chopped carrots and bagged salads. One in five adults in the UK regularly buys fruit and vegetables in this form every week, according to market research firm Mintel. Surely this cutting and peeling speeds up the degradation of nutrients? 'There is a chance that ready prepared vegetables may have a lower content of some vitamins,' says Judy Buttriss, of the British Nutrition Foundation in London. 'But if their availability means that such vegetables are consumed in greater quantities, then the net effect is beneficial.'</p>
+            
+            <p><strong>E</strong> The bottom line is that although aspects of today's food production, processing and storage might make what we eat a bit less nutritious, they are also making foods more available – and this is far more important. 'The most important thing you can do is eat more fruits, vegetables and wholegrains, and cut down on highly refined, processed foods, vegetable oils and added sugars,' says Davis. He believes this will make a far greater difference to us than worrying about growing methods and transportation.</p>
+        </div>
+
+        <div class="questions-container">
+            <div class="question">
+                <p><strong>Questions 14-18</strong></p>
+                <p>Reading Passage 2 has 5 sections, A - E.</p>
+                <p>Which section contains the following information?</p>
+                <p>Write the correct letter, A - E, in boxes 14 - 18 below.</p>
+                <p><strong>NB</strong> You may use any letter more than once.</p>
+                
+                <p>14. an admission that if one type of food is harvested too soon, its taste may be affected</p>
+                <select id="q14">
+                    <option value="">Select</option>
+                    <option value="A">A</option>
+                    <option value="B">B</option>
+                    <option value="C">C</option>
+                    <option value="D">D</option>
+                    <option value="E">E</option>
+                </select>
+                
+                <p>15. the view that there is not a great difference between the quantity of nutrients in our food now and in the past</p>
+                <select id="q15">
+                    <option value="">Select</option>
+                    <option value="A">A</option>
+                    <option value="B">B</option>
+                    <option value="C">C</option>
+                    <option value="D">D</option>
+                    <option value="E">E</option>
+                </select>
+                
+                <p>16. a comparison which illustrates why developments in agriculture may reduce the amounts of nutrients in foods</p>
+                <select id="q16">
+                    <option value="">Select</option>
+                    <option value="A">A</option>
+                    <option value="B">B</option>
+                    <option value="C">C</option>
+                    <option value="D">D</option>
+                    <option value="E">E</option>
+                </select>
+                
+                <p>17. a warning that customers could be deceived by the attractive appearance of a fruit or vegetable</p>
+                <select id="q17">
+                    <option value="">Select</option>
+                    <option value="A">A</option>
+                    <option value="B">B</option>
+                    <option value="C">C</option>
+                    <option value="D">D</option>
+                    <option value="E">E</option>
+                </select>
+                
+                <p>18. evidence of the popularity of a new development in food processing which aims to save customers trouble</p>
+                <select id="q18">
+                    <option value="">Select</option>
+                    <option value="A">A</option>
+                    <option value="B">B</option>
+                    <option value="C">C</option>
+                    <option value="D">D</option>
+                    <option value="E">E</option>
+                </select>
+            </div>
+
+            <div class="question">
+                <p><strong>Questions 19-22</strong></p>
+                <p>Look at the following statements (Questions 19-22) and the list of people below.</p>
+                <p>Match each statement with the correct person, A-F.</p>
+                <p>Write the correct letter, A-F, in boxes 19-22 below.</p>
+                
+                <p><strong>List of people</strong></p>
+                <p>A Donald Davis</p>
+                <p>B Paul Finglas</p>
+                <p>C Eric Decker</p>
+                <p>D Carol Wagstaff</p>
+                <p>E Catherine Collins</p>
+                <p>F Judy Buttriss</p>
+                
+                <p>19. People are more likely to become ill if they have low levels of some nutrients.</p>
+                <select id="q19">
+                    <option value="">Select</option>
+                    <option value="A">A</option>
+                    <option value="B">B</option>
+                    <option value="C">C</option>
+                    <option value="D">D</option>
+                    <option value="E">E</option>
+                    <option value="F">F</option>
+                </select>
+                
+                <p>20. Making healthy foods easy to cook may be more important than their vitamin content.</p>
+                <select id="q20">
+                    <option value="">Select</option>
+                    <option value="A">A</option>
+                    <option value="B">B</option>
+                    <option value="C">C</option>
+                    <option value="D">D</option>
+                    <option value="E">E</option>
+                    <option value="F">F</option>
+                </select>
+                
+                <p>21. An improved diet has made people nowadays live longer and be healthier than in the past.</p>
+                <select id="q21">
+                    <option value="">Select</option>
+                    <option value="A">A</option>
+                    <option value="B">B</option>
+                    <option value="C">C</option>
+                    <option value="D">D</option>
+                    <option value="E">E</option>
+                    <option value="F">F</option>
+                </select>
+                
+                <p>22. People's diets are more varied now than they were in the past.</p>
+                <select id="q22">
+                    <option value="">Select</option>
+                    <option value="A">A</option>
+                    <option value="B">B</option>
+                    <option value="C">C</option>
+                    <option value="D">D</option>
+                    <option value="E">E</option>
+                    <option value="F">F</option>
+                </select>
+            </div>
+
+            <div class="question">
+                <p><strong>Questions 23-26</strong></p>
+                <p>Complete the summary below.</p>
+                <p>Choose <strong>ONE WORD ONLY</strong> from the text for each answer.</p>
+                <p>Write your answers in boxes 23-26 below.</p>
+                
+                <p><strong>Food transportation</strong></p>
+                <p>In order to prevent loss of nutrients when transporting fruit and vegetables, chilling is used to slow down the effect that <input type="text" id="q23"> have on them.</p>
+                
+                <p>Some foods, such as tomatoes, must be picked before they are ripe to avoid problems such as <input type="text" id="q24"> during transportation.</p>
+                
+                <p>Other foods, such as cabbage, lose nutrients when kept in the <input type="text" id="q25">.</p>
+                
+                <p>Vegetables such as <input type="text" id="q26">, which are picked fresh and transported to the supermarket, may be less nutritious than those which are frozen.</p>
+            </div>
+
+            <button class="submit-btn" id="submit-btn">
+                <i class="fas fa-paper-plane"></i> Submit Answers
+            </button>
+        </div>
+    </div>
+
+    <div class="result-container" id="result-container">
+        <div class="result-header">
+            <h2>Test Results</h2>
+            <div class="score" id="score"></div>
+        </div>
+        
+        <div id="answer-feedback"></div>
+        
+        <button class="close-results" id="close-results">
+            <i class="fas fa-times"></i> Close Results
+        </button>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Theme switching
+            document.getElementById('day-theme').addEventListener('click', function() {
+                document.body.className = 'theme-day';
+            });
+            
+            document.getElementById('night-theme').addEventListener('click', function() {
+                document.body.className = 'theme-night';
+            });
+            
+            document.getElementById('sepia-theme').addEventListener('click', function() {
+                document.body.className = 'theme-sepia';
+            });
+            
+            // Timer functionality
+            const timerElement = document.getElementById('timer');
+            let timeLeft = 20 * 60; // 20 minutes in seconds
+            let timerInterval;
+            
+            function startTimer() {
+                timerInterval = setInterval(function() {
+                    timeLeft--;
+                    
+                    const minutes = Math.floor(timeLeft / 60);
+                    const seconds = timeLeft % 60;
+                    
+                    timerElement.querySelector('span').textContent = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+                    
+                    if (timeLeft === 5 * 60) { // 5 minutes left
+                        timerElement.classList.add('warning');
+                    }
+                    
+                    if (timeLeft <= 0) {
+                        clearInterval(timerInterval);
+                        submitAnswers();
+                    }
+                }, 1000);
+            }
+            
+            startTimer();
+            
+            // Text highlighting functionality
+            const passageElement = document.getElementById('passage');
+            let highlightMenu = null;
+            let currentSelection = null;
+            
+            passageElement.addEventListener('mouseup', function(e) {
+                const selection = window.getSelection();
+                if (!selection.isCollapsed) {
+                    currentSelection = selection;
+                    showHighlightMenu(e);
+                }
+            });
+            
+            document.addEventListener('mousedown', function(e) {
+                if (highlightMenu && !highlightMenu.contains(e.target)) {
+                    hideHighlightMenu();
+                }
+            });
+            
+            function showHighlightMenu(e) {
+                hideHighlightMenu();
+                
+                highlightMenu = document.createElement('div');
+                highlightMenu.className = 'highlight-menu';
+                
+                const yellowBtn = document.createElement('button');
+                yellowBtn.classList.add('highlight-yellow');
+                yellowBtn.innerHTML = '<i class="fas fa-highlighter"></i>';
+                yellowBtn.title = 'Yellow Highlight';
+                yellowBtn.addEventListener('click', function() {
+                    highlightSelection('highlight-yellow');
+                });
+                
+                const blueBtn = document.createElement('button');
+                blueBtn.classList.add('highlight-blue');
+                blueBtn.innerHTML = '<i class="fas fa-highlighter"></i>';
+                blueBtn.title = 'Blue Highlight';
+                blueBtn.addEventListener('click', function() {
+                    highlightSelection('highlight-blue');
+                });
+                
+                const clearBtn = document.createElement('button');
+                clearBtn.innerHTML = '<i class="fas fa-eraser"></i>';
+                clearBtn.title = 'Clear Highlight';
+                clearBtn.addEventListener('click', function() {
+                    removeHighlight();
+                });
+                
+                highlightMenu.appendChild(yellowBtn);
+                highlightMenu.appendChild(blueBtn);
+                highlightMenu.appendChild(clearBtn);
+                
+                document.body.appendChild(highlightMenu);
+                
+                // Position the menu near the selection
+                const rect = currentSelection.getRangeAt(0).getBoundingClientRect();
+                highlightMenu.style.top = `${rect.top + window.scrollY - 50}px`;
+                highlightMenu.style.left = `${rect.left + window.scrollX}px`;
+            }
+            
+            function hideHighlightMenu() {
+                if (highlightMenu) {
+                    document.body.removeChild(highlightMenu);
+                    highlightMenu = null;
+                }
+            }
+            
+            function highlightSelection(className) {
+                if (currentSelection && currentSelection.rangeCount > 0) {
+                    const range = currentSelection.getRangeAt(0);
+                    const selectedText = range.toString();
+                    
+                    if (selectedText.trim().length > 0) {
+                        const span = document.createElement('span');
+                        span.className = className;
+                        
+                        try {
+                            range.surroundContents(span);
+                        } catch (e) {
+                            // If surrounding fails, try extracting and inserting
+                            range.extractContents();
+                            span.appendChild(document.createTextNode(selectedText));
+                            range.insertNode(span);
+                        }
+                    }
+                }
+                
+                hideHighlightMenu();
+                window.getSelection().removeAllRanges();
+            }
+            
+            function removeHighlight() {
+                if (currentSelection && currentSelection.rangeCount > 0) {
+                    const range = currentSelection.getRangeAt(0);
+                    const parent = range.startContainer.parentNode;
+                    
+                    if (parent.classList.contains('highlight-yellow') || 
+                        parent.classList.contains('highlight-blue')) {
+                        const text = parent.textContent;
+                        const textNode = document.createTextNode(text);
+                        parent.parentNode.replaceChild(textNode, parent);
+                    }
+                }
+                
+                hideHighlightMenu();
+                window.getSelection().removeAllRanges();
+            }
+            
+            // Answer submission and evaluation
+            document.getElementById('submit-btn').addEventListener('click', submitAnswers);
+            document.getElementById('close-results').addEventListener('click', function() {
+                document.getElementById('result-container').style.display = 'none';
+            });
+            
+            function submitAnswers() {
+                clearInterval(timerInterval);
+                
+                // Correct answers
+                const correctAnswers = {
+                    q14: 'C',
+                    q15: 'B',
+                    q16: 'A',
+                    q17: 'C',
+                    q18: 'D',
+                    q19: 'A',
+                    q20: 'E',
+                    q21: 'C',
+                    q22: 'B',
+                    q23: 'enzymes',
+                    q24: 'bruising',
+                    q25: 'light',
+                    q26: 'peas'
+                };
+                
+                // User answers
+                const userAnswers = {};
+                for (let i = 14; i <= 26; i++) {
+                    const element = document.getElementById(`q${i}`);
+                    if (element) {
+                        userAnswers[`q${i}`] = element.tagName === 'SELECT' ? 
+                            element.value : element.value.toLowerCase().trim();
+                    }
+                }
+                
+                // Calculate score
+                let score = 0;
+                const totalQuestions = Object.keys(correctAnswers).length;
+                
+                for (const question in correctAnswers) {
+                    if (userAnswers[question] === correctAnswers[question]) {
+                        score++;
+                    }
+                }
+                
+                // Display results
+                document.getElementById('score').textContent = `Score: ${score}/${totalQuestions}`;
+                
+                const feedbackContainer = document.getElementById('answer-feedback');
+                feedbackContainer.innerHTML = '';
+                
+                for (const question in correctAnswers) {
+                    const isCorrect = userAnswers[question] === correctAnswers[question];
+                    const feedbackElement = document.createElement('div');
+                    feedbackElement.className = `answer-feedback ${isCorrect ? 'correct' : 'incorrect'}`;
+                    
+                    let questionText = '';
+                    if (question.startsWith('q1')) {
+                        // Questions 14-18
+                        const num = parseInt(question.substring(1));
+                        questionText = `Question ${num}: `;
+                        const questions = [
+                            "an admission that if one type of food is harvested too soon, its taste may be affected",
+                            "the view that there is not a great difference between the quantity of nutrients in our food now and in the past",
+                            "a comparison which illustrates why developments in agriculture may reduce the amounts of nutrients in foods",
+                            "a warning that customers could be deceived by the attractive appearance of a fruit or vegetable",
+                            "evidence of the popularity of a new development in food processing which aims to save customers trouble"
+                        ];
+                        questionText += questions[num - 14];
+                    } else if (question.startsWith('q19')) {
+                        // Questions 19-22
+                        const num = parseInt(question.substring(1));
+                        questionText = `Question ${num}: `;
+                        const questions = [
+                            "People are more likely to become ill if they have low levels of some nutrients.",
+                            "Making healthy foods easy to cook may be more important than their vitamin content.",
+                            "An improved diet has made people nowadays live longer and be healthier than in the past.",
+                            "People's diets are more varied now than they were in the past."
+                        ];
+                        questionText += questions[num - 19];
+                    } else {
+                        // Questions 23-26
+                        const num = parseInt(question.substring(1));
+                        questionText = `Question ${num}: `;
+                        const questions = [
+                            "In order to prevent loss of nutrients when transporting fruit and vegetables, chilling is used to slow down the effect that ... have on them.",
+                            "Some foods, such as tomatoes, must be picked before they are ripe to avoid problems such as ... during transportation.",
+                            "Other foods, such as cabbage, lose nutrients when kept in the ...",
+                            "Vegetables such as ..., which are picked fresh and transported to the supermarket, may be less nutritious than those which are frozen."
+                        ];
+                        questionText += questions[num - 23];
+                    }
+                    
+                    feedbackElement.innerHTML = `
+                        <p><strong>${questionText}</strong></p>
+                        <p>Your answer: ${userAnswers[question] || 'No answer'}</p>
+                        <p>Correct answer: ${correctAnswers[question]}</p>
+                        ${!isCorrect ? `<p>Explanation: ${getExplanation(question)}</p>` : ''}
+                    `;
+                    
+                    feedbackContainer.appendChild(feedbackElement);
+                }
+                
+                document.getElementById('result-container').style.display = 'block';
+            }
+            
+            function getExplanation(questionId) {
+                const explanations = {
+                    q14: "Section C mentions that tomatoes harvested unripe may lose flavor compared to home-grown ones.",
+                    q15: "Section B states that we eat a wider range of foods today than in the past, suggesting nutrient differences are small.",
+                    q16: "Section A uses the comparison of diluting orange juice to explain how high-yield crops dilute nutrients.",
+                    q17: "Section C warns that supermarket fruits and vegetables might look shiny and fresh but were picked days earlier.",
+                    q18: "Section D discusses the popularity of 'fresh-cut' fruits and vegetables that save customers preparation time.",
+                    q19: "Donald Davis mentions that nutrient deficiencies increase susceptibility to health problems.",
+                    q20: "Catherine Collins suggests that frozen foods (easy to cook) are often more nutritious than fresh ones.",
+                    q21: "Eric Decker states that improved food supply has led to longer lifespans and better health.",
+                    q22: "Paul Finglas argues that we eat a wider range of foods today than in the past.",
+                    q23: "Enzymes drive nutrient deterioration, and chilling slows down these reactions.",
+                    q24: "Tomatoes must be picked unripe to avoid bruising during transportation.",
+                    q25: "Cabbage loses nutrients (glucosinolates) when kept in light.",
+                    q26: "Frozen peas are more nutritious than fresh peas that are transported to supermarkets."
+                };
+                
+                return explanations[questionId] || "No explanation available.";
+            }
+        });
+    </script>
+</body>
+</html>
