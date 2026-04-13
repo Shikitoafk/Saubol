@@ -21,7 +21,7 @@ export interface GeminiResponse {
 }
 
 const GEMINI_API_KEY = "AIzaSyCJmfEYIinvA4wQTcMTXiK2P0UsYO9Z4L4";
-const GEMINI_API_URL = "https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent";
+const GEMINI_API_URL = "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent";
 
 export async function evaluateEssayWithGemini(
   taskType: "task1" | "task2",
