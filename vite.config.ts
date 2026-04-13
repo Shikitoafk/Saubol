@@ -11,6 +11,9 @@ import { defineConfig } from "vite";
       },
       dedupe: ["react", "react-dom"],
     },
+    optimizeDeps: {
+      exclude: ['@xenova/transformers']
+    },
     build: {
       outDir: "dist",
       emptyOutDir: true,

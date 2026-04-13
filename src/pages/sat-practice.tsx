@@ -1,7 +1,9 @@
 import { useState, useEffect, useRef, useMemo, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
-import katex from "katex";
-import "katex/dist/katex.min.css";
+import katex, { renderMathInElement } from "katex";
+import { KATEX_OPTS, MATH_CMDS, tryKaTeX } from "./katex-utils";
+import { env } from "@xenova/transformers";
+import { answerQuestion } from "@/lib/reading-assistant";
 import {
   ChevronLeft,
   CheckCircle2,
@@ -23,6 +25,34 @@ import {
 import { Layout } from "@/components/layout";
 import { Button } from "@/components/ui/button";
 import { supabase } from "@/lib/supabase";
+
+/* Add global KaTeX CSS fixes */
+const katexStyles = `
+.katex { 
+  font-size: 1em !important; 
+  line-height: 1.2;
+}
+.katex-display { 
+  font-size: 1em !important; 
+  margin: 0.5em 0; 
+  line-height: 1.2;
+}
+.katex-html { 
+  white-space: normal; 
+}
+.katex .base {
+  position: relative;
+  white-space: nowrap;
+  width: min-content;
+}
+`;
+
+// Inject styles into document head
+if (typeof document !== 'undefined') {
+  const style = document.createElement('style');
+  style.textContent = katexStyles;
+  document.head.appendChild(style);
+}
 
 /* ════════════════════════════════════════════════════════════════════
    KaTeX rendering
@@ -67,12 +97,35 @@ function cleanQuestion(raw: string): string {
   if (!raw) return "";
   let out = raw;
 
-  // ── 1. Normalise non-LaTeX notation ──────────────────────────────
-  // sqrt(X) → \sqrt{X}
+  // ---- 1. Handle ^{...} without $ (wrap in $) ----------------------
+  out = applyToTextParts(out, (seg) => {
+    // Handle ^{...} patterns that aren't already in math mode
+    seg = seg.replace(/(\w+)\^(\{[^{}]+\})/g, "$$$1^$2$$");
+    return seg;
+  });
+
+  // ---- 2. Handle \frac without $ (wrap in $) -----------------------
+  out = applyToTextParts(out, (seg) => {
+    // Handle \frac{...}{...} patterns that aren't already in math mode
+    seg = seg.replace(/\\frac(\{[^{}]+\})(\{[^{}]+\})/g, "$$\\frac$1$2$$");
+    return seg;
+  });
+
+  // ---- 3. Handle standalone numbers like "2^2" -> $2^{2}$ -----------
+  out = applyToTextParts(out, (seg) => {
+    // Handle number^number patterns that aren't already in math mode
+    seg = seg.replace(/(\d+)\^(\d+)/g, "$$$1^{$2}$$");
+    // Handle number^{...} patterns
+    seg = seg.replace(/(\d+)\^(\{[^{}]+\})/g, "$$$1^$2$$");
+    return seg;
+  });
+
+  // ---- 4. Normalise non-LaTeX notation -----------------------------
+  // sqrt(X) -> \sqrt{X}
   out = out.replace(/(?<![a-zA-Z\\])sqrt\(([^)]*)\)/g, "\\sqrt{$1}");
-  // [letter]sqrt{ → [letter]\sqrt{  (e.g. asqrt{ → a\sqrt{)
+  // [letter]sqrt{ -> [letter]\sqrt{  (e.g. asqrt{ -> a\sqrt{)
   out = out.replace(/([a-zA-Z0-9])sqrt(\{)/g, "$1\\sqrt$2");
-  // Npi / N.Npi → N\pi   (e.g. 112pi → 112\pi)
+  // Npi / N.Npi -> N\pi   (e.g. 112pi -> 112\pi)
   out = out.replace(/(\d+(?:\.\d+)?)pi(?![a-zA-Z])/g, "$1\\pi");
   // "pi" after an operator/digit  (e.g. "= 16pi.")
   out = out.replace(/([\d\s*+\-/(=,])pi([\s*+\-/)^,.])/g, "$1\\pi$2");
@@ -87,7 +140,7 @@ function cleanQuestion(raw: string): string {
     return seg;
   });
 
-  // ── 2. Wrap \LaTeX commands in $…$ (skip existing math regions) ──
+  // ---- 5. Wrap \LaTeX commands in $...$ (skip existing math regions) --
   out = applyToTextParts(out, (seg) =>
     seg.replace(
       /\\([a-zA-Z]+)((?:\{[^{}]*(?:\{[^{}]*\}[^{}]*)?\}){0,2})/g,
@@ -95,7 +148,7 @@ function cleanQuestion(raw: string): string {
     )
   );
 
-  // ── 3. Wrap bare caret expressions in $…$ (skip math regions) ────
+  // ---- 6. Wrap bare caret expressions in $...$ (skip math regions) ----
   out = applyToTextParts(out, (seg) => {
     // (expr)^exponent  e.g. (x+2)^2  (1.001)^((x-4)/2)
     seg = seg.replace(
@@ -496,12 +549,16 @@ export default function SATPractice() {
   const [phase, setPhase] = useState<Phase>("bank");
   const [questions, setQuestions] = useState<SATQuestion[]>([]);
   const [currentIdx, setCurrentIdx] = useState(0);
-  const [answerState, setAnswerState] = useState<AnswerState>(null);
-  const [showExp, setShowExp] = useState(false);
-  const [sessionAnswers, setSessionAnswers] = useState<Record<string, { selected: string; correct: boolean }>>({});
+  const [answerState, setAnswerState] = useState<{ type: QuestionType | null; selected: string | null }>({ type: null, selected: null });
+  const [sessionAnswers, setSessionAnswers] = useState<Record<string, { selected?: string; correct?: boolean }>>({});
   const [elapsed, setElapsed] = useState(0);
-  const [frInput, setFrInput] = useState("");
-  const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
+  const [timer, setTimer] = useState<NodeJS.Timeout | null>(null);
+
+  // Reading Assistant state
+  const [passageText, setPassageText] = useState("");
+  const [questionText, setQuestionText] = useState("");
+  const [aiAnswer, setAiAnswer] = useState<any>(null);
+  const [isAnalyzingQuestion, setIsAnalyzingQuestion] = useState(false);
   const frInputRef = useRef<HTMLInputElement>(null);
 
   const progress = loadProgress();
@@ -512,6 +569,20 @@ export default function SATPractice() {
       .catch((e) => setFetchError(e.message))
       .finally(() => setLoadingMeta(false));
   }, []);
+
+  // Render math after every question loads
+  useEffect(() => {
+    if (typeof renderMathInElement !== 'undefined') {
+      renderMathInElement(document.body, {
+        delimiters: [
+          {left: '$$', right: '$$', display: true},
+          {left: '$', right: '$', display: false},
+          {left: '\\(', right: '\\)', display: false},
+        ],
+        throwOnError: false,
+      });
+    }
+  }, [currentIdx, answerState]);
 
   const stopTimer = useCallback(() => {
     if (timerRef.current) { clearInterval(timerRef.current); timerRef.current = null; }
@@ -730,6 +801,97 @@ export default function SATPractice() {
         {/* Ultra thin progress bar at very top */}
         <div className="h-0.5" style={{ background: "#e5e7eb" }}>
           <div className="h-0.5 transition-all duration-500" style={{ width: `${pctDone}%`, background: "#2563eb" }} />
+        </div>
+
+        {/* SAT Reading Assistant */}
+        <div className="fixed bottom-6 right-6 z-50">
+          <div className="bg-white rounded-lg shadow-xl border border-border p-4 w-80">
+            <div className="flex items-center justify-between mb-3">
+              <h3 className="text-sm font-semibold text-foreground">
+                <Brain className="inline-block h-4 w-4 mr-2" />
+                Reading Assistant
+              </h3>
+              <button
+                onClick={() => {
+                  setPassageText("");
+                  setQuestionText("");
+                  setAiAnswer(null);
+                }}
+                className="text-muted-foreground hover:text-foreground"
+              >
+                <X className="h-4 w-4" />
+              </button>
+            </div>
+            
+            <div className="space-y-3">
+              <div>
+                <label className="text-xs font-medium text-muted-foreground mb-1">Paste passage text:</label>
+                <textarea
+                  placeholder="Paste a difficult passage here..."
+                  className="w-full h-24 p-2 text-xs border border-border rounded-md resize-none focus:outline-none focus:ring-2 focus:ring-primary/20"
+                  value={passageText}
+                  onChange={(e) => setPassageText(e.target.value)}
+                />
+              </div>
+              
+              <div>
+                <label className="text-xs font-medium text-muted-foreground mb-1">Ask a question:</label>
+                <input
+                  placeholder="What is the main idea of this passage?"
+                  className="w-full p-2 text-xs border border-border rounded-md focus:outline-none focus:ring-2 focus:ring-primary/20"
+                  value={questionText}
+                  onChange={(e) => setQuestionText(e.target.value)}
+                />
+              </div>
+              
+              <Button
+                onClick={async () => {
+                  if (!passageText.trim() || !questionText.trim()) return;
+                  
+                  setIsAnalyzingQuestion(true);
+                  setAiAnswer(null);
+                  
+                  try {
+                    const result = await answerQuestion(passageText, questionText);
+                    setAiAnswer(result);
+                  } catch (error) {
+                    console.error('Reading assistant error:', error);
+                  } finally {
+                    setIsAnalyzingQuestion(false);
+                  }
+                }}
+                disabled={isAnalyzingQuestion || !passageText.trim() || !questionText.trim()}
+                className="w-full"
+                size="sm"
+              >
+                {isAnalyzingQuestion ? (
+                  <>
+                    <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                    Finding Answer...
+                  </>
+                ) : (
+                  <>
+                    <Brain className="h-4 w-4 mr-2" />
+                    Find Answer
+                  </>
+                )}
+              </Button>
+              
+              {aiAnswer && (
+                <div className="mt-3 p-3 bg-secondary/30 rounded-md">
+                  <div className="text-xs font-medium text-foreground mb-2">AI Answer:</div>
+                  <div className="text-xs text-muted-foreground">{aiAnswer.answer}</div>
+                  <div className="text-xs text-muted-foreground mt-1">
+                    Confidence: {Math.round(aiAnswer.score * 100)}%
+                  </div>
+                </div>
+              )}
+            </div>
+            
+            <div className="mt-2 text-xs text-muted-foreground text-center">
+              Powered by AI — running locally in your browser
+            </div>
+          </div>
         </div>
 
         {/* Top navigation */}

@@ -12,7 +12,11 @@ import {
   GraduationCap,
   Loader2,
   AlertCircle,
+  Brain,
+  CheckCircle,
+  XCircle,
 } from "lucide-react";
+import { analyzeEssay } from "@/lib/essay-analyzer";
 import { Layout } from "@/components/layout";
 import { Button } from "@/components/ui/button";
 import {
@@ -391,6 +395,12 @@ const IELTSPrep = () => {
   const [error, setError] = useState<string | null>(null);
   const [animating, setAnimating] = useState(false);
   const [direction, setDirection] = useState<"forward" | "back">("forward");
+  
+  // Essay Analyzer state
+  const [essayText, setEssayText] = useState("");
+  const [essayAnalysis, setEssayAnalysis] = useState<any>(null);
+  const [isAnalyzingEssay, setIsAnalyzingEssay] = useState(false);
+  const [activeTab, setActiveTab] = useState<"tests" | "checker">("tests");
 
   const level = selectedType ? 3 : selectedSkill ? 2 : 1;
 
@@ -401,6 +411,22 @@ const IELTSPrep = () => {
       cb();
       setAnimating(false);
     }, 250);
+  };
+
+  const handleEssayAnalysis = async () => {
+    if (!essayText.trim()) return;
+    
+    setIsAnalyzingEssay(true);
+    setEssayAnalysis(null);
+    
+    try {
+      const result = await analyzeEssay(essayText);
+      setEssayAnalysis(result);
+    } catch (error) {
+      console.error('Essay analysis error:', error);
+    } finally {
+      setIsAnalyzingEssay(false);
+    }
   };
 
   const goToSkill = (skill: Skill) => animate("forward", () => setSelectedSkill(skill));
@@ -619,64 +645,213 @@ const IELTSPrep = () => {
 
           {level === 3 && selectedType !== "cambridge" && (
             <div className="mt-4">
-              {loading && (
-                <div className="flex flex-col items-center justify-center py-20 text-muted-foreground">
-                  <Loader2 className="h-8 w-8 animate-spin mb-3" />
-                  <p>Loading tests…</p>
+              {/* Tab Navigation */}
+              <div className="mb-6 border-b border-border">
+                <div className="flex space-x-8">
+                  <button
+                    onClick={() => setActiveTab("tests")}
+                    className={`pb-3 px-1 border-b-2 font-medium text-sm transition-colors ${
+                      activeTab === "tests"
+                        ? "border-primary text-primary"
+                        : "border-transparent text-muted-foreground hover:text-foreground"
+                    }`}
+                  >
+                    Tests
+                  </button>
+                  <button
+                    onClick={() => setActiveTab("checker")}
+                    className={`pb-3 px-1 border-b-2 font-medium text-sm transition-colors ${
+                      activeTab === "checker"
+                        ? "border-primary text-primary"
+                        : "border-transparent text-muted-foreground hover:text-foreground"
+                    }`}
+                  >
+                    Essay Checker
+                  </button>
                 </div>
+              </div>
+
+              {/* Tests Tab */}
+              {activeTab === "tests" && (
+                <>
+                  {loading && (
+                    <div className="flex flex-col items-center justify-center py-20 text-muted-foreground">
+                      <Loader2 className="h-8 w-8 animate-spin mb-3" />
+                      <p>Loading tests…</p>
+                    </div>
+                  )}
+
+                  {error && (
+                    <div className="flex flex-col items-center justify-center py-20 text-muted-foreground">
+                      <AlertCircle className="h-8 w-8 mb-3 text-destructive" />
+                      <p className="text-sm">No tests available yet. Check back soon!</p>
+                    </div>
+                  )}
+
+                  {!loading && !error && tests.length === 0 && (
+                    <div className="flex flex-col items-center justify-center py-20 text-muted-foreground">
+                      <ClipboardList className="h-8 w-8 mb-3" />
+                      <p>No tests found in this category yet.</p>
+                    </div>
+                  )}
+
+                  {!loading && !error && tests.length > 0 && (
+                    <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+                      {tests.map((t, i) => (
+                        <div
+                          key={t.id}
+                          className="group flex flex-col rounded-xl border bg-card p-6 shadow-sm transition-all hover:-translate-y-1 hover:shadow-md"
+                        >
+                          <div className="flex items-center justify-between">
+                            <span className="text-sm font-medium text-muted-foreground">Test {i + 1}</span>
+                            <span className={`rounded-full border px-2.5 py-0.5 text-xs font-semibold ${difficultyColor[t.difficulty] || difficultyColor.Medium}`}>
+                              {t.difficulty}
+                            </span>
+                          </div>
+                          <h3 className="mt-3 text-lg font-semibold text-card-foreground">{t.name}</h3>
+                          {t.topic && <p className="mt-1 text-sm text-muted-foreground">{t.topic}</p>}
+                          <div className="mt-4 flex items-center gap-4 text-sm text-muted-foreground">
+                            <span className="flex items-center gap-1">
+                              <HelpCircle className="h-4 w-4" /> {t.questions} questions
+                            </span>
+                            <span className="flex items-center gap-1">
+                              <Clock className="h-4 w-4" /> {t.time}
+                            </span>
+                          </div>
+                          <Button
+                            className="mt-6"
+                            size="sm"
+                            onClick={() => {
+                              if (t.slug) {
+                                nav(`/ielts/test/${t.slug}`);
+                              }
+                            }}
+                            disabled={!t.slug}
+                          >
+                            Start Test
+                          </Button>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </>
               )}
 
-              {error && (
-                <div className="flex flex-col items-center justify-center py-20 text-muted-foreground">
-                  <AlertCircle className="h-8 w-8 mb-3 text-destructive" />
-                  <p className="text-sm">No tests available yet. Check back soon!</p>
-                </div>
-              )}
-
-              {!loading && !error && tests.length === 0 && (
-                <div className="flex flex-col items-center justify-center py-20 text-muted-foreground">
-                  <ClipboardList className="h-8 w-8 mb-3" />
-                  <p>No tests found in this category yet.</p>
-                </div>
-              )}
-
-              {!loading && !error && tests.length > 0 && (
-                <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-                  {tests.map((t, i) => (
-                    <div
-                      key={t.id}
-                      className="group flex flex-col rounded-xl border bg-card p-6 shadow-sm transition-all hover:-translate-y-1 hover:shadow-md"
-                    >
-                      <div className="flex items-center justify-between">
-                        <span className="text-sm font-medium text-muted-foreground">Test {i + 1}</span>
-                        <span className={`rounded-full border px-2.5 py-0.5 text-xs font-semibold ${difficultyColor[t.difficulty] || difficultyColor.Medium}`}>
-                          {t.difficulty}
-                        </span>
-                      </div>
-                      <h3 className="mt-3 text-lg font-semibold text-card-foreground">{t.name}</h3>
-                      {t.topic && <p className="mt-1 text-sm text-muted-foreground">{t.topic}</p>}
-                      <div className="mt-4 flex items-center gap-4 text-sm text-muted-foreground">
-                        <span className="flex items-center gap-1">
-                          <HelpCircle className="h-4 w-4" /> {t.questions} questions
-                        </span>
-                        <span className="flex items-center gap-1">
-                          <Clock className="h-4 w-4" /> {t.time}
-                        </span>
-                      </div>
+              {/* Essay Checker Tab */}
+              {activeTab === "checker" && (
+                <div className="space-y-6">
+                  <div className="bg-card rounded-lg border p-6">
+                    <h3 className="text-lg font-semibold text-card-foreground mb-4">
+                      <Brain className="inline-block h-5 w-5 mr-2" />
+                      IELTS Essay Checker
+                    </h3>
+                    <p className="text-sm text-muted-foreground mb-4">
+                      Paste your essay below to get instant AI feedback on tone, formality, word count, and sentence-by-sentence analysis.
+                    </p>
+                    
+                    <div className="space-y-4">
+                      <textarea
+                        placeholder="Paste your IELTS essay here..."
+                        className="w-full h-64 p-4 border border-border rounded-md resize-none focus:outline-none focus:ring-2 focus:ring-primary/20"
+                        value={essayText}
+                        onChange={(e) => setEssayText(e.target.value)}
+                      />
+                      
                       <Button
-                        className="mt-6"
-                        size="sm"
-                        onClick={() => {
-                          if (t.slug) {
-                            nav(`/ielts/test/${t.slug}`);
-                          }
-                        }}
-                        disabled={!t.slug}
+                        onClick={handleEssayAnalysis}
+                        disabled={isAnalyzingEssay || !essayText.trim()}
+                        className="w-full"
                       >
-                        Start Test
+                        {isAnalyzingEssay ? (
+                          <>
+                            <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                            Analyzing Essay...
+                          </>
+                        ) : (
+                          <>
+                            <Brain className="h-4 w-4 mr-2" />
+                            Analyze Essay
+                          </>
+                        )}
                       </Button>
                     </div>
-                  ))}
+
+                    {essayAnalysis && (
+                      <div className="space-y-6 bg-secondary/30 rounded-lg p-6">
+                        <h4 className="text-lg font-semibold text-card-foreground mb-4">Analysis Results</h4>
+                        
+                        <div className="grid gap-6 md:grid-cols-2">
+                          <div className="space-y-4">
+                            <div className="flex items-center justify-between">
+                              <h5 className="font-medium text-card-foreground">Tone</h5>
+                              <span className={`px-3 py-1 rounded-full text-sm font-medium ${
+                                essayAnalysis.toneScore === 'Formal' 
+                                  ? 'bg-emerald-100 text-emerald-700 border-emerald-200'
+                                  : essayAnalysis.toneScore === 'Mostly Formal'
+                                  ? 'bg-amber-100 text-amber-700 border-amber-200'
+                                  : 'bg-red-100 text-red-700 border-red-200'
+                              }`}>
+                                {essayAnalysis.toneScore}
+                              </span>
+                            </div>
+                            
+                            <div className="flex items-center justify-between">
+                              <h5 className="font-medium text-card-foreground">Word Count</h5>
+                              <span className="text-muted-foreground">{essayAnalysis.wordCount}</span>
+                            </div>
+                            
+                            <div className="flex items-center justify-between">
+                              <h5 className="font-medium text-card-foreground">Avg Sentence Length</h5>
+                              <span className="text-muted-foreground">{essayAnalysis.avgSentenceLength} words</span>
+                            </div>
+                          </div>
+                          
+                          {essayAnalysis.informalWords.length > 0 && (
+                            <div className="space-y-3">
+                              <h5 className="font-medium text-card-foreground">Informal Words Found</h5>
+                              <div className="space-y-2">
+                                {essayAnalysis.informalWords.map((word: string, index: number) => (
+                                  <div key={index} className="flex items-center justify-between p-3 bg-background rounded-md">
+                                    <span className="text-sm text-muted-foreground">{word}</span>
+                                    <span className="text-sm text-muted-foreground">
+                                      Try: {word.replace(/gonna/g, 'going to').replace(/wanna/g, 'want to').replace(/kinda/g, 'kind of').replace(/stuff/g, 'things').replace(/like/g, 'such as').replace(/okay/g, 'acceptable').replace(/ok/g, 'acceptable').replace(/yeah/g, 'yes').replace(/nope/g, 'no').replace(/lots of/g, 'many').replace(/don't/g, 'do not').replace(/can't/g, 'cannot').replace(/won't/g, 'will not').replace(/it's/g, 'it is').replace(/that's/g, 'that is')}
+                                    </span>
+                                  </div>
+                                ))}
+                              </div>
+                            </div>
+                          )}
+                        </div>
+                        
+                        <div className="mt-6">
+                          <h5 className="font-medium text-card-foreground mb-4">Sentence-by-Sentence Analysis</h5>
+                          <div className="space-y-3 max-h-64 overflow-y-auto">
+                            {essayAnalysis.sentences.map((sentence: any, index: number) => (
+                              <div key={index} className="p-3 bg-background rounded-md">
+                                <div className="flex items-start justify-between mb-2">
+                                  <span className="text-sm text-muted-foreground">{sentence.sentence}</span>
+                                  <span className={`px-2 py-1 rounded text-xs font-medium ${
+                                    sentence.label === 'POSITIVE'
+                                      ? 'bg-emerald-100 text-emerald-700'
+                                      : 'bg-red-100 text-red-700'
+                                  }`}>
+                                    {sentence.label}
+                                  </span>
+                                </div>
+                                <div className="text-xs text-muted-foreground">
+                                  Confidence: {Math.round(sentence.score * 100)}%
+                                </div>
+                              </div>
+                            ))}
+                          </div>
+                        </div>
+                      </div>
+                    )}
+
+                    <div className="mt-4 text-xs text-muted-foreground text-center">
+                      Powered by AI — running locally in your browser
+                    </div>
+                  </div>
                 </div>
               )}
             </div>

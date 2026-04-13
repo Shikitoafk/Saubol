@@ -6,7 +6,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
-import { Search, MapPin, Filter, AlertCircle, ExternalLink, Bookmark, BookmarkCheck } from "lucide-react";
+import { Search, MapPin, Filter, AlertCircle, ExternalLink, Bookmark, BookmarkCheck, Brain, Loader2, ChevronDown, ChevronRight } from "lucide-react";
 import {
   Sheet,
   SheetContent,
@@ -18,6 +18,7 @@ import {
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { supabase } from "@/lib/supabase";
 import { useAuth } from "@/hooks/useAuth";
+import { semanticSearch } from "@/lib/ai-search";
 
 export interface Program {
   id: string | number;
@@ -69,6 +70,12 @@ export default function Programs() {
   const [selectedFormat, setSelectedFormat] = useState("All");
   const [selectedPrice, setSelectedPrice] = useState("All");
   const [savedPrograms, setSavedPrograms] = useState<Set<string>>(new Set());
+  const [aiQuery, setAiQuery] = useState("");
+  const [aiResults, setAiResults] = useState<any[]>([]);
+  const [isAiSearching, setIsAiSearching] = useState(false);
+  const [isAiMatchmakerOpen, setIsAiMatchmakerOpen] = useState(true);
+  const [isModelLoading, setIsModelLoading] = useState(false);
+  const [modelError, setModelError] = useState<string | null>(null);
 
   const { user } = useAuth();
 
@@ -111,9 +118,9 @@ export default function Programs() {
           .eq("program_name", program.name);
         
         setSavedPrograms(prev => {
-          const newSet = new Set(prev);
-          newSet.delete(program.name);
-          return newSet;
+          const next = new Set(prev);
+          next.delete(program.name);
+          return next;
         });
       } else {
         // Add to saved programs
@@ -129,6 +136,27 @@ export default function Programs() {
       }
     } catch (error) {
       console.error('Error toggling bookmark:', error);
+    }
+  };
+
+  const handleAiSearch = async () => {
+    if (!aiQuery.trim()) return;
+    
+    setIsAiSearching(true);
+    setIsModelLoading(true);
+    setModelError(null);
+    setAiResults([]);
+    
+    try {
+      const results = await semanticSearch(aiQuery, programs);
+      setAiResults(results);
+    } catch (error) {
+      console.error('AI search error:', error);
+      setModelError("AI unavailable. Please try again later.");
+      setAiResults([]);
+    } finally {
+      setIsAiSearching(false);
+      setIsModelLoading(false);
     }
   };
 
@@ -175,12 +203,30 @@ export default function Programs() {
               <div className="relative">
                 <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                 <Input
-                  placeholder="Find a program..."
-                  className="pl-9 bg-background"
-                  value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
-                  data-testid="input-program-search"
+                  placeholder="Describe yourself and what you're looking for..."
+                  className="pl-9 bg-background pr-10"
+                  value={aiQuery}
+                  onChange={(e) => setAiQuery(e.target.value)}
+                  data-testid="input-ai-search"
                 />
+                <Button
+                  onClick={handleAiSearch}
+                  disabled={isAiSearching || !aiQuery.trim()}
+                  className="absolute right-3 top-1/2 h-8 w-8 px-3 bg-primary hover:bg-primary/90 text-white"
+                  data-testid="btn-ai-search"
+                >
+                  {isAiSearching ? (
+                    <>
+                      <Loader2 className="h-4 w-4 animate-spin" />
+                      Finding matching programs...
+                    </>
+                  ) : (
+                    <>
+                      <Brain className="h-4 w-4" />
+                      Find matching programs
+                    </>
+                  )}
+                </Button>
               </div>
             </div>
 
@@ -348,6 +394,106 @@ export default function Programs() {
               </div>
             )}
 
+            {/* AI Matchmaker Section - Always visible above programs */}
+            {!isLoading && !error && (
+              <div className="mb-8 bg-gradient-to-r from-primary/10 to-primary/5 rounded-xl border border-primary/20 p-6">
+                <div className="flex items-center justify-between mb-4">
+                  <div>
+                    <h2 className="text-2xl font-bold text-foreground flex items-center gap-2">
+                      <Brain className="h-6 w-6 text-primary" />
+                      AI Program Matchmaker
+                    </h2>
+                    <p className="text-muted-foreground mt-1">
+                      Describe yourself and we'll find the best programs for you
+                    </p>
+                  </div>
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => setIsAiMatchmakerOpen(!isAiMatchmakerOpen)}
+                    className="text-muted-foreground hover:text-foreground"
+                  >
+                    {isAiMatchmakerOpen ? (
+                      <>
+                        <ChevronDown className="h-4 w-4 mr-1" />
+                        Hide
+                      </>
+                    ) : (
+                      <>
+                        <ChevronRight className="h-4 w-4 mr-1" />
+                        Show
+                      </>
+                    )}
+                  </Button>
+                </div>
+                
+                {isAiMatchmakerOpen && (
+                  <div className="space-y-4">
+                    <textarea
+                      placeholder="Example: I'm interested in medicine and biology, looking for free summer programs in the US..."
+                      className="w-full h-24 p-4 border border-border rounded-md resize-none focus:outline-none focus:ring-2 focus:ring-primary/20"
+                      value={aiQuery}
+                      onChange={(e) => setAiQuery(e.target.value)}
+                    />
+                    
+                    <div className="flex items-center gap-4">
+                      <Button
+                        onClick={handleAiSearch}
+                        disabled={isAiSearching || !aiQuery.trim()}
+                        className="flex-1"
+                      >
+                        {isModelLoading ? (
+                          <>
+                            <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                            Loading AI (20MB, one time only)...
+                          </>
+                        ) : isAiSearching ? (
+                          <>
+                            <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                            Finding matching programs...
+                          </>
+                        ) : (
+                          <>
+                            <Brain className="h-4 w-4 mr-2" />
+                            Find My Programs →
+                          </>
+                        )}
+                      </Button>
+                    </div>
+                    
+                    {modelError && (
+                      <div className="text-sm text-red-600 bg-red-50 border border-red-200 rounded-md p-3">
+                        {modelError}
+                      </div>
+                    )}
+                    
+                    {aiResults.length > 0 && (
+                      <div className="mt-4 space-y-3">
+                        <h3 className="text-sm font-semibold text-foreground">AI Results:</h3>
+                        {aiResults.map((result: any, index: number) => (
+                          <div key={index} className="bg-card border border-border rounded-md p-4 flex items-start gap-3">
+                            <div className="flex-shrink-0 w-12 h-12 bg-primary/10 rounded-lg flex items-center justify-center">
+                              <span className="text-lg font-bold text-primary">
+                                {Math.round(result.score * 100)}%
+                              </span>
+                            </div>
+                            <div className="flex-1 min-w-0">
+                              <h4 className="font-medium text-foreground">{result.name}</h4>
+                              <p className="text-sm text-muted-foreground line-clamp-2">{result.details}</p>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    )}
+                    
+                    <div className="text-xs text-muted-foreground text-center">
+                      Powered by AI — running locally in your browser
+                    </div>
+                  </div>
+                )}
+              </div>
+            )}
+
             {/* Programs grid */}
             {!isLoading && !error && (
               <>
@@ -468,6 +614,7 @@ export default function Programs() {
                 )}
               </>
             )}
+            </div>
           </div>
         </div>
       </div>
