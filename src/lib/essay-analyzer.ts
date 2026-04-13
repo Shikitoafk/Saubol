@@ -1,12 +1,10 @@
-import { pipeline, env } from '@xenova/transformers';
-
-env.allowLocalModels = false;
-
 let classifier: any = null;
 let grammarChecker: any = null;
 
 export async function analyzeEssay(text: string) {
   if (!classifier) {
+    const { pipeline, env } = await import('@xenova/transformers');
+    env.allowLocalModels = false;
     classifier = await pipeline('text-classification', 'Xenova/distilbert-base-uncased-finetuned-sst-2-english');
   }
   

@@ -1,11 +1,9 @@
-import { pipeline, env } from '@xenova/transformers';
-
-env.allowLocalModels = false;
-
 let embedder: any = null;
 
 async function getEmbedder() {
   if (!embedder) {
+    const { pipeline, env } = await import('@xenova/transformers');
+    env.allowLocalModels = false;
     embedder = await pipeline('feature-extraction', 'Xenova/all-MiniLM-L6-v2');
   }
   return embedder;

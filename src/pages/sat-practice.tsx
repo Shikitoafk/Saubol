@@ -1,8 +1,7 @@
 import { useState, useEffect, useRef, useMemo, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
-import katex, { renderMathInElement } from "katex";
+import katex from "katex";
 import { KATEX_OPTS, MATH_CMDS, tryKaTeX } from "./katex-utils";
-import { env } from "@xenova/transformers";
 import { answerQuestion } from "@/lib/reading-assistant";
 import {
   ChevronLeft,
@@ -572,8 +571,8 @@ export default function SATPractice() {
 
   // Render math after every question loads
   useEffect(() => {
-    if (typeof renderMathInElement !== 'undefined') {
-      renderMathInElement(document.body, {
+    if (typeof (window as any).renderMathInElement !== 'undefined') {
+      (window as any).renderMathInElement(document.body, {
         delimiters: [
           {left: '$$', right: '$$', display: true},
           {left: '$', right: '$', display: false},

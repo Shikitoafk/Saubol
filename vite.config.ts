@@ -17,6 +17,9 @@ import { defineConfig } from "vite";
     build: {
       outDir: "dist",
       emptyOutDir: true,
+      rollupOptions: {
+        external: ['@xenova/transformers']
+      }
     },
     server: {
       port: Number(process.env.PORT) || 3000,
