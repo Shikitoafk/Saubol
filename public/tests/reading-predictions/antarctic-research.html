@@ -5,6 +5,29 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>IELTS Reading Comprehension - Antarctic Research</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script>
+    const SUPABASE_URL = 'https://qdpejhmgocaisywzgfra.supabase.co';
+    const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InFkcGVqaG1nb2NhaXN5d3pnZnJhIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MDk3MzQ0NDksImV4cCI6MjAyNTMxMDQ0OX0.3Jc5hGGnZQzP3kY2FhP5nB6kX8wR9kY7mQ2L4J7K8Wc';
+    const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+    async function saveIELTSProgress(skill, score, total, testName) {
+      try {
+        const { data: { session } } = await supabase.auth.getSession();
+        if (!session) return;
+        await supabase.from('ielts_progress').insert({
+          user_id: session.user.id,
+          test_name: testName,
+          skill: skill,
+          score: score,
+          total: total,
+        });
+        console.log('IELTS progress saved!');
+      } catch(e) {
+        console.error('Error saving IELTS progress:', e);
+      }
+    }
+    </script>
     <style>
         :root {
             --bg-color: #ffffff;
@@ -1240,6 +1263,7 @@
             }
             
             document.getElementById('score-display').textContent = `${correctCount}/13`;
+            saveIELTSProgress('Reading', correctCount, 13, 'Antarctic Research');
             feedbackOverlay.style.display = 'flex';
         });
 

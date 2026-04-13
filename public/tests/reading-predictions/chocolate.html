@@ -1,10 +1,33 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<title>Reading Passage 1 – The history and production of chocolate</title>
-<style>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Reading Passage 1 – The history and production of chocolate</title>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script>
+    const SUPABASE_URL = 'https://qdpejhmgocaisywzgfra.supabase.co';
+    const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InFkcGVqaG1nb2NhaXN5d3pnZnJhIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MDk3MzQ0NDksImV4cCI6MjAyNTMxMDQ0OX0.3Jc5hGGnZQzP3kY2FhP5nB6kX8wR9kY7mQ2L4J7K8Wc';
+    const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+    async function saveIELTSProgress(skill, score, total, testName) {
+      try {
+        const { data: { session } } = await supabase.auth.getSession();
+        if (!session) return;
+        await supabase.from('ielts_progress').insert({
+          user_id: session.user.id,
+          test_name: testName,
+          skill: skill,
+          score: score,
+          total: total,
+        });
+        console.log('IELTS progress saved!');
+      } catch(e) {
+        console.error('Error saving IELTS progress:', e);
+      }
+    }
+    </script>
+    <style>
   :root{--brand:#2563eb;--ink:#111827;--bg:#f7f7fb;--ok:#16a34a;--bad:#dc2626;--muted:#6b7280}
   *{box-sizing:border-box}
   body{margin:0;font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;background:var(--bg);color:#111}
@@ -389,6 +412,7 @@ function submit(){
   });
 
   document.getElementById('score').innerHTML = `Graded ${graded} of ${total} • Score: ${correctCount}/${graded}`;
+  saveIELTSProgress('Reading', correctCount, graded, 'Chocolate History and Production');
   document.getElementById('answers').innerHTML = itemsOut.map(it=>`<li class="${/Correct/.test(it.status)?'ok':'bad'}">Q${it.label}: ${it.status} — Your: <b>${it.user}</b> | Correct: <b>${it.correct}</b></li>`).join('');
   const r=document.getElementById('results'); r.style.display='block'; r.scrollIntoView({behavior:'smooth'});
 }
