@@ -196,31 +196,35 @@ function loadProgress(): Record<string, { correct: boolean; timestamp: number }>
 }
 
 async function saveProgress(questionId: string, question: SATQuestion, correct: boolean) {
+  // Fallback to localStorage for logged out users
+  const p = loadProgress();
+  p[questionId] = { correct, timestamp: Date.now() };
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(p));
+}
+
+async function saveProgressToSupabase(question: SATQuestion, correct: boolean) {
   try {
-    const { data: { user } } = await supabase.auth.getUser();
+    console.log('SAT Practice: Saving progress to Supabase...');
+    const { data: { session } } = await supabase.auth.getSession();
     
-    if (user) {
-      // Save to Supabase if user is logged in
-      await supabase.from('user_progress').insert({
-        user_id: user.id,
-        question_id: questionId,
-        section: question.section,
-        category: question.category,
-        difficulty: question.difficulty,
-        correct: correct
-      });
-    } else {
-      // Fallback to localStorage for logged out users
-      const p = loadProgress();
-      p[questionId] = { correct, timestamp: Date.now() };
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(p));
+    if (!session) {
+      console.log('SAT Practice: No session found, skipping Supabase save');
+      return; // not logged in, skip
     }
+    
+    console.log('SAT Practice: Session found, saving to user_progress table');
+    await supabase.from('user_progress').insert({
+      user_id: session.user.id,
+      question_id: question.id,
+      section: question.section,
+      category: question.category,
+      difficulty: question.difficulty,
+      correct: correct,
+    });
+    
+    console.log('SAT Practice: Progress saved successfully to Supabase');
   } catch (error) {
-    console.error('Error saving progress:', error);
-    // Fallback to localStorage on error
-    const p = loadProgress();
-    p[questionId] = { correct, timestamp: Date.now() };
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(p));
+    console.error('SAT Practice: Error saving progress to Supabase:', error);
   }
 }
 
@@ -600,7 +604,8 @@ export default function SATPractice() {
     setAnswerState({ type: "mc", selected: label, correct });
     setShowExp(true);
     setSessionAnswers((p) => ({ ...p, [q.id]: { selected: label, correct } }));
-    saveProgress(q.id, q, correct);
+    saveProgress(q.id, q, correct); // localStorage
+    saveProgressToSupabase(q, correct); // Supabase
   }
 
   function handleFRAnswer() {
@@ -611,6 +616,7 @@ export default function SATPractice() {
     setShowExp(true);
     setSessionAnswers((p) => ({ ...p, [q.id]: { selected: frInput, correct } }));
     saveProgress(q.id, q, correct);
+    saveProgressToSupabase(q, correct); // ADD THIS
   }
 
   function nextQuestion() {

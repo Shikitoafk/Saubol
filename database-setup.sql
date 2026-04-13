@@ -1,4 +1,4 @@
--- Create user_progress table with proper timestamp type
+-- Create user_progress table
 create table if not exists user_progress (
   id uuid default gen_random_uuid() primary key,
   user_id uuid references auth.users(id) on delete cascade,
@@ -24,7 +24,9 @@ alter table user_progress enable row level security;
 alter table saved_programs enable row level security;
 
 -- Drop existing policies if they exist
+drop policy if exists "users own progress" on user_progress;
 drop policy if exists "Users can only see own progress" on user_progress;
+drop policy if exists "users own saved programs" on saved_programs;
 drop policy if exists "Users can only see own saved programs" on saved_programs;
 
 -- Create RLS policies
