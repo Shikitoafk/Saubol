@@ -19,6 +19,7 @@ import {
   ListFilter,
   Play,
   X,
+  Brain,
 } from "lucide-react";
 import { Layout } from "@/components/layout";
 import { Button } from "@/components/ui/button";
@@ -556,7 +557,41 @@ export default function SATPractice() {
   const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const frInputRef = useRef<HTMLInputElement>(null);
 
+  // Reading Assistant state
+  const [showReadingAssistant, setShowReadingAssistant] = useState(false);
+  const [qaQuestion, setQaQuestion] = useState("");
+  const [qaAnswer, setQaAnswer] = useState<any>(null);
+  const [isAnalyzingQA, setIsAnalyzingQA] = useState(false);
+  const [isModelLoading, setIsModelLoading] = useState(false);
+  const qaModelRef = useRef<any>(null);
+
   const progress = loadProgress();
+
+  const askAboutPassage = async (passage: string, question: string) => {
+    setIsAnalyzingQA(true);
+    setQaAnswer(null);
+
+    try {
+      const pipeline = (window as any).TransformersPipeline;
+      const env = (window as any).TransformersEnv;
+      if (!pipeline) throw new Error('Transformers not loaded');
+
+      if (!qaModelRef.current) {
+        setIsModelLoading(true);
+        env.allowLocalModels = false;
+        qaModelRef.current = await pipeline('question-answering', 'Xenova/distilbert-base-uncased-distilled-squad');
+        setIsModelLoading(false);
+      }
+
+      const result = await qaModelRef.current(question, passage);
+      setQaAnswer(result);
+    } catch (error) {
+      console.error('Reading assistant error:', error);
+      setQaAnswer({ error: 'AI unavailable. Please try again later.' });
+    } finally {
+      setIsAnalyzingQA(false);
+    }
+  };
 
   useEffect(() => {
     fetchSATMeta()
@@ -923,6 +958,102 @@ export default function SATPractice() {
                 color: answerState?.correct ? "#14532d" : "#7f1d1d"
               }}>
               <MathText text={q.explanation} className="leading-relaxed" style={{ fontSize: "14px", lineHeight: "1.7" }} />
+            </div>
+          )}
+
+          {/* AI Reading Assistant - only for Reading & Writing questions */}
+          {q.category === "Reading & Writing" && (
+            <div className="mb-8">
+              {!showReadingAssistant ? (
+                <button
+                  onClick={() => setShowReadingAssistant(true)}
+                  className="flex items-center gap-2 text-blue-600 hover:text-blue-800 text-sm font-medium transition-colors"
+                >
+                  <Brain className="h-4 w-4" />
+                  Ask AI about this passage
+                </button>
+              ) : (
+                <div className="bg-gray-50 rounded-lg border p-4 animate-in fade-in duration-300">
+                  <div className="flex items-center justify-between mb-4">
+                    <h3 className="text-sm font-semibold text-gray-900 flex items-center gap-2">
+                      <Brain className="h-4 w-4" />
+                      AI Reading Assistant
+                    </h3>
+                    <button
+                      onClick={() => setShowReadingAssistant(false)}
+                      className="text-gray-400 hover:text-gray-600"
+                    >
+                      <X className="h-4 w-4" />
+                    </button>
+                  </div>
+
+                  <div className="space-y-3">
+                    <textarea
+                      placeholder="Ask a question about the passage..."
+                      className="w-full h-24 p-3 text-sm border border-gray-300 rounded-md resize-none focus:outline-none focus:ring-2 focus:ring-blue-500/20"
+                      value={qaQuestion}
+                      onChange={(e) => setQaQuestion(e.target.value)}
+                    />
+
+                    <Button
+                      onClick={() => askAboutPassage(q.question, qaQuestion)}
+                      disabled={isAnalyzingQA || !qaQuestion.trim()}
+                      className="w-full"
+                      size="sm"
+                    >
+                      {isModelLoading ? (
+                        <>
+                          <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                          Loading AI model (one time, ~60MB)...
+                        </>
+                      ) : isAnalyzingQA ? (
+                        <>
+                          <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                          Finding Answer...
+                        </>
+                      ) : (
+                        <>
+                          <Brain className="h-4 w-4 mr-2" />
+                          Get Answer
+                        </>
+                      )}
+                    </Button>
+
+                    {qaAnswer && (
+                      <div className="mt-4 space-y-3">
+                        {qaAnswer.error ? (
+                          <div className="text-sm text-red-600 flex items-center gap-2">
+                            <AlertCircle className="h-4 w-4" />
+                            {qaAnswer.error}
+                          </div>
+                        ) : (
+                          <>
+                            <div className="p-3 bg-white rounded-md border">
+                              <div className="text-xs font-medium text-gray-500 mb-2">Answer</div>
+                              <div className="text-sm font-semibold text-gray-900">{qaAnswer.answer}</div>
+                              <div className="text-xs text-gray-500 mt-1">
+                                Confidence: {Math.round(qaAnswer.score * 100)}%
+                              </div>
+                            </div>
+                            {qaAnswer.start !== undefined && qaAnswer.end !== undefined && (
+                              <div className="p-3 bg-white rounded-md border">
+                                <div className="text-xs font-medium text-gray-500 mb-2">Relevant Passage</div>
+                                <div className="text-sm text-gray-700">
+                                  {q.question.substring(qaAnswer.start, qaAnswer.end)}
+                                </div>
+                              </div>
+                            )}
+                          </>
+                        )}
+                      </div>
+                    )}
+                  </div>
+
+                  <div className="mt-3 text-xs text-gray-400 text-center">
+                    Powered by AI — running locally in your browser
+                  </div>
+                </div>
+              )}
             </div>
           )}
 

@@ -16,7 +16,6 @@ import {
   CheckCircle,
   XCircle,
 } from "lucide-react";
-import { analyzeEssay } from "@/lib/essay-analyzer";
 import { Layout } from "@/components/layout";
 import { Button } from "@/components/ui/button";
 import {
@@ -386,6 +385,36 @@ const difficultyColor: Record<string, string> = {
   Hard: "bg-red-100 text-red-700 border-red-200",
 };
 
+// Pure JavaScript essay analyzer (no AI models needed)
+function analyzeEssay(text: string) {
+  const informalWords = ['gonna', 'wanna', 'kinda', 'stuff', 'things', 'like,', 'okay', 'ok', 'yeah', 'nope', 'lots of', "don't", "can't", "won't", "it's", "that's", 'really', 'very', 'so,', 'well,', 'anyway'];
+  
+  const sentences = text.match(/[^.!?]+[.!?]+/g) || [];
+  const words = text.split(/\s+/).filter(Boolean);
+  const informalFound = informalWords.filter(w => text.toLowerCase().includes(w));
+  const avgSentenceLength = Math.round(words.length / (sentences.length || 1));
+  const longWords = words.filter(w => w.length > 8).length;
+  const vocabularyScore = Math.round((longWords / words.length) * 100);
+  
+  return {
+    wordCount: words.length,
+    sentenceCount: sentences.length,
+    avgSentenceLength,
+    vocabularyScore,
+    informalWords: informalFound,
+    tone: informalFound.length === 0 ? 'Formal' : informalFound.length < 3 ? 'Mostly Formal' : 'Too Informal',
+    toneColor: informalFound.length === 0 ? 'green' : informalFound.length < 3 ? 'amber' : 'red',
+    suggestions: [
+      informalFound.length > 0 ? `Replace informal words: ${informalFound.slice(0,3).join(', ')}` : null,
+      avgSentenceLength < 10 ? 'Sentences too short — aim for 15-20 words average' : null,
+      avgSentenceLength > 30 ? 'Some sentences too long — break them up' : null,
+      words.length < 250 ? 'Essay too short — IELTS Task 2 requires minimum 250 words' : null,
+      words.length > 400 ? 'Good length!' : null,
+      vocabularyScore < 20 ? 'Use more academic vocabulary' : null,
+    ].filter(Boolean)
+  };
+}
+
 const IELTSPrep = () => {
   const nav = useNavigate();
   const [selectedSkill, setSelectedSkill] = useState<Skill | null>(null);
@@ -413,20 +442,17 @@ const IELTSPrep = () => {
     }, 250);
   };
 
-  const handleEssayAnalysis = async () => {
+  const handleEssayAnalysis = () => {
     if (!essayText.trim()) return;
     
     setIsAnalyzingEssay(true);
     setEssayAnalysis(null);
     
-    try {
-      const result = await analyzeEssay(essayText);
+    setTimeout(() => {
+      const result = analyzeEssay(essayText);
       setEssayAnalysis(result);
-    } catch (error) {
-      console.error('Essay analysis error:', error);
-    } finally {
       setIsAnalyzingEssay(false);
-    }
+    }, 500);
   };
 
   const goToSkill = (skill: Skill) => animate("forward", () => setSelectedSkill(skill));
@@ -780,69 +806,89 @@ const IELTSPrep = () => {
                       <div className="space-y-6 bg-secondary/30 rounded-lg p-6">
                         <h4 className="text-lg font-semibold text-card-foreground mb-4">Analysis Results</h4>
                         
-                        <div className="grid gap-6 md:grid-cols-2">
-                          <div className="space-y-4">
-                            <div className="flex items-center justify-between">
-                              <h5 className="font-medium text-card-foreground">Tone</h5>
-                              <span className={`px-3 py-1 rounded-full text-sm font-medium ${
-                                essayAnalysis.toneScore === 'Formal' 
-                                  ? 'bg-emerald-100 text-emerald-700 border-emerald-200'
-                                  : essayAnalysis.toneScore === 'Mostly Formal'
-                                  ? 'bg-amber-100 text-amber-700 border-amber-200'
-                                  : 'bg-red-100 text-red-700 border-red-200'
-                              }`}>
-                                {essayAnalysis.toneScore}
-                              </span>
-                            </div>
-                            
-                            <div className="flex items-center justify-between">
-                              <h5 className="font-medium text-card-foreground">Word Count</h5>
-                              <span className="text-muted-foreground">{essayAnalysis.wordCount}</span>
-                            </div>
-                            
-                            <div className="flex items-center justify-between">
-                              <h5 className="font-medium text-card-foreground">Avg Sentence Length</h5>
-                              <span className="text-muted-foreground">{essayAnalysis.avgSentenceLength} words</span>
+                        {/* 4 Stat Cards */}
+                        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                          <div className="bg-background rounded-lg p-4 border">
+                            <div className="text-sm text-muted-foreground mb-1">Word Count</div>
+                            <div className="text-2xl font-bold text-card-foreground">{essayAnalysis.wordCount}</div>
+                          </div>
+                          <div className="bg-background rounded-lg p-4 border">
+                            <div className="text-sm text-muted-foreground mb-1">Sentence Count</div>
+                            <div className="text-2xl font-bold text-card-foreground">{essayAnalysis.sentenceCount}</div>
+                          </div>
+                          <div className="bg-background rounded-lg p-4 border">
+                            <div className="text-sm text-muted-foreground mb-1">Avg Sentence Length</div>
+                            <div className="text-2xl font-bold text-card-foreground">{essayAnalysis.avgSentenceLength}</div>
+                          </div>
+                          <div className="bg-background rounded-lg p-4 border">
+                            <div className="text-sm text-muted-foreground mb-1">Vocabulary Score</div>
+                            <div className="text-2xl font-bold text-card-foreground">{essayAnalysis.vocabularyScore}%</div>
+                          </div>
+                        </div>
+
+                        {/* Tone Badge */}
+                        <div className="flex items-center justify-between p-4 bg-background rounded-lg border">
+                          <span className="font-medium text-card-foreground">Tone Analysis</span>
+                          <span className={`px-4 py-2 rounded-full text-sm font-bold ${
+                            essayAnalysis.toneColor === 'green' 
+                              ? 'bg-green-100 text-green-700 border-green-200'
+                              : essayAnalysis.toneColor === 'amber'
+                              ? 'bg-amber-100 text-amber-700 border-amber-200'
+                              : 'bg-red-100 text-red-700 border-red-200'
+                          }`}>
+                            {essayAnalysis.tone}
+                          </span>
+                        </div>
+
+                        {/* Informal Words */}
+                        {essayAnalysis.informalWords.length > 0 && (
+                          <div className="space-y-3">
+                            <h5 className="font-medium text-card-foreground">Informal Words Found</h5>
+                            <div className="flex flex-wrap gap-2">
+                              {essayAnalysis.informalWords.map((word: string, index: number) => (
+                                <span key={index} className="px-3 py-1 bg-red-100 text-red-700 rounded-md text-sm font-medium">
+                                  {word}
+                                </span>
+                              ))}
                             </div>
                           </div>
-                          
-                          {essayAnalysis.informalWords.length > 0 && (
-                            <div className="space-y-3">
-                              <h5 className="font-medium text-card-foreground">Informal Words Found</h5>
-                              <div className="space-y-2">
-                                {essayAnalysis.informalWords.map((word: string, index: number) => (
-                                  <div key={index} className="flex items-center justify-between p-3 bg-background rounded-md">
-                                    <span className="text-sm text-muted-foreground">{word}</span>
-                                    <span className="text-sm text-muted-foreground">
-                                      Try: {word.replace(/gonna/g, 'going to').replace(/wanna/g, 'want to').replace(/kinda/g, 'kind of').replace(/stuff/g, 'things').replace(/like/g, 'such as').replace(/okay/g, 'acceptable').replace(/ok/g, 'acceptable').replace(/yeah/g, 'yes').replace(/nope/g, 'no').replace(/lots of/g, 'many').replace(/don't/g, 'do not').replace(/can't/g, 'cannot').replace(/won't/g, 'will not').replace(/it's/g, 'it is').replace(/that's/g, 'that is')}
+                        )}
+
+                        {/* Suggestions */}
+                        {essayAnalysis.suggestions.length > 0 && (
+                          <div className="space-y-3">
+                            <h5 className="font-medium text-card-foreground">Suggestions</h5>
+                            <ul className="space-y-2">
+                              {essayAnalysis.suggestions.map((suggestion: string, index: number) => (
+                                <li key={index} className="flex items-start gap-2 text-sm text-muted-foreground">
+                                  <CheckCircle className="h-4 w-4 mt-0.5 flex-shrink-0 text-blue-500" />
+                                  {suggestion}
+                                </li>
+                              ))}
+                            </ul>
+                          </div>
+                        )}
+
+                        {/* Highlighted Essay Text */}
+                        <div className="space-y-3">
+                          <h5 className="font-medium text-card-foreground">Essay with Informal Words Highlighted</h5>
+                          <div className="p-4 bg-background rounded-lg border">
+                            {essayAnalysis.informalWords.length > 0 ? (
+                              <div className="text-sm leading-relaxed">
+                                {essayText.split(/(\s+)/).map((word: string, index: number) => {
+                                  const isInformal = essayAnalysis.informalWords.some((iw: string) => 
+                                    word.toLowerCase().includes(iw.toLowerCase())
+                                  );
+                                  return (
+                                    <span key={index} className={isInformal ? "bg-yellow-200 px-0.5 rounded" : ""}>
+                                      {word}
                                     </span>
-                                  </div>
-                                ))}
+                                  );
+                                })}
                               </div>
-                            </div>
-                          )}
-                        </div>
-                        
-                        <div className="mt-6">
-                          <h5 className="font-medium text-card-foreground mb-4">Sentence-by-Sentence Analysis</h5>
-                          <div className="space-y-3 max-h-64 overflow-y-auto">
-                            {essayAnalysis.sentences.map((sentence: any, index: number) => (
-                              <div key={index} className="p-3 bg-background rounded-md">
-                                <div className="flex items-start justify-between mb-2">
-                                  <span className="text-sm text-muted-foreground">{sentence.sentence}</span>
-                                  <span className={`px-2 py-1 rounded text-xs font-medium ${
-                                    sentence.label === 'POSITIVE'
-                                      ? 'bg-emerald-100 text-emerald-700'
-                                      : 'bg-red-100 text-red-700'
-                                  }`}>
-                                    {sentence.label}
-                                  </span>
-                                </div>
-                                <div className="text-xs text-muted-foreground">
-                                  Confidence: {Math.round(sentence.score * 100)}%
-                                </div>
-                              </div>
-                            ))}
+                            ) : (
+                              <p className="text-sm text-muted-foreground">No informal words found. Great job!</p>
+                            )}
                           </div>
                         </div>
                       </div>
