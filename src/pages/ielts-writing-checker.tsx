@@ -29,21 +29,11 @@ const IELTSSWritingChecker = () => {
     setResult(null);
 
     try {
-      // Initialize scoring engine
+      // Initialize scoring engine with Gemini API
       const engine = new IELTSScoringEngine(taskType, prompt, essay);
       
-      // Use new scoring engine with LanguageTool API
+      // Use Gemini API for comprehensive evaluation
       const scoringResult = await engine.score();
-      
-      // Format grammar errors from LanguageTool API
-      const grammarErrors = scoringResult.details.grammarMatches.map(match => ({
-        text: match.context.text.substring(match.context.offset, match.context.offset + match.context.length),
-        correction: match.replacements.length > 0 
-          ? match.replacements.slice(0, 3).map(r => r.value).join(", ")
-          : "No suggestion",
-        message: match.message,
-        position: match.offset
-      }));
 
       setResult({
         bandScore: scoringResult.overallBand,
@@ -51,12 +41,12 @@ const IELTSSWritingChecker = () => {
         coherenceCohesion: scoringResult.coherenceCohesion,
         lexicalResource: scoringResult.lexicalResource,
         grammaticalRange: scoringResult.grammaticalRange,
-        grammarErrors,
-        rewrittenEssay: "AI rewriting will be available after Web Worker integration.",
-        details: scoringResult.details
+        grammarErrors: scoringResult.feedback,
+        rewrittenEssay: scoringResult.rewrittenEssay,
       });
     } catch (error) {
       console.error('Scoring error:', error);
+      alert('Error analyzing essay. Please try again.');
     } finally {
       setIsAnalyzing(false);
     }
@@ -189,12 +179,6 @@ const IELTSSWritingChecker = () => {
                   <span className="text-sm font-medium">Task Response</span>
                 </div>
                 <div className="text-2xl font-bold text-primary">{result.taskResponse}</div>
-                <div className="text-xs text-muted-foreground mt-1">
-                  Word count: {result.details.wordCount}
-                </div>
-                <div className="text-xs text-muted-foreground">
-                  {result.details.wordCountPenalty}
-                </div>
               </div>
 
               {/* Coherence & Cohesion */}
@@ -204,12 +188,6 @@ const IELTSSWritingChecker = () => {
                   <span className="text-sm font-medium">Coherence & Cohesion</span>
                 </div>
                 <div className="text-2xl font-bold text-primary">{result.coherenceCohesion}</div>
-                <div className="text-xs text-muted-foreground mt-1">
-                  Transition words: {result.details.transitionWordCount}
-                </div>
-                <div className="text-xs text-muted-foreground">
-                  Paragraphs: {result.details.paragraphCount}
-                </div>
               </div>
 
               {/* Lexical Resource */}
@@ -219,12 +197,6 @@ const IELTSSWritingChecker = () => {
                   <span className="text-sm font-medium">Lexical Resource</span>
                 </div>
                 <div className="text-2xl font-bold text-primary">{result.lexicalResource}</div>
-                <div className="text-xs text-muted-foreground mt-1">
-                  Repeated words: {result.details.repeatedWords.length}
-                </div>
-                <div className="text-xs text-muted-foreground">
-                  Vocabulary diversity calculated
-                </div>
               </div>
 
               {/* Grammatical Range */}
@@ -234,12 +206,6 @@ const IELTSSWritingChecker = () => {
                   <span className="text-sm font-medium">Grammatical Range</span>
                 </div>
                 <div className="text-2xl font-bold text-primary">{result.grammaticalRange}</div>
-                <div className="text-xs text-muted-foreground mt-1">
-                  Grammar errors: {result.details.grammarErrors}
-                </div>
-                <div className="text-xs text-muted-foreground">
-                  Sentence variety analyzed
-                </div>
               </div>
             </div>
 
@@ -254,12 +220,12 @@ const IELTSSWritingChecker = () => {
                   result.grammarErrors.map((error: any, index: number) => (
                     <div key={index} className="flex flex-col gap-2 p-4 bg-muted rounded-md">
                       <div className="flex items-start gap-3">
-                        <span className="text-red-600 font-medium line-through bg-white px-2 py-1 rounded">{error.text}</span>
+                        <span className="text-red-600 font-medium line-through bg-white px-2 py-1 rounded">{error.errorText}</span>
                         <span className="text-gray-400">→</span>
                         <span className="text-green-600 font-medium bg-white px-2 py-1 rounded">{error.correction}</span>
                       </div>
-                      {error.message && (
-                        <div className="text-xs text-muted-foreground mt-1">{error.message}</div>
+                      {error.explanation && (
+                        <div className="text-xs text-muted-foreground mt-1">{error.explanation}</div>
                       )}
                     </div>
                   ))
@@ -269,7 +235,7 @@ const IELTSSWritingChecker = () => {
               </div>
               {result.grammarErrors && result.grammarErrors.length > 0 && (
                 <div className="mt-4 text-xs text-muted-foreground text-center">
-                  {result.grammarErrors.length} grammar error(s) found by LanguageTool
+                  {result.grammarErrors.length} issue(s) found by AI
                 </div>
               )}
             </div>
@@ -288,7 +254,7 @@ const IELTSSWritingChecker = () => {
         )}
 
         <div className="mt-8 text-xs text-muted-foreground text-center">
-          Powered by AI — running locally in your browser
+          Powered by Google Gemini AI — comprehensive IELTS evaluation
         </div>
       </div>
     </Layout>
