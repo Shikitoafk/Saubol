@@ -552,6 +552,8 @@ export default function SATPractice() {
   const [sessionAnswers, setSessionAnswers] = useState<Record<string, { selected?: string; correct?: boolean }>>({});
   const [elapsed, setElapsed] = useState(0);
   const [timer, setTimer] = useState<NodeJS.Timeout | null>(null);
+  const [showExp, setShowExp] = useState(false);
+  const [frInput, setFrInput] = useState("");
 
   // Reading Assistant state
   const [passageText, setPassageText] = useState("");

@@ -11,15 +11,9 @@ import { defineConfig } from "vite";
       },
       dedupe: ["react", "react-dom"],
     },
-    optimizeDeps: {
-      exclude: ['@xenova/transformers']
-    },
     build: {
       outDir: "dist",
       emptyOutDir: true,
-      rollupOptions: {
-        external: ['@xenova/transformers']
-      }
     },
     server: {
       port: Number(process.env.PORT) || 3000,

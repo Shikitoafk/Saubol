@@ -3,7 +3,9 @@ let grammarChecker: any = null;
 
 export async function analyzeEssay(text: string) {
   if (!classifier) {
-    const { pipeline, env } = await import('@xenova/transformers');
+    const pipeline = (window as any).TransformersPipeline;
+    const env = (window as any).TransformersEnv;
+    if (!pipeline) throw new Error('Transformers not loaded');
     env.allowLocalModels = false;
     classifier = await pipeline('text-classification', 'Xenova/distilbert-base-uncased-finetuned-sst-2-english');
   }

@@ -1,8 +1,10 @@
 let embedder: any = null;
 
 async function getEmbedder() {
+  const pipeline = (window as any).TransformersPipeline;
+  const env = (window as any).TransformersEnv;
+  if (!pipeline) throw new Error('Transformers not loaded');
   if (!embedder) {
-    const { pipeline, env } = await import('@xenova/transformers');
     env.allowLocalModels = false;
     embedder = await pipeline('feature-extraction', 'Xenova/all-MiniLM-L6-v2');
   }
