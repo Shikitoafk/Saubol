@@ -30,48 +30,85 @@ export default function Dashboard() {
   const [user, setUser] = useState<any>(null);
   const [progress, setProgress] = useState<UserProgress | null>(null);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
   const navigate = useNavigate();
 
   useEffect(() => {
     const getUserAndProgress = async () => {
       try {
-        const { data: { user } } = await supabase.auth.getUser();
+        console.log('Dashboard: Starting auth session check...');
         
-        if (!user) {
+        // Get auth session
+        const { data: { session }, error: sessionError } = await supabase.auth.getSession();
+        
+        if (sessionError) {
+          console.error('Dashboard: Session error:', sessionError);
+          setError('Failed to get user session');
+          setLoading(false);
+          return;
+        }
+        
+        if (!session) {
+          console.log('Dashboard: No session found, redirecting to login');
           navigate('/login');
           return;
         }
-
-        setUser(user);
+        
+        console.log('Dashboard: User session found:', session.user.email);
+        setUser(session.user);
 
         // Fetch user progress from Supabase
-        const { data: progressData, error } = await supabase
-          .from('user_progress')
-          .select('*')
-          .eq('user_id', user.id)
-          .order('answered_at', { ascending: false });
+        console.log('Dashboard: Fetching user progress...');
+        let progressData: any[] = [];
+        
+        try {
+          const { data: data, error: progressError } = await supabase
+            .from('user_progress')
+            .select('*')
+            .eq('user_id', session.user.id)
+            .order('answered_at', { ascending: false });
 
-        if (error) throw error;
+          if (progressError) {
+            console.error('Dashboard: Progress fetch error:', progressError);
+            // Table might not exist or other error - set empty data
+            progressData = [];
+          } else {
+            console.log('Dashboard: Progress data loaded:', data?.length || 0, 'records');
+            progressData = data || [];
+          }
+        } catch (fetchError) {
+          console.error('Dashboard: Fetch error:', fetchError);
+          progressData = [];
+        }
 
-        // Calculate stats
+        // Calculate stats with safe defaults
         const totalQuestions = progressData?.length || 0;
         const correctAnswers = progressData?.filter(p => p.correct).length || 0;
         const accuracy = totalQuestions > 0 ? Math.round((correctAnswers / totalQuestions) * 100) : 0;
 
-        // Calculate current streak (simplified - consecutive days)
-        const today = new Date();
-        const streak = 1; // Simplified for now
+        // Calculate current streak (simplified)
+        const streak = 0; // Default to 0 for new users
 
-        // Get favorite section
+        // Get favorite section with safe default
         const sectionCounts: Record<string, number> = {};
         progressData?.forEach(p => {
-          sectionCounts[p.section] = (sectionCounts[p.section] || 0) + 1;
+          if (p.section) {
+            sectionCounts[p.section] = (sectionCounts[p.section] || 0) + 1;
+          }
         });
-        const favoriteSection = Object.keys(sectionCounts).reduce((a, b) => 
-          sectionCounts[a] > sectionCounts[b] ? a : b, 'None');
+        const favoriteSection = Object.keys(sectionCounts).length > 0 
+          ? Object.keys(sectionCounts).reduce((a, b) => sectionCounts[a] > sectionCounts[b] ? a : b)
+          : 'None';
 
         // Recent activity (last 10)
-        const recentActivity = progressData?.slice(0, 10) || [];
+        const recentActivity = progressData?.slice(0, 10).map(p => ({
+          question_id: p.question_id || '',
+          section: p.section || 'Unknown',
+          category: p.category || 'Unknown',
+          difficulty: p.difficulty || 'Unknown',
+          correct: p.correct || false,
+          answered_at: p.answered_at || new Date().toISOString()
+        })) || [];
 
         // Daily activity for last 7 days
         const dailyActivity = [];
@@ -80,12 +117,12 @@ export default function Dashboard() {
           date.setDate(date.getDate() - i);
           const dateStr = date.toISOString().split('T')[0];
           const questionsAnswered = progressData?.filter(p => 
-            p.answered_at.startsWith(dateStr)
+            p.answered_at && p.answered_at.startsWith(dateStr)
           ).length || 0;
           dailyActivity.push({ date: dateStr, questions_answered: questionsAnswered });
         }
 
-        setProgress({
+        const progressDataObj: UserProgress = {
           total_questions: totalQuestions,
           correct_answers: correctAnswers,
           accuracy,
@@ -93,10 +130,14 @@ export default function Dashboard() {
           favorite_section: favoriteSection,
           recent_activity: recentActivity,
           daily_activity: dailyActivity
-        });
+        };
+        
+        console.log('Dashboard: Progress calculated:', progressDataObj);
+        setProgress(progressDataObj);
 
       } catch (error) {
-        console.error('Error fetching user data:', error);
+        console.error('Dashboard: Unexpected error:', error);
+        setError('Failed to load dashboard data');
       } finally {
         setLoading(false);
       }
@@ -114,13 +155,28 @@ export default function Dashboard() {
     return (
       <Layout>
         <div className="min-h-screen flex items-center justify-center">
-          <div className="text-gray-600">Loading...</div>
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+          <div className="ml-3 text-gray-600">Loading dashboard...</div>
         </div>
       </Layout>
     );
   }
 
-  if (!user || !progress) {
+  if (error) {
+    return (
+      <Layout>
+        <div className="min-h-screen flex items-center justify-center">
+          <div className="text-center">
+            <div className="text-red-500 mb-4">Error loading dashboard</div>
+            <div className="text-gray-600 mb-4">{error}</div>
+            <Button onClick={() => window.location.reload()}>Try Again</Button>
+          </div>
+        </div>
+      </Layout>
+    );
+  }
+
+  if (!user) {
     return null;
   }
 
@@ -157,9 +213,14 @@ export default function Dashboard() {
           {/* Welcome Message */}
           <div className="mb-8">
             <h2 className="text-3xl font-bold text-gray-900">
-              Welcome back, {user.user_metadata?.full_name || user.email?.split('@')[0]}!
+              Welcome, {user.user_metadata?.full_name || user.email?.split('@')[0]}! 👋
             </h2>
-            <p className="text-gray-600 mt-2">Here's your learning progress overview</p>
+            <p className="text-gray-600 mt-2">
+              {progress?.total_questions === 0 
+                ? 'Start practicing SAT to see your progress here' 
+                : 'Here\'s your learning progress overview'
+              }
+            </p>
           </div>
 
           {/* Stats Cards */}
@@ -170,8 +231,8 @@ export default function Dashboard() {
                 <Target className="h-4 w-4 text-muted-foreground" />
               </CardHeader>
               <CardContent>
-                <div className="text-2xl font-bold">{progress.total_questions}</div>
-                <p className="text-xs text-muted-foreground">Questions answered</p>
+                <div className="text-2xl font-bold">{progress?.total_questions || 0}</div>
+                <p className="text-xs text-muted-foreground">questions answered</p>
               </CardContent>
             </Card>
 
@@ -181,9 +242,9 @@ export default function Dashboard() {
                 <Trophy className="h-4 w-4 text-muted-foreground" />
               </CardHeader>
               <CardContent>
-                <div className="text-2xl font-bold">{progress.accuracy}%</div>
+                <div className="text-2xl font-bold">{progress?.accuracy || 0}%</div>
                 <p className="text-xs text-muted-foreground">
-                  {progress.correct_answers} correct out of {progress.total_questions}
+                  {progress?.correct_answers || 0} correct out of {progress?.total_questions || 0}
                 </p>
               </CardContent>
             </Card>
@@ -194,8 +255,8 @@ export default function Dashboard() {
                 <Zap className="h-4 w-4 text-muted-foreground" />
               </CardHeader>
               <CardContent>
-                <div className="text-2xl font-bold">{progress.current_streak}</div>
-                <p className="text-xs text-muted-foreground">Days in a row</p>
+                <div className="text-2xl font-bold">{progress?.current_streak || 0}</div>
+                <p className="text-xs text-muted-foreground">day streak</p>
               </CardContent>
             </Card>
 
@@ -205,7 +266,7 @@ export default function Dashboard() {
                 <BookOpen className="h-4 w-4 text-muted-foreground" />
               </CardHeader>
               <CardContent>
-                <div className="text-2xl font-bold">{progress.favorite_section}</div>
+                <div className="text-2xl font-bold">{progress?.favorite_section || 'None'}</div>
                 <p className="text-xs text-muted-foreground">Most practiced</p>
               </CardContent>
             </Card>
@@ -218,8 +279,13 @@ export default function Dashboard() {
             </CardHeader>
             <CardContent>
               <div className="space-y-4">
-                {progress.recent_activity.length === 0 ? (
-                  <p className="text-gray-500 text-center py-8">No recent activity. Start practicing to see your progress!</p>
+                {(!progress?.recent_activity || progress.recent_activity.length === 0) ? (
+                  <div className="text-center py-8">
+                    <p className="text-gray-500 mb-4">No recent activity. Start practicing to see your progress!</p>
+                    <Button onClick={() => navigate('/sat')} className="mt-2">
+                      Start Practicing →
+                    </Button>
+                  </div>
                 ) : (
                   progress.recent_activity.map((activity, index) => (
                     <div key={index} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
@@ -241,7 +307,17 @@ export default function Dashboard() {
           </Card>
 
           {/* Quick Actions */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          {progress?.total_questions === 0 && (
+            <div className="text-center py-12 bg-blue-50 rounded-xl border border-blue-200">
+              <h3 className="text-xl font-semibold text-blue-900 mb-4">Ready to start your SAT journey?</h3>
+              <p className="text-blue-700 mb-6">Begin practicing and track your progress over time</p>
+              <Button onClick={() => navigate('/sat')} size="lg" className="bg-blue-600 hover:bg-blue-700">
+                Start Practicing →
+              </Button>
+            </div>
+          )}
+          
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-8">
             <Button 
               onClick={() => navigate('/sat/practice')} 
               className="flex items-center justify-between p-4 h-auto"
