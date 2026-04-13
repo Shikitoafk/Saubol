@@ -685,14 +685,10 @@ const IELTSPrep = () => {
                     Tests
                   </button>
                   <button
-                    onClick={() => setActiveTab("checker")}
-                    className={`pb-3 px-1 border-b-2 font-medium text-sm transition-colors ${
-                      activeTab === "checker"
-                        ? "border-primary text-primary"
-                        : "border-transparent text-muted-foreground hover:text-foreground"
-                    }`}
+                    onClick={() => nav("/ielts/writing-checker")}
+                    className="pb-3 px-1 border-b-2 font-medium text-sm transition-colors border-transparent text-muted-foreground hover:text-foreground"
                   >
-                    Essay Checker
+                    Writing Checker
                   </button>
                 </div>
               </div>
@@ -761,144 +757,6 @@ const IELTSPrep = () => {
                     </div>
                   )}
                 </>
-              )}
-
-              {/* Essay Checker Tab */}
-              {activeTab === "checker" && (
-                <div className="space-y-6">
-                  <div className="bg-card rounded-lg border p-6">
-                    <h3 className="text-lg font-semibold text-card-foreground mb-4">
-                      <Brain className="inline-block h-5 w-5 mr-2" />
-                      IELTS Essay Checker
-                    </h3>
-                    <p className="text-sm text-muted-foreground mb-4">
-                      Paste your essay below to get instant AI feedback on tone, formality, word count, and sentence-by-sentence analysis.
-                    </p>
-                    
-                    <div className="space-y-4">
-                      <textarea
-                        placeholder="Paste your IELTS essay here..."
-                        className="w-full h-64 p-4 border border-border rounded-md resize-none focus:outline-none focus:ring-2 focus:ring-primary/20"
-                        value={essayText}
-                        onChange={(e) => setEssayText(e.target.value)}
-                      />
-                      
-                      <Button
-                        onClick={handleEssayAnalysis}
-                        disabled={isAnalyzingEssay || !essayText.trim()}
-                        className="w-full"
-                      >
-                        {isAnalyzingEssay ? (
-                          <>
-                            <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-                            Analyzing Essay...
-                          </>
-                        ) : (
-                          <>
-                            <Brain className="h-4 w-4 mr-2" />
-                            Analyze Essay
-                          </>
-                        )}
-                      </Button>
-                    </div>
-
-                    {essayAnalysis && (
-                      <div className="space-y-6 bg-secondary/30 rounded-lg p-6">
-                        <h4 className="text-lg font-semibold text-card-foreground mb-4">Analysis Results</h4>
-                        
-                        {/* 4 Stat Cards */}
-                        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                          <div className="bg-background rounded-lg p-4 border">
-                            <div className="text-sm text-muted-foreground mb-1">Word Count</div>
-                            <div className="text-2xl font-bold text-card-foreground">{essayAnalysis.wordCount}</div>
-                          </div>
-                          <div className="bg-background rounded-lg p-4 border">
-                            <div className="text-sm text-muted-foreground mb-1">Sentence Count</div>
-                            <div className="text-2xl font-bold text-card-foreground">{essayAnalysis.sentenceCount}</div>
-                          </div>
-                          <div className="bg-background rounded-lg p-4 border">
-                            <div className="text-sm text-muted-foreground mb-1">Avg Sentence Length</div>
-                            <div className="text-2xl font-bold text-card-foreground">{essayAnalysis.avgSentenceLength}</div>
-                          </div>
-                          <div className="bg-background rounded-lg p-4 border">
-                            <div className="text-sm text-muted-foreground mb-1">Vocabulary Score</div>
-                            <div className="text-2xl font-bold text-card-foreground">{essayAnalysis.vocabularyScore}%</div>
-                          </div>
-                        </div>
-
-                        {/* Tone Badge */}
-                        <div className="flex items-center justify-between p-4 bg-background rounded-lg border">
-                          <span className="font-medium text-card-foreground">Tone Analysis</span>
-                          <span className={`px-4 py-2 rounded-full text-sm font-bold ${
-                            essayAnalysis.toneColor === 'green' 
-                              ? 'bg-green-100 text-green-700 border-green-200'
-                              : essayAnalysis.toneColor === 'amber'
-                              ? 'bg-amber-100 text-amber-700 border-amber-200'
-                              : 'bg-red-100 text-red-700 border-red-200'
-                          }`}>
-                            {essayAnalysis.tone}
-                          </span>
-                        </div>
-
-                        {/* Informal Words */}
-                        {essayAnalysis.informalWords.length > 0 && (
-                          <div className="space-y-3">
-                            <h5 className="font-medium text-card-foreground">Informal Words Found</h5>
-                            <div className="flex flex-wrap gap-2">
-                              {essayAnalysis.informalWords.map((word: string, index: number) => (
-                                <span key={index} className="px-3 py-1 bg-red-100 text-red-700 rounded-md text-sm font-medium">
-                                  {word}
-                                </span>
-                              ))}
-                            </div>
-                          </div>
-                        )}
-
-                        {/* Suggestions */}
-                        {essayAnalysis.suggestions.length > 0 && (
-                          <div className="space-y-3">
-                            <h5 className="font-medium text-card-foreground">Suggestions</h5>
-                            <ul className="space-y-2">
-                              {essayAnalysis.suggestions.map((suggestion: string, index: number) => (
-                                <li key={index} className="flex items-start gap-2 text-sm text-muted-foreground">
-                                  <CheckCircle className="h-4 w-4 mt-0.5 flex-shrink-0 text-blue-500" />
-                                  {suggestion}
-                                </li>
-                              ))}
-                            </ul>
-                          </div>
-                        )}
-
-                        {/* Highlighted Essay Text */}
-                        <div className="space-y-3">
-                          <h5 className="font-medium text-card-foreground">Essay with Informal Words Highlighted</h5>
-                          <div className="p-4 bg-background rounded-lg border">
-                            {essayAnalysis.informalWords.length > 0 ? (
-                              <div className="text-sm leading-relaxed">
-                                {essayText.split(/(\s+)/).map((word: string, index: number) => {
-                                  const isInformal = essayAnalysis.informalWords.some((iw: string) => 
-                                    word.toLowerCase().includes(iw.toLowerCase())
-                                  );
-                                  return (
-                                    <span key={index} className={isInformal ? "bg-yellow-200 px-0.5 rounded" : ""}>
-                                      {word}
-                                    </span>
-                                  );
-                                })}
-                              </div>
-                            ) : (
-                              <p className="text-sm text-muted-foreground">No informal words found. Great job!</p>
-                            )}
-                          </div>
-                        </div>
-                      </div>
-                    )}
-
-                    <div className="mt-4 text-xs text-muted-foreground text-center">
-                      Powered by AI — running locally in your browser
-                    </div>
-                  </div>
-                </div>
               )}
             </div>
           )}

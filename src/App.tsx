@@ -10,6 +10,7 @@ import Home from "@/pages/home";
 import Programs from "@/pages/programs";
 import IeltsPrep from "@/pages/ielts";
 import IELTSTestViewer from "@/pages/ielts-test-viewer";
+import IELTSWritingChecker from "@/pages/ielts-writing-checker";
 import SatPrep from "@/pages/sat";
 import SATTestViewer from "@/pages/sat-test-viewer";
 import SATPractice from "@/pages/sat-practice";
@@ -29,6 +30,7 @@ function App() {
               <Route path="/" element={<Home />} />
               <Route path="/programs" element={<Programs />} />
               <Route path="/ielts" element={<IeltsPrep />} />
+              <Route path="/ielts/writing-checker" element={<IELTSWritingChecker />} />
               <Route path="/ielts/test/:slug" element={<IELTSTestViewer />} />
               <Route path="/sat" element={<SatPrep />} />
               <Route path="/sat/practice" element={<SATPractice />} />
