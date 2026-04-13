@@ -32,22 +32,18 @@ const IELTSSWritingChecker = () => {
       // Initialize scoring engine
       const engine = new IELTSScoringEngine(taskType, prompt, essay);
       
-      // Generate AI prompts (will be used with Web Worker later)
-      const aiPrompts = IELTSScoringEngine.generateAIPrompts(prompt, essay);
-      
-      // For now, use pure JS heuristics (without AI)
+      // Use new scoring engine with LanguageTool API
       const scoringResult = await engine.score();
       
-      // Format grammar errors for display
-      const grammarErrors = [];
-      const repeatedWords = scoringResult.details.repeatedWords;
-      repeatedWords.forEach(word => {
-        grammarErrors.push({
-          text: word,
-          correction: "Consider using a synonym or rephrase",
-          position: 0
-        });
-      });
+      // Format grammar errors from LanguageTool API
+      const grammarErrors = scoringResult.details.grammarMatches.map(match => ({
+        text: match.context.text.substring(match.context.offset, match.context.offset + match.context.length),
+        correction: match.replacements.length > 0 
+          ? match.replacements.slice(0, 3).map(r => r.value).join(", ")
+          : "No suggestion",
+        message: match.message,
+        position: match.offset
+      }));
 
       setResult({
         bandScore: scoringResult.overallBand,
@@ -256,18 +252,26 @@ const IELTSSWritingChecker = () => {
               <div className="space-y-3">
                 {result.grammarErrors && result.grammarErrors.length > 0 ? (
                   result.grammarErrors.map((error: any, index: number) => (
-                    <div key={index} className="flex items-start gap-3 p-3 bg-muted rounded-md">
-                      <div className="flex-1">
-                        <span className="text-red-600 font-medium line-through">{error.text}</span>
-                        <span className="mx-2">→</span>
-                        <span className="text-green-600 font-medium">{error.correction}</span>
+                    <div key={index} className="flex flex-col gap-2 p-4 bg-muted rounded-md">
+                      <div className="flex items-start gap-3">
+                        <span className="text-red-600 font-medium line-through bg-white px-2 py-1 rounded">{error.text}</span>
+                        <span className="text-gray-400">→</span>
+                        <span className="text-green-600 font-medium bg-white px-2 py-1 rounded">{error.correction}</span>
                       </div>
+                      {error.message && (
+                        <div className="text-xs text-muted-foreground mt-1">{error.message}</div>
+                      )}
                     </div>
                   ))
                 ) : (
                   <p className="text-sm text-muted-foreground">No major issues detected. Great job!</p>
                 )}
               </div>
+              {result.grammarErrors && result.grammarErrors.length > 0 && (
+                <div className="mt-4 text-xs text-muted-foreground text-center">
+                  {result.grammarErrors.length} grammar error(s) found by LanguageTool
+                </div>
+              )}
             </div>
 
             {/* AI Rewritten Version */}

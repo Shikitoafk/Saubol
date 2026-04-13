@@ -1,6 +1,6 @@
 // IELTS Hybrid Scoring Engine
 // Implements the 4 official IELTS Band Descriptors (TR, CC, LR, GRA)
-// Combines JS heuristics with AI prompts for accurate scoring
+// Combines JS heuristics with LanguageTool API for accurate scoring
 
 export interface ScoringResult {
   taskResponse: number;
@@ -16,9 +16,25 @@ export interface ScoringResult {
     transitionWordCount: number;
     paragraphCount: number;
     repeatedWords: string[];
-    basicWordsWithAlternatives: Array<{ word: string; alternatives: string[] }>;
-    grammarErrors: number;
-    grammarCorrections: string;
+    averageWordLength: number;
+    grammarMatches: LanguageToolMatch[];
+  };
+}
+
+export interface LanguageToolMatch {
+  message: string;
+  shortMessage: string;
+  offset: number;
+  length: number;
+  context: {
+    text: string;
+    offset: number;
+    length: number;
+  };
+  replacements: Array<{ value: string }>;
+  rule: {
+    id: string;
+    description: string;
   };
 }
 
@@ -63,15 +79,14 @@ export class IELTSScoringEngine {
   /**
    * Main scoring method - aggregates all 4 criteria
    */
-  async score(aiPrompts?: AIPrompts, aiResults?: {
-    keywords?: string[];
-    alternatives?: Array<{ word: string; alternatives: string[] }>;
-    correctedText?: string;
-  }): Promise<ScoringResult> {
+  async score(): Promise<ScoringResult> {
+    // Fetch grammar errors from LanguageTool API
+    const grammarMatches = await this.fetchLanguageToolErrors();
+    
     const tr = this.scoreTaskResponse();
     const cc = this.scoreCoherenceCohesion();
-    const lr = await this.scoreLexicalResource(aiResults?.alternatives);
-    const gra = await this.scoreGrammaticalRange(aiResults?.correctedText);
+    const lr = this.scoreLexicalResource();
+    const gra = this.scoreGrammaticalRange(grammarMatches);
 
     const overallBand = this.calculateOverallBand(tr, cc, lr, gra);
 
@@ -89,39 +104,67 @@ export class IELTSScoringEngine {
         transitionWordCount: this.getTransitionWordCount(),
         paragraphCount: this.getParagraphCount(),
         repeatedWords: this.detectRepeatedWords(),
-        basicWordsWithAlternatives: aiResults?.alternatives || [],
-        grammarErrors: aiResults?.correctedText ? this.countGrammarErrors(aiResults.correctedText) : 0,
-        grammarCorrections: aiResults?.correctedText || "",
+        averageWordLength: this.calculateAverageWordLength(),
+        grammarMatches,
       }
     };
   }
 
   /**
+   * Fetch grammar errors from LanguageTool API
+   */
+  private async fetchLanguageToolErrors(): Promise<LanguageToolMatch[]> {
+    try {
+      const response = await fetch('https://api.languagetool.org/v2/check', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/x-www-form-urlencoded',
+        },
+        body: new URLSearchParams({
+          text: this.essay,
+          language: 'en-US',
+        }),
+      });
+
+      if (!response.ok) {
+        console.error('LanguageTool API error:', response.statusText);
+        return [];
+      }
+
+      const data = await response.json();
+      return data.matches || [];
+    } catch (error) {
+      console.error('LanguageTool API fetch error:', error);
+      return [];
+    }
+  }
+
+  /**
    * Task Response (TR) Scoring
+   * Baseline: 6.0
+   * +0.5 if word count > 260
+   * -1.0 if word count < 250
    */
   private scoreTaskResponse(): number {
-    let score = 7.0; // Start with a decent base score
+    let score = 6.0; // Baseline score
 
-    // Word count penalty
     const wordCount = this.getWordCount();
     const minWords = this.taskType === "task1" ? 150 : 250;
     
+    // Word count adjustments
     if (wordCount < minWords) {
-      const penalty = Math.floor((minWords - wordCount) / 25) * 0.5;
-      score = Math.max(4.0, score - penalty);
+      score -= 1.0;
+    } else if (wordCount > 260) {
+      score += 0.5;
     }
 
     // Keyword matching - check if essay addresses the prompt
     const keywordMatch = this.calculateKeywordMatch();
-    if (keywordMatch < 0.3) {
-      score -= 1.0;
-    } else if (keywordMatch < 0.5) {
-      score -= 0.5;
-    } else if (keywordMatch > 0.7) {
+    if (keywordMatch > 0.7) {
       score += 0.5;
     }
 
-    return Math.min(9.0, Math.max(4.0, score));
+    return Math.min(9.0, Math.max(0.0, score));
   }
 
   private getWordCount(): number {
@@ -164,39 +207,23 @@ export class IELTSScoringEngine {
 
   /**
    * Coherence and Cohesion (CC) Scoring
+   * Baseline: 6.0
+   * +1.0 if between 5 and 10 transition words
+   * -0.5 if > 15 (spamming) or < 4
    */
   private scoreCoherenceCohesion(): number {
-    let score = 6.0;
+    let score = 6.0; // Baseline score
 
-    // Transition word usage
-    const transitionWordsUsed = this.getTransitionWordsUsed();
     const transitionWordCount = this.getTransitionWordCount();
     
-    // Good variety of transition words
-    if (transitionWordCount >= 5) {
+    // Transition word adjustments
+    if (transitionWordCount >= 5 && transitionWordCount <= 10) {
       score += 1.0;
-    } else if (transitionWordCount >= 3) {
-      score += 0.5;
-    } else if (transitionWordCount === 0) {
-      score -= 1.0;
-    }
-
-    // Penalize overuse (spamming)
-    if (transitionWordCount > 15) {
+    } else if (transitionWordCount > 15 || transitionWordCount < 4) {
       score -= 0.5;
     }
 
-    // Paragraph structure
-    const paragraphCount = this.getParagraphCount();
-    const minParagraphs = this.taskType === "task1" ? 2 : 3;
-    
-    if (paragraphCount < minParagraphs) {
-      score -= 1.0;
-    } else if (paragraphCount >= 4) {
-      score += 0.5;
-    }
-
-    return Math.min(9.0, Math.max(4.0, score));
+    return Math.min(9.0, Math.max(0.0, score));
   }
 
   private getTransitionWordsUsed(): string[] {
@@ -233,48 +260,41 @@ export class IELTSScoringEngine {
 
   /**
    * Lexical Resource (LR) Scoring
+   * Baseline: 6.0
+   * +1.0 if average word length is high
+   * -0.5 ONLY if the SAME word is repeated more than 5 times (excluding stop words)
    */
-  private async scoreLexicalResource(aiAlternatives?: Array<{ word: string; alternatives: string[] }>): Promise<number> {
-    let score = 6.0;
+  private scoreLexicalResource(): number {
+    let score = 6.0; // Baseline score
 
-    // Detect word repetition
+    // Average word length check
+    const avgWordLength = this.calculateAverageWordLength();
+    if (avgWordLength > 5) {
+      score += 1.0;
+    }
+
+    // Word repetition check (only penalize if SAME word > 5 times, excluding stop words)
     const repeatedWords = this.detectRepeatedWords();
-    if (repeatedWords.length > 3) {
-      score -= 1.0;
-    } else if (repeatedWords.length > 1) {
-      score -= 0.5;
-    }
-
-    // AI-provided alternatives for basic words
-    if (aiAlternatives && aiAlternatives.length > 0) {
-      // If the essay uses many basic words but AI can suggest alternatives, penalize
-      const basicWordCount = this.countBasicWords();
-      if (basicWordCount > 5) {
-        score -= 0.5;
-      }
-      // If AI found many opportunities for improvement
-      if (aiAlternatives.length > 3) {
-        score -= 0.5;
-      }
-    } else {
-      // Without AI, use simple heuristic
-      const basicWordCount = this.countBasicWords();
-      if (basicWordCount > 10) {
-        score -= 1.0;
-      } else if (basicWordCount > 5) {
+    if (repeatedWords.length > 0) {
+      // Check if any word is repeated more than 5 times
+      const hasOverRepeated = repeatedWords.some(word => {
+        const wordCount = this.essay.toLowerCase().split(/\s+/).filter(w => w === word).length;
+        return wordCount > 5;
+      });
+      if (hasOverRepeated) {
         score -= 0.5;
       }
     }
 
-    // Vocabulary diversity (unique words / total words)
-    const diversity = this.calculateVocabularyDiversity();
-    if (diversity > 0.7) {
-      score += 0.5;
-    } else if (diversity < 0.4) {
-      score -= 0.5;
-    }
+    return Math.min(9.0, Math.max(0.0, score));
+  }
 
-    return Math.min(9.0, Math.max(4.0, score));
+  private calculateAverageWordLength(): number {
+    const words = this.essay.trim().split(/\s+/).filter(w => w.length > 0);
+    if (words.length === 0) return 0;
+    
+    const totalLength = words.reduce((sum, word) => sum + word.length, 0);
+    return totalLength / words.length;
   }
 
   private detectRepeatedWords(): string[] {
@@ -302,132 +322,24 @@ export class IELTSScoringEngine {
     return repeated;
   }
 
-  private countBasicWords(): number {
-    const essayLower = this.essay.toLowerCase();
-    let count = 0;
-    
-    this.basicWords.forEach(word => {
-      const regex = new RegExp(`\\b${word}\\b`, "gi");
-      const matches = essayLower.match(regex);
-      if (matches) {
-        count += matches.length;
-      }
-    });
-
-    return count;
-  }
-
-  private calculateVocabularyDiversity(): number {
-    const words = this.essay
-      .toLowerCase()
-      .replace(/[^\w\s]/g, "")
-      .split(/\s+/)
-      .filter(w => w.length > 0);
-
-    if (words.length === 0) return 0;
-
-    const uniqueWords = new Set(words);
-    return uniqueWords.size / words.length;
-  }
-
   /**
    * Grammatical Range and Accuracy (GRA) Scoring
+   * Baseline: 8.0
+   * Subtract 0.5 for every 3 grammar errors
+   * Cap minimum at 4.0 and maximum at 9.0
    */
-  private async scoreGrammaticalRange(aiCorrectedText?: string): Promise<number> {
-    let score = 6.0;
+  private scoreGrammaticalRange(grammarMatches: LanguageToolMatch[]): number {
+    let score = 8.0; // Baseline score
 
-    if (aiCorrectedText) {
-      // Compare original with AI-corrected text
-      const errorCount = this.countGrammarErrors(aiCorrectedText);
-      
-      // Fewer errors = higher score
-      if (errorCount === 0) {
-        score = 8.0;
-      } else if (errorCount <= 2) {
-        score = 7.5;
-      } else if (errorCount <= 5) {
-        score = 7.0;
-      } else if (errorCount <= 10) {
-        score = 6.0;
-      } else if (errorCount <= 20) {
-        score = 5.0;
-      } else {
-        score = 4.0;
-      }
-    } else {
-      // Without AI, use simple heuristics
-      // Check for common grammar mistakes
-      const commonErrors = this.detectCommonGrammarErrors();
-      score = Math.max(4.0, 6.0 - commonErrors * 0.5);
-    }
+    // Count grammar errors from LanguageTool
+    const errorCount = grammarMatches.length;
+    
+    // Subtract 0.5 for every 3 grammar errors
+    const penalty = Math.floor(errorCount / 3) * 0.5;
+    score -= penalty;
 
-    // Check sentence variety
-    const sentenceVariety = this.calculateSentenceVariety();
-    if (sentenceVariety > 0.7) {
-      score += 0.5;
-    } else if (sentenceVariety < 0.3) {
-      score -= 0.5;
-    }
-
+    // Cap between 4.0 and 9.0
     return Math.min(9.0, Math.max(4.0, score));
-  }
-
-  private countGrammarErrors(correctedText: string): number {
-    // Simple diff approach: count character differences
-    const original = this.essay.replace(/\s+/g, " ").trim();
-    const corrected = correctedText.replace(/\s+/g, " ").trim();
-    
-    let differences = 0;
-    const maxLength = Math.max(original.length, corrected.length);
-    
-    for (let i = 0; i < maxLength; i++) {
-      if (original[i] !== corrected[i]) {
-        differences++;
-      }
-    }
-
-    // Normalize by text length
-    return Math.round(differences / Math.max(original.length, 1) * 100);
-  }
-
-  private detectCommonGrammarErrors(): number {
-    let errors = 0;
-    const essayLower = this.essay.toLowerCase();
-
-    // Check for common errors
-    const errorPatterns = [
-      /\bi\b(?!\s+am)/g, // "I" not followed by "am"
-      /\ba\b(?=\s+[aeiou])/g, // "a" before vowel
-      /\bthere\s+are\s+a\b/g, // "there are a"
-      /\bwas\s+were\b/g, // subject-verb agreement
-      /\bwere\s+was\b/g,
-      /\bdon't\s+has\b/g,
-      /\bdoesn't\s+have\b/g,
-    ];
-
-    errorPatterns.forEach(pattern => {
-      const matches = essayLower.match(pattern);
-      if (matches) {
-        errors += matches.length;
-      }
-    });
-
-    return errors;
-  }
-
-  private calculateSentenceVariety(): number {
-    const sentences = this.essay.split(/[.!?]+/).filter(s => s.trim().length > 0);
-    if (sentences.length === 0) return 0;
-
-    const lengths = sentences.map(s => s.trim().split(/\s+/).length);
-    const avgLength = lengths.reduce((a, b) => a + b, 0) / lengths.length;
-    
-    // Calculate standard deviation
-    const variance = lengths.reduce((acc, len) => acc + Math.pow(len - avgLength, 2), 0) / lengths.length;
-    const stdDev = Math.sqrt(variance);
-
-    // Higher stdDev relative to avg = more variety
-    return Math.min(1, stdDev / avgLength);
   }
 
   /**
@@ -438,17 +350,6 @@ export class IELTSScoringEngine {
     
     // Round to nearest 0.5
     return Math.round(average * 2) / 2;
-  }
-
-  /**
-   * Generate AI prompts for the scoring engine
-   */
-  static generateAIPrompts(prompt: string, essay: string): AIPrompts {
-    return {
-      extractKeywords: `Extract the main keywords (nouns and verbs) from this IELTS prompt: "${prompt}". Return as a comma-separated list.`,
-      suggestAlternatives: `Analyze this IELTS essay and identify 3-5 basic or informal words. For each, suggest 2-3 C1/C2 level academic alternatives. Essay: "${essay}". Format as JSON: [{"word": "...", "alternatives": [...]}]`,
-      correctGrammar: `Correct all grammatical errors in this IELTS essay. Keep the meaning the same but fix grammar, punctuation, and sentence structure. Essay: "${essay}"`
-    };
   }
 }
 
