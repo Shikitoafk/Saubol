@@ -6,7 +6,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
-import { Search, MapPin, Filter, AlertCircle, ExternalLink } from "lucide-react";
+import { Search, MapPin, Filter, AlertCircle, ExternalLink, Bookmark, BookmarkCheck } from "lucide-react";
 import {
   Sheet,
   SheetContent,
@@ -17,6 +17,7 @@ import {
 } from "@/components/ui/sheet";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { supabase } from "@/lib/supabase";
+import { useAuth } from "@/hooks/useAuth";
 
 export interface Program {
   id: string | number;
@@ -67,12 +68,69 @@ export default function Programs() {
   const [selectedSubject, setSelectedSubject] = useState("All");
   const [selectedFormat, setSelectedFormat] = useState("All");
   const [selectedPrice, setSelectedPrice] = useState("All");
+  const [savedPrograms, setSavedPrograms] = useState<Set<string>>(new Set());
+
+  const { user } = useAuth();
 
   const { data: programs = [], isLoading, error } = useQuery<Program[], Error>({
     queryKey: ["programs"],
     queryFn: fetchPrograms,
     retry: 1,
   });
+
+  // Fetch saved programs when user is logged in
+  useQuery({
+    queryKey: ["saved-programs", user?.id],
+    queryFn: async () => {
+      if (!user) return [];
+      const { data, error } = await supabase
+        .from("saved_programs")
+        .select("program_name")
+        .eq("user_id", user.id);
+      
+      if (error) throw error;
+      const programNames = new Set(data?.map(p => p.program_name) || []);
+      setSavedPrograms(programNames);
+      return data;
+    },
+    enabled: !!user,
+  });
+
+  const toggleBookmark = async (program: Program) => {
+    if (!user) return;
+
+    const isSaved = savedPrograms.has(program.name);
+    
+    try {
+      if (isSaved) {
+        // Remove from saved programs
+        await supabase
+          .from("saved_programs")
+          .delete()
+          .eq("user_id", user.id)
+          .eq("program_name", program.name);
+        
+        setSavedPrograms(prev => {
+          const newSet = new Set(prev);
+          newSet.delete(program.name);
+          return newSet;
+        });
+      } else {
+        // Add to saved programs
+        await supabase
+          .from("saved_programs")
+          .insert({
+            user_id: user.id,
+            program_name: program.name,
+            program_url: program.url || ""
+          });
+        
+        setSavedPrograms(prev => new Set(prev).add(program.name));
+      }
+    } catch (error) {
+      console.error('Error toggling bookmark:', error);
+    }
+  };
 
   const filteredPrograms = useMemo(() => {
     return programs.filter((p) => {
@@ -311,17 +369,34 @@ export default function Programs() {
                     {filteredPrograms.map((program) => (
                       <Card key={program.id} className="flex flex-col h-full hover:shadow-md transition-shadow border-border/60 bg-card">
                         <CardHeader className="pb-4">
-                          <div className="flex flex-wrap gap-2 mb-2">
-                            <Badge variant="secondary" className="bg-primary/10 text-primary hover:bg-primary/20 border-transparent">
-                              {program.subject}
-                            </Badge>
-                            <Badge variant="outline" className={program.price === "Free" ? "text-emerald-600 border-emerald-200 bg-emerald-50" : "text-amber-600 border-amber-200 bg-amber-50"}>
-                              {program.price}
-                            </Badge>
-                            {program.format && (
-                              <Badge variant="outline" className="text-muted-foreground">
-                                {program.format}
+                          <div className="flex items-start justify-between mb-2">
+                            <div className="flex flex-wrap gap-2 flex-1">
+                              <Badge variant="secondary" className="bg-primary/10 text-primary hover:bg-primary/20 border-transparent">
+                                {program.subject}
                               </Badge>
+                              <Badge variant="outline" className={program.price === "Free" ? "text-emerald-600 border-emerald-200 bg-emerald-50" : "text-amber-600 border-amber-200 bg-amber-50"}>
+                                {program.price}
+                              </Badge>
+                              {program.format && (
+                                <Badge variant="outline" className="text-muted-foreground">
+                                  {program.format}
+                                </Badge>
+                              )}
+                            </div>
+                            {user && (
+                              <Button
+                                variant="ghost"
+                                size="sm"
+                                onClick={() => toggleBookmark(program)}
+                                className="ml-2 h-8 w-8 p-0 hover:bg-muted"
+                                title={savedPrograms.has(program.name) ? "Remove bookmark" : "Bookmark program"}
+                              >
+                                {savedPrograms.has(program.name) ? (
+                                  <BookmarkCheck className="h-4 w-4 text-primary" />
+                                ) : (
+                                  <Bookmark className="h-4 w-4 text-muted-foreground" />
+                                )}
+                              </Button>
                             )}
                           </div>
                           <CardTitle className="text-xl leading-tight text-foreground">{program.name}</CardTitle>

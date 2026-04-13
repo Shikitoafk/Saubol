@@ -194,10 +194,34 @@ const STORAGE_KEY = "sat_practice_progress";
 function loadProgress(): Record<string, { correct: boolean; timestamp: number }> {
   try { return JSON.parse(localStorage.getItem(STORAGE_KEY) || "{}"); } catch { return {}; }
 }
-function saveProgress(id: string, correct: boolean) {
-  const p = loadProgress();
-  p[id] = { correct, timestamp: Date.now() };
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(p));
+
+async function saveProgress(questionId: string, question: SATQuestion, correct: boolean) {
+  try {
+    const { data: { user } } = await supabase.auth.getUser();
+    
+    if (user) {
+      // Save to Supabase if user is logged in
+      await supabase.from('user_progress').insert({
+        user_id: user.id,
+        question_id: questionId,
+        section: question.section,
+        category: question.category,
+        difficulty: question.difficulty,
+        correct: correct
+      });
+    } else {
+      // Fallback to localStorage for logged out users
+      const p = loadProgress();
+      p[questionId] = { correct, timestamp: Date.now() };
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(p));
+    }
+  } catch (error) {
+    console.error('Error saving progress:', error);
+    // Fallback to localStorage on error
+    const p = loadProgress();
+    p[questionId] = { correct, timestamp: Date.now() };
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(p));
+  }
 }
 
 /* ════════════════════════════════════════════════════════════════════
@@ -576,7 +600,7 @@ export default function SATPractice() {
     setAnswerState({ type: "mc", selected: label, correct });
     setShowExp(true);
     setSessionAnswers((p) => ({ ...p, [q.id]: { selected: label, correct } }));
-    saveProgress(q.id, correct);
+    saveProgress(q.id, q, correct);
   }
 
   function handleFRAnswer() {
@@ -586,7 +610,7 @@ export default function SATPractice() {
     setAnswerState({ type: "fr", userAnswer: frInput, correct });
     setShowExp(true);
     setSessionAnswers((p) => ({ ...p, [q.id]: { selected: frInput, correct } }));
-    saveProgress(q.id, correct);
+    saveProgress(q.id, q, correct);
   }
 
   function nextQuestion() {
