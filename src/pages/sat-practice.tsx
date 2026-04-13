@@ -2,7 +2,6 @@ import { useState, useEffect, useRef, useMemo, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import katex from "katex";
 import { KATEX_OPTS, MATH_CMDS, tryKaTeX } from "./katex-utils";
-import { answerQuestion } from "@/lib/reading-assistant";
 import {
   ChevronLeft,
   CheckCircle2,
@@ -554,12 +553,7 @@ export default function SATPractice() {
   const [timer, setTimer] = useState<NodeJS.Timeout | null>(null);
   const [showExp, setShowExp] = useState(false);
   const [frInput, setFrInput] = useState("");
-
-  // Reading Assistant state
-  const [passageText, setPassageText] = useState("");
-  const [questionText, setQuestionText] = useState("");
-  const [aiAnswer, setAiAnswer] = useState<any>(null);
-  const [isAnalyzingQuestion, setIsAnalyzingQuestion] = useState(false);
+  const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const frInputRef = useRef<HTMLInputElement>(null);
 
   const progress = loadProgress();
@@ -802,97 +796,6 @@ export default function SATPractice() {
         {/* Ultra thin progress bar at very top */}
         <div className="h-0.5" style={{ background: "#e5e7eb" }}>
           <div className="h-0.5 transition-all duration-500" style={{ width: `${pctDone}%`, background: "#2563eb" }} />
-        </div>
-
-        {/* SAT Reading Assistant */}
-        <div className="fixed bottom-6 right-6 z-50">
-          <div className="bg-white rounded-lg shadow-xl border border-border p-4 w-80">
-            <div className="flex items-center justify-between mb-3">
-              <h3 className="text-sm font-semibold text-foreground">
-                <Brain className="inline-block h-4 w-4 mr-2" />
-                Reading Assistant
-              </h3>
-              <button
-                onClick={() => {
-                  setPassageText("");
-                  setQuestionText("");
-                  setAiAnswer(null);
-                }}
-                className="text-muted-foreground hover:text-foreground"
-              >
-                <X className="h-4 w-4" />
-              </button>
-            </div>
-            
-            <div className="space-y-3">
-              <div>
-                <label className="text-xs font-medium text-muted-foreground mb-1">Paste passage text:</label>
-                <textarea
-                  placeholder="Paste a difficult passage here..."
-                  className="w-full h-24 p-2 text-xs border border-border rounded-md resize-none focus:outline-none focus:ring-2 focus:ring-primary/20"
-                  value={passageText}
-                  onChange={(e) => setPassageText(e.target.value)}
-                />
-              </div>
-              
-              <div>
-                <label className="text-xs font-medium text-muted-foreground mb-1">Ask a question:</label>
-                <input
-                  placeholder="What is the main idea of this passage?"
-                  className="w-full p-2 text-xs border border-border rounded-md focus:outline-none focus:ring-2 focus:ring-primary/20"
-                  value={questionText}
-                  onChange={(e) => setQuestionText(e.target.value)}
-                />
-              </div>
-              
-              <Button
-                onClick={async () => {
-                  if (!passageText.trim() || !questionText.trim()) return;
-                  
-                  setIsAnalyzingQuestion(true);
-                  setAiAnswer(null);
-                  
-                  try {
-                    const result = await answerQuestion(passageText, questionText);
-                    setAiAnswer(result);
-                  } catch (error) {
-                    console.error('Reading assistant error:', error);
-                  } finally {
-                    setIsAnalyzingQuestion(false);
-                  }
-                }}
-                disabled={isAnalyzingQuestion || !passageText.trim() || !questionText.trim()}
-                className="w-full"
-                size="sm"
-              >
-                {isAnalyzingQuestion ? (
-                  <>
-                    <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-                    Finding Answer...
-                  </>
-                ) : (
-                  <>
-                    <Brain className="h-4 w-4 mr-2" />
-                    Find Answer
-                  </>
-                )}
-              </Button>
-              
-              {aiAnswer && (
-                <div className="mt-3 p-3 bg-secondary/30 rounded-md">
-                  <div className="text-xs font-medium text-foreground mb-2">AI Answer:</div>
-                  <div className="text-xs text-muted-foreground">{aiAnswer.answer}</div>
-                  <div className="text-xs text-muted-foreground mt-1">
-                    Confidence: {Math.round(aiAnswer.score * 100)}%
-                  </div>
-                </div>
-              )}
-            </div>
-            
-            <div className="mt-2 text-xs text-muted-foreground text-center">
-              Powered by AI — running locally in your browser
-            </div>
-          </div>
         </div>
 
         {/* Top navigation */}
