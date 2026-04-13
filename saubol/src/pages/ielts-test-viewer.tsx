@@ -43,9 +43,7 @@ const IELTSTestViewer = () => {
         `https://engnovate.com/ielts-listening-tests/cambridge-ielts-${bookNum}-academic-listening-test-${testNum}/`
       )}`;
     } else {
-      testUrl = `/api/test-proxy?url=${encodeURIComponent(
-        `https://engnovate.com/ielts-reading-tests/cambridge-ielts-${bookNum}-academic-reading-test-${testNum}/`
-      )}`;
+      testUrl = `/tests/cambridge/cambridge-${bookNum}/test-${testNum}/Reading.html`;
     }
   } else if (slug.startsWith("mock-")) {
     const parts = slug.split("-");

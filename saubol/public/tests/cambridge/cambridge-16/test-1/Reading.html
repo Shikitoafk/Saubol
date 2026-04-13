@@ -1,54 +1,934 @@
 <!DOCTYPE html>
-<html lang="en">
-<head>
+  <html lang="en">
+  <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Cambridge IELTS 16 — Test 1 Reading</title>
+  <title>Saubol — Cambridge IELTS 16 Test 1 Reading</title>
   <style>
-    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
-    html, body { height: 100%; overflow: hidden; font-family: Arial, sans-serif; background: #0f172a; }
-    .topbar {
-      height: 48px;
-      background: #1e293b;
-      border-bottom: 1px solid #334155;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      padding: 0 16px;
-      gap: 12px;
-    }
-    .back-btn {
-      font-size: 13px; font-weight: 600; color: #94a3b8;
-      text-decoration: none; padding: 5px 12px;
-      border: 1px solid #334155; border-radius: 6px;
-      background: transparent; white-space: nowrap;
-      cursor: pointer; flex-shrink: 0;
-    }
-    .back-btn:hover { color: #f1f5f9; border-color: #64748b; }
-    .title { font-size: 14px; font-weight: 700; color: #f1f5f9; text-align: center; flex: 1; }
-    .spacer { width: 80px; flex-shrink: 0; }
-    .frame-wrap { position: absolute; top: 48px; left: 0; right: 0; bottom: 0; }
-    iframe { width: 100%; height: 100%; border: none; }
-    .loading-msg {
-      position: absolute; top: 50%; left: 50%;
-      transform: translate(-50%, -50%);
-      font-size: 14px; color: #475569; pointer-events: none;
-    }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: Arial, sans-serif; background: #0f172a; color: #e2e8f0; height: 100vh; overflow: hidden; display: flex; flex-direction: column; }
+
+  .saubol-topbar { background: #1e293b; border-bottom: 1px solid #334155; padding: 8px 20px; display: flex; align-items: center; justify-content: space-between; flex-shrink: 0; }
+  .saubol-logo { font-size: 13px; font-weight: 700; color: #60a5fa; display: flex; align-items: center; gap: 6px; }
+  .saubol-timer { font-size: 15px; font-weight: 700; color: #f87171; background: #2d1b1b; padding: 4px 12px; border-radius: 6px; border: 1px solid #7f1d1d; font-variant-numeric: tabular-nums; }
+  .saubol-timer.warning { animation: pulse 1s infinite; }
+  @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:.5} }
+
+  .saubol-tabs { background: #1e293b; border-bottom: 1px solid #334155; display: flex; flex-shrink: 0; }
+  .saubol-tab { padding: 9px 18px; font-size: 13px; font-weight: 600; color: #64748b; cursor: pointer; border-bottom: 3px solid transparent; white-space: nowrap; transition: all 0.15s; user-select: none; }
+  .saubol-tab:hover { color: #94a3b8; }
+  .saubol-tab.active { color: #60a5fa; border-bottom-color: #60a5fa; }
+
+  .saubol-split { display: flex; flex: 1; overflow: hidden; }
+  .saubol-passage-panel { width: 52%; border-right: 2px solid #334155; overflow-y: auto; padding: 20px 24px; flex-shrink: 0; }
+  .saubol-question-panel { flex: 1; overflow-y: auto; padding: 20px 20px 80px; }
+
+  /* ── Passage ── */
+  .ielts-reading-transcript { display: none; font-size: 14px; line-height: 1.85; color: #cbd5e1; }
+  .ielts-reading-transcript.saubol-active { display: block; }
+  .ielts-reading-transcript p { margin-bottom: 14px; color: #cbd5e1; }
+  .ielts-reading-transcript h2, .ielts-reading-transcript h3 { font-size: 17px; font-weight: 700; color: #f1f5f9; margin-bottom: 14px; }
+  .ielts-reading-transcript strong { color: #93c5fd; }
+  .ielts-reading-transcript em { font-style: italic; color: #94a3b8; }
+  .ielts-reading-transcript a { color: #cbd5e1; text-decoration: none; pointer-events: none; }
+  .saubol-passage-source { font-size: 11px; color: #475569; margin-bottom: 16px; font-style: italic; }
+  .ielts-reading-transcripts-header, .ielts-reading-skimming-button,
+  .ielts-reading-skimming-speed-buttons, .ielts-reading-part-question-count { display: none !important; }
+
+  /* ── Question section ── */
+  .ielts-reading-question-section { margin-bottom: 28px; }
+  .ielts-reading-question-section-heading { font-size: 14px; font-weight: 700; color: #60a5fa; background: #1e293b; border: 1px solid #334155; border-radius: 8px; padding: 10px 14px; margin-bottom: 12px; }
+  .ielts-reading-question-section-content { background: #1e293b; border: 1px solid #334155; border-radius: 8px; padding: 12px 14px; margin-bottom: 16px; }
+  .ielts-reading-question-section-content p { font-size: 13px; color: #94a3b8; line-height: 1.65; margin-bottom: 6px; }
+  .ielts-reading-question-section-content strong { color: #e2e8f0; }
+  .ielts-reading-question-section-content em { color: #94a3b8; }
+  .ielts-reading-question-section-content td { padding: 4px 8px; border: 1px solid #334155; color: #94a3b8; font-size: 13px; }
+
+  .ielts-reading-question-item { margin-bottom: 18px; padding-bottom: 16px; border-bottom: 1px solid #1e3a5f; }
+  .ielts-reading-question-item:last-child { border-bottom: none; }
+  .ielts-reading-question-number { display: inline-flex; align-items: center; background: #1e3a5f; color: #60a5fa; font-size: 11px; font-weight: 700; padding: 2px 8px; border-radius: 4px; margin-right: 6px; }
+  .ielts-reading-question-item > span { font-size: 13.5px; color: #e2e8f0; line-height: 1.6; display: block; margin-bottom: 10px; }
+
+  /* Paragraph fill-in questions */
+  .ielts-reading-question-items-paragraph { font-size: 14px; line-height: 2.2; color: #cbd5e1; background: #1a2744; border: 1px solid #334155; border-radius: 8px; padding: 14px 16px; margin-bottom: 16px; }
+
+  /* ── Answer options (radio TFN / multiple choice) ── */
+  /* Hide the real radio input */
+  input[type="radio"] { display: none !important; }
+
+  /* Hide the letter label (A, B, C) */
+  .ielts-reading-option-letter { display: none !important; }
+
+  /* Style the option div as a clickable pill */
+  .ielts-reading-option {
+    display: inline-flex;
+    align-items: center;
+    padding: 5px 14px;
+    border: 1px solid #334155;
+    border-radius: 6px;
+    background: #1e293b;
+    color: #94a3b8;
+    font-size: 12px;
+    font-weight: 600;
+    cursor: pointer;
+    margin-right: 8px;
+    margin-bottom: 6px;
+    transition: all 0.15s;
+    user-select: none;
+  }
+  .ielts-reading-option:hover { border-color: #60a5fa; color: #60a5fa; }
+  .ielts-reading-option.saubol-selected { background: #1e3a5f; border-color: #60a5fa; color: #60a5fa; }
+  /* Use :has for modern browsers */
+  .ielts-reading-option:has(input[type="radio"]:checked) { background: #1e3a5f; border-color: #60a5fa; color: #60a5fa; }
+
+  .ielts-reading-option span { font-size: 12px; font-weight: 600; pointer-events: none; }
+  .ielts-reading-options { display: flex; flex-wrap: wrap; gap: 0; margin-top: 4px; }
+
+  /* ── Select (matching headings) ── */
+  select { padding: 6px 10px; background: #1e293b; border: 1px solid #334155; border-radius: 6px; font-size: 13px; color: #e2e8f0; outline: none; cursor: pointer; min-width: 90px; margin-top: 6px; }
+  select:focus { border-color: #60a5fa; }
+  select option { background: #1e293b; }
+
+  /* ── Text input (fill-in) ── */
+  input[type="text"] { padding: 6px 12px; background: #1e293b; border: 1px solid #334155; border-radius: 6px; font-size: 13px; color: #e2e8f0; outline: none; min-width: 100px; max-width: 200px; transition: border-color 0.15s; margin: 2px; }
+  input[type="text"]:focus { border-color: #60a5fa; }
+  input[type="hidden"] { display: none !important; }
+
+  /* ── Hide engnovate chrome ── */
+  .ielts-reading-test-form-controls, .ielts-reading-submit-button,
+  .ielts-reading-check-answers, .ielts-reading-show-answer,
+  .ielts-reading-score-section, .reading-test-score,
+  .ielts-reading-question-count { display: none !important; }
+
+  /* ── Submit ── */
+  .saubol-submit-row { margin-top: 28px; display: flex; gap: 12px; }
+  .saubol-btn-submit { padding: 10px 28px; background: #2563eb; color: #fff; border: none; border-radius: 8px; font-size: 14px; font-weight: 700; cursor: pointer; }
+  .saubol-btn-submit:hover { background: #1d4ed8; }
+  .saubol-btn-clear { padding: 10px 18px; background: transparent; color: #64748b; border: 1px solid #334155; border-radius: 8px; font-size: 14px; cursor: pointer; }
+  .saubol-btn-clear:hover { color: #94a3b8; border-color: #64748b; }
+  .saubol-score-box { display: none; background: #1e293b; border: 1px solid #334155; border-radius: 10px; padding: 16px 20px; margin-top: 16px; }
+  .saubol-score-box h4 { font-size: 15px; color: #60a5fa; margin-bottom: 6px; }
+  .saubol-score-box p { font-size: 13px; color: #94a3b8; }
+
+  ::-webkit-scrollbar { width: 6px; }
+  ::-webkit-scrollbar-track { background: #1e293b; }
+  ::-webkit-scrollbar-thumb { background: #334155; border-radius: 3px; }
+  ::-webkit-scrollbar-thumb:hover { background: #475569; }
   </style>
-</head>
-<body>
-  <div class="topbar">
-    <a href="javascript:history.back()" class="back-btn">← Back</a>
-    <div class="title">📖 Cambridge IELTS 16 · Test 1 — Reading</div>
-    <div class="spacer"></div>
+  </head>
+  <body>
+
+  <div class="saubol-topbar">
+    <div class="saubol-logo">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5" stroke="#60a5fa" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      Saubol &nbsp;·&nbsp; Cambridge IELTS 16 · Test 1 — Reading · 60 min
+    </div>
+    <div class="saubol-timer" id="saubol-timer">60:00</div>
   </div>
-  <div class="frame-wrap">
-    <div class="loading-msg" id="loading">Loading test…</div>
-    <iframe
-      src="/api/test-proxy?url=https%3A%2F%2Fengnovate.com%2Fielts-reading-tests%2Fcambridge-ielts-16-academic-reading-test-1%2F"
-      onload="document.getElementById('loading').style.display='none'"
-      allowfullscreen
-    ></iframe>
+
+  <div class="saubol-tabs">
+    <div class="saubol-tab active" data-p="1">Passage 1</div>
+    <div class="saubol-tab" data-p="2">Passage 2</div>
+    <div class="saubol-tab" data-p="3">Passage 3</div>
   </div>
-</body>
-</html>
+
+  <div class="saubol-split">
+    <div class="saubol-passage-panel" id="passage-panel"></div>
+    <div class="saubol-question-panel" id="question-panel"></div>
+  </div>
+
+  <div id="src-passages" style="display:none"><div class="test-content">    
+                            <div id = "ielts-reading-transcript-1" class="ielts-reading-transcript current"><h2 id="why-we-need-to-protect-polar-bears">Why we need to protect polar bears</h2>
+<p>Polar bears are being increasingly threatened by the effects of climate change, but their disappearance could have far-reaching consequences. They are uniquely adapted to the extreme conditions of the Arctic Circle, where temperatures can reach &mdash;40&deg;C. One reason for this is that they have up to 11 centimetres of fat underneath their skin. Humans with comparative levels of adipose tissue would be considered obese and would be likely to suffer from diabetes and heart disease. Yet the polar bear experiences no such consequences.</p>
+<p>A 2014 study by Shi Ping Liu and colleagues sheds light on this mystery. They compared the genetic structure of polar bears with that of their closest relatives from a warmer climate, the brown bears. This allowed them to determine the genes that have allowed polar bears to survive in one of the toughest environments on Earth. Liu and his colleagues found the polar bears had a gene known as APoB, which reduces levels of low-density lipoproteins (LDLs) &#8211; a form of &#8216;bad&#8217; cholesterol. In humans, mutations of this gene are associated with increased risk of heart disease. Polar bears may therefore be an important study model to understand heart disease in humans.</p>
+<p>The genome of the polar bear may also provide the solution for another condition, one that particularly affects our older generation: osteoporosis. This is a disease where bones show reduced density, usually caused by insufficient exercise, reduced calcium intake or food starvation. Bone tissue is constantly being remodelled, meaning that bone is added or removed, depending on nutrient availability and the stress that the bone is under. Female polar bears, however, undergo extreme conditions during every pregnancy. Once autumn comes around, these females will dig maternity dens in the snow and will remain there throughout the winter, both before and after the birth of their cubs. This process results in about six months of fasting, where the female bears have to keep themselves and their cubs alive, depleting their own calcium and calorie reserves. Despite this, their bones remain strong and dense.</p>
+<p>Physiologists Alanda Lennox and Allen Goodship found an explanation for this paradox in 2008. They discovered that pregnant bears were able to increase the density of their bones before they started to build their dens. In addition, six months later, when they finally emerged from the den with their cubs, there was no evidence of significant loss of bone density. Hibernating brown bears do not have this capacity and must therefore resort to major bone reformation in the following spring. If the mechanism of bone remodelling in polar bears can be understood, many bedridden humans, and even astronauts, could potentially benefit.</p>
+<p>The medical benefits of the polar bear for humanity certainly have their importance in our conservation efforts, but these should not be the only factors taken into consideration. We tend to want to protect animals we think are intelligent and possess emotions, such as elephants and primates. Bears, on the other hand, seem to be perceived as stupid and in many cases violent. And yet anecdotal evidence from the field challenges those assumptions, suggesting for example that polar bears have good problem-solving abilities. A male bear called GoGo in Tennoji Zoo, Osaka, has even been observed making use of a tool to manipulate his environment. The bear used a tree branch on multiple occasions to dislodge a piece of meat hung out of his reach. Problem-solving ability has also been witnessed in wild polar bears, although not as obviously as with GoGo. A calculated move by a male bear involved running and jumping onto barrels in an attempt to get to a photographer standing on a platform four metres high.</p>
+<p>In other studies, such as one by Alison Annes in 2008, polar bears showed deliberate and focussed manipulation. For example, Annes observed bears putting objects in piles and then knocking them over in what appeared to be a game. The study demonstrates that bears are capable of agile and thought-out behaviours. These examples suggest bears have greater creativity and problem-solving abilities than previously thought.</p>
+<p>As for emotions while the evidence is once again anecdotal, many bears have been seen to hit out at ice and snow &mdash; seemingly out of frustration &mdash; when they have just missed out on a kill. Moreover, polar bears can form unusual relationships with other species, including playing with the dogs used to pull sleds in the Arctic. Remarkably, one hand-raised polar bear called Agee has formed a close relationship with her owner Mark Dumas to the point where they even swim together. This is even more astonishing since polar bears are known to actively hunt humans in the wild.</p>
+<p>If climate change were to lead to their extinction, this would mean not only the loss of potential breakthroughs in human medicine, but more importantly, the disappearance of an intelligent, majestic animal.</p>
+</div><div id = "ielts-reading-transcript-2" class="ielts-reading-transcript "><h2 id="the-step-pyramid-of-djoser">The Step Pyramid of Djoser</h2>
+<p><strong>A.</strong></p>
+<p>The pyramids are the most famous monuments of ancient Egypt and still hold enormous interest for people in the present day. These grand, impressive tributes to the memory of the Egyptian kings have become linked with the country even though other cultures, such as the Chinese and Mayan, also built pyramids. The evolution of the pyramid form has been written and argued about for centuries. However, there is no question that, as far as Egypt is concerned, it began with one monument to one king designed by one brilliant architect: <strong>the Step Pyramid of Djoser at Saqqara</strong>.</p>
+<p><strong>B.</strong></p>
+<p>Djoser was the first king of the Third Dynasty of Egypt and the first to build in stone. Prior to Djoser&rsquo;s reign, tombs were rectangular monuments made of dried clay brick, which covered underground passages where the deceased person was buried. For reasons which remain unclear, Djoser&rsquo;s main official, whose name was Imhotep, conceived of building a taller, more impressive tomb for his king by stacking stone slabs on top of one another, progressively making them smaller, to form the shape now known as the Step Pyramid. Djoser is thought to have reigned for 19 years, but some historians and scholars attribute a much longer time for his rule, owing to the number and size of the monuments he built.</p>
+<p><strong>C.</strong></p>
+<p>The Step Pyramid has been thoroughly examined and investigated over the last century, and it is now known that the building process went through many different stages. Historian Marc Van de Mieroop comments on this, writing &lsquo;Much experimentation was involved, which is especially clear in the construction of the pyramid in the center of the complex. It had several plans &hellip; before it became the first Step Pyramid in history, piling six levels on top of one another &hellip; The weight of the enormous mass was a challenge for the builders, who placed the stones at an inward incline in order to prevent the monument breaking up.&rsquo;</p>
+<p><strong>D.</strong></p>
+<p>When finally completed, the Step Pyramid rose 62 meters high and was the tallest structure of its time. The complex in which it was built was the size of a city in ancient Egypt and included a temple, courtyards, shrines, and living quarters for the priests. It covered a region of 16 hectares and was surrounded by a wall 10.5 meters high. The wall had 13 false doors cut into it with only one true entrance cut into the south-east corner; the entire wall was then ringed by a trench 750 meters long and 40 meters wide. The false doors and the trench were incorporated into the complex to discourage unwanted visitors. If someone wished to enter, he or she would have needed to know in advance how to find the location of the true opening in the wall. Djoser was so proud of his accomplishment that he broke the tradition of having only his own name on the monument and had Imhotep&rsquo;s name carved on it as well.</p>
+<p><strong>E.</strong></p>
+<p>The burial chamber of the tomb, where the king&rsquo;s body was laid to rest, was dug beneath the base of the pyramid, surrounded by a vast maze of long tunnels that had rooms off them to discourage robbers. One of the most mysterious discoveries found inside the pyramid was a large number of stone vessels. Over 40,000 of these vessels, of various forms and shapes, were discovered in storerooms of the pyramid&rsquo;s underground passages. They are inscribed with the names of rulers from the First and Second Dynasties of Egypt and made from different kinds of stone. There is no agreement among scholars and archaeologists on why the vessels were placed in the tomb of Djoser or what they were supposed to represent. The archaeologist Jean-Philippe Lauer, who excavated most of the pyramid and complex, believes they were originally stored and then given a &lsquo;proper burial&rsquo; by Djoser in his pyramid to honor his predecessors. There are other historians, however, who claim the vessels were dumped into the shafts as yet another attempt to prevent grave robbers from getting to the king&rsquo;s burial chamber.</p>
+<p><strong>F. </strong></p>
+<p>Unfortunately, all of the precautions and intricate design of the underground network did not prevent ancient robbers from finding a way in. Djoser&rsquo;s grave goods, and even his body, were stolen at some point in the past and all archaeologists found were a small number of his valuables overlooked by the thieves. There was enough left throughout the pyramid and its complex, however, to astonish and amaze the archaeologists who excavated it.</p>
+<p><strong>G.</strong></p>
+<p>Egyptologist Miroslav Verner writes, &lsquo;Few monuments hold a place in human history as significant as that of the Step Pyramid in Saqqara &hellip; It can be said without exaggeration that this pyramid complex constitutes a milestone in the evolution of monumental stone architecture in Egypt and in the world as a whole.&rsquo; The Step Pyramid was a revolutionary advance in architecture and became the archetype which all the other great pyramid builders of Egypt would follow.</p>
+</div><div id = "ielts-reading-transcript-3" class="ielts-reading-transcript "><h2 id="the-future-of-work">The future of work</h2>
+<p>According to a leading business consultancy, 3&mdash;14% of the global workforce will need to switch to a different occupation within the next 10&mdash;15 years, and all workers will need to adapt as their occupations evolve alongside increasingly capable machines. Automation &mdash; or &lsquo;embodied artificial intelligence (AI) &mdash; is one aspect of the disruptive effects of technology on the labour market. &lsquo;Disembodied AI&rsquo;, like the algorithms running in our smartphones, is another.</p>
+<p>Dr Stella Pachidi from Cambridge Judge Business School believes that some of the most fundamental changes are happening as a result of the &lsquo;<strong>algorithmication</strong>&rsquo; of jobs that are dependent on data rather than on production &mdash; the so-called knowledge economy. Algorithms are capable of learning from data to undertake tasks that previously needed human judgement, such as reading legal contracts, analysing medical scans and gathering market intelligence.</p>
+<p>&lsquo;In many cases, they can outperform humans,&rsquo; says Pachidi. &lsquo;Organisations are attracted to using algorithms because they want to make choices based on what they consider is &ldquo;perfect information&rdquo;, as well as to reduce costs and enhance productivity.&rsquo;</p>
+<p>&lsquo;But these enhancements are not without consequences,&rsquo; says Pachidi. &lsquo;If routine cognitive tasks are taken over by AI, how do professions develop their future experts?&rsquo; she asks. &lsquo;One way of learning about a job is &ldquo;legitimate peripheral participation&rdquo;&mdash; a novice stands next to experts and learns by observation. If this isn&rsquo;t happening, then you need to find new ways to learn.&rsquo;</p>
+<p>Another issue is the extent to which the technology influences or even controls the workforce. For over two years, Pachidi monitored a telecommunications company. &lsquo;The way telecoms salespeople work is through personal and frequent contact with clients, using the benefit of experience to assess a situation and reach a decision. However, the company had started using a[n] &hellip; algorithm that defined when account managers should contact certain customers about which kinds of campaigns and what to offer them.&rsquo;</p>
+<p>The algorithm &mdash; usually built by external designers &mdash; often becomes the keeper of knowledge, she explains. In cases like this, Pachidi believes, a short-sighted view begins to creep into working practices whereby workers learn through the &lsquo;algorithm&rsquo;s eyes&rsquo; and become dependent on its instructions. Alternative explorations &mdash; where experimentation and human instinct lead to progress and new ideas &mdash; are effectively discouraged.</p>
+<p>Pachidi and colleagues even observed people developing strategies to make the algorithm work to their own advantage. &lsquo;We are seeing cases where workers feed the algorithm with false data to reach their targets,&rsquo; she reports.</p>
+<p>It&rsquo;s scenarios like these that many researchers are working to avoid. Their objective is to make AI technologies more trustworthy and transparent, so that organisations and individuals understand how AI decisions are made. In the meantime, says Pachidi, &lsquo;We need to make sure we fully understand the dilemmas that this new world raises regarding expertise, occupational boundaries and control.&rsquo;</p>
+<p>Economist Professor Hamish Low believes that the future of work will involve major transitions across the whole life course for everyone: &lsquo;The traditional trajectory of full-time education followed by full-time work followed by a pensioned retirement is a thing of the past,&rsquo; says Low. Instead, he envisages a multistage employment life: one where retraining happens across the life course, and where multiple jobs and no job happen by choice at different stages.</p>
+<p>On the subject of job losses, Low believes the predictions are founded on a fallacy: &lsquo;It assumes that the number of jobs is fixed. If in 30 years, half of 100 jobs are being carried out by robots, that doesn&rsquo;t mean we are left with just 50 jobs for humans. The number of jobs will increase: we would expect there to be 150 jobs.&rsquo;</p>
+<p>Dr Ewan McGaughey, at Cambridge&rsquo;s Centre for Business Research and King&rsquo;s College London, agrees that &lsquo;apocalyptic&rsquo; views about the future of work are misguided. &lsquo;It&rsquo;s the laws that restrict the supply of capital to the job market, not the advent of new technologies that causes unemployment.&rsquo;</p>
+<p>His recently published research answers the question of whether automation, AI and robotics will mean a &lsquo;jobless future&rsquo; by looking at the causes of unemployment. &lsquo;History is clear that change can mean redundancies. But social policies can tackle this through retraining and redeployment.&rsquo;</p>
+<p>He adds: &lsquo;If there is going to be change to jobs as a result of AI and robotics then I&rsquo;d like to see governments seizing the opportunity to improve policy to enforce good job security. We can &ldquo;reprogramme&rdquo; the law to prepare for a fairer future of work and leisure.&rsquo; McGaughey&rsquo;s findings are a call to arms to leaders of organisations, governments and banks to pre-empt the coming changes with bold new policies that guarantee full employment, fair incomes and a thriving economic democracy.</p>
+<p>&lsquo;The promises of these new technologies are astounding. They deliver humankind the capacity to live in a way that nobody could have once imagined,&rsquo; he adds. &#8216;Just as the industrial revolution brought people past subsistence agriculture, and the corporate revolution enabled mass production, a third revolution has been pronounced. But it will not only be one of technology. The next revolution will be social.&#8217;</p>
+</div>                        </div></div>
+  <div id="src-questions" style="display:none"><form id ="ielts-reading-test-form" class="ielts-reading-test-form">
+                                <input type="hidden" id="ielts_reading_test_nonce" name="ielts_reading_test_nonce" value="c8b3771ede" /><input type="hidden" name="_wp_http_referer" value="/ielts-reading-tests/cambridge-ielts-16-academic-reading-test-1/" />                                <input type="hidden" id="post_id" name="post_id" value="9016">
+                                <input type="hidden" id="category_type" name="category_type" value="cambridge-academic">
+                                <div class="ielts-reading-question-sections">
+                                                                                                                <div id="ielts-reading-question-section-1" class="ielts-reading-question-section current" data-part-number="1">                                        <h2 class="ielts-reading-question-section-heading"> Questions 1-7 </h2>
+                                        <div class="ielts-reading-question-section-content">
+                                            <p>Do the following statements agree with the information given in the Reading Passage?</p>
+<p><em>In boxes on your answer sheet, write</em></p>
+<p><strong>TRUE</strong>               if the statement agrees with the information</p>
+<p><strong>FALSE</strong>              if the statement contradicts the information</p>
+<p><strong>NOT</strong> <strong>GIVEN</strong>    if there is no information on this</p>
+                                        </div>
+                                        <div class="ielts-reading-questions">
+                                                                                                                                            <div class="ielts-reading-question-item">                                    
+                                                    <span><strong id = "ielts-reading-question-number-1" class = "ielts-reading-question-number">1</strong> <span>Polar bears suffer from various health problems due to the build-up of fat under their skin.</span></span>                                   
+                                                                                                    
+                                                                                                       
+                                                        <div class = "ielts-reading-option"><label class="ielts-reading-option-letter" for="ielts_reading_answer_8959_1_0">A</label><input type="radio" name="ielts_reading_answer_8959_1" id="ielts_reading_answer_8959_1_0" value="TRUE"><span>TRUE</span></div>                                         
+                                                                                                       
+                                                        <div class = "ielts-reading-option"><label class="ielts-reading-option-letter" for="ielts_reading_answer_8959_1_1">B</label><input type="radio" name="ielts_reading_answer_8959_1" id="ielts_reading_answer_8959_1_1" value="FALSE"><span>FALSE</span></div>                                         
+                                                                                                       
+                                                        <div class = "ielts-reading-option"><label class="ielts-reading-option-letter" for="ielts_reading_answer_8959_1_2">C</label><input type="radio" name="ielts_reading_answer_8959_1" id="ielts_reading_answer_8959_1_2" value="NOT GIVEN"><span>NOT GIVEN</span></div>                                         
+                                                                                                                               
+                                                </div>
+                                                                                                                                            <div class="ielts-reading-question-item">                                    
+                                                    <span><strong id = "ielts-reading-question-number-2" class = "ielts-reading-question-number">2</strong> <span>The study done by Liu and his colleagues compared different groups of polar bears.</span></span>                                   
+                                                                                                    
+                                                                                                       
+                                                        <div class = "ielts-reading-option"><label class="ielts-reading-option-letter" for="ielts_reading_answer_8959_2_0">A</label><input type="radio" name="ielts_reading_answer_8959_2" id="ielts_reading_answer_8959_2_0" value="TRUE"><span>TRUE</span></div>                                         
+                                                                                                       
+                                                        <div class = "ielts-reading-option"><label class="ielts-reading-option-letter" for="ielts_reading_answer_8959_2_1">B</label><input type="radio" name="ielts_reading_answer_8959_2" id="ielts_reading_answer_8959_2_1" value="FALSE"><span>FALSE</span></div>                                         
+                                                                                                       
+                                                        <div class = "ielts-reading-option"><label class="ielts-reading-option-letter" for="ielts_reading_answer_8959_2_2">C</label><input type="radio" name="ielts_reading_answer_8959_2" id="ielts_reading_answer_8959_2_2" value="NOT GIVEN"><span>NOT GIVEN</span></div>                                         
+                                                                                                                               
+                                                </div>
+                                                                                                                                            <div class="ielts-reading-question-item">                                    
+                                                    <span><strong id = "ielts-reading-question-number-3" class = "ielts-reading-question-number">3</strong> <span>Liu and colleagues were the first researchers to compare polar bears and brown bears genetically.</span></span>                                   
+                                                                                                    
+                                                                                                       
+                                                        <div class = "ielts-reading-option"><label class="ielts-reading-option-letter" for="ielts_reading_answer_8959_3_0">A</label><input type="radio" name="ielts_reading_answer_8959_3" id="ielts_reading_answer_8959_3_0" value="TRUE"><span>TRUE</span></div>                                         
+                                                                                                       
+                                                        <div class = "ielts-reading-option"><label class="ielts-reading-option-letter" for="ielts_reading_answer_8959_3_1">B</label><input type="radio" name="ielts_reading_answer_8959_3" id="ielts_reading_answer_8959_3_1" value="FALSE"><span>FALSE</span></div>                                         
+                                                                                                       
+                                                        <div class = "ielts-reading-option"><label class="ielts-reading-option-letter" for="ielts_reading_answer_8959_3_2">C</label><input type="radio" name="ielts_reading_answer_8959_3" id="ielts_reading_answer_8959_3_2" value="NOT GIVEN"><span>NOT GIVEN</span></div>                                         
+                                                                                                                               
+                                                </div>
+                                                                                                                                            <div class="ielts-reading-question-item">                                    
+                                                    <span><strong id = "ielts-reading-question-number-4" class = "ielts-reading-question-number">4</strong> <span>Polar bears are able to control their levels of bad cholesterol by genetic means.</span></span>                                   
+                                                                                                    
+                                                                                                       
+                                                        <div class = "ielts-reading-option"><label class="ielts-reading-option-letter" for="ielts_reading_answer_8959_4_0">A</label><input type="radio" name="ielts_reading_answer_8959_4" id="ielts_reading_answer_8959_4_0" value="TRUE"><span>TRUE</span></div>                                         
+                                                                                                       
+                                                        <div class = "ielts-reading-option"><label class="ielts-reading-option-letter" for="ielts_reading_answer_8959_4_1">B</label><input type="radio" name="ielts_reading_answer_8959_4" id="ielts_reading_answer_8959_4_1" value="FALSE"><span>FALSE</span></div>                                         
+                                                                                                       
+                                                        <div class = "ielts-reading-option"><label class="ielts-reading-option-letter" for="ielts_reading_answer_8959_4_2">C</label><input type="radio" name="ielts_reading_answer_8959_4" id="ielts_reading_answer_8959_4_2" value="NOT GIVEN"><span>NOT GIVEN</span></div>                                         
+                                                                                                                               
+                                                </div>
+                                                                                                                                            <div class="ielts-reading-question-item">                                    
+                                                    <span><strong id = "ielts-reading-question-number-5" class = "ielts-reading-question-number">5</strong> <span>Female polar bears are able to survive for about six months without food.</span></span>                                   
+                                                                                                    
+                                                                                                       
+                                                        <div class = "ielts-reading-option"><label class="ielts-reading-option-letter" for="ielts_reading_answer_8959_5_0">A</label><input type="radio" name="ielts_reading_answer_8959_5" id="ielts_reading_answer_8959_5_0" value="TRUE"><span>TRUE</span></div>                                         
+                                                                                                       
+                                                        <div class = "ielts-reading-option"><label class="ielts-reading-option-letter" for="ielts_reading_answer_8959_5_1">B</label><input type="radio" name="ielts_reading_answer_8959_5" id="ielts_reading_answer_8959_5_1" value="FALSE"><span>FALSE</span></div>                                         
+                                                                                                       
+                                                        <div class = "ielts-reading-option"><label class="ielts-reading-option-letter" for="ielts_reading_answer_8959_5_2">C</label><input type="radio" name="ielts_reading_answer_8959_5" id="ielts_reading_answer_8959_5_2" value="NOT GIVEN"><span>NOT GIVEN</span></div>                                         
+                                                                                                                               
+                                                </div>
+                                                                                                                                            <div class="ielts-reading-question-item">                                    
+                                                    <span><strong id = "ielts-reading-question-number-6" class = "ielts-reading-question-number">6</strong> <span>It was found that the bones of female polar bears were very weak when they came out of their dens in spring.</span></span>                                   
+                                                                                                    
+                                                                                                       
+                                                        <div class = "ielts-reading-option"><label class="ielts-reading-option-letter" for="ielts_reading_answer_8959_6_0">A</label><input type="radio" name="ielts_reading_answer_8959_6" id="ielts_reading_answer_8959_6_0" value="TRUE"><span>TRUE</span></div>                                         
+                                                                                                       
+                                                        <div class = "ielts-reading-option"><label class="ielts-reading-option-letter" for="ielts_reading_answer_8959_6_1">B</label><input type="radio" name="ielts_reading_answer_8959_6" id="ielts_reading_answer_8959_6_1" value="FALSE"><span>FALSE</span></div>                                         
+                                                                                                       
+                                                        <div class = "ielts-reading-option"><label class="ielts-reading-option-letter" for="ielts_reading_answer_8959_6_2">C</label><input type="radio" name="ielts_reading_answer_8959_6" id="ielts_reading_answer_8959_6_2" value="NOT GIVEN"><span>NOT GIVEN</span></div>                                         
+                                                                                                                               
+                                                </div>
+                                                                                                                                            <div class="ielts-reading-question-item">                                    
+                                                    <span><strong id = "ielts-reading-question-number-7" class = "ielts-reading-question-number">7</strong> <span>The polar bear&rsquo;s mechanism for increasing bone density could also be used by people one day.</span></span>                                   
+                                                                                                    
+                                                                                                       
+                                                        <div class = "ielts-reading-option"><label class="ielts-reading-option-letter" for="ielts_reading_answer_8959_7_0">A</label><input type="radio" name="ielts_reading_answer_8959_7" id="ielts_reading_answer_8959_7_0" value="TRUE"><span>TRUE</span></div>                                         
+                                                                                                       
+                                                        <div class = "ielts-reading-option"><label class="ielts-reading-option-letter" for="ielts_reading_answer_8959_7_1">B</label><input type="radio" name="ielts_reading_answer_8959_7" id="ielts_reading_answer_8959_7_1" value="FALSE"><span>FALSE</span></div>                                         
+                                                                                                       
+                                                        <div class = "ielts-reading-option"><label class="ielts-reading-option-letter" for="ielts_reading_answer_8959_7_2">C</label><input type="radio" name="ielts_reading_answer_8959_7" id="ielts_reading_answer_8959_7_2" value="NOT GIVEN"><span>NOT GIVEN</span></div>                                         
+                                                                                                                               
+                                                </div>
+                                                                                    </div>
+                                                                                                                                                            <h2 class="ielts-reading-question-section-heading"> Questions 8-13 </h2>
+                                        <div class="ielts-reading-question-section-content">
+                                            <p>Complete the table below.</p>
+<p>Choose <strong>ONE WORD ONLY</strong> from the passage for each answer.</p>
+<p><em>Write your answers in boxes <strong>8-13</strong> on your answer sheet.</em></p>
+<table>
+<tbody>
+<tr>
+<td width="623">
+<h3><strong>Reasons why polar bears should be protected</strong></h3>
+<h3></h3>
+<p>People think of bears as unintelligent and <span class="ielts-reading-question-item"><strong id = "ielts-reading-question-number-8" class="ielts-reading-question-number">8</strong> <input type="text" name="ielts_reading_answer_8963_1" id="ielts_reading_answer_8963_1" aria-label="Question 8"></span>.</p>
+<p>However, this may not be correct. For example:</p>
+<ul>
+<li>In Tennoji Zoo, a bear has been seen using a branch as a <span class="ielts-reading-question-item"><strong id = "ielts-reading-question-number-9" class="ielts-reading-question-number">9</strong> <input type="text" name="ielts_reading_answer_8963_2" id="ielts_reading_answer_8963_2" aria-label="Question 9"></span>. This allowed him to knock down some <span class="ielts-reading-question-item"><strong id = "ielts-reading-question-number-10" class="ielts-reading-question-number">10</strong> <input type="text" name="ielts_reading_answer_8963_3" id="ielts_reading_answer_8963_3" aria-label="Question 10"></span>.</li>
+<li>A wild polar bear worked out a method of reaching a platform where a <span class="ielts-reading-question-item"><strong id = "ielts-reading-question-number-11" class="ielts-reading-question-number">11</strong> <input type="text" name="ielts_reading_answer_8963_4" id="ielts_reading_answer_8963_4" aria-label="Question 11"></span> was located.</li>
+<li>Polar bears have displayed behaviour such as conscious manipulation of objects and activity similar to a <span class="ielts-reading-question-item"><strong id = "ielts-reading-question-number-12" class="ielts-reading-question-number">12</strong> <input type="text" name="ielts_reading_answer_8963_5" id="ielts_reading_answer_8963_5" aria-label="Question 12"></span>.</li>
+</ul>
+<p>Bears may also display emotions. For example:</p>
+<ul>
+<li>They may make movements suggesting <span class="ielts-reading-question-item"><strong id = "ielts-reading-question-number-13" class="ielts-reading-question-number">13</strong> <input type="text" name="ielts_reading_answer_8963_6" id="ielts_reading_answer_8963_6" aria-label="Question 13"></span> if disappointed when hunting.</li>
+<li>They may form relationships with other species.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+                                        </div>
+                                        <div class="ielts-reading-questions">
+                                                                                                                                            <div class="ielts-reading-question-item">                                    
+                                                                                       
+                                                                                                    
+                                                                                                       
+                                                                                                 
+                                                                                                                               
+                                                </div>
+                                                                                                                                            <div class="ielts-reading-question-item">                                    
+                                                                                       
+                                                                                                    
+                                                                                                       
+                                                                                                 
+                                                                                                                               
+                                                </div>
+                                                                                                                                            <div class="ielts-reading-question-item">                                    
+                                                                                       
+                                                                                                    
+                                                                                                       
+                                                                                                 
+                                                                                                                               
+                                                </div>
+                                                                                                                                            <div class="ielts-reading-question-item">                                    
+                                                                                       
+                                                                                                    
+                                                                                                       
+                                                                                                 
+                                                                                                                               
+                                                </div>
+                                                                                                                                            <div class="ielts-reading-question-item">                                    
+                                                                                       
+                                                                                                    
+                                                                                                       
+                                                                                                 
+                                                                                                                               
+                                                </div>
+                                                                                                                                            <div class="ielts-reading-question-item">                                    
+                                                                                       
+                                                                                                    
+                                                                                                       
+                                                                                                 
+                                                                                                                               
+                                                </div>
+                                                                                    </div>
+                                        </div>                                                                            <div id="ielts-reading-question-section-2" class="ielts-reading-question-section " data-part-number="2">                                        <h2 class="ielts-reading-question-section-heading"> Questions 14-20 </h2>
+                                        <div class="ielts-reading-question-section-content">
+                                            <p><em>The Reading Passage has seven paragraphs, <strong>A-G.</strong></em></p>
+<p><em>Choose the correct heading for paragraphs from the list of headings below.</em></p>
+<p><em>Write the correct number, <strong>i-ix</strong>, in boxes on your answer sheet.</em></p>
+<p><strong>List of Headings</strong></p>
+<p><strong>i     </strong>The areas and artefacts within the pyramid itself</p>
+<p><strong>ii     </strong>A difficult task for those involved</p>
+<p><strong>iii    </strong> A king who saved his people</p>
+<p><strong>iv  </strong>   A single certainty among other less definite facts</p>
+<p><strong>v     </strong>An overview of the external buildings and areas</p>
+<p><strong>vi  </strong>   A pyramid design that others copied</p>
+<p><strong>vii </strong>    An idea for changing the design of burial structures</p>
+<p><strong>viii</strong>     An incredible experience despite the few remains</p>
+<p><strong>ix  </strong>   The answers to some unexpected questions</p>
+                                        </div>
+                                        <div class="ielts-reading-questions">
+                                                                                                                                            <div class="ielts-reading-question-item">                                    
+                                                    <span><strong id = "ielts-reading-question-number-14" class = "ielts-reading-question-number">14</strong> <span>Paragraph&nbsp;<strong>A</strong></span></span>                                   
+                                                                                                    
+                                                                                                       
+                                                        <select name="ielts_reading_answer_8965_1" id="ielts_reading_answer_8965_1"><option value=""></option><option value="i">i</option>                                         
+                                                                                                       
+                                                        <option value="ii">ii</option>                                         
+                                                                                                       
+                                                        <option value="iii">iii</option>                                         
+                                                                                                       
+                                                        <option value="iv">iv</option>                                         
+                                                                                                       
+                                                        <option value="v">v</option>                                         
+                                                                                                       
+                                                        <option value="vi">vi</option>                                         
+                                                                                                       
+                                                        <option value="vii">vii</option>                                         
+                                                                                                       
+                                                        <option value="viii">viii</option>                                         
+                                                                                                       
+                                                        <option value="ix">ix</option></select>                                         
+                                                                                                                               
+                                                </div>
+                                                                                                                                            <div class="ielts-reading-question-item">                                    
+                                                    <span><strong id = "ielts-reading-question-number-15" class = "ielts-reading-question-number">15</strong> <span>Paragraph&nbsp;<strong>B</strong></span></span>                                   
+                                                                                                    
+                                                                                                       
+                                                        <select name="ielts_reading_answer_8965_2" id="ielts_reading_answer_8965_2"><option value=""></option><option value="i">i</option>                                         
+                                                                                                       
+                                                        <option value="ii">ii</option>                                         
+                                                                                                       
+                                                        <option value="iii">iii</option>                                         
+                                                                                                       
+                                                        <option value="iv">iv</option>                                         
+                                                                                                       
+                                                        <option value="v">v</option>                                         
+                                                                                                       
+                                                        <option value="vi">vi</option>                                         
+                                                                                                       
+                                                        <option value="vii">vii</option>                                         
+                                                                                                       
+                                                        <option value="viii">viii</option>                                         
+                                                                                                       
+                                                        <option value="ix">ix</option></select>                                         
+                                                                                                                               
+                                                </div>
+                                                                                                                                            <div class="ielts-reading-question-item">                                    
+                                                    <span><strong id = "ielts-reading-question-number-16" class = "ielts-reading-question-number">16</strong> <span>Paragraph&nbsp;<strong>C</strong></span></span>                                   
+                                                                                                    
+                                                                                                       
+                                                        <select name="ielts_reading_answer_8965_3" id="ielts_reading_answer_8965_3"><option value=""></option><option value="i">i</option>                                         
+                                                                                                       
+                                                        <option value="ii">ii</option>                                         
+                                                                                                       
+                                                        <option value="iii">iii</option>                                         
+                                                                                                       
+                                                        <option value="iv">iv</option>                                         
+                                                                                                       
+                                                        <option value="v">v</option>                                         
+                                                                                                       
+                                                        <option value="vi">vi</option>                                         
+                                                                                                       
+                                                        <option value="vii">vii</option>                                         
+                                                                                                       
+                                                        <option value="viii">viii</option>                                         
+                                                                                                       
+                                                        <option value="ix">ix</option></select>                                         
+                                                                                                                               
+                                                </div>
+                                                                                                                                            <div class="ielts-reading-question-item">                                    
+                                                    <span><strong id = "ielts-reading-question-number-17" class = "ielts-reading-question-number">17</strong> <span>Paragraph&nbsp;<strong>D</strong></span></span>                                   
+                                                                                                    
+                                                                                                       
+                                                        <select name="ielts_reading_answer_8965_4" id="ielts_reading_answer_8965_4"><option value=""></option><option value="i">i</option>                                         
+                                                                                                       
+                                                        <option value="ii">ii</option>                                         
+                                                                                                       
+                                                        <option value="iii">iii</option>                                         
+                                                                                                       
+                                                        <option value="iv">iv</option>                                         
+                                                                                                       
+                                                        <option value="v">v</option>                                         
+                                                                                                       
+                                                        <option value="vi">vi</option>                                         
+                                                                                                       
+                                                        <option value="vii">vii</option>                                         
+                                                                                                       
+                                                        <option value="viii">viii</option>                                         
+                                                                                                       
+                                                        <option value="ix">ix</option></select>                                         
+                                                                                                                               
+                                                </div>
+                                                                                                                                            <div class="ielts-reading-question-item">                                    
+                                                    <span><strong id = "ielts-reading-question-number-18" class = "ielts-reading-question-number">18</strong> <span>Paragraph&nbsp;<strong>E</strong></span></span>                                   
+                                                                                                    
+                                                                                                       
+                                                        <select name="ielts_reading_answer_8965_5" id="ielts_reading_answer_8965_5"><option value=""></option><option value="i">i</option>                                         
+                                                                                                       
+                                                        <option value="ii">ii</option>                                         
+                                                                                                       
+                                                        <option value="iii">iii</option>                                         
+                                                                                                       
+                                                        <option value="iv">iv</option>                                         
+                                                                                                       
+                                                        <option value="v">v</option>                                         
+                                                                                                       
+                                                        <option value="vi">vi</option>                                         
+                                                                                                       
+                                                        <option value="vii">vii</option>                                         
+                                                                                                       
+                                                        <option value="viii">viii</option>                                         
+                                                                                                       
+                                                        <option value="ix">ix</option></select>                                         
+                                                                                                                               
+                                                </div>
+                                                                                                                                            <div class="ielts-reading-question-item">                                    
+                                                    <span><strong id = "ielts-reading-question-number-19" class = "ielts-reading-question-number">19</strong> <span>Paragraph&nbsp;<strong>F</strong></span></span>                                   
+                                                                                                    
+                                                                                                       
+                                                        <select name="ielts_reading_answer_8965_6" id="ielts_reading_answer_8965_6"><option value=""></option><option value="i">i</option>                                         
+                                                                                                       
+                                                        <option value="ii">ii</option>                                         
+                                                                                                       
+                                                        <option value="iii">iii</option>                                         
+                                                                                                       
+                                                        <option value="iv">iv</option>                                         
+                                                                                                       
+                                                        <option value="v">v</option>                                         
+                                                                                                       
+                                                        <option value="vi">vi</option>                                         
+                                                                                                       
+                                                        <option value="vii">vii</option>                                         
+                                                                                                       
+                                                        <option value="viii">viii</option>                                         
+                                                                                                       
+                                                        <option value="ix">ix</option></select>                                         
+                                                                                                                               
+                                                </div>
+                                                                                                                                            <div class="ielts-reading-question-item">                                    
+                                                    <span><strong id = "ielts-reading-question-number-20" class = "ielts-reading-question-number">20</strong> <span>Paragraph&nbsp;<strong>G</strong></span></span>                                   
+                                                                                                    
+                                                                                                       
+                                                        <select name="ielts_reading_answer_8965_7" id="ielts_reading_answer_8965_7"><option value=""></option><option value="i">i</option>                                         
+                                                                                                       
+                                                        <option value="ii">ii</option>                                         
+                                                                                                       
+                                                        <option value="iii">iii</option>                                         
+                                                                                                       
+                                                        <option value="iv">iv</option>                                         
+                                                                                                       
+                                                        <option value="v">v</option>                                         
+                                                                                                       
+                                                        <option value="vi">vi</option>                                         
+                                                                                                       
+                                                        <option value="vii">vii</option>                                         
+                                                                                                       
+                                                        <option value="viii">viii</option>                                         
+                                                                                                       
+                                                        <option value="ix">ix</option></select>                                         
+                                                                                                                               
+                                                </div>
+                                                                                    </div>
+                                                                                                                                                            <h2 class="ielts-reading-question-section-heading"> Questions 21-24 </h2>
+                                        <div class="ielts-reading-question-section-content">
+                                            <div class="ielts-reading-section-content-wrapper">Complete the notes below.</p>
+<p>Choose <strong>ONE WORD ONLY</strong> from the passage for each answer.</p>
+<p><em>Write your answers in boxes on your answer sheet.</em></p>
+<h4><strong>The Step Pyramid of Djoser</strong></h4>
+<p>The complex that includes the Step Pyramid and its surroundings is considered to be as big as an Egyptian <span class="ielts-reading-question-item"><strong id = "ielts-reading-question-number-21" class="ielts-reading-question-number">21</strong> <input type="text" name="ielts_reading_answer_8983_1" id="ielts_reading_answer_8983_1" aria-label="Question 21"></span> of the past. The area outside the pyramid included accommodation that was occupied by <span class="ielts-reading-question-item"><strong id = "ielts-reading-question-number-22" class="ielts-reading-question-number">22</strong> <input type="text" name="ielts_reading_answer_8983_2" id="ielts_reading_answer_8983_2" aria-label="Question 22"></span>, along with many other buildings and features.</p>
+<p>A wall ran around the outside of the complex and a number of false entrances were built into this. In addition, a long <span class="ielts-reading-question-item"><strong id = "ielts-reading-question-number-23" class="ielts-reading-question-number">23</strong> <input type="text" name="ielts_reading_answer_8983_3" id="ielts_reading_answer_8983_3" aria-label="Question 23"></span> encircled the wall. As a result, any visitors who had not been invited were cleverly prevented from entering the pyramid grounds unless they knew the <span class="ielts-reading-question-item"><strong id = "ielts-reading-question-number-24" class="ielts-reading-question-number">24</strong> <input type="text" name="ielts_reading_answer_8983_4" id="ielts_reading_answer_8983_4" aria-label="Question 24"></span> of the real entrance.</div>
+                                        </div>
+                                        <div class="ielts-reading-questions">
+                                                                                                                                            <div class="ielts-reading-question-item">                                    
+                                                                                       
+                                                                                                    
+                                                                                                       
+                                                                                                 
+                                                                                                                               
+                                                </div>
+                                                                                                                                            <div class="ielts-reading-question-item">                                    
+                                                                                       
+                                                                                                    
+                                                                                                       
+                                                                                                 
+                                                                                                                               
+                                                </div>
+                                                                                                                                            <div class="ielts-reading-question-item">                                    
+                                                                                       
+                                                                                                    
+                                                                                                       
+                                                                                                 
+                                                                                                                               
+                                                </div>
+                                                                                                                                            <div class="ielts-reading-question-item">                                    
+                                                                                       
+                                                                                                    
+                                                                                                       
+                                                                                                 
+                                                                                                                               
+                                                </div>
+                                                                                    </div>
+                                                                                                                                                            <h2 class="ielts-reading-question-section-heading"> Questions 25-26 </h2>
+                                        <div class="ielts-reading-question-section-content">
+                                            <p>Choose <strong>TWO</strong> letters, <strong>A-E</strong>.</p>
+<p><em>Write the correct letters in boxes on your answer sheet.</em></p>
+                                        </div>
+                                        <div class="ielts-reading-questions">
+                                                                                                                                            <div class="ielts-reading-question-item">                                    
+                                                                                       
+                                                                                                    
+                                                                                                       
+                                                                                                 
+                                                                                                                               
+                                                </div>
+                                                                                                                                            <div class="ielts-reading-question-item">                                    
+                                                    <span><strong id = "ielts-reading-question-number-25" class = "ielts-reading-question-number">25</strong> <strong id = "ielts-reading-question-number-26" class = "ielts-reading-question-number">26</strong> <span>Which&nbsp;<strong>TWO</strong>&nbsp;of the following points does the writer make about King Djoser?</span></span>                                   
+                                                                                                    
+                                                                                                       
+                                                        <div class = "ielts-reading-option"><label class="ielts-reading-option-letter" for="ielts_reading_answer_8985_2_0">A</label><input data-limit="2" type="checkbox" name="ielts_reading_answer_8985_2[]" id="ielts_reading_answer_8985_2_0" value="A"><span>Initially he had to be persuaded to build in stone rather than clay.</span></div>                                         
+                                                                                                       
+                                                        <div class = "ielts-reading-option"><label class="ielts-reading-option-letter" for="ielts_reading_answer_8985_2_1">B</label><input data-limit="2" type="checkbox" name="ielts_reading_answer_8985_2[]" id="ielts_reading_answer_8985_2_1" value="B"><span>There is disagreement concerning the length of his reign.</span></div>                                         
+                                                                                                       
+                                                        <div class = "ielts-reading-option"><label class="ielts-reading-option-letter" for="ielts_reading_answer_8985_2_2">C</label><input data-limit="2" type="checkbox" name="ielts_reading_answer_8985_2[]" id="ielts_reading_answer_8985_2_2" value="C"><span>He failed to appreciate Imhotep’s part in the design of the Step Pyramid.</span></div>                                         
+                                                                                                       
+                                                        <div class = "ielts-reading-option"><label class="ielts-reading-option-letter" for="ielts_reading_answer_8985_2_3">D</label><input data-limit="2" type="checkbox" name="ielts_reading_answer_8985_2[]" id="ielts_reading_answer_8985_2_3" value="D"><span>A few of his possessions were still in his tomb when archaeologists found it.</span></div>                                         
+                                                                                                       
+                                                        <div class = "ielts-reading-option"><label class="ielts-reading-option-letter" for="ielts_reading_answer_8985_2_4">E</label><input data-limit="2" type="checkbox" name="ielts_reading_answer_8985_2[]" id="ielts_reading_answer_8985_2_4" value="E"><span>He criticised the design and construction of other pyramids in Egypt.</span></div>                                         
+                                                                                                                               
+                                                </div>
+                                                                                    </div>
+                                        </div>                                                                            <div id="ielts-reading-question-section-3" class="ielts-reading-question-section " data-part-number="3">                                        <h2 class="ielts-reading-question-section-heading"> Questions 27-30 </h2>
+                                        <div class="ielts-reading-question-section-content">
+                                            <p>Choose the correct letter, <strong>A</strong>, <strong>B</strong>, <strong>C</strong> or <strong>D</strong>.</p>
+<p><em>Write the correct letter in boxes on your answer sheet.</em></p>
+                                        </div>
+                                        <div class="ielts-reading-questions">
+                                                                                                                                            <div class="ielts-reading-question-item">                                    
+                                                    <span><strong id = "ielts-reading-question-number-27" class = "ielts-reading-question-number">27</strong> <span>The first paragraph tells us about</span></span>                                   
+                                                                                                    
+                                                                                                       
+                                                        <div class = "ielts-reading-option"><label class="ielts-reading-option-letter" for="ielts_reading_answer_8988_1_0">A</label><input type="radio" name="ielts_reading_answer_8988_1" id="ielts_reading_answer_8988_1_0" value="A"><span>the kinds of jobs that will be most affected by the growth of AI.</span></div>                                         
+                                                                                                       
+                                                        <div class = "ielts-reading-option"><label class="ielts-reading-option-letter" for="ielts_reading_answer_8988_1_1">B</label><input type="radio" name="ielts_reading_answer_8988_1" id="ielts_reading_answer_8988_1_1" value="B"><span>the extent to which AI will after the nature of the work that people do.</span></div>                                         
+                                                                                                       
+                                                        <div class = "ielts-reading-option"><label class="ielts-reading-option-letter" for="ielts_reading_answer_8988_1_2">C</label><input type="radio" name="ielts_reading_answer_8988_1" id="ielts_reading_answer_8988_1_2" value="C"><span>the proportion of the world’s labour force who will have jobs in AI in the future.</span></div>                                         
+                                                                                                       
+                                                        <div class = "ielts-reading-option"><label class="ielts-reading-option-letter" for="ielts_reading_answer_8988_1_3">D</label><input type="radio" name="ielts_reading_answer_8988_1" id="ielts_reading_answer_8988_1_3" value="D"><span>the difference between ways that embodied and disembodied AI with impact on workers.</span></div>                                         
+                                                                                                                               
+                                                </div>
+                                                                                                                                            <div class="ielts-reading-question-item">                                    
+                                                    <span><strong id = "ielts-reading-question-number-28" class = "ielts-reading-question-number">28</strong> <span>According to the second paragraph, what is Stella Pachidi&rsquo;s view of the &lsquo;knowledge economy&rsquo;?</span></span>                                   
+                                                                                                    
+                                                                                                       
+                                                        <div class = "ielts-reading-option"><label class="ielts-reading-option-letter" for="ielts_reading_answer_8988_2_0">A</label><input type="radio" name="ielts_reading_answer_8988_2" id="ielts_reading_answer_8988_2_0" value="A"><span>It is having an influence on the number of jobs available.</span></div>                                         
+                                                                                                       
+                                                        <div class = "ielts-reading-option"><label class="ielts-reading-option-letter" for="ielts_reading_answer_8988_2_1">B</label><input type="radio" name="ielts_reading_answer_8988_2" id="ielts_reading_answer_8988_2_1" value="B"><span>It is changing people’s attitudes towards their occupations.</span></div>                                         
+                                                                                                       
+                                                        <div class = "ielts-reading-option"><label class="ielts-reading-option-letter" for="ielts_reading_answer_8988_2_2">C</label><input type="radio" name="ielts_reading_answer_8988_2" id="ielts_reading_answer_8988_2_2" value="C"><span>It is the main reason why the production sector is declining.</span></div>                                         
+                                                                                                       
+                                                        <div class = "ielts-reading-option"><label class="ielts-reading-option-letter" for="ielts_reading_answer_8988_2_3">D</label><input type="radio" name="ielts_reading_answer_8988_2" id="ielts_reading_answer_8988_2_3" value="D"><span>It is a key factor driving current developments in the workplace.</span></div>                                         
+                                                                                                                               
+                                                </div>
+                                                                                                                                            <div class="ielts-reading-question-item">                                    
+                                                    <span><strong id = "ielts-reading-question-number-29" class = "ielts-reading-question-number">29</strong> <span>What did Pachidi observe at the telecommunications company?</span></span>                                   
+                                                                                                    
+                                                                                                       
+                                                        <div class = "ielts-reading-option"><label class="ielts-reading-option-letter" for="ielts_reading_answer_8988_3_0">A</label><input type="radio" name="ielts_reading_answer_8988_3" id="ielts_reading_answer_8988_3_0" value="A"><span>staff disagreeing with the recommendations of AI</span></div>                                         
+                                                                                                       
+                                                        <div class = "ielts-reading-option"><label class="ielts-reading-option-letter" for="ielts_reading_answer_8988_3_1">B</label><input type="radio" name="ielts_reading_answer_8988_3" id="ielts_reading_answer_8988_3_1" value="B"><span>staff feeling resentful about the intrusion of AI in their work</span></div>                                         
+                                                                                                       
+                                                        <div class = "ielts-reading-option"><label class="ielts-reading-option-letter" for="ielts_reading_answer_8988_3_2">C</label><input type="radio" name="ielts_reading_answer_8988_3" id="ielts_reading_answer_8988_3_2" value="C"><span>staff making sure that AI produces the results that they want</span></div>                                         
+                                                                                                       
+                                                        <div class = "ielts-reading-option"><label class="ielts-reading-option-letter" for="ielts_reading_answer_8988_3_3">D</label><input type="radio" name="ielts_reading_answer_8988_3" id="ielts_reading_answer_8988_3_3" value="D"><span>staff allowing AI to carry out tasks they ought to do themselves</span></div>                                         
+                                                                                                                               
+                                                </div>
+                                                                                                                                            <div class="ielts-reading-question-item">                                    
+                                                    <span><strong id = "ielts-reading-question-number-30" class = "ielts-reading-question-number">30</strong> <span>In his recently published research, Ewan McGaughey</span></span>                                   
+                                                                                                    
+                                                                                                       
+                                                        <div class = "ielts-reading-option"><label class="ielts-reading-option-letter" for="ielts_reading_answer_8988_4_0">A</label><input type="radio" name="ielts_reading_answer_8988_4" id="ielts_reading_answer_8988_4_0" value="A"><span>challenges the idea that redundancy is a negative thing.</span></div>                                         
+                                                                                                       
+                                                        <div class = "ielts-reading-option"><label class="ielts-reading-option-letter" for="ielts_reading_answer_8988_4_1">B</label><input type="radio" name="ielts_reading_answer_8988_4" id="ielts_reading_answer_8988_4_1" value="B"><span>shows the profound effect of mass unemployment on society.</span></div>                                         
+                                                                                                       
+                                                        <div class = "ielts-reading-option"><label class="ielts-reading-option-letter" for="ielts_reading_answer_8988_4_2">C</label><input type="radio" name="ielts_reading_answer_8988_4" id="ielts_reading_answer_8988_4_2" value="C"><span>highlights some differences between past and future job losses.</span></div>                                         
+                                                                                                       
+                                                        <div class = "ielts-reading-option"><label class="ielts-reading-option-letter" for="ielts_reading_answer_8988_4_3">D</label><input type="radio" name="ielts_reading_answer_8988_4" id="ielts_reading_answer_8988_4_3" value="D"><span>illustrates how changes in the job market can be successfully handled.</span></div>                                         
+                                                                                                                               
+                                                </div>
+                                                                                    </div>
+                                                                                                                                                            <h2 class="ielts-reading-question-section-heading"> Questions 31-34 </h2>
+                                        <div class="ielts-reading-question-section-content">
+                                            <div class="ielts-reading-section-content-wrapper">Complete the summary using the list of words, <strong>A-G</strong>, below.</p>
+<p><em>Write the correct letter, <strong>A-G</strong>, in boxes on your answer sheet.</em></p>
+<p><strong>A</strong>   pressure                <strong>B</strong>   satisfaction            <strong>C  </strong> intuition</p>
+<p><strong>D</strong>   promotion             <strong>E</strong>   reliance                  <strong>F  </strong> confidence</p>
+<p><strong>G</strong>   information</p>
+<h4><strong>The ‘algorithmication’ of jobs</strong></h4>
+<p>Stella Pachidi of Cambridge Judge Business School has been focusing on the ‘algorithmication’ of jobs which rely not on production but on <span class="ielts-reading-question-item"><strong id = "ielts-reading-question-number-31" class="ielts-reading-question-number">31</strong><select name="ielts_reading_answer_8990_1" id="ielts_reading_answer_8990_1"><option value=""></option><option value="A">A</option><option value="B">B</option><option value="C">C</option><option value="D">D</option><option value="E">E</option><option value="F">F</option><option value="G">G</option></select></span>.</p>
+<p>While monitoring a telecommunications company, Pachidi observed a growing <span class="ielts-reading-question-item"><strong id = "ielts-reading-question-number-32" class="ielts-reading-question-number">32</strong><select name="ielts_reading_answer_8990_2" id="ielts_reading_answer_8990_2"><option value=""></option><option value="A">A</option><option value="B">B</option><option value="C">C</option><option value="D">D</option><option value="E">E</option><option value="F">F</option><option value="G">G</option></select></span> on the recommendations made by AI, as workers begin to learn through the ‘algorithm’s eyes’. Meanwhile, staff are deterred from experimenting and using their own <span class="ielts-reading-question-item"><strong id = "ielts-reading-question-number-33" class="ielts-reading-question-number">33</strong><select name="ielts_reading_answer_8990_3" id="ielts_reading_answer_8990_3"><option value=""></option><option value="A">A</option><option value="B">B</option><option value="C">C</option><option value="D">D</option><option value="E">E</option><option value="F">F</option><option value="G">G</option></select></span>, and are therefore prevented from achieving innovation.</p>
+<p>To avoid the kind of situations which Pachidi observed, researchers are trying to make AI’s decision-making process easier to comprehend, and to increase users’ <span class="ielts-reading-question-item"><strong id = "ielts-reading-question-number-34" class="ielts-reading-question-number">34</strong><select name="ielts_reading_answer_8990_4" id="ielts_reading_answer_8990_4"><option value=""></option><option value="A">A</option><option value="B">B</option><option value="C">C</option><option value="D">D</option><option value="E">E</option><option value="F">F</option><option value="G">G</option></select></span> with regard to the technology.</div>
+                                        </div>
+                                        <div class="ielts-reading-questions">
+                                                                                                                                            <div class="ielts-reading-question-item">                                    
+                                                                                       
+                                                                                                    
+                                                                                                       
+                                                                                                 
+                                                                                                       
+                                                                                                 
+                                                                                                       
+                                                                                                 
+                                                                                                       
+                                                                                                 
+                                                                                                       
+                                                                                                 
+                                                                                                       
+                                                                                                 
+                                                                                                       
+                                                                                                 
+                                                                                                                               
+                                                </div>
+                                                                                                                                            <div class="ielts-reading-question-item">                                    
+                                                                                       
+                                                                                                    
+                                                                                                       
+                                                                                                 
+                                                                                                       
+                                                                                                 
+                                                                                                       
+                                                                                                 
+                                                                                                       
+                                                                                                 
+                                                                                                       
+                                                                                                 
+                                                                                                       
+                                                                                                 
+                                                                                                       
+                                                                                                 
+                                                                                                                               
+                                                </div>
+                                                                                                                                            <div class="ielts-reading-question-item">                                    
+                                                                                       
+                                                                                                    
+                                                                                                       
+                                                                                                 
+                                                                                                       
+                                                                                                 
+                                                                                                       
+                                                                                                 
+                                                                                                       
+                                                                                                 
+                                                                                                       
+                                                                                                 
+                                                                                                       
+                                                                                                 
+                                                                                                       
+                                                                                                 
+                                                                                                                               
+                                                </div>
+                                                                                                                                            <div class="ielts-reading-question-item">                                    
+                                                                                       
+                                                                                                    
+                                                                                                       
+                                                                                                 
+                                                                                                       
+                                                                                                 
+                                                                                                       
+                                                                                                 
+                                                                                                       
+                                                                                                 
+                                                                                                       
+                                                                                                 
+                                                                                                       
+                                                                                                 
+                                                                                                       
+                                                                                                 
+                                                                                                                               
+                                                </div>
+                                                                                    </div>
+                                                                                                                                                            <h2 class="ielts-reading-question-section-heading"> Questions 35-40 </h2>
+                                        <div class="ielts-reading-question-section-content">
+                                            <p>Look at the following statements and the list of people below.</p>
+<p>Match each statement with the correct person, <strong>A</strong>, <strong>B</strong> or <strong>C</strong>.</p>
+<p><em>Write the correct letter, <strong>A</strong>, <strong>B</strong> or <strong>C</strong>, in boxes on your answer sheet.</em></p>
+<p><strong><em>NB</em></strong><em>   You may use any letter more than once.</em></p>
+<p><strong>List of people</strong></p>
+<p><strong>A</strong>     Stella Pachidi</p>
+<p><strong>B </strong>    Hamish Low</p>
+<p><strong>C </strong>    Ewan McGaughey</p>
+                                        </div>
+                                        <div class="ielts-reading-questions">
+                                                                                                                                            <div class="ielts-reading-question-item">                                    
+                                                    <span><strong id = "ielts-reading-question-number-35" class = "ielts-reading-question-number">35</strong> <span>Greater levels of automation will not result in lower employment.</span></span>                                   
+                                                                                                    
+                                                                                                       
+                                                        <select name="ielts_reading_answer_8992_1" id="ielts_reading_answer_8992_1"><option value=""></option><option value="A">A</option>                                         
+                                                                                                       
+                                                        <option value="B">B</option>                                         
+                                                                                                       
+                                                        <option value="C">C</option></select>                                         
+                                                                                                                               
+                                                </div>
+                                                                                                                                            <div class="ielts-reading-question-item">                                    
+                                                    <span><strong id = "ielts-reading-question-number-36" class = "ielts-reading-question-number">36</strong> <span>There are several reasons why AI is appealing to businesses.</span></span>                                   
+                                                                                                    
+                                                                                                       
+                                                        <select name="ielts_reading_answer_8992_2" id="ielts_reading_answer_8992_2"><option value=""></option><option value="A">A</option>                                         
+                                                                                                       
+                                                        <option value="B">B</option>                                         
+                                                                                                       
+                                                        <option value="C">C</option></select>                                         
+                                                                                                                               
+                                                </div>
+                                                                                                                                            <div class="ielts-reading-question-item">                                    
+                                                    <span><strong id = "ielts-reading-question-number-37" class = "ielts-reading-question-number">37</strong> <span>AI&rsquo;s potential to transform people&rsquo;s lives has parallels with major cultural shifts which occurred in previous eras.</span></span>                                   
+                                                                                                    
+                                                                                                       
+                                                        <select name="ielts_reading_answer_8992_3" id="ielts_reading_answer_8992_3"><option value=""></option><option value="A">A</option>                                         
+                                                                                                       
+                                                        <option value="B">B</option>                                         
+                                                                                                       
+                                                        <option value="C">C</option></select>                                         
+                                                                                                                               
+                                                </div>
+                                                                                                                                            <div class="ielts-reading-question-item">                                    
+                                                    <span><strong id = "ielts-reading-question-number-38" class = "ielts-reading-question-number">38</strong> <span>It is important to be aware of the range of problems that AI causes.</span></span>                                   
+                                                                                                    
+                                                                                                       
+                                                        <select name="ielts_reading_answer_8992_4" id="ielts_reading_answer_8992_4"><option value=""></option><option value="A">A</option>                                         
+                                                                                                       
+                                                        <option value="B">B</option>                                         
+                                                                                                       
+                                                        <option value="C">C</option></select>                                         
+                                                                                                                               
+                                                </div>
+                                                                                                                                            <div class="ielts-reading-question-item">                                    
+                                                    <span><strong id = "ielts-reading-question-number-39" class = "ielts-reading-question-number">39</strong> <span>People are going to follow a less conventional career path than in the past.</span></span>                                   
+                                                                                                    
+                                                                                                       
+                                                        <select name="ielts_reading_answer_8992_5" id="ielts_reading_answer_8992_5"><option value=""></option><option value="A">A</option>                                         
+                                                                                                       
+                                                        <option value="B">B</option>                                         
+                                                                                                       
+                                                        <option value="C">C</option></select>                                         
+                                                                                                                               
+                                                </div>
+                                                                                                                                            <div class="ielts-reading-question-item">                                    
+                                                    <span><strong id = "ielts-reading-question-number-40" class = "ielts-reading-question-number">40</strong> <span>Authorities should take measures to ensure that there will be adequately paid work for everyone</span></span>                                   
+                                                                                                    
+                                                                                                       
+                                                        <select name="ielts_reading_answer_8992_6" id="ielts_reading_answer_8992_6"><option value=""></option><option value="A">A</option>                                         
+                                                                                                       
+                                                        <option value="B">B</option>                                         
+                                                                                                       
+                                                        <option value="C">C</option></select>                                         
+                                                                                                                               
+                                                </div>
+                                                                                    </div>
+                                        </div>                                                                    </div>
+                            </form></div>
+
+  <script>
+  const STORAGE_KEY = 'cambridge_16_test1_reading_saubol';
+  const answers = JSON.parse(localStorage.getItem(STORAGE_KEY) || '{}');
+  function save() { localStorage.setItem(STORAGE_KEY, JSON.stringify(answers)); }
+
+  const passagePanel = document.getElementById('passage-panel');
+  const questionPanel = document.getElementById('question-panel');
+
+  // Move transcripts
+  const srcP = document.getElementById('src-passages');
+  const transcripts = [...srcP.querySelectorAll('.ielts-reading-transcript')];
+  transcripts.forEach(t => {
+    const note = document.createElement('div');
+    note.className = 'saubol-passage-source';
+    note.textContent = 'Cambridge IELTS 16, Test 1 — Saubol Reading Practice';
+    t.prepend(note);
+    passagePanel.appendChild(t);
+  });
+  srcP.remove();
+
+  // Move question sections
+  const srcQ = document.getElementById('src-questions');
+  const qSections = [...srcQ.querySelectorAll('.ielts-reading-question-section')];
+  qSections.forEach(q => questionPanel.appendChild(q));
+  srcQ.remove();
+
+  // Submit row
+  questionPanel.insertAdjacentHTML('beforeend', `
+    <div class="saubol-submit-row">
+      <button class="saubol-btn-submit" onclick="submitTest()">Submit Test</button>
+      <button class="saubol-btn-clear" onclick="clearAll()">Clear All</button>
+    </div>
+    <div class="saubol-score-box" id="saubol-score-box">
+      <h4>&#10003; Answers Saved</h4>
+      <p>Your answers have been saved. Check the Cambridge IELTS 16 answer key to review your score.</p>
+    </div>
+  `);
+
+  // Make option divs clickable (handle radio selection visually)
+  document.querySelectorAll('.ielts-reading-option').forEach(opt => {
+    opt.addEventListener('click', () => {
+      const radio = opt.querySelector('input[type="radio"]');
+      if (!radio) return;
+      // Deselect siblings
+      const siblings = opt.parentElement ? opt.parentElement.querySelectorAll('.ielts-reading-option') : [];
+      siblings.forEach(s => s.classList.remove('saubol-selected'));
+      // Select this one
+      radio.checked = true;
+      opt.classList.add('saubol-selected');
+      answers[radio.name] = radio.value;
+      save();
+    });
+  });
+
+  // Restore radio answers
+  document.querySelectorAll('input[type="radio"]').forEach(inp => {
+    if (answers[inp.name] === inp.value) {
+      inp.checked = true;
+      inp.closest('.ielts-reading-option')?.classList.add('saubol-selected');
+    }
+  });
+
+  // Restore select answers
+  document.querySelectorAll('select').forEach(sel => {
+    if (answers[sel.name]) sel.value = answers[sel.name];
+    sel.addEventListener('change', () => { answers[sel.name] = sel.value; save(); });
+  });
+
+  // Restore text inputs
+  document.querySelectorAll('input[type="text"]').forEach(inp => {
+    if (answers[inp.name]) inp.value = answers[inp.name];
+    inp.addEventListener('input', () => { answers[inp.name] = inp.value; save(); });
+  });
+
+  // Passage tabs
+  function showPassage(n) {
+    transcripts.forEach((t, i) => t.classList.toggle('saubol-active', i === n - 1));
+    document.querySelectorAll('.saubol-tab').forEach(tab => tab.classList.toggle('active', parseInt(tab.dataset.p) === n));
+    passagePanel.scrollTop = 0;
+  }
+  document.querySelectorAll('.saubol-tab').forEach(tab => {
+    tab.addEventListener('click', () => showPassage(parseInt(tab.dataset.p)));
+  });
+  showPassage(1);
+
+  // Timer
+  let timeLeft = 60 * 60;
+  const timerEl = document.getElementById('saubol-timer');
+  const tim = setInterval(() => {
+    timeLeft--;
+    const m = Math.floor(timeLeft / 60), s = timeLeft % 60;
+    timerEl.textContent = String(m).padStart(2,'0') + ':' + String(s).padStart(2,'0');
+    if (timeLeft <= 600) timerEl.classList.add('warning');
+    if (timeLeft <= 0) { clearInterval(tim); submitTest(); }
+  }, 1000);
+
+  function submitTest() {
+    save();
+    document.getElementById('saubol-score-box').style.display = 'block';
+    document.getElementById('saubol-score-box').scrollIntoView({ behavior: 'smooth' });
+  }
+  function clearAll() {
+    if (!confirm('Clear all answers for this test?')) return;
+    Object.keys(answers).forEach(k => delete answers[k]);
+    localStorage.removeItem(STORAGE_KEY);
+    document.querySelectorAll('.ielts-reading-option').forEach(o => o.classList.remove('saubol-selected'));
+    document.querySelectorAll('input[type="radio"]').forEach(i => i.checked = false);
+    document.querySelectorAll('select').forEach(s => s.selectedIndex = 0);
+    document.querySelectorAll('input[type="text"]').forEach(i => i.value = '');
+  }
+  </script>
+  </body>
+  </html>
