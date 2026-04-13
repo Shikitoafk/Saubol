@@ -617,7 +617,6 @@ export default function Programs() {
             </div>
           </div>
         </div>
-      </div>
     </Layout>
   );
 }
