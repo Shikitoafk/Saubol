@@ -350,7 +350,7 @@ export default function SATPractice() {
                      <button
                        key={i}
                        onClick={() => { if (!answerState) { setCurrentIdx(i); setFrInput(""); } }}
-                       className={`w-8 h-8 rounded-lg border text-[10px] font-black flex items-center justify-center transition-all ${i === currentQ ? 'bg-white text-black border-white' : (sessionAnswers[questions[i].id] ? (sessionAnswers[questions[i].id].correct ? 'bg-emerald-500/20 border-emerald-500/40 text-emerald-500' : 'bg-rose-500/20 border-rose-500/40 text-rose-500') : (markedQuestions.has(i) ? 'bg-yellow-400/20 border-yellow-400/40 text-yellow-400' : 'border-white/10 text-[#444] hover:border-white/30'))}`}
+                       className={`w-8 h-8 rounded-lg border text-[10px] font-black flex items-center justify-center transition-all ${i === currentIdx ? 'bg-white text-black border-white' : (sessionAnswers[questions[i].id] ? (sessionAnswers[questions[i].id].correct ? 'bg-emerald-500/20 border-emerald-500/40 text-emerald-500' : 'bg-rose-500/20 border-rose-500/40 text-rose-500') : (markedQuestions.has(i) ? 'bg-yellow-400/20 border-yellow-400/40 text-yellow-400' : 'border-white/10 text-[#444] hover:border-white/30'))}`}
                      >
                        {i + 1}
                      </button>
