@@ -31,13 +31,13 @@ const SATTestViewer = () => {
       <div className="absolute top-6 left-6 z-[60] flex items-center gap-4">
         <Button 
           onClick={() => navigate("/sat")}
-          className="glass-3d px-6 py-3 rounded-xl flex items-center gap-2 text-[10px] font-black uppercase tracking-widest text-white hover:bg-white/10 transition-all border border-white/5"
+          className="bg-white text-black hover:bg-gray-100 px-6 py-3 rounded-xl flex items-center gap-2 text-[10px] font-black uppercase tracking-widest transition-all shadow-2xl"
         >
           <ChevronLeft className="w-4 h-4" /> Exit Session
         </Button>
-        <div className="px-4 py-3 rounded-xl bg-white/5 border border-white/5 backdrop-blur-md hidden md:flex items-center gap-3">
+        <div className="px-4 py-3 rounded-xl bg-black/80 border border-white/10 backdrop-blur-md hidden md:flex items-center gap-3 shadow-2xl">
           <Target className="w-4 h-4 text-blue-400" />
-          <span className="text-[9px] font-black uppercase tracking-widest text-[#444]">High-Performance Mode</span>
+          <span className="text-[9px] font-black uppercase tracking-widest text-white/60">High-Performance Mode</span>
         </div>
       </div>
 
