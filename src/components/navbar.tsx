@@ -45,11 +45,15 @@ export function Navbar() {
                 key={link.href}
                 to={link.href}
                 className={cn(
-                  "text-[10px] font-black uppercase tracking-[0.2em] transition-all hover:text-white",
-                  location.pathname === link.href ? "text-white" : "text-[#444]"
+                  "text-[10px] font-black uppercase tracking-[0.2em] transition-all hover:text-white relative group/link",
+                  location.pathname === link.href ? "text-white" : "text-[#888]"
                 )}
               >
                 {link.name}
+                <span className={cn(
+                  "absolute -bottom-1 left-0 h-px bg-white transition-all duration-300",
+                  location.pathname === link.href ? "w-full" : "w-0 group-hover/link:w-full"
+                )} />
               </Link>
             ))}
           </div>
@@ -107,7 +111,7 @@ export function Navbar() {
                       to={link.href}
                       className={cn(
                         "text-2xl font-black uppercase tracking-tighter transition-all",
-                        location.pathname === link.href ? "text-shimmer" : "text-[#333]"
+                        location.pathname === link.href ? "text-shimmer" : "text-[#888]"
                       )}
                     >
                       {link.name}.
