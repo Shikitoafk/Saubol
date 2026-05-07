@@ -31,9 +31,11 @@ export function Navbar() {
       <div className="max-w-[1400px] mx-auto px-10 h-full flex items-center justify-between">
         <div className="flex items-center gap-12">
           <Link to="/" className="flex items-center gap-4 group">
-            <div className="w-10 h-10 rounded-full bg-gradient-to-r from-white to-blue-500 shadow-[0_0_20px_rgba(59,130,246,0.3)] group-hover:scale-110 transition-transform duration-500 relative overflow-hidden">
-              <div className="absolute inset-0 bg-white/20 blur-sm" />
-            </div>
+            <img 
+              src="/logo.png" 
+              alt="Saubol Logo" 
+              className="w-10 h-10 object-contain group-hover:scale-110 transition-transform duration-500 drop-shadow-[0_0_10px_rgba(255,255,255,0.1)]"
+            />
             <span className="font-black text-2xl tracking-tighter text-white uppercase">
               SAUBOL
             </span>
@@ -46,7 +48,7 @@ export function Navbar() {
                 to={link.href}
                 className={cn(
                   "text-[10px] font-black uppercase tracking-[0.2em] transition-all hover:text-white relative group/link",
-                  location.pathname === link.href ? "text-white" : "text-[#888]"
+                  location.pathname === link.href ? "text-white" : "text-white/40"
                 )}
               >
                 {link.name}
@@ -69,7 +71,7 @@ export function Navbar() {
                       <div className="w-6 h-6 rounded-lg bg-indigo-500/20 text-indigo-400 flex items-center justify-center text-[10px] font-black border border-indigo-500/20">
                         {getUserInitials()}
                       </div>
-                      <span className="text-[10px] font-black uppercase tracking-widest text-[#444] group-hover:text-white transition-colors">{user.user_metadata?.full_name?.split(' ')[0] || 'Member'}</span>
+                      <span className="text-[10px] font-black uppercase tracking-widest text-white/60 group-hover:text-white transition-colors">{user.user_metadata?.full_name?.split(' ')[0] || 'Member'}</span>
                     </button>
                   </DropdownMenuTrigger>
                   <DropdownMenuContent className="w-56 bg-black border-white/10 text-white p-2" align="end">
@@ -90,7 +92,7 @@ export function Navbar() {
             </div>
           )}
           
-          <Button asChild className="hidden lg:flex glass-3d px-6 h-10 text-[9px] font-black uppercase tracking-widest bg-white text-black hover:bg-gray-100 border-none shadow-[0_10px_20px_rgba(255,255,255,0.05)]">
+          <Button asChild className="hidden lg:flex px-6 h-10 text-[10px] font-black uppercase tracking-widest bg-white text-black hover:bg-gray-200 border-none rounded-xl shadow-[0_10px_20px_rgba(255,255,255,0.1)] transition-all">
             <a href="https://t.me/shikitoafk" target="_blank" rel="noopener noreferrer">
               Contact <Send className="w-3 h-3 ml-2" />
             </a>

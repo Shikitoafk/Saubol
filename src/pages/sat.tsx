@@ -54,7 +54,7 @@ export default function SatPrep() {
           </div>
 
           {/* Footer Info */}
-          <div className="mt-20 pt-10 border-t border-white/5 flex flex-col md:flex-row justify-between items-center text-[10px] font-black text-[#222] uppercase tracking-[0.5em]">
+          <div className="mt-20 pt-10 border-t border-white/5 flex flex-col md:flex-row justify-between items-center text-[10px] font-black text-white/20 uppercase tracking-[0.5em]">
              <span>Designed for 1550+ Score</span>
              <span className="mt-4 md:mt-0 italic">Saubol Analytics System</span>
           </div>

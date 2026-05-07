@@ -28,13 +28,13 @@ export default function Admissions() {
           <div className="mb-24">
             <div className="flex items-center gap-3 mb-6 opacity-60">
               <Globe className="w-5 h-5 text-emerald-400" />
-              <span className="text-[10px] font-black tracking-[0.4em] uppercase text-emerald-400">Global Admissions Strategy</span>
+              <span className="text-[10px] font-black tracking-[0.4em] uppercase text-emerald-400">Admissions Strategy</span>
             </div>
             <h1 className="text-6xl md:text-9xl font-black tracking-tighter text-shimmer leading-[0.85] mb-10 uppercase">
               YOUR GLOBAL <br /> FUTURE.
             </h1>
             <p className="text-xl text-[#666] font-medium max-w-2xl leading-relaxed">
-              Мы помогаем студентам не просто поступать, а становиться лидерами. Полное сопровождение в Ivy League, Oxbridge и топовые вузы мира с использованием AI-аналитики.
+              Помогаем поступить в лучшие вузы мира. Стратегия, подготовка и результат.
             </p>
           </div>
 
@@ -49,16 +49,16 @@ export default function Admissions() {
                   </div>
                   <h2 className="text-5xl font-black tracking-tight mb-6 uppercase">AI Matchmaker</h2>
                   <p className="text-[#888] text-lg leading-relaxed mb-10">
-                    Наш алгоритм анализирует твой профиль, оценки и внеклассную деятельность, чтобы подобрать идеальный список университетов с вероятностью поступления 95%.
+                    Наш алгоритм анализирует твой профиль и подбирает лучшие варианты для поступления.
                   </p>
                   <Button className="bg-white text-black hover:bg-gray-100 rounded-2xl px-12 h-16 font-black uppercase text-xs shadow-[0_20px_40px_rgba(255,255,255,0.1)]">Analyze My Profile</Button>
                </div>
                <div className="grid grid-cols-2 gap-6 w-full lg:w-auto">
                   {[
-                    { label: "Top 1% Global", icon: Building2 },
+                    { label: "Global Reach", icon: Building2 },
                     { label: "Visa Support", icon: MapPin },
                     { label: "Essays Help", icon: GraduationCap },
-                    { label: "Scholarships", icon: Zap }
+                    { label: "Consulting", icon: Zap }
                   ].map((s, i) => (
                     <div key={i} className="p-8 bg-white/5 rounded-2xl border border-white/5 flex flex-col items-center justify-center text-center">
                        <s.icon className="w-8 h-8 mb-4 text-[#333]" />
@@ -72,9 +72,9 @@ export default function Admissions() {
           {/* Destination Modules */}
           <div className="grid gap-8 lg:grid-cols-3">
              {[
-               { region: "USA & CANADA", desc: "Ivy League, Stanford, MIT, and top research institutions.", color: "text-blue-400" },
-               { region: "UK & EUROPE", desc: "Oxbridge, LSE, and leading specialized academies.", color: "text-indigo-400" },
-               { region: "ASIA & GLOBAL", desc: "NUS, HKU, and emerging innovation hubs worldwide.", color: "text-emerald-400" }
+               { region: "USA & CANADA", desc: "Топовые вузы США и Канады.", color: "text-blue-400" },
+               { region: "UK & EUROPE", desc: "Лучшее образование в Европе и Британии.", color: "text-indigo-400" },
+               { region: "ASIA & GLOBAL", desc: "Инновационные вузы Азии.", color: "text-emerald-400" }
              ].map((dest, i) => (
                <div key={i} className="glass-3d p-12 group hover:scale-105 transition-all cursor-pointer">
                   <div className="flex justify-between items-start mb-12">
@@ -88,17 +88,6 @@ export default function Admissions() {
                   </div>
                </div>
              ))}
-          </div>
-
-          {/* Footer Feature */}
-          <div className="mt-32 border-t border-white/5 pt-24 text-center">
-             <h4 className="text-sm font-black text-[#222] uppercase tracking-[0.5em] mb-12">Partnerships with 200+ Institutions</h4>
-             <div className="flex flex-wrap justify-center gap-20 opacity-10">
-                <span className="text-3xl font-black italic tracking-tighter">HARVARD</span>
-                <span className="text-3xl font-black italic tracking-tighter">STANFORD</span>
-                <span className="text-3xl font-black italic tracking-tighter">OXFORD</span>
-                <span className="text-3xl font-black italic tracking-tighter">MIT</span>
-             </div>
           </div>
         </div>
       </div>

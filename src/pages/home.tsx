@@ -31,15 +31,15 @@ export default function Home() {
             <div className="max-w-[1400px] mx-auto">
               <div className="flex items-center gap-3 mb-10 opacity-60">
                 <Sparkles className="w-5 h-5 text-blue-400" />
-                <span className="text-xs font-black tracking-[0.4em] uppercase text-blue-400">Elite Education 2026</span>
+                <span className="text-xs font-black tracking-[0.4em] uppercase text-blue-400">Saubol 2026</span>
               </div>
               <h1 className="text-7xl md:text-[120px] font-black tracking-tighter mb-12 leading-[0.85] text-shimmer">
-                BEYOND THE <br />
-                LIMITS.
+                TOP UNIK. <br />
+                KAYF 99%.
               </h1>
               <div className="grid md:grid-cols-2 gap-20 items-end">
                 <p className="text-2xl text-[#888] leading-relaxed font-medium max-w-xl">
-                  Персонализированная подготовка нового поколения. Мы не просто учим — мы проектируем твое будущее в лучших университетах мира.
+                  Поступай в лучшие вузы мира. <br /> Без лишней суеты и воды.
                 </p>
                 <div className="flex items-center gap-6">
                   <Button 
@@ -49,11 +49,6 @@ export default function Home() {
                   >
                     START NOW <ArrowRight className="ml-3 w-6 h-6" />
                   </Button>
-                  <div className="hidden sm:block group cursor-pointer">
-                    <div className="w-20 h-20 rounded-full border border-white/10 flex items-center justify-center hover:bg-white/5 transition-colors">
-                      <Zap className="w-8 h-8 text-white group-hover:scale-125 transition-transform" />
-                    </div>
-                  </div>
                 </div>
               </div>
             </div>
@@ -69,22 +64,12 @@ export default function Home() {
                      <div className="w-16 h-16 bg-white/10 rounded-2xl flex items-center justify-center border border-white/20 group-hover:bg-white/20 transition-colors">
                         <Headphones className="w-8 h-8 text-white" />
                      </div>
-                     <span className="text-xs font-black tracking-[0.3em] uppercase text-indigo-400">Advanced Module</span>
+                     <span className="text-xs font-black tracking-[0.3em] uppercase text-indigo-400">Prep Module</span>
                   </div>
-                  <h3 className="text-6xl font-black mb-8 leading-tight">IELTS <br /> INTENSIVE</h3>
+                  <h3 className="text-6xl font-black mb-8 leading-tight">IELTS <br /> HUB</h3>
                   <p className="text-[#888] text-2xl leading-relaxed max-w-lg">
-                    Глубокая аналитика Writing и адаптивные тренировки Listening/Reading. Твой путь к 8.5+ начинается здесь.
+                    Просто и понятно готовим к IELTS.
                   </p>
-                </div>
-                <div className="flex items-center gap-12 mt-12 pt-12 border-t border-white/5">
-                   <div className="flex flex-col gap-1">
-                      <span className="text-3xl font-black text-white">99%</span>
-                      <span className="text-xs font-bold text-[#444] uppercase tracking-widest">Success Rate</span>
-                   </div>
-                   <div className="flex flex-col gap-1">
-                      <span className="text-3xl font-black text-white">AI</span>
-                      <span className="text-xs font-bold text-[#444] uppercase tracking-widest">Engine Powered</span>
-                   </div>
                 </div>
               </div>
 
@@ -96,16 +81,10 @@ export default function Home() {
                         <Target className="w-8 h-8 text-white" />
                      </div>
                   </div>
-                  <h3 className="text-5xl font-black mb-8 leading-tight">SAT <br /> MASTERY</h3>
+                  <h3 className="text-5xl font-black mb-8 leading-tight">SAT <br /> BANK</h3>
                   <p className="text-[#888] text-xl leading-relaxed">
-                    Адаптивные тесты нового поколения. Мы анализируем каждый твой клик, чтобы ускорить прогресс.
+                    Все вопросы и тесты. Без дизинфы.
                   </p>
-                </div>
-                <div className="bg-white/5 rounded-2xl p-8 border border-white/5 group-hover:border-white/20 transition-all">
-                   <div className="flex items-center justify-between">
-                      <span className="text-sm font-bold text-[#666] uppercase tracking-widest">Next Session</span>
-                      <ChevronRight className="w-6 h-6 text-white group-hover:translate-x-2 transition-transform" />
-                   </div>
                 </div>
               </div>
             </div>
@@ -115,13 +94,16 @@ export default function Home() {
           <section className="section-spacing px-10 pb-32">
             <div className="max-w-[1400px] mx-auto glass-3d p-24 text-center relative overflow-hidden group">
               <div className="absolute inset-0 bg-gradient-to-r from-blue-600/10 to-purple-600/10 opacity-0 group-hover:opacity-100 transition-opacity duration-1000" />
-              <h2 className="text-6xl md:text-9xl font-black mb-16 tracking-tighter text-shimmer">DREAM BIG.</h2>
+              <h2 className="text-6xl md:text-9xl font-black mb-16 tracking-tighter text-shimmer">JUST DO IT.</h2>
               <Button 
                 size="lg" 
                 className="bg-white text-black hover:bg-gray-100 rounded-2xl px-16 h-24 text-2xl font-black shadow-[0_30px_60px_rgba(255,255,255,0.1)] transition-all hover:scale-110 active:scale-95"
                 onClick={() => navigate('/login')}
               >
                 GET FULL ACCESS
+              </Button>
+            </div>
+          </section>             GET FULL ACCESS
               </Button>
             </div>
           </section>

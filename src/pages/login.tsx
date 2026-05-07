@@ -36,9 +36,11 @@ export default function Login() {
 
         <div className="max-w-xl w-full px-10 relative z-10">
           <div className="glass-3d p-16 text-center group">
-            <div className="w-20 h-20 rounded-full bg-gradient-to-r from-white to-blue-500 shadow-[0_0_40px_rgba(59,130,246,0.3)] mx-auto mb-12 group-hover:scale-110 transition-transform duration-500 relative overflow-hidden">
-              <div className="absolute inset-0 bg-white/20 blur-md" />
-            </div>
+            <img 
+              src="/logo.png" 
+              alt="Saubol Logo" 
+              className="w-24 h-24 object-contain mx-auto mb-12 drop-shadow-[0_0_20px_rgba(255,255,255,0.15)] group-hover:scale-110 transition-transform duration-500"
+            />
             
             <div className="flex items-center justify-center gap-2 mb-4 opacity-40">
               <ShieldCheck className="w-4 h-4 text-emerald-400" />

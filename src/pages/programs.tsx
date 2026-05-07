@@ -114,12 +114,12 @@ export default function Programs() {
                     <Brain className="w-5 h-5 text-indigo-400" />
                     <span className="text-[10px] font-black tracking-widest uppercase text-indigo-400">AI Matchmaker</span>
                   </div>
-                  <p className="text-xs font-bold text-[#444] uppercase tracking-widest leading-relaxed mb-8">Опиши свои интересы, и AI подберет идеальный лагерь.</p>
+                  <p className="text-xs font-bold text-white/60 uppercase tracking-widest leading-relaxed mb-8">Опиши свои интересы, и AI подберет идеальный лагерь.</p>
                   <textarea 
                     value={aiQuery}
                     onChange={(e) => setAiQuery(e.target.value)}
                     placeholder="e.g. I want a free STEM camp in USA..."
-                    className="w-full bg-white/5 border border-white/10 rounded-xl p-4 text-xs font-medium focus:outline-none focus:border-indigo-500/50 transition-all h-32 mb-6 placeholder:text-[#222]"
+                    className="w-full bg-white/5 border border-white/10 rounded-xl p-4 text-xs font-medium focus:outline-none focus:border-indigo-500/50 transition-all h-32 mb-6 placeholder:text-white/20"
                   />
                   <Button onClick={handleAiSearch} disabled={isAiSearching} className="w-full bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl h-12 font-black uppercase text-[10px] tracking-widest">
                     {isAiSearching ? <Loader2 className="w-4 h-4 animate-spin" /> : "FIND MY PATH"}
@@ -129,18 +129,18 @@ export default function Programs() {
                {/* Standard Filters */}
                <div className="space-y-10">
                   <div>
-                    <h3 className="text-[10px] font-black text-[#222] uppercase tracking-[0.3em] mb-6">Subject Area</h3>
+                    <h3 className="text-[10px] font-black text-white/40 uppercase tracking-[0.3em] mb-6">Subject Area</h3>
                     <div className="flex flex-wrap gap-2">
                        {SUBJECT_FILTERS.map(f => (
-                         <button key={f} onClick={() => setSelectedSubject(f)} className={`px-4 py-2 rounded-lg text-[10px] font-black uppercase tracking-widest border transition-all ${selectedSubject === f ? 'bg-white text-black border-white' : 'bg-transparent border-white/5 text-[#444] hover:border-white/20'}`}>{f}</button>
+                         <button key={f} onClick={() => setSelectedSubject(f)} className={`px-4 py-2 rounded-lg text-[10px] font-black uppercase tracking-widest border transition-all ${selectedSubject === f ? 'bg-white text-black border-white' : 'bg-transparent border-white/5 text-white/60 hover:border-white/20'}`}>{f}</button>
                        ))}
                     </div>
                   </div>
                   <div>
-                    <h3 className="text-[10px] font-black text-[#222] uppercase tracking-[0.3em] mb-6">Format</h3>
+                    <h3 className="text-[10px] font-black text-white/40 uppercase tracking-[0.3em] mb-6">Format</h3>
                     <div className="flex flex-wrap gap-2">
                        {FORMAT_FILTERS.map(f => (
-                         <button key={f} onClick={() => setSelectedFormat(f)} className={`px-4 py-2 rounded-lg text-[10px] font-black uppercase tracking-widest border transition-all ${selectedFormat === f ? 'bg-white text-black border-white' : 'bg-transparent border-white/5 text-[#444] hover:border-white/20'}`}>{f}</button>
+                         <button key={f} onClick={() => setSelectedFormat(f)} className={`px-4 py-2 rounded-lg text-[10px] font-black uppercase tracking-widest border transition-all ${selectedFormat === f ? 'bg-white text-black border-white' : 'bg-transparent border-white/5 text-white/60 hover:border-white/20'}`}>{f}</button>
                        ))}
                     </div>
                   </div>
@@ -174,7 +174,7 @@ export default function Programs() {
                          <p className="text-xs font-medium text-[#666] leading-relaxed mb-10 line-clamp-2">{p.details}</p>
                          
                          <div className="mt-auto pt-8 border-t border-white/5 flex items-center justify-between">
-                            <div className="flex items-center gap-2 text-[9px] font-black text-[#222] uppercase tracking-widest">
+                            <div className="flex items-center gap-2 text-[9px] font-black text-white/40 uppercase tracking-widest">
                                <MapPin className="w-3 h-3" /> {p.location}
                             </div>
                             <Sheet>
@@ -193,7 +193,7 @@ export default function Programs() {
                                   <div className="space-y-12 py-10">
                                      {p.overview && (
                                        <div>
-                                          <h4 className="text-[10px] font-black uppercase tracking-[0.3em] text-[#333] mb-4">Program Overview</h4>
+                                          <h4 className="text-[10px] font-black uppercase tracking-[0.3em] text-white/20 mb-4">Program Overview</h4>
                                           <p className="text-sm font-medium leading-relaxed text-[#888]">{p.overview}</p>
                                        </div>
                                      )}

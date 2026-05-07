@@ -93,6 +93,8 @@ export default function SATPractice() {
   const [sessionAnswers, setSessionAnswers] = useState<Record<string, any>>({});
   const [elapsed, setElapsed] = useState(0);
   const [frInput, setFrInput] = useState("");
+  const [markedQuestions, setMarkedQuestions] = useState<Set<number>>(new Set());
+  const [isDesmosOpen, setIsDesmosOpen] = useState(false);
   const timerRef = useRef<any>(null);
 
   useEffect(() => {
@@ -140,12 +142,21 @@ export default function SATPractice() {
     setPhase("quiz");
     setCurrentIdx(0);
     setElapsed(0);
+    setMarkedQuestions(new Set());
     timerRef.current = setInterval(() => setElapsed(e => e + 1), 1000);
+  };
+
+  const toggleMark = () => {
+    const next = new Set(markedQuestions);
+    if (next.has(currentIdx)) next.delete(currentIdx);
+    else next.add(currentIdx);
+    setMarkedQuestions(next);
   };
 
   const exitQuiz = () => {
     clearInterval(timerRef.current);
     setPhase("bank");
+    setIsDesmosOpen(false);
   };
 
   const handleMCAnswer = async (label: string) => {
@@ -207,17 +218,21 @@ export default function SATPractice() {
       <Layout>
         <div className="min-h-screen bg-black text-white p-10">
            <div className="max-w-[1400px] mx-auto">
-              <h1 className="text-6xl font-black text-shimmer mb-12">SAT BANK.</h1>
+              <div className="flex items-center gap-3 mb-6 opacity-60">
+                <Target className="w-5 h-5 text-blue-400" />
+                <span className="text-[10px] font-black tracking-[0.4em] uppercase text-blue-400">Adaptive Practice Bank</span>
+              </div>
+              <h1 className="text-7xl font-black text-shimmer mb-12">SAT HUB.</h1>
               <div className="grid md:grid-cols-2 gap-8">
-                 <div className="glass-3d p-12 group cursor-pointer" onClick={() => startQuiz(questions.filter(q => q.section === "Math"))}>
-                    <Calculator className="w-10 h-10 mb-8 text-blue-400" />
-                    <h3 className="text-3xl font-black mb-4">MATH</h3>
-                    <p className="text-[#666]">Adaptive practice questions for SAT Math.</p>
+                 <div className="glass-3d p-12 group cursor-pointer hover:border-blue-500/30 transition-all" onClick={() => startQuiz(questions.filter(q => q.section === "Math"))}>
+                    <Calculator className="w-12 h-12 mb-8 text-blue-400" />
+                    <h3 className="text-4xl font-black mb-4">MATH</h3>
+                    <p className="text-[#666] text-lg">Digital SAT Math bank with adaptive levels.</p>
                  </div>
-                 <div className="glass-3d p-12 group cursor-pointer" onClick={() => startQuiz(questions.filter(q => q.section === "Reading & Writing"))}>
-                    <BookOpen className="w-10 h-10 mb-8 text-purple-400" />
-                    <h3 className="text-3xl font-black mb-4">READING & WRITING</h3>
-                    <p className="text-[#666]">Master the verbal section with comprehensive texts.</p>
+                 <div className="glass-3d p-12 group cursor-pointer hover:border-purple-500/30 transition-all" onClick={() => startQuiz(questions.filter(q => q.section === "Reading & Writing"))}>
+                    <BookOpen className="w-12 h-12 mb-8 text-purple-400" />
+                    <h3 className="text-4xl font-black mb-4">READING & WRITING</h3>
+                    <p className="text-[#666] text-lg">Comprehensive English bank for RW section.</p>
                  </div>
               </div>
            </div>
@@ -231,51 +246,120 @@ export default function SATPractice() {
     const q = questions[currentIdx];
     return (
       <Layout>
-        <div className="min-h-screen bg-black text-white relative overflow-hidden font-sans">
+        <div className="min-h-screen bg-black text-white relative overflow-hidden font-sans flex flex-col">
           <div className="bg-vignette" />
-          <div className="max-w-[1400px] mx-auto px-10 py-10 relative z-10 flex flex-col h-screen">
-             <div className="flex items-center justify-between mb-10 shrink-0">
-                <Button variant="ghost" onClick={exitQuiz} className="text-[10px] font-black uppercase tracking-widest text-[#444] hover:text-white"><ChevronLeft className="w-4 h-4 mr-2" /> Exit</Button>
-                <div className="text-center">
-                   <p className="text-[10px] font-black text-indigo-400 uppercase tracking-widest mb-1">{q.section}</p>
-                   <p className="text-xl font-black">{currentIdx + 1} / {questions.length}</p>
+          
+          {/* Desmos Sidebar Overlay */}
+          {isDesmosOpen && (
+            <div className="fixed inset-y-0 right-0 w-full lg:w-[600px] z-[100] bg-black border-l border-white/10 shadow-2xl animate-in slide-in-from-right duration-300">
+               <div className="flex items-center justify-between p-4 border-b border-white/10 bg-white/5">
+                  <div className="flex items-center gap-2">
+                     <Calculator className="w-4 h-4 text-blue-400" />
+                     <span className="text-[10px] font-black uppercase tracking-widest">Desmos Graphing Calculator</span>
+                  </div>
+                  <Button size="icon" variant="ghost" onClick={() => setIsDesmosOpen(false)}><X className="w-4 h-4" /></Button>
+               </div>
+               <iframe 
+                 src="https://www.desmos.com/testing/cb-digital-sat/graphing" 
+                 className="w-full h-[calc(100%-60px)] border-0"
+                 title="Desmos"
+               />
+            </div>
+          )}
+
+          <div className="max-w-[1600px] mx-auto w-full px-10 py-6 relative z-10 flex flex-col flex-1">
+             <div className="flex items-center justify-between mb-8 shrink-0">
+                <div className="flex items-center gap-6">
+                   <Button variant="ghost" onClick={exitQuiz} className="text-[10px] font-black uppercase tracking-widest text-[#444] hover:text-white"><ChevronLeft className="w-4 h-4 mr-2" /> Exit</Button>
+                   <Button variant="ghost" onClick={toggleMark} className={`text-[10px] font-black uppercase tracking-widest flex items-center gap-2 ${markedQuestions.has(currentIdx) ? 'text-yellow-400' : 'text-[#444] hover:text-white'}`}>
+                      <Target className="w-4 h-4" /> {markedQuestions.has(currentIdx) ? 'Marked' : 'Mark for Review'}
+                   </Button>
                 </div>
-                <div className="text-right">
-                   <p className="text-[10px] font-black text-blue-400 uppercase tracking-widest mb-1">Time</p>
-                   <p className="text-2xl font-black tabular-nums">{formatTime(elapsed)}</p>
+                
+                <div className="flex items-center gap-8 bg-white/5 px-8 py-3 rounded-2xl border border-white/10 backdrop-blur-md">
+                   <div className="text-center">
+                      <p className="text-[8px] font-black text-indigo-400 uppercase tracking-widest mb-1">Module</p>
+                      <p className="text-sm font-black">{q.section}</p>
+                   </div>
+                   <div className="w-px h-8 bg-white/10" />
+                   <div className="text-center">
+                      <p className="text-[8px] font-black text-white/40 uppercase tracking-widest mb-1">Question</p>
+                      <p className="text-sm font-black">{currentIdx + 1} of {questions.length}</p>
+                   </div>
+                   <div className="w-px h-8 bg-white/10" />
+                   <div className="text-center min-w-[80px]">
+                      <div className="flex items-center justify-center gap-2 mb-1">
+                         <Clock className="w-3 h-3 text-blue-400" />
+                         <p className="text-[8px] font-black text-blue-400 uppercase tracking-widest">Time</p>
+                      </div>
+                      <p className="text-xl font-black tabular-nums leading-none">{formatTime(elapsed)}</p>
+                   </div>
+                </div>
+
+                <div className="flex items-center gap-4">
+                   {q.section === "Math" && (
+                     <Button onClick={() => setIsDesmosOpen(!isDesmosOpen)} className={`px-6 h-12 rounded-xl font-black uppercase text-[10px] tracking-widest transition-all ${isDesmosOpen ? 'bg-blue-600 text-white' : 'bg-white/5 border border-white/10 text-white hover:bg-white/10'}`}>
+                        <Calculator className="w-4 h-4 mr-2" /> Desmos
+                     </Button>
+                   )}
                 </div>
              </div>
 
-             <div className="flex-1 overflow-y-auto pr-4 custom-scrollbar">
-                <div className="grid lg:grid-cols-2 gap-12 min-h-full">
-                   <div className="glass-3d p-12 flex flex-col">
-                      <div className="text-2xl font-medium leading-relaxed mb-12"><MathText text={q.question} /></div>
-                      {q.image_url && <div className="mt-auto p-4 bg-white/5 rounded-2xl border border-white/5 flex items-center justify-center"><img src={q.image_url} className="max-h-[300px] invert hue-rotate-180" /></div>}
+             <div className="flex-1 overflow-y-auto pr-4 custom-scrollbar mb-8">
+                <div className="grid lg:grid-cols-2 gap-8 items-start">
+                   <div className="glass-3d p-10 flex flex-col sticky top-0">
+                      <div className="text-xl font-medium leading-relaxed mb-10"><MathText text={q.question} /></div>
+                      {q.image_url && <div className="mt-8 p-6 bg-white/5 rounded-2xl border border-white/5 flex items-center justify-center"><img src={q.image_url} className="max-h-[300px] invert hue-rotate-180 brightness-200" /></div>}
                    </div>
-                   <div className="flex flex-col gap-6">
+                   
+                   <div className="flex flex-col gap-4">
                       {!q.isFreeResponse ? (
                         ["A", "B", "C", "D"].map((label) => (
-                          <button key={label} onClick={() => handleMCAnswer(label)} className={`glass-3d p-8 text-left transition-all ${answerState ? (label === q.correctAnswer ? 'bg-emerald-500/10 border-emerald-500/30 text-emerald-400' : (answerState.selected === label ? 'bg-rose-500/10 border-rose-500/30 text-rose-400' : 'opacity-20')) : 'bg-white/5 hover:bg-white/10'}`}>
-                            <div className="flex items-center gap-6">
-                               <div className="w-10 h-10 rounded-lg bg-white/5 flex items-center justify-center border border-white/10 font-black">{label}</div>
-                               <div className="text-lg font-medium"><MathText text={(q as any)[`option${label}`]} /></div>
+                          <button key={label} onClick={() => handleMCAnswer(label)} className={`glass-3d p-6 text-left transition-all ${answerState ? (label === q.correctAnswer ? 'bg-emerald-500/10 border-emerald-500/30 text-emerald-400' : (answerState.selected === label ? 'bg-rose-500/10 border-rose-500/30 text-rose-400' : 'opacity-20')) : 'bg-white/5 hover:bg-white/10 hover:translate-x-2'}`}>
+                            <div className="flex items-center gap-5">
+                               <div className="w-8 h-8 rounded-lg bg-white/5 flex items-center justify-center border border-white/10 font-black text-sm">{label}</div>
+                               <div className="text-base font-medium flex-1"><MathText text={(q as any)[`option${label}`]} /></div>
                             </div>
                           </button>
                         ))
                       ) : (
                         <div className="glass-3d p-10">
-                           <input type="text" className="w-full bg-transparent border-b-2 border-white/10 pb-4 text-4xl font-black focus:outline-none focus:border-white" placeholder="0" value={frInput} onChange={e => setFrInput(e.target.value)} disabled={!!answerState} />
-                           {!answerState ? <Button onClick={handleFRAnswer} className="mt-12 bg-white text-black hover:bg-gray-200 w-full h-16 font-black uppercase text-xs rounded-xl">Submit</Button> : <div className={`mt-12 p-6 rounded-xl border font-black text-center ${answerState.correct ? 'bg-emerald-500/10 border-emerald-500/30 text-emerald-500' : 'bg-rose-500/10 border-rose-500/30 text-rose-500'}`}>{answerState.correct ? 'CORRECT' : `EXPECTED: ${q.correctAnswer}`}</div>}
+                           <p className="text-[10px] font-black text-[#444] uppercase tracking-widest mb-4">Student-Produced Response</p>
+                           <input type="text" className="w-full bg-transparent border-b-2 border-white/10 pb-4 text-4xl font-black focus:outline-none focus:border-white transition-colors" placeholder="ENTER ANSWER" value={frInput} onChange={e => setFrInput(e.target.value)} disabled={!!answerState} autoFocus />
+                           {!answerState ? <Button onClick={handleFRAnswer} className="mt-12 bg-white text-black hover:bg-gray-200 w-full h-16 font-black uppercase text-xs rounded-xl shadow-xl">Submit Answer</Button> : <div className={`mt-12 p-6 rounded-xl border font-black text-center ${answerState.correct ? 'bg-emerald-500/10 border-emerald-500/30 text-emerald-500' : 'bg-rose-500/10 border-rose-500/30 text-rose-500'}`}>{answerState.correct ? 'CORRECT' : `EXPECTED: ${q.correctAnswer}`}</div>}
                         </div>
                       )}
+                      
                       {answerState && (
-                        <div className="glass-3d p-10">
-                           <div className="flex items-center gap-3 mb-6"><Sparkles className="w-4 h-4 text-indigo-400" /><h4 className="text-[10px] font-black uppercase tracking-widest text-indigo-400">Explanation</h4></div>
-                           <MathText text={q.explanation} className="text-[#888] font-medium" />
-                           <Button onClick={nextQuestion} className="mt-10 bg-indigo-600 hover:bg-indigo-700 text-white w-full h-16 font-black uppercase text-xs rounded-xl shadow-[0_10px_20px_rgba(79,70,229,0.3)]">Next <ChevronRight className="ml-2 w-4 h-4" /></Button>
+                        <div className="glass-3d p-8 animate-in fade-in slide-in-from-bottom-4 duration-500">
+                           <div className="flex items-center gap-3 mb-4"><Sparkles className="w-4 h-4 text-indigo-400" /><h4 className="text-[10px] font-black uppercase tracking-widest text-indigo-400">Explanation</h4></div>
+                           <MathText text={q.explanation} className="text-[#666] font-medium text-sm block leading-relaxed" />
+                           <Button onClick={nextQuestion} className="mt-8 bg-white text-black hover:bg-gray-100 w-full h-14 font-black uppercase text-xs rounded-xl flex items-center justify-center gap-2 group">
+                              Next Question <ChevronRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+                           </Button>
                         </div>
                       )}
                    </div>
+                </div>
+             </div>
+
+             {/* Question Navigation Footer */}
+             <div className="mt-auto border-t border-white/10 pt-6 flex items-center justify-between shrink-0">
+                <div className="flex flex-wrap gap-2">
+                   {questions.map((_, i) => (
+                     <button
+                       key={i}
+                       onClick={() => { if (!answerState) { setCurrentIdx(i); setFrInput(""); } }}
+                       className={`w-8 h-8 rounded-lg border text-[10px] font-black flex items-center justify-center transition-all ${i === currentQ ? 'bg-white text-black border-white' : (sessionAnswers[questions[i].id] ? (sessionAnswers[questions[i].id].correct ? 'bg-emerald-500/20 border-emerald-500/40 text-emerald-500' : 'bg-rose-500/20 border-rose-500/40 text-rose-500') : (markedQuestions.has(i) ? 'bg-yellow-400/20 border-yellow-400/40 text-yellow-400' : 'border-white/10 text-[#444] hover:border-white/30'))}`}
+                     >
+                       {i + 1}
+                     </button>
+                   ))}
+                </div>
+                <div className="flex items-center gap-4 text-[10px] font-black text-[#222] uppercase tracking-widest">
+                   <div className="flex items-center gap-2"><div className="w-2 h-2 rounded-full bg-emerald-500" /> Done</div>
+                   <div className="flex items-center gap-2"><div className="w-2 h-2 rounded-full bg-yellow-400" /> Marked</div>
+                   <div className="flex items-center gap-2"><div className="w-2 h-2 rounded-full bg-white/20" /> Unseen</div>
                 </div>
              </div>
           </div>
@@ -292,13 +376,33 @@ export default function SATPractice() {
 
     return (
       <Layout>
-        <div className="min-h-screen bg-black text-white p-10">
-           <div className="max-w-[1000px] mx-auto text-center py-20">
-              <h1 className="text-8xl font-black text-shimmer mb-8">COMPLETE.</h1>
-              <div className="glass-3d p-16 mb-12">
-                 <div className="text-9xl font-black text-shimmer mb-4">{pct}%</div>
-                 <p className="text-[#888] font-black tracking-widest uppercase mb-12">{correct} / {total} Correct</p>
-                 <Button onClick={exitQuiz} className="bg-white text-black hover:bg-gray-200 rounded-xl px-12 h-16 font-black uppercase text-xs">Back to Bank</Button>
+        <div className="min-h-screen bg-black text-white p-10 flex flex-col items-center justify-center relative overflow-hidden">
+           <div className="bg-vignette" />
+           <div className="max-w-[1000px] mx-auto text-center relative z-10">
+              <div className="flex items-center justify-center gap-3 mb-8 opacity-60">
+                 <Trophy className="w-8 h-8 text-yellow-400" />
+                 <span className="text-sm font-black tracking-[0.5em] uppercase text-yellow-400">Session Complete</span>
+              </div>
+              <h1 className="text-[120px] font-black text-shimmer leading-none mb-12">RESULTS.</h1>
+              <div className="glass-3d p-20 mb-12 max-w-2xl mx-auto">
+                 <div className="text-[160px] font-black text-white leading-none mb-4 tracking-tighter">{pct}%</div>
+                 <div className="flex items-center justify-center gap-12 mb-16">
+                    <div className="text-center">
+                       <p className="text-4xl font-black">{correct}</p>
+                       <p className="text-[10px] font-black text-[#444] uppercase tracking-widest mt-2">Correct</p>
+                    </div>
+                    <div className="w-px h-12 bg-white/10" />
+                    <div className="text-center">
+                       <p className="text-4xl font-black">{total - correct}</p>
+                       <p className="text-[10px] font-black text-[#444] uppercase tracking-widest mt-2">Incorrect</p>
+                    </div>
+                    <div className="w-px h-12 bg-white/10" />
+                    <div className="text-center">
+                       <p className="text-4xl font-black">{formatTime(elapsed)}</p>
+                       <p className="text-[10px] font-black text-[#444] uppercase tracking-widest mt-2">Time spent</p>
+                    </div>
+                 </div>
+                 <Button onClick={exitQuiz} className="bg-white text-black hover:bg-gray-200 rounded-2xl px-16 h-20 text-xl font-black shadow-[0_20px_40px_rgba(255,255,255,0.1)] transition-all hover:scale-105 active:scale-95">Back to Bank</Button>
               </div>
            </div>
         </div>
@@ -308,3 +412,4 @@ export default function SATPractice() {
 
   return null;
 }
+
