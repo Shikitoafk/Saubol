@@ -30,12 +30,13 @@ export function Navbar() {
     <nav className="fixed top-0 z-[100] w-full bg-black/60 backdrop-blur-xl border-b border-white/5 h-20">
       <div className="max-w-[1400px] mx-auto px-10 h-full flex items-center justify-between">
         <div className="flex items-center gap-12">
-          <Link to="/" className="flex items-center gap-3 group">
-            <img 
-              src="/logo.png" 
-              alt="Saubol Logo" 
-              className="w-10 h-10 object-contain group-hover:scale-110 transition-transform"
-            />
+          <Link to="/" className="flex items-center gap-4 group">
+            <div className="flex items-center justify-center w-10 h-10 rounded-xl bg-white text-black font-black text-xl italic shadow-[0_0_20px_rgba(255,255,255,0.1)] group-hover:scale-110 transition-transform">
+              S
+            </div>
+            <span className="font-black text-2xl tracking-tighter text-white uppercase">
+              SAUBOL
+            </span>
           </Link>
 
           <div className="hidden lg:flex items-center gap-8">

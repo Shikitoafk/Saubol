@@ -7,12 +7,13 @@ export function Footer() {
       <div className="max-w-[1400px] mx-auto px-10 relative z-10">
         <div className="grid grid-cols-1 md:grid-cols-4 gap-20">
           <div className="md:col-span-2">
-            <div className="flex items-center gap-3 mb-8 group">
-              <img 
-                src="/logo.png" 
-                alt="Saubol Logo" 
-                className="w-10 h-10 object-contain group-hover:scale-110 transition-transform"
-              />
+            <div className="flex items-center gap-4 mb-8 group">
+              <div className="flex items-center justify-center w-10 h-10 rounded-xl bg-white text-black font-black text-xl italic shadow-[0_0_20px_rgba(255,255,255,0.1)] group-hover:scale-110 transition-transform">
+                S
+              </div>
+              <span className="font-black text-2xl tracking-tighter text-white uppercase">
+                SAUBOL
+              </span>
             </div>
             <p className="text-[#444] font-bold text-xs uppercase tracking-widest leading-relaxed max-w-sm mb-12">
               Мы создаем будущее образования. Твой проводник в мир топовых университетов, элитной подготовки и неограниченных возможностей.
