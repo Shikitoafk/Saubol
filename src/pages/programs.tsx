@@ -28,6 +28,7 @@ export interface Program {
   price: string;
   subject: string;
   url?: string;
+  score?: number;
 }
 
 const SUBJECT_FILTERS = ["All", "Mixed", "STEM", "Medicine", "Humanities", "Engineering", "Business", "Art", "Computer Science"];
@@ -163,6 +164,11 @@ export default function Programs() {
                             <div className="flex flex-wrap gap-2">
                                <Badge className="bg-indigo-500/10 text-indigo-400 border-none text-[8px] font-black uppercase tracking-widest">{p.subject}</Badge>
                                <Badge className={`${p.price === 'Free' ? 'bg-emerald-500/10 text-emerald-400' : 'bg-amber-500/10 text-amber-400'} border-none text-[8px] font-black uppercase tracking-widest`}>{p.price}</Badge>
+                               {p.score !== undefined && (
+                                 <Badge className="bg-white/10 text-white border-none text-[8px] font-black uppercase tracking-widest flex items-center gap-1">
+                                   <Sparkles className="w-2 h-2" /> Match: {Math.round(p.score * 100)}%
+                                 </Badge>
+                               )}
                             </div>
                             {user && (
                               <button onClick={() => toggleBookmark(p)} className="text-[#222] hover:text-white transition-colors">
