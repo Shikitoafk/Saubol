@@ -31,12 +31,11 @@ export function Navbar() {
       <div className="max-w-[1400px] mx-auto px-10 h-full flex items-center justify-between">
         <div className="flex items-center gap-12">
           <Link to="/" className="flex items-center gap-3 group">
-            <div className="flex items-center justify-center w-10 h-10 rounded-xl bg-white text-black font-black text-xl italic shadow-[0_0_20px_rgba(255,255,255,0.1)] group-hover:scale-110 transition-transform">
-              S
-            </div>
-            <span className="font-black text-2xl tracking-tighter text-shimmer hidden sm:inline-block">
-              SAUBOL.
-            </span>
+            <img 
+              src="/logo.png" 
+              alt="Saubol Logo" 
+              className="w-10 h-10 object-contain group-hover:scale-110 transition-transform"
+            />
           </Link>
 
           <div className="hidden lg:flex items-center gap-8">
