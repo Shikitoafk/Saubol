@@ -1,14 +1,14 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { supabase } from '@/lib/supabase';
-import Layout from '@/components/Layout';
-import { 
-  Target, 
-  Trophy, 
-  Zap, 
-  History, 
-  TrendingUp, 
-  User, 
+import layout from '@/components/layout';
+import {
+  Target,
+  Trophy,
+  Zap,
+  History,
+  TrendingUp,
+  User,
   LogOut,
   PenTool,
   Brain,
@@ -83,7 +83,7 @@ export default function Dashboard() {
         const totalQuestions = rawProgress.length;
         const correctAnswers = rawProgress.filter(d => d.correct).length;
         const accuracy = totalQuestions > 0 ? Math.round((correctAnswers / totalQuestions) * 100) : 0;
-        
+
         const last7Days = [...Array(7)].map((_, i) => {
           const d = new Date();
           d.setDate(d.getDate() - i);
@@ -149,7 +149,7 @@ export default function Dashboard() {
         {/* Depth Background */}
         <div className="bg-vignette" />
         <div className="bg-sphere top-[-10%] left-[-5%] opacity-30" />
-        
+
         <div className="max-w-[1400px] mx-auto px-10 py-24 relative z-10">
           {/* Dashboard Header */}
           <div className="flex flex-col md:flex-row md:items-end justify-between gap-8 mb-24">
@@ -182,12 +182,12 @@ export default function Dashboard() {
               { label: 'Overall', val: progress?.ielts_stats?.overall, icon: Award, color: 'text-shimmer', bg: 'bg-white/5' }
             ].map((stat, i) => (
               <div key={i} className={`glass-3d p-10 group hover:scale-105 transition-all ${stat.bg || ''}`}>
-                 <div className="flex items-center justify-between mb-10">
-                   <span className={`text-[10px] font-black tracking-[0.3em] uppercase ${stat.color}`}>{stat.label}</span>
-                   <stat.icon className={`w-6 h-6 ${stat.color}`} />
-                 </div>
-                 <div className={`text-6xl font-black mb-2 ${stat.color}`}>{stat.val || 0}</div>
-                 <p className="text-[10px] font-black text-[#333] uppercase tracking-[0.2em]">Current Band</p>
+                <div className="flex items-center justify-between mb-10">
+                  <span className={`text-[10px] font-black tracking-[0.3em] uppercase ${stat.color}`}>{stat.label}</span>
+                  <stat.icon className={`w-6 h-6 ${stat.color}`} />
+                </div>
+                <div className={`text-6xl font-black mb-2 ${stat.color}`}>{stat.val || 0}</div>
+                <p className="text-[10px] font-black text-[#333] uppercase tracking-[0.2em]">Current Band</p>
               </div>
             ))}
           </div>
@@ -203,7 +203,7 @@ export default function Dashboard() {
                 <h3 className="text-4xl font-black tracking-tighter">ANALYTICS.</h3>
               </div>
               <div className="flex gap-4">
-                 <div className="px-6 py-2 rounded-full border border-white/10 text-[10px] font-black uppercase tracking-widest">Last 7 Days</div>
+                <div className="px-6 py-2 rounded-full border border-white/10 text-[10px] font-black uppercase tracking-widest">Last 7 Days</div>
               </div>
             </div>
             <div className="h-[450px] w-full relative z-10">
@@ -211,14 +211,14 @@ export default function Dashboard() {
                 <AreaChart data={progress?.daily_activity || []}>
                   <defs>
                     <linearGradient id="colorChart" x1="0" y1="0" x2="0" y2="1">
-                      <stop offset="5%" stopColor="#ffffff" stopOpacity={0.15}/>
-                      <stop offset="95%" stopColor="#ffffff" stopOpacity={0}/>
+                      <stop offset="5%" stopColor="#ffffff" stopOpacity={0.15} />
+                      <stop offset="95%" stopColor="#ffffff" stopOpacity={0} />
                     </linearGradient>
                   </defs>
                   <CartesianGrid strokeDasharray="0" vertical={false} stroke="#111" />
-                  <XAxis dataKey="date" stroke="#222" fontSize={10} tickLine={false} axisLine={false} tick={{dy: 20}} />
-                  <YAxis stroke="#222" fontSize={10} tickLine={false} axisLine={false} tick={{dx: -20}} />
-                  <Tooltip 
+                  <XAxis dataKey="date" stroke="#222" fontSize={10} tickLine={false} axisLine={false} tick={{ dy: 20 }} />
+                  <YAxis stroke="#222" fontSize={10} tickLine={false} axisLine={false} tick={{ dx: -20 }} />
+                  <Tooltip
                     contentStyle={{ background: '#000', border: '1px solid #222', borderRadius: '16px', fontSize: '10px', fontBlack: true }}
                     itemStyle={{ color: '#fff' }}
                   />
@@ -242,14 +242,14 @@ export default function Dashboard() {
                 ) : (
                   progress.ielts_activity.map((item, i) => (
                     <div key={i} className="p-10 flex items-center justify-between hover:bg-white/5 transition-all group">
-                       <div className="flex items-center gap-8">
-                          <div className="text-2xl font-black text-[#222] group-hover:text-white transition-colors">{(item.score/10).toFixed(1)}</div>
-                          <div>
-                            <p className="font-black tracking-tight mb-1">{item.test_name?.toUpperCase()}</p>
-                            <p className="text-[10px] font-bold text-[#444] uppercase tracking-widest">{item.skill} · {new Date(item.completed_at).toLocaleDateString()}</p>
-                          </div>
-                       </div>
-                       <ChevronRight className="w-5 h-5 text-[#222] group-hover:text-white transition-all" />
+                      <div className="flex items-center gap-8">
+                        <div className="text-2xl font-black text-[#222] group-hover:text-white transition-colors">{(item.score / 10).toFixed(1)}</div>
+                        <div>
+                          <p className="font-black tracking-tight mb-1">{item.test_name?.toUpperCase()}</p>
+                          <p className="text-[10px] font-bold text-[#444] uppercase tracking-widest">{item.skill} · {new Date(item.completed_at).toLocaleDateString()}</p>
+                        </div>
+                      </div>
+                      <ChevronRight className="w-5 h-5 text-[#222] group-hover:text-white transition-all" />
                     </div>
                   ))
                 )}
@@ -268,14 +268,14 @@ export default function Dashboard() {
                 ) : (
                   progress.recent_activity.map((item, i) => (
                     <div key={i} className="p-10 flex items-center justify-between hover:bg-white/5 transition-all group">
-                       <div className="flex items-center gap-8">
-                          <div className={`w-3 h-3 rounded-full ${item.correct ? 'bg-emerald-500 shadow-[0_0_15px_rgba(16,185,129,0.5)]' : 'bg-rose-500 shadow-[0_0_15px_rgba(244,63,94,0.5)]'}`} />
-                          <div>
-                            <p className="font-black tracking-tight mb-1">{item.section?.toUpperCase()}</p>
-                            <p className="text-[10px] font-bold text-[#444] uppercase tracking-widest">{item.topic} · {item.correct ? 'Correct' : 'Missed'}</p>
-                          </div>
-                       </div>
-                       <span className="text-[10px] font-black text-[#222] group-hover:text-white transition-all">{new Date(item.date).toLocaleDateString()}</span>
+                      <div className="flex items-center gap-8">
+                        <div className={`w-3 h-3 rounded-full ${item.correct ? 'bg-emerald-500 shadow-[0_0_15px_rgba(16,185,129,0.5)]' : 'bg-rose-500 shadow-[0_0_15px_rgba(244,63,94,0.5)]'}`} />
+                        <div>
+                          <p className="font-black tracking-tight mb-1">{item.section?.toUpperCase()}</p>
+                          <p className="text-[10px] font-bold text-[#444] uppercase tracking-widest">{item.topic} · {item.correct ? 'Correct' : 'Missed'}</p>
+                        </div>
+                      </div>
+                      <span className="text-[10px] font-black text-[#222] group-hover:text-white transition-all">{new Date(item.date).toLocaleDateString()}</span>
                     </div>
                   ))
                 )}
