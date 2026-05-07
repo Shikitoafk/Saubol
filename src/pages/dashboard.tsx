@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { supabase } from '@/lib/supabase';
-import layout from '@/components/layout';
+import { Layout } from '@/components/layout';
 import {
   Target,
   Trophy,

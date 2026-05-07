@@ -31,8 +31,8 @@ export function Navbar() {
       <div className="max-w-[1400px] mx-auto px-10 h-full flex items-center justify-between">
         <div className="flex items-center gap-12">
           <Link to="/" className="flex items-center gap-4 group">
-            <div className="flex items-center justify-center w-10 h-10 rounded-xl bg-white text-black font-black text-xl italic shadow-[0_0_20px_rgba(255,255,255,0.1)] group-hover:scale-110 transition-transform">
-              S
+            <div className="w-10 h-10 rounded-full bg-gradient-to-r from-white to-blue-500 shadow-[0_0_20px_rgba(59,130,246,0.3)] group-hover:scale-110 transition-transform duration-500 relative overflow-hidden">
+              <div className="absolute inset-0 bg-white/20 blur-sm" />
             </div>
             <span className="font-black text-2xl tracking-tighter text-white uppercase">
               SAUBOL
