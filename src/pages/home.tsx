@@ -103,9 +103,6 @@ export default function Home() {
                 GET FULL ACCESS
               </Button>
             </div>
-          </section>             GET FULL ACCESS
-              </Button>
-            </div>
           </section>
         </main>
       </div>
