@@ -216,7 +216,7 @@ export default function SATPractice() {
   if (phase === "bank") {
     return (
       <Layout>
-        <div className="min-h-screen bg-black text-white p-10">
+        <div className="min-h-screen bg-black text-white pt-32 p-10">
            <div className="max-w-[1400px] mx-auto">
               <div className="flex items-center gap-3 mb-6 opacity-60">
                 <Target className="w-5 h-5 text-blue-400" />
@@ -267,7 +267,7 @@ export default function SATPractice() {
             </div>
           )}
 
-          <div className="max-w-[1600px] mx-auto w-full px-10 py-6 relative z-10 flex flex-col flex-1">
+          <div className="max-w-[1600px] mx-auto w-full px-10 pt-24 pb-6 relative z-10 flex flex-col flex-1">
              <div className="flex items-center justify-between mb-8 shrink-0">
                 <div className="flex items-center gap-6">
                    <Button variant="ghost" onClick={exitQuiz} className="text-[10px] font-black uppercase tracking-widest text-[#444] hover:text-white"><ChevronLeft className="w-4 h-4 mr-2" /> Exit</Button>
@@ -376,7 +376,7 @@ export default function SATPractice() {
 
     return (
       <Layout>
-        <div className="min-h-screen bg-black text-white p-10 flex flex-col items-center justify-center relative overflow-hidden">
+        <div className="min-h-screen bg-black text-white pt-24 p-10 flex flex-col items-center justify-center relative overflow-hidden">
            <div className="bg-vignette" />
            <div className="max-w-[1000px] mx-auto text-center relative z-10">
               <div className="flex items-center justify-center gap-3 mb-8 opacity-60">
