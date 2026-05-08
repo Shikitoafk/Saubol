@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { motion } from 'framer-motion';
 import { supabase } from '@/lib/supabase';
 import { Layout } from '@/components/layout';
 import {
@@ -92,7 +93,7 @@ export default function Dashboard() {
 
         const dailyActivity = last7Days.map(dateStr => ({
           date: dateStr,
-          questions_answered: rawProgress.filter(d => d.answered_at.startsWith(dateStr)).length
+          questions_answered: rawProgress.filter(d => (d.answered_at || d.created_at || "").startsWith(dateStr)).length
         }));
 
         const getAvgBySkill = (skill: string) => {
@@ -139,6 +140,18 @@ export default function Dashboard() {
     return (
       <div className="min-h-screen bg-black flex items-center justify-center">
         <div className="w-16 h-16 border-4 border-white/5 border-t-white rounded-full animate-spin" />
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="min-h-screen bg-black flex items-center justify-center p-10">
+        <div className="glass-3d p-10 text-center max-w-md border-rose-500/20">
+          <p className="text-rose-500 font-black uppercase tracking-widest mb-4">Tactical Error Detected</p>
+          <p className="text-[#666] mb-8 font-medium">{error}</p>
+          <Button onClick={() => window.location.reload()} className="bg-white text-black hover:bg-gray-100 w-full h-12 font-black uppercase text-xs rounded-xl">Recalibrate System</Button>
+        </div>
       </div>
     );
   }

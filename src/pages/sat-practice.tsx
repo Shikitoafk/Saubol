@@ -100,47 +100,60 @@ export default function SATPractice() {
   const [isDesmosOpen, setIsDesmosOpen] = useState(false);
   const timerRef = useRef<any>(null);
 
+  const [error, setError] = useState<string | null>(null);
+
   useEffect(() => {
     const init = async () => {
-      const { data: mcq } = await supabase.from("SAT_MCQ").select("*");
-      const { data: open } = await supabase.from("SAT_Open").select("*");
-      
-      const allQs: SATQuestion[] = [
-        ...(mcq || []).map(r => ({
-          id: `mcq-${r.id}`,
-          question: r.question,
-          optionA: r.option_a,
-          optionB: r.option_b,
-          optionC: r.option_c,
-          optionD: r.option_d,
-          correctAnswer: r.correct_answer,
-          explanation: r.explanation,
-          difficulty: r.difficulty,
-          category: r.category,
-          section: r.section,
-          isFreeResponse: false,
-          image_url: r.image_url
-        })),
-        ...(open || []).map(r => ({
-          id: `open-${r.id}`,
-          question: r.question,
-          optionA: "", optionB: "", optionC: "", optionD: "",
-          correctAnswer: r.correct_answer,
-          explanation: r.explanation,
-          difficulty: r.difficulty,
-          category: r.category,
-          section: r.section,
-          isFreeResponse: true,
-          image_url: r.image_url
-        }))
-      ];
-      setQuestions(allQs);
-      setLoading(false);
+      try {
+        const { data: mcq, error: mcqErr } = await supabase.from("SAT_MCQ").select("*");
+        const { data: open, error: openErr } = await supabase.from("SAT_Open").select("*");
+        
+        if (mcqErr || openErr) throw new Error(mcqErr?.message || openErr?.message);
+
+        const allQs: SATQuestion[] = [
+          ...(mcq || []).map(r => ({
+            id: `mcq-${r.id}`,
+            question: r.question,
+            optionA: r.option_a,
+            optionB: r.option_b,
+            optionC: r.option_c,
+            optionD: r.option_d,
+            correctAnswer: r.correct_answer,
+            explanation: r.explanation,
+            difficulty: r.difficulty,
+            category: r.category,
+            section: r.section,
+            isFreeResponse: false,
+            image_url: r.image_url
+          })),
+          ...(open || []).map(r => ({
+            id: `open-${r.id}`,
+            question: r.question,
+            optionA: "", optionB: "", optionC: "", optionD: "",
+            correctAnswer: r.correct_answer,
+            explanation: r.explanation,
+            difficulty: r.difficulty,
+            category: r.category,
+            section: r.section,
+            isFreeResponse: true,
+            image_url: r.image_url
+          }))
+        ];
+        setQuestions(allQs);
+      } catch (err: any) {
+        setError(err.message);
+      } finally {
+        setLoading(false);
+      }
     };
     init();
   }, []);
 
   const startQuiz = (qs: SATQuestion[]) => {
+    if (!qs || qs.length === 0) {
+      alert("No questions available for this section yet. System recalibration in progress.");
+      return;
+    }
     setQuestions(qs.sort(() => Math.random() - 0.5));
     setPhase("quiz");
     setCurrentIdx(0);
@@ -213,7 +226,32 @@ export default function SATPractice() {
     }
   };
 
-  if (loading) return <div className="min-h-screen bg-black flex items-center justify-center"><Loader2 className="w-12 h-12 animate-spin text-white" /></div>;
+  if (loading) return (
+    <div className="min-h-screen bg-black flex items-center justify-center">
+      <Loader2 className="w-12 h-12 animate-spin text-white" />
+    </div>
+  );
+
+  if (error) {
+    return (
+      <Layout>
+        <div className="min-h-screen bg-black flex items-center justify-center p-10">
+          <div className="glass-3d p-12 text-center max-w-lg border-rose-500/20">
+             <div className="flex items-center justify-center gap-3 mb-6 opacity-60">
+                <AlertCircle className="w-6 h-6 text-rose-500" />
+                <span className="text-[10px] font-black tracking-[0.5em] uppercase text-rose-500">System Failure</span>
+             </div>
+             <h2 className="text-4xl font-black tracking-tighter uppercase mb-6">SAT Link Broken.</h2>
+             <p className="text-[#666] mb-10 font-medium leading-relaxed italic uppercase tracking-widest text-xs">
+                We encountered a tactical error while fetching the SAT question bank. 
+                <br /> {error}
+             </p>
+             <Button onClick={() => window.location.reload()} className="bg-white text-black hover:bg-gray-100 w-full h-16 font-black uppercase text-xs rounded-xl shadow-xl">Re-establish Connection</Button>
+          </div>
+        </div>
+      </Layout>
+    );
+  }
 
   /* ── Bank ───────────────────────────────────────────────────────── */
   if (phase === "bank") {
