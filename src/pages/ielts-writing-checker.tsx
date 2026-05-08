@@ -31,7 +31,7 @@ import { supabase } from "@/lib/supabase";
 
 type TaskType = "task1" | "task2";
 
-const IELTSSWritingChecker = () => {
+const IELTSWritingChecker = () => {
   const nav = useNavigate();
   const [taskType, setTaskType] = useState<TaskType>("task2");
   const [prompt, setPrompt] = useState("");
@@ -335,4 +335,4 @@ const IELTSSWritingChecker = () => {
   );
 };
 
-export default IELTSSWritingChecker;
+export default IELTSWritingChecker;
