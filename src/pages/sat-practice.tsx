@@ -30,6 +30,7 @@ import { Layout } from "@/components/layout";
 import { Button } from "@/components/ui/button";
 import SATAITutor from "@/components/sat-ai-tutor";
 import { supabase } from "@/lib/supabase";
+import { Badge } from "@/components/ui/badge";
 
 /* ════════════════════════════════════════════════════════════════════
    KaTeX & Helpers
@@ -218,23 +219,103 @@ export default function SATPractice() {
   if (phase === "bank") {
     return (
       <Layout>
-        <div className="min-h-screen bg-black text-white pt-32 p-10">
-           <div className="max-w-[1400px] mx-auto">
-              <div className="flex items-center gap-3 mb-6 opacity-60">
-                <Target className="w-5 h-5 text-blue-400" />
-                <span className="text-[10px] font-black tracking-[0.4em] uppercase text-blue-400">Adaptive Practice Bank</span>
-              </div>
-              <h1 className="text-7xl font-black text-shimmer mb-12">SAT HUB.</h1>
-              <div className="grid md:grid-cols-2 gap-8">
-                 <div className="glass-3d p-12 group cursor-pointer hover:border-blue-500/30 transition-all" onClick={() => startQuiz(questions.filter(q => q.section === "Math"))}>
-                    <Calculator className="w-12 h-12 mb-8 text-blue-400" />
-                    <h3 className="text-4xl font-black mb-4">MATH</h3>
-                    <p className="text-[#666] text-lg">Digital SAT Math bank with adaptive levels.</p>
+        <div className="min-h-screen bg-black text-white pt-32 pb-20 px-10 relative overflow-hidden">
+           <div className="bg-vignette" />
+           <div className="bg-sphere top-[-10%] left-[-10%] opacity-20" style={{ background: 'radial-gradient(circle, rgba(79, 70, 229, 0.1) 0%, transparent 70%)' }} />
+           
+           <div className="max-w-[1400px] mx-auto relative z-10">
+              <div className="flex flex-col md:flex-row justify-between items-end gap-8 mb-20">
+                 <div>
+                    <div className="flex items-center gap-3 mb-6 opacity-60">
+                      <Target className="w-5 h-5 text-blue-400" />
+                      <span className="text-[10px] font-black tracking-[0.4em] uppercase text-blue-400">Adaptive Intelligence v3.0</span>
+                    </div>
+                    <h1 className="text-7xl md:text-9xl font-black text-shimmer leading-none">SAT HUB.</h1>
                  </div>
-                 <div className="glass-3d p-12 group cursor-pointer hover:border-purple-500/30 transition-all" onClick={() => startQuiz(questions.filter(q => q.section === "Reading & Writing"))}>
-                    <BookOpen className="w-12 h-12 mb-8 text-purple-400" />
-                    <h3 className="text-4xl font-black mb-4">READING & WRITING</h3>
-                    <p className="text-[#666] text-lg">Comprehensive English bank for RW section.</p>
+                 <div className="flex gap-4">
+                    <div className="glass-3d p-6 min-w-[160px]">
+                       <p className="text-[8px] font-black text-white/40 uppercase tracking-widest mb-2">Total Questions</p>
+                       <p className="text-3xl font-black">{questions.length}</p>
+                    </div>
+                    <div className="glass-3d p-6 min-w-[160px]">
+                       <p className="text-[8px] font-black text-emerald-400 uppercase tracking-widest mb-2">Solved Today</p>
+                       <p className="text-3xl font-black text-emerald-400">0</p>
+                    </div>
+                 </div>
+              </div>
+
+              <div className="grid lg:grid-cols-12 gap-10">
+                 {/* Main Prep Cards */}
+                 <div className="lg:col-span-8 grid md:grid-cols-2 gap-8">
+                    <div className="glass-3d p-12 group cursor-pointer border-blue-500/10 hover:border-blue-500/40 transition-all flex flex-col justify-between min-h-[400px]" onClick={() => startQuiz(questions.filter(q => q.section === "Math"))}>
+                       <div>
+                          <div className="flex justify-between items-start mb-10">
+                             <div className="w-16 h-16 bg-blue-500/10 rounded-2xl flex items-center justify-center border border-blue-500/20 group-hover:bg-blue-500/20 transition-all">
+                                <Calculator className="w-8 h-8 text-blue-400" />
+                             </div>
+                             <Badge className="bg-blue-500/10 text-blue-400 border-none font-black text-[8px] uppercase tracking-widest">Digital SAT</Badge>
+                          </div>
+                          <h3 className="text-5xl font-black mb-4">MATH</h3>
+                          <p className="text-[#666] text-lg font-medium leading-relaxed">Алгебра, геометрия и тригонометрия с использованием Desmos.</p>
+                       </div>
+                       <div className="flex items-center gap-3 text-[10px] font-black text-blue-400 uppercase tracking-widest mt-12">
+                          Start Practice <ChevronRight className="w-4 h-4" />
+                       </div>
+                    </div>
+
+                    <div className="glass-3d p-12 group cursor-pointer border-purple-500/10 hover:border-purple-500/40 transition-all flex flex-col justify-between min-h-[400px]" onClick={() => startQuiz(questions.filter(q => q.section === "Reading & Writing"))}>
+                       <div>
+                          <div className="flex justify-between items-start mb-10">
+                             <div className="w-16 h-16 bg-purple-500/10 rounded-2xl flex items-center justify-center border border-purple-500/20 group-hover:bg-purple-500/20 transition-all">
+                                <BookOpen className="w-8 h-8 text-purple-400" />
+                             </div>
+                             <Badge className="bg-purple-500/10 text-purple-400 border-none font-black text-[8px] uppercase tracking-widest">Digital SAT</Badge>
+                          </div>
+                          <h3 className="text-5xl font-black mb-4">READING</h3>
+                          <p className="text-[#666] text-lg font-medium leading-relaxed">Анализ текстов, грамматика и логика на английском языке.</p>
+                       </div>
+                       <div className="flex items-center gap-3 text-[10px] font-black text-purple-400 uppercase tracking-widest mt-12">
+                          Start Practice <ChevronRight className="w-4 h-4" />
+                       </div>
+                    </div>
+                 </div>
+
+                 {/* Sidebar: Path & Stats */}
+                 <div className="lg:col-span-4 flex flex-col gap-8">
+                    <div className="glass-3d p-10 bg-indigo-600/5 border-indigo-500/10">
+                       <h4 className="text-[10px] font-black text-indigo-400 uppercase tracking-widest mb-8 flex items-center gap-2">
+                          <TrendingUp className="w-4 h-4" /> Your Learning Path
+                       </h4>
+                       <div className="space-y-8">
+                          {[
+                            { label: "Foundation", status: "Complete", color: "text-emerald-400" },
+                            { label: "Middle Module", status: "In Progress", color: "text-blue-400" },
+                            { label: "Advanced Level", status: "Locked", color: "text-white/20" }
+                          ].map((item, i) => (
+                            <div key={i} className="flex items-center justify-between">
+                               <span className="text-sm font-bold text-white/80">{item.label}</span>
+                               <span className={`text-[9px] font-black uppercase tracking-widest ${item.color}`}>{item.status}</span>
+                            </div>
+                          ))}
+                       </div>
+                       <div className="mt-10 pt-8 border-t border-white/5">
+                          <p className="text-[9px] font-black text-[#444] uppercase tracking-widest mb-4">Daily Goal: 20 Questions</p>
+                          <div className="w-full h-2 bg-white/5 rounded-full overflow-hidden">
+                             <div className="w-0 h-full bg-indigo-500 transition-all" />
+                          </div>
+                       </div>
+                    </div>
+
+                    <div className="glass-3d p-10">
+                       <h4 className="text-[10px] font-black text-white/40 uppercase tracking-widest mb-6">Recent Achievements</h4>
+                       <div className="flex flex-wrap gap-3">
+                          {[Zap, Trophy, Sparkles].map((Icon, i) => (
+                            <div key={i} className="w-12 h-12 rounded-xl bg-white/5 flex items-center justify-center border border-white/10">
+                               <Icon className="w-5 h-5 text-[#444]" />
+                            </div>
+                          ))}
+                       </div>
+                    </div>
                  </div>
               </div>
            </div>
