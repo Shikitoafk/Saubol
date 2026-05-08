@@ -3369,7 +3369,16 @@ The last timekeeper to be introduced is the fire candle clock. Candle clocks tak
             });
 
             // Open the modal immediately after grading
-            modal.style.display = 'flex';
+            modal.style.display = 'flex'; 
+                if (window.parent) { 
+                    window.parent.postMessage({ 
+                        type: 'ielts-test-result', 
+                        score: (typeof band !== 'undefined' ? band * 10 : (typeof score !== 'undefined' ? score : 0)), 
+                        total: 40, 
+                        skill: (window.location.href.toLowerCase().includes('reading') ? 'reading' : 'listening'), 
+                        slug: window.location.pathname.split('/').pop().replace('.html', '') 
+                    }, '*'); 
+                }
         }
         
         function startTimer() {
@@ -3945,4 +3954,5 @@ The last timekeeper to be introduced is the fire candle clock. Candle clocks tak
     </script>
 </body>
 </html>
+
 

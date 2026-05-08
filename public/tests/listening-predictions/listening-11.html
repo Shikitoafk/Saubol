@@ -3391,7 +3391,16 @@ That is the end of the listening test. You now have 10 minutes to transfer your 
             });
 
             // Open the modal immediately after grading
-            modal.style.display = 'flex';
+            modal.style.display = 'flex'; 
+                if (window.parent) { 
+                    window.parent.postMessage({ 
+                        type: 'ielts-test-result', 
+                        score: (typeof band !== 'undefined' ? band * 10 : (typeof score !== 'undefined' ? score : 0)), 
+                        total: 40, 
+                        skill: (window.location.href.toLowerCase().includes('reading') ? 'reading' : 'listening'), 
+                        slug: window.location.pathname.split('/').pop().replace('.html', '') 
+                    }, '*'); 
+                }
         }
         
         function startTimer() {
@@ -3967,4 +3976,5 @@ That is the end of the listening test. You now have 10 minutes to transfer your 
     </script>
 </body>
 </html>
+
 

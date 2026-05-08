@@ -38,10 +38,12 @@ const KATEX_OPTS = { throwOnError: false, errorColor: "#f87171" };
 
 function renderKaTeX(raw: string): string {
   if (!raw) return "";
+  // Fix potential escaping issues from DB
+  const clean = raw.replace(/\\\\/g, "\\");
   try {
-    return raw.replace(/\$\$([^$]+?)\$\$/gs, (_, m) => katex.renderToString(m, { ...KATEX_OPTS, displayMode: true }))
-              .replace(/\$([^$\n]{1,600}?)\$/g, (_, m) => katex.renderToString(m, KATEX_OPTS));
-  } catch { return raw; }
+    return clean.replace(/\$\$([^$]+?)\$\$/gs, (_, m) => katex.renderToString(m, { ...KATEX_OPTS, displayMode: true }))
+                .replace(/\$([^$\n]{1,600}?)\$/g, (_, m) => katex.renderToString(m, KATEX_OPTS));
+  } catch { return clean; }
 }
 
 function MathText({ text, className }: { text: string; className?: string }) {

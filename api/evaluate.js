@@ -92,7 +92,8 @@ Ensure the LLM returns ONLY a valid JSON object matching this exact structure. D
       "correction": "string",
       "reason": "string"
     }
-  ]
+  ],
+  "rewrittenEssay": "A Band 9.0 optimized version of the student's essay, maintaining the original ideas but elevating the language and structure."
 }`;
 
     const userMessage = `TASK_TYPE: ${taskType}\nTASK_PROMPT: ${prompt || 'N/A'}\nUSER_ESSAY: ${essay}`;

@@ -61,6 +61,10 @@ const IELTSTestViewer = () => {
     <div className="fixed inset-0 z-50 bg-[#000000] flex flex-col font-sans">
       {/* Premium Header Wrapper */}
       <div className="absolute top-6 left-6 z-[60] flex items-center gap-4">
+        <div className="flex items-center gap-3 pr-4 border-r border-white/10 mr-2">
+          <img src="/logo.png" className="w-8 h-8 object-contain" alt="Logo" />
+          <span className="font-black text-sm tracking-tighter text-white uppercase">SAUBOL</span>
+        </div>
         <Button 
           onClick={() => navigate("/ielts")}
           className="bg-white text-black hover:bg-gray-100 px-6 py-3 rounded-xl flex items-center gap-2 text-[10px] font-black uppercase tracking-widest transition-all shadow-2xl"
