@@ -268,7 +268,7 @@ export default function SATPractice() {
                       <Target className="w-5 h-5 text-blue-400" />
                       <span className="text-[10px] font-black tracking-[0.4em] uppercase text-blue-400">Adaptive Intelligence v3.0</span>
                     </div>
-                    <h1 className="text-7xl md:text-9xl font-black text-shimmer leading-none">SAT HUB.</h1>
+                    <h1 className="text-6xl md:text-7xl font-black text-shimmer leading-none">SAT HUB.</h1>
                  </div>
                  <div className="flex gap-4">
                     <div className="glass-3d p-6 min-w-[160px]">
@@ -504,9 +504,9 @@ export default function SATPractice() {
                  <Trophy className="w-8 h-8 text-yellow-400" />
                  <span className="text-sm font-black tracking-[0.5em] uppercase text-yellow-400">Session Complete</span>
               </div>
-              <h1 className="text-[120px] font-black text-shimmer leading-none mb-12">RESULTS.</h1>
+              <h1 className="text-7xl font-black text-shimmer leading-none mb-12">RESULTS.</h1>
               <div className="glass-3d p-20 mb-12 max-w-2xl mx-auto">
-                 <div className="text-[160px] font-black text-white leading-none mb-4 tracking-tighter">{pct}%</div>
+                 <div className="text-8xl font-black text-white leading-none mb-4 tracking-tighter">{pct}%</div>
                  <div className="flex items-center justify-center gap-12 mb-16">
                     <div className="text-center">
                        <p className="text-4xl font-black">{correct}</p>

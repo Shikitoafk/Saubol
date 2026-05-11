@@ -45,7 +45,7 @@ export default function Home() {
                   <span className="text-[10px] font-black tracking-[0.6em] uppercase text-blue-400">Next Generation Education Platform</span>
                 </div>
                 
-                <h1 className="text-8xl md:text-[160px] font-black tracking-tighter leading-[0.8] text-shimmer mb-8">
+                <h1 className="text-6xl md:text-8xl font-black tracking-tighter leading-[0.8] text-shimmer mb-8">
                   DREAM. <br />
                   SUCCEED. <br />
                   REPEAT.
@@ -79,24 +79,6 @@ export default function Home() {
             </div>
           </section>
 
-          {/* Statistics Bar - The Trust Section */}
-          <section className="py-24 border-y border-white/5 bg-white/[0.01]">
-            <div className="max-w-[1400px] mx-auto px-10">
-              <div className="grid grid-cols-2 md:grid-cols-4 gap-12">
-                {[
-                  { label: "Success Rate", val: "94%", color: "text-emerald-400" },
-                  { label: "Universities", val: "100+", color: "text-blue-400" },
-                  { label: "Active Students", val: "2.4k", color: "text-purple-400" },
-                  { label: "Scholarships", val: "$12M", color: "text-shimmer" }
-                ].map((stat, i) => (
-                  <div key={i} className="text-center">
-                    <p className={`text-6xl font-black mb-2 ${stat.color}`}>{stat.val}</p>
-                    <p className="text-[10px] font-black text-[#444] uppercase tracking-[0.4em]">{stat.label}</p>
-                  </div>
-                ))}
-              </div>
-            </div>
-          </section>
 
           {/* Main Features Grid */}
           <section className="py-48 px-10 max-w-[1400px] mx-auto">
@@ -106,7 +88,7 @@ export default function Home() {
                     <Zap className="w-5 h-5 text-indigo-400" />
                     <span className="text-[10px] font-black tracking-[0.4em] uppercase text-indigo-400">Core Ecosystem</span>
                   </div>
-                  <h2 className="text-7xl font-black tracking-tighter uppercase">Powering your <br /> potential.</h2>
+                  <h2 className="text-5xl font-black tracking-tighter uppercase">Powering your <br /> potential.</h2>
                </div>
                <p className="text-[#666] text-xl font-medium max-w-sm mb-4">
                  Инструменты мирового уровня, доступные каждому абитуриенту Saubol.
@@ -123,7 +105,7 @@ export default function Home() {
                   <div className="w-16 h-16 bg-white/5 rounded-2xl flex items-center justify-center border border-white/10 mb-12 group-hover:border-white/40 transition-all">
                     <Brain className="w-8 h-8 text-white" />
                   </div>
-                  <h3 className="text-7xl font-black mb-8 leading-tight">IELTS <br /> MASTERING.</h3>
+                  <h3 className="text-5xl font-black mb-8 leading-tight">IELTS <br /> MASTERING.</h3>
                   <p className="text-[#888] text-2xl leading-relaxed max-w-lg font-medium">
                     Адаптивная система подготовки с искусственным интеллектом для анализа твоего Writing и Speaking.
                   </p>
@@ -184,7 +166,7 @@ export default function Home() {
                    <Brain className="w-6 h-6 text-indigo-400" />
                    <span className="text-[12px] font-black tracking-[0.6em] uppercase text-indigo-400">Intelligence Accelerated</span>
                 </div>
-                <h2 className="text-7xl md:text-9xl font-black tracking-tighter mb-16 leading-none">THE AI <br /> ADVANTAGE.</h2>
+                <h2 className="text-5xl md:text-7xl font-black tracking-tighter mb-16 leading-none">THE AI <br /> ADVANTAGE.</h2>
                 <div className="grid md:grid-cols-3 gap-12 text-left">
                    {[
                      { title: "Smart Scoring", desc: "Мгновенная оценка эссе по официальным критериям IELTS с детальным разбором ошибок." },
@@ -205,7 +187,7 @@ export default function Home() {
             <div className="max-w-[1400px] mx-auto glass-3d p-32 text-center relative overflow-hidden group">
                <div className="absolute inset-0 bg-gradient-to-r from-blue-600/10 to-indigo-600/10 opacity-0 group-hover:opacity-100 transition-opacity duration-1000" />
                <div className="relative z-10">
-                  <h2 className="text-7xl md:text-[140px] font-black mb-16 tracking-tighter leading-none text-shimmer">UNLEASH <br /> YOUR FUTURE.</h2>
+                  <h2 className="text-5xl md:text-[80px] font-black mb-16 tracking-tighter leading-none text-shimmer">UNLEASH <br /> YOUR FUTURE.</h2>
                   <p className="text-2xl text-[#666] mb-20 font-medium max-w-2xl mx-auto">Присоединяйся к сообществу Saubol и начни свой путь в лучшие университеты мира уже сегодня.</p>
                   <Button 
                     size="lg" 

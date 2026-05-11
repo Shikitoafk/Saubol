@@ -30,7 +30,7 @@ export default function Admissions() {
               <Globe className="w-5 h-5 text-emerald-400" />
               <span className="text-[10px] font-black tracking-[0.4em] uppercase text-emerald-400">Admissions Strategy</span>
             </div>
-            <h1 className="text-6xl md:text-9xl font-black tracking-tighter text-shimmer leading-[0.85] mb-10 uppercase">
+            <h1 className="text-5xl md:text-7xl font-black tracking-tighter text-shimmer leading-[0.85] mb-10 uppercase">
               YOUR GLOBAL <br /> FUTURE.
             </h1>
             <p className="text-xl text-[#666] font-medium max-w-2xl leading-relaxed">
