@@ -187,6 +187,72 @@ export default function SATPractice() {
     setIsDesmosOpen(false);
   };
 
+  const updateTopicPerformance = async (userId: string, q: SATQuestion, correct: boolean) => {
+    try {
+      // Fetch current performance for this topic
+      const { data: currentPerf } = await supabase
+        .from('topic_performance')
+        .select('*')
+        .eq('user_id', userId)
+        .eq('topic', q.category)
+        .maybeSingle();
+
+      if (currentPerf) {
+        await supabase
+          .from('topic_performance')
+          .update({
+            questions_answered: currentPerf.questions_answered + 1,
+            questions_correct: currentPerf.questions_correct + (correct ? 1 : 0),
+          })
+          .eq('id', currentPerf.id);
+      } else {
+        await supabase
+          .from('topic_performance')
+          .insert({
+            user_id: userId,
+            topic: q.category,
+            section: q.section,
+            questions_answered: 1,
+            questions_correct: correct ? 1 : 0
+          });
+      }
+
+      // Update Streak
+      const today = new Date().toISOString().split('T')[0];
+      const { data: streak } = await supabase
+        .from('user_streaks')
+        .select('*')
+        .eq('user_id', userId)
+        .maybeSingle();
+
+      if (streak) {
+        if (streak.last_activity_date !== today) {
+          const isConsecutive = new Date(streak.last_activity_date).getTime() >= new Date(today).getTime() - 86400000;
+          const nextStreak = isConsecutive ? streak.current_streak + 1 : 1;
+          await supabase
+            .from('user_streaks')
+            .update({
+              current_streak: nextStreak,
+              last_activity_date: today,
+              longest_streak: Math.max(nextStreak, streak.longest_streak)
+            })
+            .eq('user_id', userId);
+        }
+      } else {
+        await supabase
+          .from('user_streaks')
+          .insert({
+            user_id: userId,
+            current_streak: 1,
+            last_activity_date: today,
+            longest_streak: 1
+          });
+      }
+    } catch (err) {
+      console.error("Error updating performance metrics:", err);
+    }
+  };
+
   const handleMCAnswer = async (label: string) => {
     if (answerState) return;
     const q = questions[currentIdx];
@@ -205,6 +271,7 @@ export default function SATPractice() {
         difficulty: q.difficulty,
         correct
       });
+      await updateTopicPerformance(session.user.id, q, correct);
     }
   };
 
@@ -226,6 +293,7 @@ export default function SATPractice() {
         difficulty: q.difficulty,
         correct
       });
+      await updateTopicPerformance(session.user.id, q, correct);
     }
   };
 

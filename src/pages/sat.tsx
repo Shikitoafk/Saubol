@@ -9,7 +9,9 @@ import {
   BookOpen,
   Zap,
   Clock,
-  TrendingUp
+  TrendingUp,
+  Brain,
+  History
 } from "lucide-react";
 import { Layout } from "@/components/layout";
 import { Button } from "@/components/ui/button";
@@ -43,17 +45,49 @@ export default function SatPrep() {
           className="max-w-[1400px] mx-auto px-10 py-32 relative z-10"
         >
           {/* Header Section */}
-          <motion.div variants={item} className="mb-32">
-            <div className="flex items-center gap-3 mb-8 opacity-60">
-              <Target className="w-6 h-6 text-violet-400" />
-              <span className="text-[11px] font-black tracking-[0.5em] uppercase text-violet-400">Adaptive Intelligence Hub</span>
+          <motion.div variants={item} className="mb-32 flex flex-col md:flex-row justify-between items-start gap-12">
+            <div className="max-w-3xl">
+              <div className="flex items-center gap-3 mb-8 opacity-60">
+                <Target className="w-6 h-6 text-violet-400" />
+                <span className="text-[11px] font-black tracking-[0.5em] uppercase text-violet-400">Adaptive Intelligence Hub</span>
+              </div>
+              <h1 className="text-8xl md:text-[140px] font-black tracking-tighter text-shimmer leading-[0.8] mb-12 uppercase italic">
+                SAT <br /> STRATEGIST.
+              </h1>
+              <p className="text-2xl text-[#666] font-medium max-w-2xl leading-tight mb-12">
+                Персонализированная система подготовки к Digital SAT. Мы используем адаптивные алгоритмы для максимизации твоего результата.
+              </p>
+              
+              <div className="flex flex-wrap gap-6">
+                <Button 
+                  onClick={() => nav("/sat/diagnostic")}
+                  className="bg-white text-black hover:bg-gray-100 rounded-2xl px-12 h-20 font-black uppercase text-xs shadow-[0_20px_40px_rgba(255,255,255,0.1)] transition-transform hover:scale-105 active:scale-95"
+                >
+                  Start Diagnostic <Sparkles className="ml-2 w-4 h-4 fill-current" />
+                </Button>
+                <Button 
+                  onClick={() => nav("/sat/dashboard")}
+                  variant="outline"
+                  className="border-white/10 text-white hover:bg-white/5 rounded-2xl px-12 h-20 font-black uppercase text-xs transition-all"
+                >
+                  Performance Dashboard <TrendingUp className="ml-2 w-4 h-4" />
+                </Button>
+              </div>
             </div>
-            <h1 className="text-8xl md:text-[140px] font-black tracking-tighter text-shimmer leading-[0.8] mb-12 uppercase italic">
-              SAT <br /> STRATEGIST.
-            </h1>
-            <p className="text-2xl text-[#666] font-medium max-w-2xl leading-tight">
-              Персонализированная система подготовки к Digital SAT. Мы используем адаптивные алгоритмы для максимизации твоего результата в кратчайшие сроки.
-            </p>
+
+            {/* AI Advisor Card */}
+            <div className="glass-3d p-12 w-full md:w-96 border-indigo-500/20 bg-indigo-500/5">
+               <div className="flex items-center gap-3 mb-8">
+                  <Brain className="w-6 h-6 text-indigo-400" />
+                  <span className="text-[10px] font-black uppercase tracking-widest text-indigo-400">AI Study Advisor</span>
+               </div>
+               <p className="text-white/60 text-sm font-medium leading-relaxed mb-10">
+                 Ваш план подготовки еще не активен. Пройдите диагностику, чтобы система построила ваш личный путь к 1550+.
+               </p>
+               <div className="flex items-center gap-3 text-xs font-black uppercase tracking-widest text-white/20">
+                  <History className="w-4 h-4" /> Last analyzed: Never
+               </div>
+            </div>
           </motion.div>
 
           {/* Main Modules Grid */}
