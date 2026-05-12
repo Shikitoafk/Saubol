@@ -58,6 +58,7 @@ export default function Dashboard() {
     const getUserAndProgress = async () => {
       try {
         const { data: { session }, error: sessionError } = await supabase.auth.getSession();
+        console.log('Session:', session);
         if (sessionError || !session) {
           navigate('/login');
           return;
@@ -65,18 +66,24 @@ export default function Dashboard() {
         setUser(session.user);
 
         // Fetch SAT Progress
-        const { data: progressData } = await supabase
+        const { data: progressData, error: progressError } = await supabase
           .from('user_progress')
           .select('*')
           .eq('user_id', session.user.id)
           .order('answered_at', { ascending: false });
+        
+        console.log('SAT Progress Data:', progressData);
+        if (progressError) console.error('SAT Fetch Error:', progressError);
 
         // Fetch IELTS Progress
-        const { data: ieltsData } = await supabase
+        const { data: ieltsData, error: ieltsError } = await supabase
           .from('ielts_progress')
           .select('*')
           .eq('user_id', session.user.id)
           .order('completed_at', { ascending: false });
+
+        console.log('IELTS Progress Data:', ieltsData);
+        if (ieltsError) console.error('IELTS Fetch Error:', ieltsError);
 
         const rawProgress = progressData || [];
         const rawIelts = ieltsData || [];
@@ -98,6 +105,7 @@ export default function Dashboard() {
 
         const getAvgBySkill = (skill: string) => {
           const filtered = rawIelts.filter(d => d.skill?.toLowerCase() === skill.toLowerCase());
+          console.log(`Avg for ${skill}:`, filtered);
           return filtered.length === 0 ? 0 : Number((filtered.reduce((acc, curr) => acc + (curr.score || 0), 0) / filtered.length / 10).toFixed(1));
         };
 
@@ -129,6 +137,7 @@ export default function Dashboard() {
         });
         setLoading(false);
       } catch (err: any) {
+        console.error('Dashboard Init Error:', err);
         setError(err.message);
         setLoading(false);
       }

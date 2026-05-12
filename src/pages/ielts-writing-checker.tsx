@@ -64,15 +64,27 @@ const IELTSWritingChecker = () => {
       });
 
       // Save to Supabase
-      const { data: { user } } = await supabase.auth.getUser();
-      if (user) {
-        await supabase.from("ielts_progress").insert({
-          user_id: user.id,
+      const { data: { session }, error: sessionError } = await supabase.auth.getSession();
+      if (sessionError) {
+        console.error('Session error:', sessionError);
+      }
+      
+      if (session?.user) {
+        const { error: insertError } = await supabase.from("ielts_progress").insert({
+          user_id: session.user.id,
           test_name: `Writing (${taskType === "task1" ? "Task 1" : "Task 2"})`,
           skill: "writing",
           score: Math.round(scoringResult.overallBand * 10),
           total: 90,
         });
+
+        if (insertError) {
+          console.error('Error saving progress:', insertError);
+        } else {
+          console.log('IELTS progress saved successfully');
+        }
+      } else {
+        console.warn('No active session found, progress not saved');
       }
     } catch (error) {
       console.error('Scoring error:', error);

@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import AIMatchmakerForm, { MatchmakerData } from "@/components/ai-matchmaker-form";
 import AIMatchmakerResults from "@/components/ai-matchmaker-results";
 
