@@ -19,6 +19,7 @@ import SATDiagnostic from "@/pages/sat-diagnostic";
 import SATStudyPlan from "@/pages/sat-study-plan";
 import SATDashboard from "@/pages/sat-dashboard";
 import Admissions from "@/pages/admissions";
+import AdmissionsCalculator from "@/pages/admissions-calculator";
 import Login from "@/pages/login";
 import Dashboard from "@/pages/dashboard";
 
@@ -49,6 +50,7 @@ function App() {
               <Route path="/sat/test/:section/:slug" element={<SATTestViewer />} />
               
               <Route path="/admissions" element={<Admissions />} />
+              <Route path="/admissions/calculator" element={<AdmissionsCalculator />} />
               <Route path="/login" element={<Login />} />
               <Route path="/dashboard" element={
                 <ProtectedRoute>
