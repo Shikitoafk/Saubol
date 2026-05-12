@@ -12,34 +12,39 @@ import {
   Info
 } from "lucide-react";
 import { MatchmakerData } from "./ai-matchmaker-form";
-import { calculateAdmissionProbability } from "@/lib/sat-logic";
+import { calculateAdmissionChance, SCHOOL_BASE_RATES, AdmissionsProfile } from "@/lib/admissions-logic";
 
 export default function AIMatchmakerResults({ data, onReset }: { data: MatchmakerData, onReset: () => void }) {
-  const sat = parseInt(data.sat) || 0;
-  const gpa = parseFloat(data.gpa) || 0;
+  const sat = parseInt(data.sat) || 1200;
+  const gpa = parseFloat(data.gpa) || 3.5;
+  const ielts = parseFloat(data.ielts) || 6.5;
 
-  // Realistic matching for top global schools from Kazakhstan context
-  const getResults = (ranking: number, schoolName: string) => {
-    return calculateAdmissionProbability({
-      sat,
-      gpa,
-      research: false, // In a real app, these would come from the form
-      olympiad: false,
-      company: false,
-      upwardTrend: true,
-      noExtracurriculars: false,
-      schoolRanking: ranking
-    });
+  // Map to new profile format
+  const profile: AdmissionsProfile = {
+    sat,
+    gpa: gpa > 5 ? (gpa / 4) * 5 : gpa, // Basic normalization
+    ielts,
+    research: 'none',
+    olympiad: 'none',
+    extracurriculars: 'participation',
+    region: data.region
   };
 
-  const schools = [
-    { name: "Stanford University", ranking: 10, type: "Reach" },
-    { name: "University of Toronto", ranking: 30, type: "Competitive" },
-    { name: "University of Amsterdam", ranking: 50, type: "Target" }
-  ].map(s => ({
-    ...s,
-    results: getResults(s.ranking, s.name)
-  }));
+  const selectedSchools = SCHOOL_BASE_RATES.slice(0, 5); // Pick a few for the report
+  
+  const schools = selectedSchools.map(school => {
+    const results = calculateAdmissionChance(profile, school);
+    return {
+      name: school.name,
+      type: school.rank <= 10 ? "Reach" : school.rank <= 30 ? "Competitive" : "Target",
+      results: {
+        chance: parseInt(results.range.split('-')[0]), // Use min of range for the simple display
+        range: results.range,
+        verdict: results.verdict,
+        explanation: results.explanations
+      }
+    };
+  });
 
   const overallMatch = Math.round(schools.reduce((acc, s) => acc + s.results.chance, 0) / schools.length);
 
