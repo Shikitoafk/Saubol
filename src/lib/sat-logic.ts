@@ -135,3 +135,12 @@ export function calculateWeightedScore(answers: { correct: boolean; difficulty: 
   const rw = calculateSection('RW');
   return { math, rw, total: math + rw };
 }
+
+/**
+ * Calculates exam readiness index (0-100).
+ */
+export function calculateExamReadiness(accuracy: number, consistency: number, score: number): number {
+  const scoreWeight = ((score - 400) / 1200) * 100;
+  const readiness = (accuracy * 0.4) + (Math.min(consistency, 100) * 0.2) + (scoreWeight * 0.4);
+  return Math.min(Math.round(readiness), 99);
+}
