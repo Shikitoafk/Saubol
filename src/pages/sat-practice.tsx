@@ -99,6 +99,8 @@ export default function SATPractice() {
   const [markedQuestions, setMarkedQuestions] = useState<Set<number>>(new Set());
   const [isDesmosOpen, setIsDesmosOpen] = useState(false);
   const timerRef = useRef<any>(null);
+  const masterBank = useRef<SATQuestion[]>([]);
+  const [sessionProgress, setSessionProgress] = useState<any[]>([]);
 
   const [error, setError] = useState<string | null>(null);
 
@@ -154,11 +156,21 @@ export default function SATPractice() {
       alert("No questions available for this section yet. System recalibration in progress.");
       return;
     }
-    setQuestions(qs.sort(() => Math.random() - 0.5));
+    masterBank.current = qs;
+    
+    // Initial adaptive pick: Start with a random Medium question if available
+    const mediumQs = qs.filter(q => q.difficulty === "Medium");
+    const firstQ = mediumQs.length > 0 
+      ? mediumQs[Math.floor(Math.random() * mediumQs.length)] 
+      : qs[Math.floor(Math.random() * qs.length)];
+      
+    setQuestions([firstQ]);
     setPhase("quiz");
     setCurrentIdx(0);
     setElapsed(0);
     setMarkedQuestions(new Set());
+    setSessionAnswers({});
+    setSessionProgress([]);
     timerRef.current = setInterval(() => setElapsed(e => e + 1), 1000);
   };
 
@@ -181,6 +193,7 @@ export default function SATPractice() {
     const correct = label === q.correctAnswer;
     setAnswerState({ selected: label, correct });
     setSessionAnswers(p => ({ ...p, [q.id]: { correct } }));
+    setSessionProgress(p => [...p, { difficulty: q.difficulty, correct }]);
     
     const { data: { session } } = await supabase.auth.getSession();
     if (session) {
@@ -201,6 +214,7 @@ export default function SATPractice() {
     const correct = normalizeAnswer(frInput) === normalizeAnswer(q.correctAnswer);
     setAnswerState({ selected: frInput, correct });
     setSessionAnswers(p => ({ ...p, [q.id]: { correct } }));
+    setSessionProgress(p => [...p, { difficulty: q.difficulty, correct }]);
     
     const { data: { session } } = await supabase.auth.getSession();
     if (session) {
@@ -216,14 +230,38 @@ export default function SATPractice() {
   };
 
   const nextQuestion = () => {
-    if (currentIdx < questions.length - 1) {
-      setCurrentIdx(i => i + 1);
-      setAnswerState(null);
-      setFrInput("");
-    } else {
-      clearInterval(timerRef.current);
-      setPhase("results");
+    // Logic for 10-question adaptive set
+    if (questions.length < 10) {
+      const lastResult = sessionAnswers[questions[currentIdx].id];
+      const currentDiff = questions[currentIdx].difficulty;
+      const diffs = ["Easy", "Medium", "Hard"];
+      let nextDiffIdx = diffs.indexOf(currentDiff);
+      
+      if (lastResult.correct) {
+        nextDiffIdx = Math.min(nextDiffIdx + 1, 2);
+      } else {
+        nextDiffIdx = Math.max(nextDiffIdx - 1, 0);
+      }
+      
+      const nextDiff = diffs[nextDiffIdx];
+      const usedIds = new Set(questions.map(q => q.id));
+      
+      let pool = masterBank.current.filter(q => q.difficulty === nextDiff && !usedIds.has(q.id));
+      if (pool.length === 0) pool = masterBank.current.filter(q => !usedIds.has(q.id));
+      
+      if (pool.length > 0) {
+        const nextQ = pool[Math.floor(Math.random() * pool.length)];
+        setQuestions(prev => [...prev, nextQ]);
+        setCurrentIdx(i => i + 1);
+        setAnswerState(null);
+        setFrInput("");
+        return;
+      }
     }
+
+    // End session if 10 questions reached or no more questions
+    clearInterval(timerRef.current);
+    setPhase("results");
   };
 
   if (loading) return (
@@ -492,8 +530,17 @@ export default function SATPractice() {
   /* ── Results ────────────────────────────────────────────────────── */
   if (phase === "results") {
     const total = questions.length;
-    const correct = Object.values(sessionAnswers).filter(a => a.correct).length;
+    const correct = Object.values(sessionAnswers).filter((a: any) => a.correct).length;
     const pct = Math.round((correct / total) * 100);
+
+    // Score Prediction Logic
+    const avgDiffBonus = sessionProgress.reduce((acc, curr) => {
+      if (!curr.correct) return acc;
+      if (curr.difficulty === "Hard") return acc + 80;
+      if (curr.difficulty === "Medium") return acc + 40;
+      return acc + 20;
+    }, 0);
+    const predictedScore = Math.min(800, 200 + (correct * 40) + avgDiffBonus);
 
     return (
       <Layout>
@@ -504,27 +551,40 @@ export default function SATPractice() {
                  <Trophy className="w-8 h-8 text-yellow-400" />
                  <span className="text-sm font-black tracking-[0.5em] uppercase text-yellow-400">Session Complete</span>
               </div>
-              <h1 className="text-7xl font-black text-shimmer leading-none mb-12">RESULTS.</h1>
-              <div className="glass-3d p-20 mb-12 max-w-2xl mx-auto">
-                 <div className="text-8xl font-black text-white leading-none mb-4 tracking-tighter">{pct}%</div>
-                 <div className="flex items-center justify-center gap-12 mb-16">
-                    <div className="text-center">
-                       <p className="text-4xl font-black">{correct}</p>
-                       <p className="text-[10px] font-black text-[#444] uppercase tracking-widest mt-2">Correct</p>
-                    </div>
-                    <div className="w-px h-12 bg-white/10" />
-                    <div className="text-center">
-                       <p className="text-4xl font-black">{total - correct}</p>
-                       <p className="text-[10px] font-black text-[#444] uppercase tracking-widest mt-2">Incorrect</p>
-                    </div>
-                    <div className="w-px h-12 bg-white/10" />
-                    <div className="text-center">
-                       <p className="text-4xl font-black">{formatTime(elapsed)}</p>
-                       <p className="text-[10px] font-black text-[#444] uppercase tracking-widest mt-2">Time spent</p>
-                    </div>
-                 </div>
-                 <Button onClick={exitQuiz} className="bg-white text-black hover:bg-gray-200 rounded-2xl px-16 h-20 text-xl font-black shadow-[0_20px_40px_rgba(255,255,255,0.1)] transition-all hover:scale-105 active:scale-95">Back to Bank</Button>
+              <h1 className="text-7xl font-black text-shimmer leading-none mb-12 uppercase italic">Mission Results.</h1>
+              
+              <div className="grid md:grid-cols-2 gap-8 mb-12">
+                <div className="glass-3d p-16 flex flex-col items-center justify-center border-indigo-500/20">
+                   <div className="text-[10px] font-black text-indigo-400 uppercase tracking-widest mb-4">Accuracy Rating</div>
+                   <div className="text-8xl font-black text-white leading-none mb-4 tracking-tighter">{pct}%</div>
+                   <div className="text-xs font-bold text-white/40 uppercase tracking-widest">{correct} of {total} Questions</div>
+                </div>
+                
+                <div className="glass-3d p-16 flex flex-col items-center justify-center border-yellow-500/20">
+                   <div className="text-[10px] font-black text-yellow-500 uppercase tracking-widest mb-4">Predicted Score</div>
+                   <div className="text-8xl font-black text-white leading-none mb-4 tracking-tighter">{predictedScore}</div>
+                   <div className="text-xs font-bold text-white/40 uppercase tracking-widest">Section Projection</div>
+                </div>
               </div>
+
+              <div className="glass-3d p-12 mb-12 max-w-2xl mx-auto flex justify-between items-center px-20">
+                 <div className="text-center">
+                    <p className="text-4xl font-black">{formatTime(elapsed)}</p>
+                    <p className="text-[10px] font-black text-[#444] uppercase tracking-widest mt-2">Time spent</p>
+                 </div>
+                 <div className="w-px h-12 bg-white/10" />
+                 <div className="text-center">
+                    <p className="text-4xl font-black text-emerald-400">Adaptive</p>
+                    <p className="text-[10px] font-black text-[#444] uppercase tracking-widest mt-2">Mode</p>
+                 </div>
+                 <div className="w-px h-12 bg-white/10" />
+                 <div className="text-center">
+                    <p className="text-4xl font-black text-blue-400">{sessionProgress.filter(p => p.difficulty === 'Hard').length}</p>
+                    <p className="text-[10px] font-black text-[#444] uppercase tracking-widest mt-2">Hard Qs</p>
+                 </div>
+              </div>
+              
+              <Button onClick={exitQuiz} className="bg-white text-black hover:bg-gray-200 rounded-2xl px-16 h-20 text-xl font-black shadow-[0_20px_40px_rgba(255,255,255,0.1)] transition-all hover:scale-105 active:scale-95">Back to Command Center</Button>
            </div>
         </div>
       </Layout>

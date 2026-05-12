@@ -122,18 +122,14 @@ export default function SatPrep() {
           </div>
 
           {/* Tactical Bottom Section */}
-          <motion.div variants={item} className="mt-48 flex flex-col md:flex-row justify-between items-end gap-12">
-             <div className="max-w-xl">
-                <h3 className="text-4xl font-black tracking-tighter uppercase italic mb-6">Designed for 1550+.</h3>
-                <p className="text-lg text-[#444] font-medium uppercase tracking-widest leading-relaxed">
-                   Наша платформа анализирует каждый твой ответ. Чем больше ты практикуешься, тем точнее наши прогнозы. 
+          <motion.div variants={item} className="mt-48 pb-20">
+             <div className="max-w-4xl">
+                <h3 className="text-7xl md:text-[100px] font-black tracking-tighter uppercase mb-12 leading-none">
+                  DESIGNED FOR 1550+.
+                </h3>
+                <p className="text-2xl md:text-3xl text-[#444] font-bold uppercase tracking-tight leading-[1.1] max-w-3xl">
+                   НАША ПЛАТФОРМА АНАЛИЗИРУЕТ КАЖДЫЙ ТВОЙ ОТВЕТ. ЧЕМ БОЛЬШЕ ТЫ ПРАКТИКУЕШЬСЯ, ТЕМ ТОЧНЕЕ НАШИ ПРОГНОЗЫ. 
                 </p>
-             </div>
-             <div className="flex items-center gap-10">
-                <div className="text-right">
-                   <p className="text-[10px] font-black text-white/20 uppercase tracking-[0.5em] mb-4">Secure Prep Uplink</p>
-                   <p className="text-xs font-black text-white/40 uppercase tracking-[0.3em]">Saubol Analytics System v4.2</p>
-                </div>
              </div>
           </motion.div>
         </motion.div>
