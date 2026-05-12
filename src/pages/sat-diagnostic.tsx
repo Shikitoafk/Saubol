@@ -17,7 +17,7 @@ import {
 import { supabase } from "@/lib/supabase";
 import { calculateWeightedScore } from "@/lib/sat-logic";
 import { SAT_QUESTION_BANK } from "@/data/sat-questions";
-import { InlineMath, BlockMath } from 'react-katex';
+import katex from 'katex';
 import 'katex/dist/katex.min.css';
 
 export default function SATDiagnostic() {
@@ -103,13 +103,16 @@ export default function SATDiagnostic() {
   };
 
   const renderText = (text: string) => {
-    if (!text) return null;
-    const parts = text.split(/(\$\$[\s\S]+?\$\$|\$[\s\S]+?\$)/g);
-    return parts.map((part, i) => {
-      if (part.startsWith('$$')) return <BlockMath key={i} math={part.slice(2, -2)} />;
-      if (part.startsWith('$')) return <InlineMath key={i} math={part.slice(1, -1)} />;
-      return <span key={i}>{part}</span>;
-    });
+    if (!text) return "";
+    try {
+      return text.replace(/\$\$([\s\S]+?)\$\$/g, (_, math) => 
+        katex.renderToString(math, { displayMode: true, throwOnError: false })
+      ).replace(/\$([\s\S]+?)\$/g, (_, math) => 
+        katex.renderToString(math, { displayMode: false, throwOnError: false })
+      );
+    } catch (e) {
+      return text;
+    }
   };
 
   if (loading) return <Layout><div className="min-h-screen bg-black flex items-center justify-center"><Brain className="w-12 h-12 animate-spin text-indigo-500" /></div></Layout>;
@@ -164,13 +167,13 @@ export default function SATDiagnostic() {
                   <p className="text-lg leading-relaxed font-medium text-white/80">{q.passage}</p>
                 </div>
               )}
-              <div className="text-2xl font-black leading-tight tracking-tight">{renderText(q.question)}</div>
+              <div className="text-2xl font-black leading-tight tracking-tight" dangerouslySetInnerHTML={{ __html: renderText(q.question) }} />
             </div>
 
             <div className="space-y-4">
               {q?.options?.map((opt: string, i: number) => (
                 <button key={i} onClick={() => handleSelect(i)} className={`w-full p-8 text-left rounded-2xl border transition-all flex items-center justify-between group ${answers?.[currentIdx] === i ? 'bg-white text-black border-white' : 'bg-white/5 border-white/5 hover:border-white/20'}`}>
-                  <span className="text-lg font-bold">{renderText(opt)}</span>
+                  <span className="text-lg font-bold" dangerouslySetInnerHTML={{ __html: renderText(opt) }} />
                   <div className={`w-8 h-8 rounded-xl border flex items-center justify-center text-[10px] font-black ${answers?.[currentIdx] === i ? 'border-black' : 'border-white/10'}`}>{String.fromCharCode(65 + i)}</div>
                 </button>
               ))}

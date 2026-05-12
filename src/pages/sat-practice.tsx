@@ -18,7 +18,7 @@ import { Layout } from "@/components/layout";
 import { Button } from "@/components/ui/button";
 import { supabase } from "@/lib/supabase";
 import { SAT_QUESTION_BANK } from "@/data/sat-questions";
-import { InlineMath, BlockMath } from 'react-katex';
+import katex from 'katex';
 import 'katex/dist/katex.min.css';
 import { motion, AnimatePresence } from "framer-motion";
 
@@ -79,13 +79,16 @@ export default function SATPractice() {
   };
 
   const renderText = (text: string) => {
-    if (!text) return null;
-    const parts = text.split(/(\$\$[\s\S]+?\$\$|\$[\s\S]+?\$)/g);
-    return parts.map((part, i) => {
-      if (part.startsWith('$$')) return <BlockMath key={i} math={part.slice(2, -2)} />;
-      if (part.startsWith('$')) return <InlineMath key={i} math={part.slice(1, -1)} />;
-      return <span key={i}>{part}</span>;
-    });
+    if (!text) return "";
+    try {
+      return text.replace(/\$\$([\s\S]+?)\$\$/g, (_, math) => 
+        katex.renderToString(math, { displayMode: true, throwOnError: false })
+      ).replace(/\$([\s\S]+?)\$/g, (_, math) => 
+        katex.renderToString(math, { displayMode: false, throwOnError: false })
+      );
+    } catch (e) {
+      return text;
+    }
   };
 
   if (phase === "bank") {
@@ -165,7 +168,7 @@ export default function SATPractice() {
                     <p className="text-lg leading-relaxed font-medium text-white/80">{q.passage}</p>
                   </div>
                 )}
-                <div className="text-2xl font-black leading-tight tracking-tight">{renderText(q?.question || "")}</div>
+                <div className="text-2xl font-black leading-tight tracking-tight" dangerouslySetInnerHTML={{ __html: renderText(q?.question || "") }} />
               </div>
               
               <div className="flex flex-col gap-4 overflow-y-auto custom-scrollbar">
@@ -177,7 +180,7 @@ export default function SATPractice() {
                   >
                     <div className="flex items-center gap-6">
                       <div className="w-10 h-10 rounded-xl bg-white/5 flex items-center justify-center border border-white/10 font-black text-sm">{String.fromCharCode(65 + i)}</div>
-                      <div className="text-lg font-bold">{renderText(opt)}</div>
+                      <div className="text-lg font-bold" dangerouslySetInnerHTML={{ __html: renderText(opt) }} />
                     </div>
                   </button>
                 ))}
@@ -186,7 +189,7 @@ export default function SATPractice() {
                   {answerState && (
                     <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="glass-3d p-10 border-indigo-500/20 bg-indigo-500/5 mt-6">
                        <div className="flex items-center gap-3 mb-6"><Sparkles className="w-4 h-4 text-indigo-400" /><h4 className="text-[10px] font-black uppercase tracking-widest text-indigo-400">Strategy & Explanation</h4></div>
-                       <div className="text-white/70 font-medium text-sm block leading-relaxed mb-10">{renderText(q?.explanation || "")}</div>
+                       <div className="text-white/70 font-medium text-sm block leading-relaxed mb-10" dangerouslySetInnerHTML={{ __html: renderText(q?.explanation || "") }} />
                        <Button onClick={nextQuestion} className="bg-white text-black hover:bg-gray-100 w-full h-16 font-black uppercase text-xs rounded-xl flex items-center justify-center gap-2">Next Question <ChevronRight className="w-4 h-4" /></Button>
                     </motion.div>
                   )}
