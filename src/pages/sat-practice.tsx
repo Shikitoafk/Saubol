@@ -195,10 +195,9 @@ export default function SATPractice() {
             </div>
           </div>
         </div>
-      </div>
-    </Layout>
-  );
-}
+      </Layout>
+    );
+  }
 
   if (phase === "results") {
     const total = questions?.length || 0;
