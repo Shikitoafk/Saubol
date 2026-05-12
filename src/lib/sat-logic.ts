@@ -1,6 +1,6 @@
 /**
- * SAT Logic Engine
- * Handles scoring calculations, study plan generation, and performance analysis.
+ * SAT Logic Engine v2.0
+ * Improved scoring, realistic admissions, and intelligent study planning.
  */
 
 export interface TopicStats {
@@ -12,38 +12,57 @@ export interface TopicStats {
 export interface StudyDay {
   day: string;
   topic: string;
+  subtopic: string;
   questions: number;
   completed: boolean;
+  type: 'practice' | 'test' | 'review';
 }
 
 export interface StudyPlan {
   week: number;
   schedule: StudyDay[];
   estimatedImprovement: number;
+  focusTopics: string[];
 }
 
 const TOPICS = {
-  Math: ['Algebra', 'Advanced Math', 'Problem Solving & Data Analysis', 'Geometry & Trigonometry'],
-  RW: ['Craft & Structure', 'Information & Ideas', 'Standard English Conventions', 'Expression of Ideas']
+  Math: [
+    { name: 'Algebra', subtopics: ['Linear Equations', 'Systems of Equations', 'Linear Inequalities'] },
+    { name: 'Advanced Math', subtopics: ['Quadratic Equations', 'Exponential Functions', 'Polynomials'] },
+    { name: 'Problem Solving & Data Analysis', subtopics: ['Ratios & Proportions', 'Probability', 'Statistical Inference'] },
+    { name: 'Geometry & Trigonometry', subtopics: ['Right Triangles', 'Circles', 'Volume & Surface Area'] }
+  ],
+  RW: [
+    { name: 'Craft & Structure', subtopics: ['Vocabulary in Context', 'Text Structure', 'Cross-Text Connections'] },
+    { name: 'Information & Ideas', subtopics: ['Central Ideas', 'Textual Evidence', 'Inferences'] },
+    { name: 'Standard English Conventions', subtopics: ['Boundaries', 'Form/Structure/Punctuation'] },
+    { name: 'Expression of Ideas', subtopics: ['Transitions', 'Rhetorical Synthesis'] }
+  ]
 };
 
 /**
- * Calculates SAT score based on diagnostic performance (20 questions total)
- * Scaled from 400 to 1600.
- * In a real SAT, 20 questions is a small sample, so we extrapolate.
+ * Weighted scoring for diagnostic (20 questions)
+ * Easy: 1.0x, Medium: 1.5x, Hard: 2.0x
  */
-export function calculateDiagnosticScore(answers: { correct: boolean; section: 'Math' | 'RW'; topic: string }[]) {
-  const mathAnswers = answers.filter(a => a.section === 'Math');
-  const rwAnswers = answers.filter(a => a.section === 'RW');
+export function calculateDiagnosticScore(answers: { correct: boolean; section: 'Math' | 'RW'; topic: string; difficulty: 'Easy' | 'Medium' | 'Hard' }[]) {
+  const calculateSection = (section: 'Math' | 'RW') => {
+    const sectionAnswers = answers.filter(a => a.section === section);
+    let totalWeight = 0;
+    let earnedWeight = 0;
 
-  const mathCorrect = mathAnswers.filter(a => a.correct).length;
-  const rwCorrect = rwAnswers.filter(a => a.correct).length;
+    sectionAnswers.forEach(a => {
+      const weight = a.difficulty === 'Hard' ? 2.0 : a.difficulty === 'Medium' ? 1.5 : 1.0;
+      totalWeight += weight;
+      if (a.correct) earnedWeight += weight;
+    });
 
-  // Simple extrapolation for 20 questions (10 Math, 10 RW)
-  // Max possible per section in real SAT is 800.
-  // Base score is 200 per section.
-  const mathScore = 200 + Math.round((mathCorrect / Math.max(1, mathAnswers.length)) * 600);
-  const rwScore = 200 + Math.round((rwCorrect / Math.max(1, rwAnswers.length)) * 600);
+    const ratio = earnedWeight / Math.max(1, totalWeight);
+    // Base 200, scale to 800
+    return 200 + Math.round(ratio * 600);
+  };
+
+  const mathScore = calculateSection('Math');
+  const rwScore = calculateSection('RW');
 
   const topics = [...new Set(answers.map(a => a.topic))];
   const performancePerTopic = topics.map(topic => {
@@ -56,8 +75,8 @@ export function calculateDiagnosticScore(answers: { correct: boolean; section: '
     };
   });
 
-  const weakTopics = performancePerTopic.filter(t => t.accuracy < 70).map(t => t.topic);
-  const strongTopics = performancePerTopic.filter(t => t.accuracy >= 70).map(t => t.topic);
+  const weakTopics = performancePerTopic.sort((a, b) => a.accuracy - b.accuracy).slice(0, 3).map(t => t.topic);
+  const strongTopics = performancePerTopic.sort((a, b) => b.accuracy - a.accuracy).slice(0, 2).map(t => t.topic);
 
   return {
     overallScore: mathScore + rwScore,
@@ -70,35 +89,39 @@ export function calculateDiagnosticScore(answers: { correct: boolean; section: '
 }
 
 /**
- * Generates a weekly study plan based on weak topics.
+ * Intelligent Study Plan Generator
+ * Week 1: 70% Weakest, 30% Second Weakest
+ * Saturday: Practice Test, Sunday: Review
  */
 export function generateStudyPlan(weakTopics: string[], strongTopics: string[]): StudyPlan {
   const days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
   const schedule: StudyDay[] = [];
 
-  // Mix weak and strong topics, prioritizing weak ones
-  const allTopics = [...weakTopics, ...strongTopics];
-  if (allTopics.length === 0) {
-    // Fallback if no data
-    allTopics.push(...TOPICS.Math, ...TOPICS.RW);
-  }
+  const focus1 = weakTopics[0] || 'Algebra';
+  const focus2 = weakTopics[1] || 'Craft & Structure';
 
-  days.forEach((day, index) => {
-    // Weekend logic: Review or Rest
-    if (day === 'Sunday') {
-      schedule.push({ day, topic: 'Full Review', questions: 30, completed: false });
-    } else if (day === 'Saturday') {
-      schedule.push({ day, topic: 'Practice Test', questions: 50, completed: false });
+  days.forEach((day) => {
+    if (day === 'Saturday') {
+      schedule.push({ day, topic: 'Full Section', subtopic: 'Mixed Practice Test', questions: 54, completed: false, type: 'test' });
+    } else if (day === 'Sunday') {
+      schedule.push({ day, topic: 'Review', subtopic: 'Analysis of Incorrect Answers', questions: 0, completed: false, type: 'review' });
     } else {
-      // Pick a topic, rotate through weak ones first
-      const topicIndex = index % Math.max(1, weakTopics.length);
-      const topic = weakTopics.length > 0 ? weakTopics[topicIndex] : allTopics[index % allTopics.length];
+      // 70% chance for primary focus (Mon, Tue, Wed, Fri), 30% for secondary (Thu)
+      const isPrimary = ['Monday', 'Tuesday', 'Wednesday', 'Friday'].includes(day);
+      const topic = isPrimary ? focus1 : focus2;
       
+      // Find a subtopic
+      const sectionTopics = [...TOPICS.Math, ...TOPICS.RW];
+      const topicData = sectionTopics.find(t => t.name === topic);
+      const subtopic = topicData ? topicData.subtopics[Math.floor(Math.random() * topicData.subtopics.length)] : 'General Practice';
+
       schedule.push({
         day,
         topic,
-        questions: 20,
-        completed: false
+        subtopic,
+        questions: isPrimary ? 25 : 15,
+        completed: false,
+        type: 'practice'
       });
     }
   });
@@ -106,21 +129,80 @@ export function generateStudyPlan(weakTopics: string[], strongTopics: string[]):
   return {
     week: 1,
     schedule,
-    estimatedImprovement: weakTopics.length * 15 // Roughly 15 points per weak topic targeted
+    estimatedImprovement: 15 + Math.round(weakTopics.length * 5),
+    focusTopics: [focus1, focus2]
   };
 }
 
 /**
- * Predicted score based on current accuracy trajectory.
+ * Realistic Admissions Probability Engine
  */
-export function predictFutureScore(currentScore: number, accuracyTrend: number[]) {
-  if (accuracyTrend.length < 2) return currentScore;
+export function calculateAdmissionProbability(data: {
+  sat: number;
+  gpa: number;
+  research?: boolean;
+  olympiad?: boolean;
+  company?: boolean;
+  upwardTrend?: boolean;
+  noExtracurriculars?: boolean;
+  schoolRanking: number; // 1-100
+}) {
+  let baseChance = 0;
+  let explanation: string[] = [];
+
+  // Base rates for Kazakhstan applicants
+  if (data.schoolRanking <= 10) baseChance = 5;
+  else if (data.schoolRanking <= 30) baseChance = 15;
+  else if (data.schoolRanking <= 50) baseChance = 25;
+  else baseChance = 45;
+
+  explanation.push(`Base international acceptance rate for Top ${data.schoolRanking}: ${baseChance}%`);
+
+  // SAT Adjustments
+  const schoolMedian = data.schoolRanking <= 10 ? 1550 : data.schoolRanking <= 30 ? 1520 : 1480;
+  if (data.sat < schoolMedian) {
+    const penalty = 10;
+    baseChance -= penalty;
+    explanation.push(`SAT ${data.sat} is below median (${schoolMedian}): -${penalty}%`);
+  } else {
+    const bonus = 5;
+    baseChance += bonus;
+    explanation.push(`SAT ${data.sat} is competitive: +${bonus}%`);
+  }
+
+  // GPA Adjustments
+  if (data.gpa < 3.7) {
+    baseChance -= 15;
+    explanation.push(`GPA ${data.gpa} is significantly below target: -15%`);
+  }
+
+  // Factor Bonuses
+  if (data.research) { baseChance += 15; explanation.push("Published research paper: +15%"); }
+  if (data.olympiad) { baseChance += 10; explanation.push("International Olympiad medal: +10%"); }
+  if (data.company) { baseChance += 8; explanation.push("Founded company with users: +8%"); }
+  if (data.upwardTrend) { baseChance += 5; explanation.push("Strong upward GPA trend: +5%"); }
+
+  // Factor Penalties
+  if (data.noExtracurriculars) { baseChance -= 8; explanation.push("Missing extracurricular portfolio: -8%"); }
+
+  // Clamp results
+  const finalChance = Math.min(95, Math.max(2, baseChance));
   
-  const recentAccuracy = accuracyTrend[accuracyTrend.length - 1];
-  const previousAccuracy = accuracyTrend[accuracyTrend.length - 2];
+  return {
+    chance: finalChance,
+    explanation,
+    verdict: finalChance > 70 ? "Strong Candidate" : finalChance > 40 ? "Competitive" : "Reach / Long Shot"
+  };
+}
+
+/**
+ * Exam Readiness Logic
+ */
+export function calculateExamReadiness(accuracy: number, consistency: number, diagnosticScore: number) {
+  // accuracy (0-100), consistency (0-100), diagnosticScore (400-1600)
+  const scoreWeight = ((diagnosticScore - 400) / 1200) * 50; // Max 50 pts
+  const accuracyWeight = (accuracy / 100) * 30; // Max 30 pts
+  const consistencyWeight = (consistency / 100) * 20; // Max 20 pts
   
-  const growthFactor = (recentAccuracy - previousAccuracy) / 100;
-  const projectedScore = currentScore + (growthFactor * 200); // Max growth potential of 200 pts
-  
-  return Math.min(1600, Math.max(400, Math.round(projectedScore)));
+  return Math.min(100, Math.round(scoreWeight + accuracyWeight + consistencyWeight));
 }

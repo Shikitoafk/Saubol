@@ -13,7 +13,10 @@ import {
   Trophy,
   History,
   Brain,
-  ArrowUpRight
+  ArrowUpRight,
+  Activity,
+  ShieldCheck,
+  Star
 } from "lucide-react";
 import { 
   AreaChart, 
@@ -28,7 +31,7 @@ import {
   Cell
 } from 'recharts';
 import { supabase } from "@/lib/supabase";
-import { predictFutureScore } from "@/lib/sat-logic";
+import { calculateExamReadiness } from "@/lib/sat-logic";
 
 export default function SATDashboard() {
   const navigate = useNavigate();
@@ -38,8 +41,8 @@ export default function SATDashboard() {
   useEffect(() => {
     const fetchDashboardData = async () => {
       try {
-        const { data: { user } } = await supabase.auth.getUser();
-        if (!user) {
+        const { data: { session } } = await supabase.auth.getSession();
+        if (!session) {
           navigate('/login');
           return;
         }
@@ -48,27 +51,20 @@ export default function SATDashboard() {
         const { data: diagnostics } = await supabase
           .from('sat_diagnostics')
           .select('*')
-          .eq('user_id', user.id)
+          .eq('user_id', session.user.id)
           .order('completed_at', { ascending: false });
-
-        // Fetch Recent Practice
-        const { data: practice } = await supabase
-          .from('user_progress')
-          .select('*')
-          .eq('user_id', user.id)
-          .order('answered_at', { ascending: false });
 
         // Fetch Topic Performance
         const { data: topicPerformance } = await supabase
           .from('topic_performance')
           .select('*')
-          .eq('user_id', user.id);
+          .eq('user_id', session.user.id);
 
         // Fetch Streak
         const { data: streak } = await supabase
           .from('user_streaks')
           .select('*')
-          .eq('user_id', user.id)
+          .eq('user_id', session.user.id)
           .maybeSingle();
 
         const latestDiagnostic = diagnostics?.[0] || { overall_score: 400, math_score: 200, rw_score: 200 };
@@ -81,7 +77,7 @@ export default function SATDashboard() {
           })).reverse() : 
           [
             { date: 'Initial', score: 400 },
-            { date: 'Current', score: latestDiagnostic.overall_score }
+            { date: 'Target', score: 1550 }
           ];
 
         // Process topic accuracy
@@ -90,18 +86,19 @@ export default function SATDashboard() {
           accuracy: Math.round((t.questions_correct / Math.max(1, t.questions_answered)) * 100),
           section: t.section
         })) || [
-          { name: 'Algebra', accuracy: 65, section: 'Math' },
-          { name: 'Geometry', accuracy: 45, section: 'Math' },
-          { name: 'Reading', accuracy: 80, section: 'RW' },
-          { name: 'Writing', accuracy: 72, section: 'RW' }
+          { name: 'Algebra', accuracy: 0, section: 'Math' },
+          { name: 'Geometry', accuracy: 0, section: 'Math' }
         ];
+
+        const avgAccuracy = topicData.length > 0 ? topicData.reduce((acc, curr) => acc + curr.accuracy, 0) / topicData.length : 0;
+        const readiness = calculateExamReadiness(avgAccuracy, (streak?.current_streak || 0) * 10, latestDiagnostic.overall_score);
 
         setStats({
           currentScore: latestDiagnostic.overall_score,
           mathScore: latestDiagnostic.math_score,
           rwScore: latestDiagnostic.rw_score,
           streak: streak?.current_streak || 0,
-          predictedScore: predictFutureScore(latestDiagnostic.overall_score, [60, 70, 75]), // Mock trend
+          readiness,
           scoreHistory,
           topicData
         });
@@ -126,8 +123,6 @@ export default function SATDashboard() {
     );
   }
 
-  const COLORS = ['#6366f1', '#8b5cf6', '#10b981', '#f59e0b', '#ef4444'];
-
   return (
     <Layout>
       <div className="min-h-screen bg-[#000000] text-white selection:bg-white/10 relative overflow-hidden font-sans">
@@ -140,25 +135,29 @@ export default function SATDashboard() {
             <div>
               <div className="flex items-center gap-3 mb-6 opacity-60">
                 <Target className="w-5 h-5 text-indigo-400" />
-                <span className="text-[10px] font-black tracking-[0.6em] uppercase text-indigo-400">Mission Intelligence</span>
+                <span className="text-[10px] font-black tracking-[0.6em] uppercase text-indigo-400">Strategic Command</span>
               </div>
               <h1 className="text-7xl md:text-[140px] font-black tracking-tighter text-shimmer leading-[0.8] uppercase italic">
-                SAT <br /> INSIGHTS.
+                SAT <br /> COMMAND.
               </h1>
             </div>
             
-            <div className="flex items-center gap-8 p-10 glass-3d border-white/10 bg-white/[0.03]">
-               <div>
-                  <p className="text-[10px] font-black text-white/20 uppercase tracking-[0.3em] mb-2">Current Trajectory</p>
-                  <p className="text-5xl font-black text-emerald-400 tracking-tighter uppercase italic">{stats.predictedScore}</p>
-               </div>
-               <div className="w-px h-16 bg-white/10" />
-               <div>
-                  <p className="text-[10px] font-black text-white/20 uppercase tracking-[0.3em] mb-2">Daily Streak</p>
-                  <div className="flex items-center gap-3">
-                     <Zap className="w-6 h-6 text-yellow-500 fill-yellow-500/20" />
-                     <p className="text-4xl font-black tracking-tighter">{stats.streak} DAYS</p>
+            <div className="flex items-center gap-8 p-12 glass-3d border-indigo-500/20 bg-indigo-500/5">
+               <div className="relative">
+                  <div className="w-32 h-32 rounded-full border-4 border-white/5 flex flex-col items-center justify-center">
+                     <p className="text-3xl font-black">{stats.readiness}%</p>
+                     <p className="text-[8px] font-black uppercase text-indigo-400">Readiness</p>
                   </div>
+                  <svg className="absolute inset-0 -rotate-90 w-32 h-32">
+                     <circle cx="64" cy="64" r="60" fill="transparent" stroke="currentColor" strokeWidth="4" className="text-indigo-500" strokeDasharray={`${stats.readiness * 3.77} 377`} />
+                  </svg>
+               </div>
+               <div className="w-px h-24 bg-white/10" />
+               <div>
+                  <p className="text-[10px] font-black text-white/20 uppercase tracking-[0.3em] mb-3 flex items-center gap-2">
+                     <Zap className="w-3.5 h-3.5 text-yellow-500" /> Streak Consistency
+                  </p>
+                  <p className="text-6xl font-black tracking-tighter italic">{stats.streak} DAYS</p>
                </div>
             </div>
           </div>
@@ -166,38 +165,39 @@ export default function SATDashboard() {
           {/* Key Metrics */}
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-32">
             {[
-              { label: 'Overall Score', val: stats.currentScore, sub: 'Diagnostic Average', icon: Trophy, color: 'text-white' },
-              { label: 'Math Precision', val: stats.mathScore, sub: 'Algebra & Advanced', icon: Brain, color: 'text-blue-400' },
-              { label: 'R&W Accuracy', val: stats.rwScore, sub: 'Evidence Based', icon: Sparkles, color: 'text-indigo-400' }
+              { label: 'Intelligence Base', val: stats.currentScore, sub: 'Weighted Diagnostic Score', icon: ShieldCheck, color: 'text-white' },
+              { label: 'Math Precision', val: stats.mathScore, sub: 'Algebra & Advanced Functions', icon: Activity, color: 'text-blue-400' },
+              { label: 'R&W Semantic accuracy', val: stats.rwScore, sub: 'Context & Conventions', icon: Star, color: 'text-indigo-400' }
             ].map((stat, i) => (
               <motion.div 
                 key={i}
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: i * 0.1 }}
-                className="glass-3d p-12 group hover:border-white/20 transition-all"
+                className="glass-3d p-12 group hover:border-white/20 transition-all border-white/5"
               >
                 <div className="flex justify-between items-start mb-12">
-                   <stat.icon className={`w-8 h-8 ${stat.color} opacity-20 group-hover:opacity-100 transition-opacity`} />
-                   <Badge className="bg-white/5 text-white/40 border-none font-black text-[9px] uppercase tracking-widest px-4 py-2">Verified</Badge>
+                   <stat.icon className={`w-10 h-10 ${stat.color} opacity-20 group-hover:opacity-100 transition-opacity`} />
+                   <div className="flex flex-col items-end">
+                      <span className="text-[9px] font-black uppercase tracking-widest text-[#444]">Level</span>
+                      <span className="text-xs font-black uppercase tracking-tighter">Certified</span>
+                   </div>
                 </div>
-                <div className={`text-7xl font-black mb-4 ${stat.color} tracking-tighter`}>{stat.val}</div>
+                <div className={`text-8xl font-black mb-4 ${stat.color} tracking-tighter italic`}>{stat.val}</div>
                 <div className="text-[10px] font-black text-white/20 uppercase tracking-[0.4em] mb-2">{stat.label}</div>
-                <p className="text-[10px] font-bold text-[#444] uppercase tracking-widest">{stat.sub}</p>
+                <p className="text-[11px] font-bold text-[#444] uppercase tracking-widest leading-none">{stat.sub}</p>
               </motion.div>
             ))}
           </div>
 
           {/* Charts Row */}
           <div className="grid lg:grid-cols-2 gap-12 mb-32">
-             {/* Score Progress Chart */}
-             <div className="glass-3d p-16">
+             <div className="glass-3d p-16 border-white/5">
                 <div className="flex items-center justify-between mb-16">
                    <div>
-                      <h3 className="text-3xl font-black tracking-tighter uppercase italic">Score Velocity</h3>
-                      <p className="text-[10px] font-black text-white/20 uppercase tracking-widest mt-1">Growth trajectory over cycles</p>
+                      <h3 className="text-4xl font-black tracking-tighter uppercase italic">Score Velocity</h3>
+                      <p className="text-[10px] font-black text-white/20 uppercase tracking-widest mt-2">Aggregated performance trajectory</p>
                    </div>
-                   <Button variant="ghost" className="h-10 px-4 text-[9px] font-black uppercase tracking-widest text-[#444] hover:text-white border border-white/10">Full History</Button>
                 </div>
                 <div className="h-[400px] w-full">
                    <ResponsiveContainer width="100%" height="100%">
@@ -215,29 +215,24 @@ export default function SATDashboard() {
                             contentStyle={{ background: '#0a0a0a', border: '1px solid #222', borderRadius: '24px', padding: '20px' }}
                             itemStyle={{ color: '#fff', fontSize: '12px', fontWeight: 'bold' }}
                          />
-                         <Area type="monotone" dataKey="score" stroke="#6366f1" strokeWidth={4} fill="url(#colorScore)" />
+                         <Area type="monotone" dataKey="score" stroke="#6366f1" strokeWidth={6} fill="url(#colorScore)" />
                       </AreaChart>
                    </ResponsiveContainer>
                 </div>
              </div>
 
-             {/* Topic Accuracy Chart */}
-             <div className="glass-3d p-16">
+             <div className="glass-3d p-16 border-white/5">
                 <div className="flex items-center justify-between mb-16">
                    <div>
-                      <h3 className="text-3xl font-black tracking-tighter uppercase italic">Topic Precision</h3>
-                      <p className="text-[10px] font-black text-white/20 uppercase tracking-widest mt-1">Accuracy % across critical sectors</p>
-                   </div>
-                   <div className="flex gap-2">
-                      <div className="w-3 h-3 rounded-full bg-blue-500" />
-                      <div className="w-3 h-3 rounded-full bg-indigo-500" />
+                      <h3 className="text-4xl font-black tracking-tighter uppercase italic">Topic Precision</h3>
+                      <p className="text-[10px] font-black text-white/20 uppercase tracking-widest mt-2">Semantic accuracy across SAT sectors</p>
                    </div>
                 </div>
                 <div className="h-[400px] w-full">
                    <ResponsiveContainer width="100%" height="100%">
                       <BarChart data={stats.topicData} layout="vertical">
                          <XAxis type="number" hide />
-                         <YAxis dataKey="name" type="category" stroke="#444" fontSize={10} width={120} tickLine={false} axisLine={false} />
+                         <YAxis dataKey="name" type="category" stroke="#444" fontSize={10} width={140} tickLine={false} axisLine={false} />
                          <Tooltip
                             cursor={{ fill: 'rgba(255,255,255,0.02)' }}
                             contentStyle={{ background: '#0a0a0a', border: '1px solid #222', borderRadius: '16px' }}
@@ -253,62 +248,22 @@ export default function SATDashboard() {
              </div>
           </div>
 
-          {/* Action Center */}
-          <div className="flex flex-col md:flex-row gap-8">
-             <div className="flex-1 glass-3d p-16 border-indigo-500/20 bg-indigo-500/5 group">
-                <div className="flex justify-between items-start mb-12">
-                   <div className="w-16 h-16 rounded-3xl bg-indigo-600 flex items-center justify-center shadow-[0_20px_40px_rgba(79,70,229,0.4)]">
-                      <Zap className="w-8 h-8 text-white" />
-                   </div>
-                   <div className="text-[10px] font-black uppercase text-indigo-400 tracking-widest">Priority Next Step</div>
+          {/* Premium Call to Action */}
+          <div className="glass-3d p-20 flex flex-col md:flex-row items-center justify-between gap-12 bg-white/[0.02] border-white/10">
+             <div className="max-w-2xl">
+                <div className="flex items-center gap-3 mb-8">
+                   <Sparkles className="w-8 h-8 text-yellow-500" />
+                   <h3 className="text-6xl font-black uppercase tracking-tighter italic">Ready for 1550?</h3>
                 </div>
-                <h4 className="text-4xl font-black tracking-tighter uppercase mb-6 leading-tight italic">Practice Advanced Math.</h4>
-                <p className="text-[#666] font-medium text-lg leading-relaxed mb-12">Твой текущий уровень в Math Hub — 620. Исправь ошибки в Algebra, чтобы достичь 700+ уже на следующей неделе.</p>
-                <Button 
-                  onClick={() => navigate('/sat/practice')}
-                  className="bg-white text-black hover:bg-gray-100 rounded-2xl px-12 h-16 font-black uppercase text-xs transition-all group-hover:scale-105"
-                >
-                  Engage Practice <ArrowUpRight className="ml-2 w-4 h-4" />
-                </Button>
+                <p className="text-xl text-[#666] font-medium leading-relaxed">Твоя готовность к экзамену составляет <span className="text-white">{stats.readiness}%</span>. Мы рекомендуем сфокусироваться на Advanced Math, чтобы достичь целевого показателя в этом месяце.</p>
              </div>
-             
-             <div className="w-full md:w-96 space-y-8">
-                <div className="glass-3d p-10 border-white/5">
-                   <div className="flex items-center gap-3 mb-6">
-                      <History className="w-4 h-4 text-white/40" />
-                      <span className="text-[10px] font-black uppercase tracking-widest text-white/40">Recent Activity</span>
-                   </div>
-                   <div className="space-y-6">
-                      {[1, 2, 3].map(i => (
-                        <div key={i} className="flex items-center justify-between border-b border-white/5 pb-4 last:border-0 last:pb-0">
-                           <div className="flex items-center gap-4">
-                              <div className="w-2 h-2 rounded-full bg-indigo-500" />
-                              <span className="text-[10px] font-black uppercase tracking-widest">Math Practice</span>
-                           </div>
-                           <span className="text-[10px] font-bold text-[#444] uppercase tracking-widest">2h ago</span>
-                        </div>
-                      ))}
-                   </div>
-                </div>
-                
-                <Button 
-                  onClick={() => navigate('/sat/study-plan')}
-                  className="w-full h-20 bg-indigo-600 hover:bg-indigo-700 text-white rounded-2xl font-black uppercase tracking-widest text-xs"
-                >
-                  Adjust AI Study Plan <ChevronRight className="ml-2 w-4 h-4" />
-                </Button>
+             <div className="flex gap-6">
+                <Button onClick={() => navigate('/sat/practice')} className="h-20 px-16 rounded-2xl bg-white text-black font-black uppercase text-xs shadow-2xl hover:scale-105 active:scale-95 transition-all">Engage Practice</Button>
+                <Button onClick={() => navigate('/sat/study-plan')} variant="outline" className="h-20 px-12 rounded-2xl border-white/10 text-white/40 font-black uppercase text-xs hover:bg-white/5">Update Strategy</Button>
              </div>
           </div>
         </div>
       </div>
     </Layout>
-  );
-}
-
-function Badge({ children, className }: { children: React.ReactNode, className?: string }) {
-  return (
-    <span className={`px-2 py-1 rounded text-[8px] font-bold ${className}`}>
-      {children}
-    </span>
   );
 }
