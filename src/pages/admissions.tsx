@@ -1,5 +1,17 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { Layout } from "@/components/layout";
+import { 
+  Globe, 
+  Sparkles, 
+  Building2, 
+  MapPin, 
+  GraduationCap, 
+  Zap, 
+  Compass, 
+  ArrowRight 
+} from "lucide-react";
+import { Button } from "@/components/ui/button";
 import AIMatchmakerForm, { MatchmakerData } from "@/components/ai-matchmaker-form";
 import AIMatchmakerResults from "@/components/ai-matchmaker-results";
 

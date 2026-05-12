@@ -15,6 +15,9 @@ import IELTSWritingChecker from "@/pages/ielts-writing-checker";
 import SatPrep from "@/pages/sat";
 import SATTestViewer from "@/pages/sat-test-viewer";
 import SATPractice from "@/pages/sat-practice";
+import SATDiagnostic from "@/pages/sat-diagnostic";
+import SATStudyPlan from "@/pages/sat-study-plan";
+import SATDashboard from "@/pages/sat-dashboard";
 import Admissions from "@/pages/admissions";
 import Login from "@/pages/login";
 import Dashboard from "@/pages/dashboard";
@@ -33,16 +36,25 @@ function App() {
               <Route path="/ielts" element={<IeltsPrep />} />
               <Route path="/ielts/writing-checker" element={<IELTSWritingChecker />} />
               <Route path="/ielts/test/:slug" element={<IELTSTestViewer />} />
+              
               <Route path="/sat" element={<SatPrep />} />
               <Route path="/sat/practice" element={<SATPractice />} />
+              <Route path="/sat/diagnostic" element={<SATDiagnostic />} />
+              <Route path="/sat/study-plan" element={<SATStudyPlan />} />
+              <Route path="/sat/dashboard" element={
+                <ProtectedRoute>
+                  <SATDashboard />
+                </ProtectedRoute>
+              } />
               <Route path="/sat/test/:section/:slug" element={<SATTestViewer />} />
+              
               <Route path="/admissions" element={<Admissions />} />
               <Route path="/login" element={<Login />} />
               <Route path="/dashboard" element={
-              <ProtectedRoute>
-                <Dashboard />
-              </ProtectedRoute>
-            } />
+                <ProtectedRoute>
+                  <Dashboard />
+                </ProtectedRoute>
+              } />
               <Route path="*" element={<NotFound />} />
             </Routes>
           </BrowserRouter>
