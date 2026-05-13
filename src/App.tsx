@@ -20,6 +20,8 @@ import SATStudyPlan from "@/pages/sat-study-plan";
 import SATDashboard from "@/pages/sat-dashboard";
 import Admissions from "@/pages/admissions";
 import AdmissionsCalculator from "@/pages/admissions-calculator";
+import SATLearn from "@/pages/sat-learn";
+import SATTests from "@/pages/sat-tests";
 import Login from "@/pages/login";
 import Dashboard from "@/pages/dashboard";
 
@@ -42,6 +44,8 @@ function App() {
               <Route path="/sat/practice" element={<SATPractice />} />
               <Route path="/sat/diagnostic" element={<SATDiagnostic />} />
               <Route path="/sat/study-plan" element={<SATStudyPlan />} />
+              <Route path="/sat/learn" element={<SATLearn />} />
+              <Route path="/sat/tests" element={<SATTests />} />
               <Route path="/sat/dashboard" element={
                 <ProtectedRoute>
                   <SATDashboard />

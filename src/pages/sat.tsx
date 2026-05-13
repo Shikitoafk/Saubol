@@ -84,19 +84,78 @@ export default function SatPrep() {
                <p className="text-white/60 text-sm font-medium leading-relaxed mb-10">
                  Ваш план подготовки еще не активен. Пройдите диагностику, чтобы система построила ваш личный путь к 1550+.
                </p>
-               <div className="flex items-center gap-3 text-xs font-black uppercase tracking-widest text-white/20">
-                  <History className="w-4 h-4" /> Last analyzed: Never
-               </div>
-            </div>
-          </motion.div>
-
-          {/* Main Modules Grid */}
+               <div className="flex items-center gap-3 text-xs font-bla          {/* Strategic Modules */}
           <div className="grid lg:grid-cols-2 gap-10">
+             {/* Learn Hub */}
+             <motion.div 
+               variants={item}
+               whileHover={{ scale: 1.02, translateY: -10 }}
+               className="glass-3d p-16 flex flex-col justify-between min-h-[500px] group cursor-pointer border-emerald-500/10 hover:border-emerald-500/40 relative overflow-hidden"
+               onClick={() => nav("/sat/learn")}
+             >
+                <div className="absolute top-0 right-0 w-64 h-64 bg-emerald-500/5 blur-[100px] opacity-0 group-hover:opacity-100 transition-opacity" />
+                <div className="relative z-10">
+                   <div className="flex justify-between items-start mb-16">
+                      <div className="w-20 h-20 bg-emerald-500/10 rounded-3xl flex items-center justify-center border border-emerald-500/20 group-hover:bg-emerald-500/20 transition-all duration-700">
+                         <BookOpen className="w-10 h-10 text-emerald-400 shadow-[0_0_30px_rgba(16,185,129,0.3)]" />
+                      </div>
+                      <Badge className="bg-emerald-500/10 text-emerald-400 border-none font-black text-[9px] uppercase tracking-widest px-4 py-2">Foundation</Badge>
+                   </div>
+                   <h2 className="text-6xl font-black mb-6 tracking-tighter uppercase italic">LEARN <br /> HUB.</h2>
+                   <p className="text-xl text-[#666] font-medium leading-relaxed max-w-sm mb-12 group-hover:text-[#888] transition-colors">
+                      Уроки по всем темам SAT с примерами, стратегиями и мгновенной практикой. Овладей каждой концепцией на 100%.
+                   </p>
+                </div>
+                <div className="flex items-center justify-between relative z-10 mt-auto">
+                   <div className="flex gap-4">
+                      <div className="flex items-center gap-2 px-4 py-2 rounded-xl bg-white/5 border border-white/5 text-[9px] font-black uppercase tracking-widest text-[#444]"><Zap className="w-3.5 h-3.5" /> Topic Mastery</div>
+                      <div className="flex items-center gap-2 px-4 py-2 rounded-xl bg-white/5 border border-white/5 text-[9px] font-black uppercase tracking-widest text-[#444]"><History className="w-3.5 h-3.5" /> Lessons + Practice</div>
+                   </div>
+                   <div className="w-16 h-16 rounded-full border border-white/10 flex items-center justify-center group-hover:bg-white group-hover:text-black transition-all duration-500">
+                      <ArrowRight className="w-6 h-6" />
+                   </div>
+                </div>
+             </motion.div>
+
+             {/* Test Hub */}
+             <motion.div 
+               variants={item}
+               whileHover={{ scale: 1.02, translateY: -10 }}
+               className="glass-3d p-16 flex flex-col justify-between min-h-[500px] group cursor-pointer border-indigo-500/10 hover:border-indigo-500/40 relative overflow-hidden"
+               onClick={() => nav("/sat/tests")}
+             >
+                <div className="absolute top-0 right-0 w-64 h-64 bg-indigo-500/5 blur-[100px] opacity-0 group-hover:opacity-100 transition-opacity" />
+                <div className="relative z-10">
+                   <div className="flex justify-between items-start mb-16">
+                      <div className="w-20 h-20 bg-indigo-500/10 rounded-3xl flex items-center justify-center border border-indigo-500/20 group-hover:bg-indigo-500/20 transition-all duration-700">
+                         <Target className="w-10 h-10 text-indigo-400 shadow-[0_0_30px_rgba(99,102,241,0.3)]" />
+                      </div>
+                      <Badge className="bg-indigo-500/10 text-indigo-400 border-none font-black text-[9px] uppercase tracking-widest px-4 py-2">Evaluation</Badge>
+                   </div>
+                   <h2 className="text-6xl font-black mb-6 tracking-tighter uppercase italic">TEST <br /> HUB.</h2>
+                   <p className="text-xl text-[#666] font-medium leading-relaxed max-w-sm mb-12 group-hover:text-[#888] transition-colors">
+                      Полноценные симуляции Digital SAT. От 10-минутных спринтов до полных тестов на время.
+                   </p>
+                </div>
+                <div className="flex items-center justify-between relative z-10 mt-auto">
+                   <div className="flex gap-4">
+                      <div className="flex items-center gap-2 px-4 py-2 rounded-xl bg-white/5 border border-white/5 text-[9px] font-black uppercase tracking-widest text-[#444]"><Clock className="w-3.5 h-3.5" /> Full Simulation</div>
+                      <div className="flex items-center gap-2 px-4 py-2 rounded-xl bg-white/5 border border-white/5 text-[9px] font-black uppercase tracking-widest text-[#444]"><TrendingUp className="w-3.5 h-3.5" /> Score Analysis</div>
+                   </div>
+                   <div className="w-16 h-16 rounded-full border border-white/10 flex items-center justify-center group-hover:bg-white group-hover:text-black transition-all duration-500">
+                      <ArrowRight className="w-6 h-6" />
+                   </div>
+                </div>
+             </motion.div>
+          </div>
+
+          {/* Practice Hubs (Math/RW) */}
+          <div className="grid lg:grid-cols-2 gap-10 mt-10">
              {/* Math Module */}
              <motion.div 
                variants={item}
                whileHover={{ scale: 1.02, translateY: -10 }}
-               className="glass-3d p-16 flex flex-col justify-between min-h-[600px] group cursor-pointer border-blue-500/10 hover:border-blue-500/40 relative overflow-hidden"
+               className="glass-3d p-16 flex flex-col justify-between min-h-[500px] group cursor-pointer border-blue-500/10 hover:border-blue-500/40 relative overflow-hidden"
                onClick={() => nav("/sat/practice")}
              >
                 <div className="absolute top-0 right-0 w-64 h-64 bg-blue-500/5 blur-[100px] opacity-0 group-hover:opacity-100 transition-opacity" />
@@ -107,7 +166,7 @@ export default function SatPrep() {
                       </div>
                       <Badge className="bg-blue-500/10 text-blue-400 border-none font-black text-[9px] uppercase tracking-widest px-4 py-2">Module 01</Badge>
                    </div>
-                   <h2 className="text-6xl font-black mb-6 tracking-tighter uppercase italic">MATH <br /> HUB.</h2>
+                   <h2 className="text-6xl font-black mb-6 tracking-tighter uppercase italic">MATH <br /> PRACTICE.</h2>
                    <p className="text-xl text-[#666] font-medium leading-relaxed max-w-sm mb-12 group-hover:text-[#888] transition-colors">
                       Алгебра, Продвинутая математика, Геометрия и Анализ данных. Полная интеграция с Desmos.
                    </p>
@@ -127,7 +186,7 @@ export default function SatPrep() {
              <motion.div 
                variants={item}
                whileHover={{ scale: 1.02, translateY: -10 }}
-               className="glass-3d p-16 flex flex-col justify-between min-h-[600px] group cursor-pointer border-violet-500/10 hover:border-violet-500/40 relative overflow-hidden"
+               className="glass-3d p-16 flex flex-col justify-between min-h-[500px] group cursor-pointer border-violet-500/10 hover:border-violet-500/40 relative overflow-hidden"
                onClick={() => nav("/sat/practice")}
              >
                 <div className="absolute top-0 right-0 w-64 h-64 bg-violet-500/5 blur-[100px] opacity-0 group-hover:opacity-100 transition-opacity" />
@@ -138,7 +197,7 @@ export default function SatPrep() {
                       </div>
                       <Badge className="bg-violet-500/10 text-violet-400 border-none font-black text-[9px] uppercase tracking-widest px-4 py-2">Module 02</Badge>
                    </div>
-                   <h2 className="text-6xl font-black mb-6 tracking-tighter uppercase italic">READING <br /> HUB.</h2>
+                   <h2 className="text-6xl font-black mb-6 tracking-tighter uppercase italic">READING <br /> PRACTICE.</h2>
                    <p className="text-xl text-[#666] font-medium leading-relaxed max-w-sm mb-12 group-hover:text-[#888] transition-colors">
                       Анализ литературных и научных текстов, Грамматика и Риторика. Повышаем точность понимания.
                    </p>
