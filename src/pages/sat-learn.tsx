@@ -17,7 +17,9 @@ import TopicVideoPage from "@/components/TopicVideoPage";
 import PracticeSession from "@/components/PracticeSession";
 import PracticeComplete from "@/components/PracticeComplete";
 import { SAT_VIDEO_LIBRARY } from "@/data/sat-video-library";
-import { SAT_QUESTIONS_BANK } from "@/data/sat-questions-bank";
+import { SAT_QUESTION_BANK } from "@/data/sat-question-bank";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 
 type Phase = "video" | "practice" | "complete";
 
@@ -25,21 +27,13 @@ export default function SATLearn() {
   const [activeTopicId, setActiveTopicId] = useState("linear_equations");
   const [phase, setPhase] = useState<Phase>("video");
   const [masteryData, setMasteryData] = useState<Record<string, number>>({
-    linear_equations: 92,
-    systems_equations: 45,
+    linear_equations: 0,
+    systems_equations: 0,
     quadratic: 0,
-    functions: 0,
     inequalities: 0,
-    percentages: 0,
-    statistics: 0,
-    geometry: 0,
-    central_ideas: 88,
-    textual_evidence: 0,
-    inferences: 0,
-    words_in_context: 0,
     transitions: 0,
-    grammar_boundaries: 0,
-    rhetorical_synthesis: 0
+    central_ideas: 0,
+    grammar_boundaries: 0
   });
 
   const categories: Category[] = useMemo(() => [
@@ -49,8 +43,8 @@ export default function SATLearn() {
       topics: [
         { id: "linear_equations", name: "Linear Equations", progress: masteryData.linear_equations, isLocked: false, isCompleted: masteryData.linear_equations >= 100 },
         { id: "systems_equations", name: "Systems of Equations", progress: masteryData.systems_equations, isLocked: false, isCompleted: masteryData.systems_equations >= 100 },
-        { id: "quadratic", name: "Quadratic Equations", progress: masteryData.quadratic, isLocked: masteryData.systems_equations < 60, isCompleted: false },
-        { id: "inequalities", name: "Linear Inequalities", progress: masteryData.inequalities, isLocked: masteryData.systems_equations < 60, isCompleted: false },
+        { id: "quadratic", name: "Quadratic Equations", progress: masteryData.quadratic, isLocked: false, isCompleted: false },
+        { id: "inequalities", name: "Linear Inequalities", progress: masteryData.inequalities, isLocked: false, isCompleted: false },
       ]
     },
     {
@@ -58,27 +52,18 @@ export default function SATLearn() {
       icon: FileText,
       topics: [
         { id: "central_ideas", name: "Central Ideas", progress: masteryData.central_ideas, isLocked: false, isCompleted: masteryData.central_ideas >= 100 },
-        { id: "textual_evidence", name: "Textual Evidence", progress: masteryData.textual_evidence, isLocked: false, isCompleted: false },
         { id: "transitions", name: "Transitions", progress: masteryData.transitions, isLocked: false, isCompleted: false },
+        { id: "grammar_boundaries", name: "Grammar & Punctuation", progress: masteryData.grammar_boundaries, isLocked: false, isCompleted: false },
       ]
     }
   ], [masteryData]);
 
   const currentVideo = useMemo(() => {
-    const mathVideo = SAT_VIDEO_LIBRARY.math[activeTopicId];
-    const rwVideo = SAT_VIDEO_LIBRARY.reading_writing[activeTopicId];
-    return mathVideo || rwVideo;
+    return SAT_VIDEO_LIBRARY.math[activeTopicId] || SAT_VIDEO_LIBRARY.reading_writing[activeTopicId];
   }, [activeTopicId]);
 
   const currentQuestions = useMemo(() => {
-    // Map ID to topic name used in question bank
-    const idToName: Record<string, string> = {
-      linear_equations: "Linear Equations",
-      systems_equations: "Systems of Equations",
-      central_ideas: "Central Ideas",
-      transitions: "Transitions"
-    };
-    return SAT_QUESTIONS_BANK[idToName[activeTopicId]] || [];
+    return SAT_QUESTION_BANK[activeTopicId] || [];
   }, [activeTopicId]);
 
   const handleTopicSelect = (id: string) => {
@@ -96,18 +81,17 @@ export default function SATLearn() {
   };
 
   const handleNextTopic = () => {
-    // Simple logic to find next topic in categories
     let found = false;
     for (const cat of categories) {
       for (const topic of cat.topics) {
-        if (found && !topic.isLocked) {
+        if (found) {
           handleTopicSelect(topic.id);
           return;
         }
         if (topic.id === activeTopicId) found = true;
       }
     }
-    setPhase("video"); // Fallback
+    setPhase("video");
   };
 
   return (
@@ -120,7 +104,6 @@ export default function SATLearn() {
         />
 
         <main className="flex-1 overflow-y-auto custom-scrollbar relative bg-vignette">
-          {/* Top Breadcrumb / Status Bar */}
           <div className="sticky top-0 z-50 bg-black/80 backdrop-blur-3xl border-b border-white/5 px-12 py-6 flex items-center justify-between">
             <div className="flex items-center gap-8">
                <div className="flex items-center gap-2 text-[10px] font-black uppercase tracking-widest text-white/20">
@@ -137,7 +120,7 @@ export default function SATLearn() {
 
             <div className="flex items-center gap-4">
                <div className="text-right">
-                  <p className="text-[9px] font-black text-white/20 uppercase tracking-widest mb-1">Mastery</p>
+                  <p className="text-[9px] font-black text-white/20 uppercase tracking-widest mb-1">Topic Mastery</p>
                   <p className="text-sm font-black text-white">{masteryData[activeTopicId]}%</p>
                </div>
                <div className="w-32 h-1.5 bg-white/5 rounded-full overflow-hidden">
@@ -185,18 +168,6 @@ export default function SATLearn() {
               )}
             </motion.div>
           </AnimatePresence>
-
-          {/* Sticky Next Topic Suggestion */}
-          {phase === "video" && masteryData[activeTopicId] >= 100 && (
-            <div className="fixed bottom-12 right-12 z-50">
-               <Button 
-                 onClick={handleNextTopic}
-                 className="h-16 px-10 bg-indigo-600 hover:bg-indigo-500 text-white font-black uppercase italic text-xs rounded-2xl shadow-2xl flex items-center gap-4 transition-all hover:scale-105"
-               >
-                  Mastery Complete. Next Topic <ArrowRight className="w-5 h-5" />
-               </Button>
-            </div>
-          )}
         </main>
       </div>
     </Layout>

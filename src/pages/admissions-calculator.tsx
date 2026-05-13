@@ -2,350 +2,367 @@ import { useState } from "react";
 import { Layout } from "@/components/layout";
 import { motion, AnimatePresence } from "framer-motion";
 import { 
-  Calculator, 
   GraduationCap, 
-  Search, 
+  Target, 
   Trophy, 
-  Users, 
-  Globe,
-  Plus,
-  ChevronRight,
-  TrendingUp,
-  AlertCircle,
-  FileText,
-  FlaskConical,
-  Languages,
+  Globe, 
+  Sparkles, 
+  ChevronRight, 
+  ChevronLeft,
   ArrowRight,
-  Sparkles
+  Zap,
+  Building2,
+  CheckCircle2,
+  AlertCircle,
+  Plus,
+  Info,
+  TrendingUp,
+  FlaskConical,
+  Users
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
+import { UNIVERSITIES } from "@/data/universities";
+import { FullApplicantProfile, calculateChances, DetailedAdmissionResult } from "@/lib/admissions-logic";
 import { Badge } from "@/components/ui/badge";
-import { calculateDetailedAdmissions, ApplicantProfile, AdmissionResult } from "@/lib/admissions-logic";
 
 export default function AdmissionsCalculator() {
   const [step, setStep] = useState(1);
-  const [results, setResults] = useState<AdmissionResult[] | null>(null);
-  const [formData, setFormData] = useState<ApplicantProfile>({
-    gpa: 4.0,
+  const [region, setRegion] = useState<'usa_canada' | 'uk_europe' | 'asia_global'>('usa_canada');
+  const [showResults, setShowResults] = useState(false);
+  const [profile, setProfile] = useState<FullApplicantProfile>({
+    gpa: 0,
     gpaScale: 4.0,
-    classRank: 'unknown',
-    curriculum: 'National',
-    curriculumCount: 0,
-    gradeTrend: 'Stable',
-    hasPublishedPaper: false,
-    paperStatus: 'None',
-    labExperience: false,
-    independentResearch: false,
-    olympiadLevel: 'None',
+    sat: 0,
+    ielts: 0,
+    gradeTrend: 'stable',
+    ibApCourses: 'none',
+    research: 'none',
+    olympiad: 'none',
     competitionMedals: [],
-    foundedOrg: false,
-    orgReach: 0,
-    leadershipRole: false,
-    communityService: false,
-    sportsCompetitive: false,
-    artsCompetitive: false,
-    country: '',
-    isFirstGen: false,
+    ec: 'none',
+    firstGen: false,
     financialHardship: false,
-    speaksThreeLanguages: false,
-    targetRegions: ['US']
+    languages3plus: false,
+    uniqueStory: false,
+    region: 'usa_canada'
   });
 
-  const handleCalculate = () => {
-    const res = calculateDetailedAdmissions(formData);
-    setResults(res);
+  const next = () => setStep(s => s + 1);
+  const prev = () => setStep(s => s - 1);
+
+  const calculate = () => {
+    setShowResults(true);
   };
 
-  const toggleRegion = (region: any) => {
-    setFormData(prev => ({
-      ...prev,
-      targetRegions: prev.targetRegions.includes(region) 
-        ? prev.targetRegions.filter(r => r !== region)
-        : [...prev.targetRegions, region]
-    }));
-  };
+  const results = UNIVERSITIES
+    .filter(u => u.region === region)
+    .map(u => calculateChances({ ...profile, region }, u));
 
   return (
     <Layout>
-      <div className="min-h-screen bg-black pt-32 pb-20 px-10 relative overflow-hidden">
+      <div className="min-h-screen bg-black pt-32 pb-48 px-10 relative overflow-hidden">
         <div className="bg-vignette" />
-        <div className="bg-sphere top-[-20%] left-[-10%] opacity-20" />
-        
-        <div className="max-w-7xl mx-auto relative z-10">
-          <header className="mb-20 text-center">
-            <div className="inline-flex items-center gap-3 px-4 py-2 rounded-full bg-indigo-500/10 border border-indigo-500/20 text-indigo-400 text-[10px] font-black uppercase tracking-[0.4em] mb-6">
-              <Calculator className="w-4 h-4" />
-              Global Intelligence Engine
-            </div>
-            <h1 className="text-8xl font-black italic tracking-tighter uppercase mb-6">AI ADMISSIONS.</h1>
-            <p className="text-white/40 text-xl font-medium max-w-2xl mx-auto">Upload your full profile. Get realistic admission chances based on historical data for international applicants.</p>
-          </header>
+        <div className="bg-sphere top-[-10%] right-[-10%] opacity-20" />
 
-          {!results ? (
-            <div className="max-w-4xl mx-auto">
-              <div className="grid grid-cols-5 gap-2 mb-12">
-                 {[1,2,3,4,5].map(i => (
-                    <div key={i} className={`h-1.5 rounded-full transition-all ${step >= i ? 'bg-indigo-500' : 'bg-white/5'}`} />
-                 ))}
-              </div>
+        <div className="max-w-6xl mx-auto relative z-10">
+          {!showResults ? (
+            <div className="grid lg:grid-cols-3 gap-16">
+               <div className="lg:col-span-1">
+                  <header className="mb-16">
+                     <div className="flex items-center gap-3 mb-6 opacity-60">
+                        <Sparkles className="w-5 h-5 text-indigo-400" />
+                        <span className="text-[10px] font-black uppercase tracking-[0.4em] text-indigo-400">Admissions Intelligence</span>
+                     </div>
+                     <h1 className="text-6xl font-black italic tracking-tighter uppercase mb-8 leading-none">CV <br /> ANALYZER.</h1>
+                     <p className="text-[#666] text-lg font-medium leading-relaxed italic">
+                        Input your profile dimensions. Get realistic admission probabilities based on international data.
+                     </p>
+                  </header>
 
-              <AnimatePresence mode="wait">
-                <motion.div
-                  key={step}
-                  initial={{ opacity: 0, x: 20 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  exit={{ opacity: 0, x: -20 }}
-                  className="glass-3d p-12 border-white/5"
-                >
-                  {step === 1 && (
-                    <div className="space-y-10">
-                       <h3 className="text-4xl font-black uppercase italic flex items-center gap-4">
-                          <GraduationCap className="w-8 h-8 text-indigo-400" /> SECTION 1: ACADEMICS
-                       </h3>
-                       <div className="grid md:grid-cols-2 gap-8">
-                          <div className="space-y-4">
-                             <label className="text-[10px] font-black uppercase tracking-widest text-white/20">GPA & Scale</label>
-                             <div className="flex gap-4">
-                                <Input type="number" placeholder="GPA" className="h-14 bg-white/5" onChange={e => setFormData({...formData, gpa: parseFloat(e.target.value)})} />
-                                <select className="bg-white/5 border border-white/10 rounded-xl px-4 text-xs font-black uppercase" onChange={e => setFormData({...formData, gpaScale: parseFloat(e.target.value)})}>
-                                   <option value="4.0">/ 4.0</option>
-                                   <option value="5.0">/ 5.0</option>
-                                   <option value="100">/ 100</option>
-                                </select>
-                             </div>
-                          </div>
-                          <div className="space-y-4">
-                             <label className="text-[10px] font-black uppercase tracking-widest text-white/20">SAT Score (Optional)</label>
-                             <Input type="number" placeholder="400 - 1600" className="h-14 bg-white/5" onChange={e => setFormData({...formData, sat: parseInt(e.target.value)})} />
-                          </div>
-                          <div className="space-y-4">
-                             <label className="text-[10px] font-black uppercase tracking-widest text-white/20">Grade Trend</label>
-                             <div className="grid grid-cols-3 gap-2">
-                                {['Improving', 'Stable', 'Declining'].map(t => (
-                                   <button 
-                                     key={t}
-                                     onClick={() => setFormData({...formData, gradeTrend: t as any})}
-                                     className={`p-4 rounded-xl border text-[10px] font-black uppercase transition-all ${formData.gradeTrend === t ? 'bg-indigo-600 border-indigo-500' : 'bg-white/5 border-white/10'}`}
-                                   >
-                                      {t}
-                                   </button>
-                                ))}
-                             </div>
-                          </div>
-                       </div>
-                    </div>
-                  )}
-
-                  {step === 2 && (
-                    <div className="space-y-10">
-                       <h3 className="text-4xl font-black uppercase italic flex items-center gap-4">
-                          <FlaskConical className="w-8 h-8 text-indigo-400" /> SECTION 2: RESEARCH
-                       </h3>
-                       <div className="grid gap-6">
-                          <button 
-                            onClick={() => setFormData({...formData, paperStatus: formData.paperStatus === 'Published' ? 'None' : 'Published'})}
-                            className={`p-10 rounded-2xl border text-left flex items-center justify-between transition-all ${formData.paperStatus === 'Published' ? 'bg-indigo-600/10 border-indigo-500' : 'bg-white/5 border-white/5'}`}
-                          >
-                             <div>
-                                <p className="text-xl font-black uppercase mb-1 italic tracking-tight">Published Paper?</p>
-                                <p className="text-xs text-white/40">In a peer-reviewed journal or competition</p>
-                             </div>
-                             <div className={`w-6 h-6 rounded-full border flex items-center justify-center ${formData.paperStatus === 'Published' ? 'bg-indigo-500 border-indigo-400' : 'border-white/20'}`}>
-                                {formData.paperStatus === 'Published' && <div className="w-2 h-2 bg-white rounded-full" />}
-                             </div>
-                          </button>
-                          <div className="grid md:grid-cols-2 gap-4">
-                             <button onClick={() => setFormData({...formData, labExperience: !formData.labExperience})} className={`p-8 rounded-2xl border text-sm font-black uppercase transition-all ${formData.labExperience ? 'bg-indigo-500/10 border-indigo-500 text-indigo-400' : 'bg-white/5 border-white/5 opacity-40'}`}>Lab Research</button>
-                             <button onClick={() => setFormData({...formData, independentResearch: !formData.independentResearch})} className={`p-8 rounded-2xl border text-sm font-black uppercase transition-all ${formData.independentResearch ? 'bg-indigo-500/10 border-indigo-500 text-indigo-400' : 'bg-white/5 border-white/5 opacity-40'}`}>Independent Project</button>
-                          </div>
-                       </div>
-                    </div>
-                  )}
-
-                  {step === 3 && (
-                    <div className="space-y-10">
-                       <h3 className="text-4xl font-black uppercase italic flex items-center gap-4">
-                          <Trophy className="w-8 h-8 text-indigo-400" /> SECTION 3: OLYMPIADS
-                       </h3>
-                       <div className="grid gap-4">
-                          {[
-                            { id: 'International', label: 'International Medal', sub: 'IBO, IPhO, IMO, IChO, etc' },
-                            { id: 'NationalGold', label: 'National Gold', sub: 'Highest level in your country' },
-                            { id: 'NationalSilverBronze', label: 'National Silver/Bronze', sub: 'Top tier national placement' }
-                          ].map(opt => (
-                            <button 
-                              key={opt.id}
-                              onClick={() => setFormData({...formData, olympiadLevel: opt.id as any})}
-                              className={`p-8 rounded-2xl border text-left flex items-center justify-between transition-all ${formData.olympiadLevel === opt.id ? 'bg-indigo-500/10 border-indigo-500' : 'bg-white/5 border-white/5'}`}
-                            >
-                               <div>
-                                  <p className="text-lg font-black uppercase mb-1 italic tracking-tight">{opt.label}</p>
-                                  <p className="text-[10px] text-white/20 uppercase tracking-widest">{opt.sub}</p>
-                               </div>
-                               <div className={`w-6 h-6 rounded-full border flex items-center justify-center ${formData.olympiadLevel === opt.id ? 'bg-indigo-500 border-indigo-400' : 'border-white/20'}`}>
-                                  {formData.olympiadLevel === opt.id && <div className="w-2 h-2 bg-white rounded-full" />}
-                               </div>
-                            </button>
-                          ))}
-                       </div>
-                    </div>
-                  )}
-
-                  {step === 4 && (
-                    <div className="space-y-10">
-                       <h3 className="text-4xl font-black uppercase italic flex items-center gap-4">
-                          <Users className="w-8 h-8 text-indigo-400" /> SECTION 4: EXTRACURRICULARS
-                       </h3>
-                       <div className="space-y-8">
-                          <div className={`p-10 rounded-2xl border transition-all ${formData.foundedOrg ? 'bg-indigo-600/5 border-indigo-500/40' : 'bg-white/5 border-white/5'}`}>
-                             <div className="flex items-center justify-between mb-8">
-                                <p className="text-xl font-black uppercase italic tracking-tight">Founded an Org/Startup?</p>
-                                <button onClick={() => setFormData({...formData, foundedOrg: !formData.foundedOrg})} className={`w-12 h-6 rounded-full relative transition-all ${formData.foundedOrg ? 'bg-indigo-500' : 'bg-white/10'}`}>
-                                   <div className={`absolute top-1 w-4 h-4 rounded-full bg-white transition-all ${formData.foundedOrg ? 'right-1' : 'left-1'}`} />
-                                </button>
-                             </div>
-                             {formData.foundedOrg && (
-                                <div className="space-y-4">
-                                   <label className="text-[9px] font-black uppercase tracking-[0.2em] text-white/20">Approximate reach (users/members)</label>
-                                   <Input type="number" placeholder="e.g. 500" className="bg-black/40 h-14" onChange={e => setFormData({...formData, orgReach: parseInt(e.target.value)})} />
-                                </div>
-                             )}
-                          </div>
-                          <div className="grid md:grid-cols-2 gap-4">
-                             <button onClick={() => setFormData({...formData, leadershipRole: !formData.leadershipRole})} className={`p-8 rounded-2xl border text-sm font-black uppercase transition-all ${formData.leadershipRole ? 'bg-indigo-500/10 border-indigo-500 text-indigo-400' : 'bg-white/5 border-white/5 opacity-40'}`}>Leadership Role</button>
-                             <button onClick={() => setFormData({...formData, communityService: !formData.communityService})} className={`p-8 rounded-2xl border text-sm font-black uppercase transition-all ${formData.communityService ? 'bg-indigo-500/10 border-indigo-500 text-indigo-400' : 'bg-white/5 border-white/5 opacity-40'}`}>Community Service</button>
-                          </div>
-                       </div>
-                    </div>
-                  )}
-
-                  {step === 5 && (
-                    <div className="space-y-10">
-                       <h3 className="text-4xl font-black uppercase italic flex items-center gap-4">
-                          <Globe className="w-8 h-8 text-indigo-400" /> SECTION 5: TARGET REGION
-                       </h3>
-                       <div className="grid grid-cols-2 gap-4">
-                          {['US', 'UK', 'Canada', 'Asia', 'Australia'].map(reg => (
-                            <button 
-                              key={reg}
-                              onClick={() => toggleRegion(reg as any)}
-                              className={`p-10 rounded-2xl border text-center transition-all ${formData.targetRegions.includes(reg as any) ? 'bg-indigo-600/10 border-indigo-500 text-indigo-400' : 'bg-white/5 border-white/5'}`}
-                            >
-                               <p className="text-2xl font-black italic tracking-tighter uppercase mb-2">{reg}</p>
-                               <p className="text-[10px] opacity-40 uppercase font-black tracking-widest">{formData.targetRegions.includes(reg as any) ? 'Selected' : 'Click to add'}</p>
-                            </button>
-                          ))}
-                       </div>
-                    </div>
-                  )}
-
-                  <div className="mt-12 flex justify-between">
-                    {step > 1 && <Button variant="ghost" onClick={() => setStep(step - 1)} className="text-white/40 uppercase font-black tracking-widest text-[10px]">Back</Button>}
-                    <Button 
-                      className="ml-auto bg-indigo-600 hover:bg-indigo-500 text-white font-black uppercase italic tracking-widest text-xs px-10 h-16 rounded-xl"
-                      onClick={() => step < 5 ? setStep(step + 1) : handleCalculate()}
-                    >
-                      {step === 5 ? 'Analyze Results' : 'Continue'} <ChevronRight className="ml-2 w-4 h-4" />
-                    </Button>
+                  <div className="space-y-6">
+                     {[1, 2, 3].map(i => (
+                        <div key={i} className={`flex items-center gap-4 p-4 rounded-2xl border transition-all ${step === i ? 'bg-white/5 border-white/10' : 'opacity-30 border-transparent'}`}>
+                           <div className={`w-8 h-8 rounded-lg flex items-center justify-center text-[10px] font-black ${step === i ? 'bg-indigo-500 text-white' : 'bg-white/5 text-white/40'}`}>
+                              0{i}
+                           </div>
+                           <span className="text-[10px] font-black uppercase tracking-widest">{i === 1 ? 'Academics' : i === 2 ? 'Research & Honors' : 'Activities'}</span>
+                        </div>
+                     ))}
                   </div>
-                </motion.div>
-              </AnimatePresence>
-            </div>
-          ) : (
-            <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="space-y-12">
-               <div className="flex justify-between items-end mb-16">
-                  <div>
-                     <h2 className="text-6xl font-black italic tracking-tighter uppercase mb-4 text-shimmer">YOUR ANALYSIS.</h2>
-                     <p className="text-white/40 uppercase font-black tracking-[0.3em] text-[10px]">Based on global international applicant benchmarks</p>
-                  </div>
-                  <Button variant="outline" onClick={() => setResults(null)} className="border-white/10 hover:bg-white/5 font-black uppercase text-[10px] tracking-widest px-8">Recalculate</Button>
                </div>
 
-               <div className="grid md:grid-cols-2 gap-8">
+               <div className="lg:col-span-2">
+                  <AnimatePresence mode="wait">
+                     {step === 1 && (
+                        <motion.div key="step1" initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }} className="glass-3d p-12 space-y-12">
+                           <div className="flex items-center gap-4 mb-8">
+                              <GraduationCap className="w-8 h-8 text-indigo-400" />
+                              <h3 className="text-3xl font-black uppercase italic tracking-tight">Step 1: Academic Profile</h3>
+                           </div>
+
+                           <div className="grid md:grid-cols-2 gap-8">
+                              <div className="space-y-4">
+                                 <label className="text-[10px] font-black uppercase tracking-widest opacity-40">GPA / Scale</label>
+                                 <div className="flex gap-2">
+                                    <input type="number" step="0.01" className="flex-1 h-14 bg-white/5 border border-white/10 rounded-xl px-6 font-bold" placeholder="3.9" onChange={e => setProfile({...profile, gpa: parseFloat(e.target.value)})}/>
+                                    <select className="w-24 h-14 bg-white/5 border border-white/10 rounded-xl px-4 font-bold" onChange={e => setProfile({...profile, gpaScale: parseFloat(e.target.value)})}>
+                                       <option value="4.0">4.0</option>
+                                       <option value="5.0">5.0</option>
+                                       <option value="100">100</option>
+                                    </select>
+                                 </div>
+                              </div>
+                              <div className="space-y-4">
+                                 <label className="text-[10px] font-black uppercase tracking-widest opacity-40">SAT Score</label>
+                                 <input type="number" className="w-full h-14 bg-white/5 border border-white/10 rounded-xl px-6 font-bold" placeholder="1550" onChange={e => setProfile({...profile, sat: parseInt(e.target.value)})}/>
+                              </div>
+                              <div className="space-y-4">
+                                 <label className="text-[10px] font-black uppercase tracking-widest opacity-40">IELTS / TOEFL</label>
+                                 <input type="number" step="0.5" className="w-full h-14 bg-white/5 border border-white/10 rounded-xl px-6 font-bold" placeholder="7.5" onChange={e => setProfile({...profile, ielts: parseFloat(e.target.value)})}/>
+                              </div>
+                              <div className="space-y-4">
+                                 <label className="text-[10px] font-black uppercase tracking-widest opacity-40">IB / AP Courses</label>
+                                 <select className="w-full h-14 bg-white/5 border border-white/10 rounded-xl px-6 font-bold" onChange={e => setProfile({...profile, ibApCourses: e.target.value as any})}>
+                                    <option value="none">None</option>
+                                    <option value="1-2">1-2 Courses</option>
+                                    <option value="3-5">3-5 Courses</option>
+                                    <option value="6+">6+ Courses</option>
+                                 </select>
+                              </div>
+                              <div className="space-y-4 md:col-span-2">
+                                 <label className="text-[10px] font-black uppercase tracking-widest opacity-40">Grade Trend</label>
+                                 <div className="grid grid-cols-3 gap-4">
+                                    {['improving', 'stable', 'declining'].map(t => (
+                                       <button key={t} onClick={() => setProfile({...profile, gradeTrend: t as any})} className={`h-14 rounded-xl border font-bold uppercase text-[10px] transition-all ${profile.gradeTrend === t ? 'bg-indigo-500 border-indigo-400 text-white shadow-xl' : 'bg-white/5 border-white/10 text-white/40'}`}>
+                                          {t}
+                                       </button>
+                                    ))}
+                                 </div>
+                              </div>
+                           </div>
+
+                           <Button onClick={next} className="w-full h-20 bg-white text-black hover:bg-gray-100 rounded-2xl font-black uppercase text-xs shadow-2xl">
+                              Next Step <ArrowRight className="ml-2 w-4 h-4" />
+                           </Button>
+                        </motion.div>
+                     )}
+
+                     {step === 2 && (
+                        <motion.div key="step2" initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }} className="glass-3d p-12 space-y-12">
+                           <div className="flex items-center gap-4 mb-8">
+                              <FlaskConical className="w-8 h-8 text-indigo-400" />
+                              <h3 className="text-3xl font-black uppercase italic tracking-tight">Step 2: Research & Honors</h3>
+                           </div>
+
+                           <div className="space-y-8">
+                              <div className="space-y-4">
+                                 <label className="text-[10px] font-black uppercase tracking-widest opacity-40">Research Experience</label>
+                                 <div className="grid grid-cols-1 gap-3">
+                                    {[
+                                      { id: 'none', label: 'No research experience' },
+                                      { id: 'lab', label: 'Lab / Research experience only' },
+                                      { id: 'project', label: 'Independent research project' },
+                                      { id: 'submitted', label: 'Submitted paper (Under review)' },
+                                      { id: 'published', label: 'Published paper in real journal' }
+                                    ].map(r => (
+                                       <button key={r.id} onClick={() => setProfile({...profile, research: r.id as any})} className={`w-full h-16 rounded-xl border px-6 font-bold text-left transition-all flex items-center justify-between ${profile.research === r.id ? 'bg-indigo-500 border-indigo-400 text-white shadow-xl' : 'bg-white/5 border-white/10 text-white/40 hover:bg-white/10'}`}>
+                                          <span className="text-xs uppercase">{r.label}</span>
+                                          {profile.research === r.id && <CheckCircle2 className="w-5 h-5" />}
+                                       </button>
+                                    ))}
+                                 </div>
+                              </div>
+
+                              <div className="space-y-4">
+                                 <label className="text-[10px] font-black uppercase tracking-widest opacity-40">Olympiads & Honors</label>
+                                 <div className="grid grid-cols-1 gap-3">
+                                    {[
+                                      { id: 'none', label: 'None' },
+                                      { id: 'regional', label: 'Regional level' },
+                                      { id: 'national_other', label: 'National Bronze/Silver' },
+                                      { id: 'national_gold', label: 'National Gold' },
+                                      { id: 'international', label: 'International Medal (IBO/IMO/etc)' }
+                                    ].map(o => (
+                                       <button key={o.id} onClick={() => setProfile({...profile, olympiad: o.id as any})} className={`w-full h-16 rounded-xl border px-6 font-bold text-left transition-all flex items-center justify-between ${profile.olympiad === o.id ? 'bg-indigo-500 border-indigo-400 text-white shadow-xl' : 'bg-white/5 border-white/10 text-white/40 hover:bg-white/10'}`}>
+                                          <span className="text-xs uppercase">{o.label}</span>
+                                          {profile.olympiad === o.id && <CheckCircle2 className="w-5 h-5" />}
+                                       </button>
+                                    ))}
+                                 </div>
+                              </div>
+                           </div>
+
+                           <div className="flex gap-4">
+                              <Button onClick={prev} variant="outline" className="h-20 px-10 rounded-2xl border-white/10 text-white/40 font-black uppercase text-xs">Back</Button>
+                              <Button onClick={next} className="flex-1 h-20 bg-white text-black hover:bg-gray-100 rounded-2xl font-black uppercase text-xs shadow-2xl">Next Step <ArrowRight className="ml-2 w-4 h-4" /></Button>
+                           </div>
+                        </motion.div>
+                     )}
+
+                     {step === 3 && (
+                        <motion.div key="step3" initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }} className="glass-3d p-12 space-y-12">
+                           <div className="flex items-center gap-4 mb-8">
+                              <Users className="w-8 h-8 text-indigo-400" />
+                              <h3 className="text-3xl font-black uppercase italic tracking-tight">Step 3: Activities & Background</h3>
+                           </div>
+
+                           <div className="space-y-8">
+                              <div className="space-y-4">
+                                 <label className="text-[10px] font-black uppercase tracking-widest opacity-40">Extracurriculars</label>
+                                 <div className="grid grid-cols-1 gap-3">
+                                    {[
+                                      { id: 'none', label: 'None / Minimal' },
+                                      { id: 'member', label: 'Member of clubs/teams' },
+                                      { id: 'leadership', label: 'Leadership role (Captain/Pres)' },
+                                      { id: 'founded_small', label: 'Founded organization (<50 members)' },
+                                      { id: 'founded_large', label: 'Founded organization (100+ members/users)' }
+                                    ].map(e => (
+                                       <button key={e.id} onClick={() => setProfile({...profile, ec: e.id as any})} className={`w-full h-16 rounded-xl border px-6 font-bold text-left transition-all flex items-center justify-between ${profile.ec === e.id ? 'bg-indigo-500 border-indigo-400 text-white shadow-xl' : 'bg-white/5 border-white/10 text-white/40 hover:bg-white/10'}`}>
+                                          <span className="text-xs uppercase">{e.label}</span>
+                                          {profile.ec === e.id && <CheckCircle2 className="w-5 h-5" />}
+                                       </button>
+                                    ))}
+                                 </div>
+                              </div>
+
+                              <div className="space-y-4">
+                                 <label className="text-[10px] font-black uppercase tracking-widest opacity-40">Background Modifiers</label>
+                                 <div className="grid md:grid-cols-2 gap-4">
+                                    {[
+                                      { id: 'firstGen', label: 'First-Gen Student' },
+                                      { id: 'financialHardship', label: 'Financial Hardship' },
+                                      { id: 'languages3plus', label: 'Polyglot (3+ Lang)' },
+                                      { id: 'uniqueStory', label: 'Unique Personal Story' }
+                                    ].map(b => (
+                                       <button key={b.id} onClick={() => setProfile({...profile, [b.id]: !(profile as any)[b.id]})} className={`h-20 rounded-xl border px-6 font-bold transition-all flex items-center gap-4 ${(profile as any)[b.id] ? 'bg-indigo-500 border-indigo-400 text-white' : 'bg-white/5 border-white/10 text-white/40'}`}>
+                                          <div className={`w-6 h-6 rounded-md border flex items-center justify-center ${(profile as any)[b.id] ? 'bg-white border-white' : 'border-white/20'}`}>
+                                             {(profile as any)[b.id] && <CheckCircle2 className="w-4 h-4 text-indigo-500" />}
+                                          </div>
+                                          <span className="text-[10px] uppercase text-left">{b.label}</span>
+                                       </button>
+                                    ))}
+                                 </div>
+                              </div>
+
+                              <div className="space-y-4">
+                                 <label className="text-[10px] font-black uppercase tracking-widest opacity-40">Select Target Region</label>
+                                 <div className="grid grid-cols-3 gap-4">
+                                    {[
+                                      { id: 'usa_canada', label: 'USA & CANADA' },
+                                      { id: 'uk_europe', label: 'UK & EUROPE' },
+                                      { id: 'asia_global', label: 'ASIA & GLOBAL' }
+                                    ].map(r => (
+                                       <button key={r.id} onClick={() => setRegion(r.id as any)} className={`h-20 rounded-xl border font-black uppercase text-[10px] transition-all ${region === r.id ? 'bg-white text-black border-white shadow-2xl scale-105' : 'bg-white/5 border-white/10 text-white/40 hover:bg-white/10'}`}>
+                                          {r.label}
+                                       </button>
+                                    ))}
+                                 </div>
+                              </div>
+                           </div>
+
+                           <div className="flex gap-4">
+                              <Button onClick={prev} variant="outline" className="h-20 px-10 rounded-2xl border-white/10 text-white/40 font-black uppercase text-xs">Back</Button>
+                              <Button onClick={calculate} className="flex-1 h-20 bg-indigo-600 text-white hover:bg-indigo-500 rounded-2xl font-black uppercase text-xs shadow-[0_20px_40px_rgba(79,70,229,0.3)]">Generate Full Analysis <Zap className="ml-2 w-4 h-4 fill-current" /></Button>
+                           </div>
+                        </motion.div>
+                     )}
+                  </AnimatePresence>
+               </div>
+            </div>
+          ) : (
+            <div className="space-y-16">
+               <header className="flex flex-col md:flex-row justify-between items-end gap-12">
+                  <div>
+                     <Button onClick={() => setShowResults(false)} variant="link" className="text-indigo-400 p-0 h-auto font-black uppercase text-[10px] tracking-[0.2em] mb-6">
+                        <ChevronLeft className="w-4 h-4 mr-2" /> Recalibrate Profile
+                     </Button>
+                     <h1 className="text-7xl font-black italic tracking-tighter uppercase leading-none">THE <br /> RESULTS.</h1>
+                  </div>
+                  <div className="flex gap-4">
+                     <div className="p-6 glass-3d border-white/5 text-center min-w-[200px]">
+                        <p className="text-[9px] font-black uppercase tracking-widest text-white/20 mb-2">Region Filtered</p>
+                        <p className="text-xl font-black italic text-indigo-400 uppercase tracking-tighter">{region.replace('_', ' & ')}</p>
+                     </div>
+                  </div>
+               </header>
+
+               <div className="grid gap-12">
                   {results.map((res, i) => (
                     <motion.div 
-                      key={res.schoolName}
+                      key={i} 
                       initial={{ opacity: 0, y: 20 }}
                       animate={{ opacity: 1, y: 0 }}
-                      transition={{ delay: i * 0.05 }}
-                      className="glass-3d p-12 border-white/5 flex flex-col justify-between group"
+                      transition={{ delay: i * 0.1 }}
+                      className="glass-3d overflow-hidden border-white/5"
                     >
-                       <div>
-                          <div className="flex justify-between items-start mb-10">
-                             <div>
-                                <h3 className="text-3xl font-black uppercase tracking-tighter italic group-hover:text-indigo-400 transition-colors">{res.schoolName}</h3>
-                                <Badge className="mt-2 bg-indigo-500/10 text-indigo-400 border-none font-black text-[9px] uppercase tracking-widest px-3">{res.region}</Badge>
+                       <div className="p-12 flex flex-col lg:flex-row gap-16">
+                          <div className="lg:w-96 shrink-0">
+                             <div className="w-16 h-16 rounded-2xl bg-white/5 flex items-center justify-center border border-white/10 mb-8">
+                                <Building2 className="w-8 h-8 text-white/40" />
                              </div>
-                             <div className="text-right">
-                                <p className="text-4xl font-black italic tracking-tighter text-emerald-400">{res.estimatedChance}%</p>
-                                <p className="text-[9px] font-black uppercase tracking-widest text-white/20">Est. Chance</p>
+                             <h4 className="text-4xl font-black uppercase tracking-tighter mb-4 leading-none">{res.schoolName}</h4>
+                             <Badge className="bg-indigo-500/10 text-indigo-400 border-none font-black text-[9px] uppercase tracking-widest px-4 mb-10">Target Region</Badge>
+                             
+                             <div className="space-y-2">
+                                <div className="flex justify-between items-end">
+                                   <p className="text-[10px] font-black uppercase tracking-widest text-white/20">Admission Probability</p>
+                                   <p className="text-3xl font-black italic tracking-tighter text-indigo-400">{res.low}-{res.high}%</p>
+                                </div>
+                                <div className="h-3 w-full bg-white/5 rounded-full overflow-hidden relative">
+                                   <motion.div 
+                                     initial={{ width: 0 }}
+                                     animate={{ width: `${res.high}%` }}
+                                     className="absolute h-full bg-indigo-500/20"
+                                   />
+                                   <motion.div 
+                                     initial={{ width: 0 }}
+                                     animate={{ width: `${res.low}%` }}
+                                     className="absolute h-full bg-indigo-500 shadow-[0_0_20px_rgba(79,70,229,0.5)]"
+                                   />
+                                </div>
                              </div>
                           </div>
 
-                          <div className="h-1.5 w-full bg-white/5 rounded-full overflow-hidden mb-12">
-                             <motion.div 
-                               initial={{ width: 0 }}
-                               animate={{ width: `${res.estimatedChance}%` }}
-                               className="h-full bg-emerald-500"
-                             />
-                          </div>
-
-                          <div className="space-y-8">
+                          <div className="flex-1 space-y-12">
                              <div>
-                                <p className="text-[9px] font-black uppercase text-emerald-500/60 mb-4 tracking-widest">Strength Profile</p>
-                                <div className="space-y-3">
+                                <h6 className="text-[10px] font-black uppercase tracking-[0.4em] text-indigo-400 mb-6 flex items-center gap-2">
+                                   <TrendingUp className="w-4 h-4" /> Why this estimate?
+                                </h6>
+                                <div className="grid md:grid-cols-2 gap-4">
                                    {res.pros.map((pro, idx) => (
-                                      <div key={idx} className="flex gap-3 text-sm font-medium text-white/60">
-                                         <div className="w-5 h-5 rounded-full bg-emerald-500/10 flex items-center justify-center shrink-0 border border-emerald-500/20">
-                                            <Plus className="w-3 h-3 text-emerald-500" />
-                                         </div>
-                                         {pro}
+                                      <div key={idx} className="p-4 bg-emerald-500/5 rounded-xl border border-emerald-500/10 flex items-start gap-3">
+                                         <Plus className="w-4 h-4 text-emerald-500 mt-0.5 shrink-0" />
+                                         <span className="text-xs font-bold text-emerald-400/80">{pro}</span>
+                                      </div>
+                                   ))}
+                                   {res.cons.map((con, idx) => (
+                                      <div key={idx} className="p-4 bg-rose-500/5 rounded-xl border border-rose-500/10 flex items-start gap-3">
+                                         <AlertCircle className="w-4 h-4 text-rose-500 mt-0.5 shrink-0" />
+                                         <span className="text-xs font-bold text-rose-400/80">{con}</span>
                                       </div>
                                    ))}
                                 </div>
                              </div>
 
-                             {res.cons.length > 0 && (
-                               <div>
-                                  <p className="text-[9px] font-black uppercase text-rose-500/60 mb-4 tracking-widest">Growth Areas</p>
-                                  <div className="space-y-3">
-                                     {res.cons.map((con, idx) => (
-                                        <div key={idx} className="flex gap-3 text-sm font-medium text-rose-400/60">
-                                           <AlertCircle className="w-5 h-5 shrink-0" />
-                                           {con}
-                                        </div>
-                                     ))}
-                                  </div>
-                               </div>
-                             )}
-
-                             {res.recommendations.length > 0 && (
-                               <div className="p-6 bg-indigo-500/5 rounded-2xl border border-indigo-500/20">
-                                  <p className="text-[9px] font-black uppercase text-indigo-400 mb-4 tracking-widest">Strategic Roadmap</p>
-                                  <div className="space-y-4">
-                                     {res.recommendations.map((rec, idx) => (
-                                        <div key={idx} className="flex items-center gap-4 text-sm font-black italic tracking-tight uppercase">
-                                           <ArrowRight className="w-4 h-4 text-indigo-400" />
-                                           {rec}
-                                        </div>
-                                     ))}
-                                  </div>
-                               </div>
-                             )}
+                             <div>
+                                <h6 className="text-[10px] font-black uppercase tracking-[0.4em] text-indigo-400 mb-6 flex items-center gap-2">
+                                   <Zap className="w-4 h-4" /> Tactical Upgrades
+                                </h6>
+                                <div className="space-y-3">
+                                   {res.recommendations.map((rec, idx) => (
+                                      <div key={idx} className="p-5 bg-white/5 rounded-2xl border border-white/5 flex items-center gap-4 group">
+                                         <ArrowRight className="w-4 h-4 text-indigo-400 group-hover:translate-x-1 transition-transform" />
+                                         <span className="text-xs font-black uppercase italic tracking-tight">{rec}</span>
+                                      </div>
+                                   ))}
+                                </div>
+                             </div>
                           </div>
                        </div>
                     </motion.div>
                   ))}
                </div>
-
-               <div className="p-12 glass-3d border-yellow-500/10 bg-yellow-500/[0.02] text-center">
-                  <p className="text-xs font-black uppercase tracking-[0.3em] text-yellow-500 mb-4">Disclaimer</p>
-                  <p className="text-white/40 text-sm font-medium leading-relaxed max-w-3xl mx-auto italic">
-                     Estimated chance based on historical data for international applicants. These calculations are probabilistic models and do not guarantee admission. Top 5 universities are hard-capped at 40% due to yield protection and extreme competition.
-                  </p>
-               </div>
-            </motion.div>
+            </div>
           )}
         </div>
       </div>

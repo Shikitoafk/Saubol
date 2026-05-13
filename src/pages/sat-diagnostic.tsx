@@ -16,7 +16,7 @@ import {
 } from "lucide-react";
 import { supabase } from "@/lib/supabase";
 import { calculateWeightedScore } from "@/lib/sat-logic";
-import { SAT_QUESTION_BANK } from "@/data/sat-questions";
+import { SAT_QUESTION_BANK } from "@/data/sat-question-bank";
 import katex from 'katex';
 import 'katex/dist/katex.min.css';
 
@@ -32,19 +32,10 @@ export default function SATDiagnostic() {
   useEffect(() => {
     // Generate a 20-question diagnostic from the bank
     const diagQs: any[] = [];
-    const sections = ['Math', 'RW'];
     
-    sections.forEach(section => {
-      const categories = Object.keys(SAT_QUESTION_BANK?.[section] || {});
-      categories.forEach(cat => {
-        const topics = Object.keys(SAT_QUESTION_BANK?.[section]?.[cat] || {});
-        topics.forEach(topic => {
-          const qs = SAT_QUESTION_BANK?.[section]?.[cat]?.[topic] || [];
-          if (qs && qs.length > 0) {
-            diagQs.push(...qs);
-          }
-        });
-      });
+    // Flatten all questions from all topics
+    Object.keys(SAT_QUESTION_BANK).forEach(topicId => {
+      diagQs.push(...SAT_QUESTION_BANK[topicId]);
     });
 
     // Shuffle and pick 20
@@ -74,10 +65,11 @@ export default function SATDiagnostic() {
 
   const handleSubmit = async () => {
     setIsSubmitting(true);
+    
     const formatted = questions.map((q, i) => ({
       correct: answers?.[i] === q?.correctAnswer,
-      difficulty: q?.difficulty || 'Medium',
-      section: q?.section || 'Math'
+      difficulty: q?.difficulty || 'medium',
+      section: q?.topic === 'linear_equations' || q?.topic === 'systems_equations' || q?.topic === 'quadratic' ? 'Math' : 'RW'
     }));
 
     const score = calculateWeightedScore(formatted);
@@ -97,6 +89,8 @@ export default function SATDiagnostic() {
       setResults(score);
     } catch (err) {
       console.error("Diagnostic submission failed:", err);
+      // Still show results locally even if DB fails
+      setResults(score);
     } finally {
       setIsSubmitting(false);
     }
@@ -122,22 +116,44 @@ export default function SATDiagnostic() {
       <Layout>
         <div className="min-h-screen bg-black text-white flex items-center justify-center p-10">
           <motion.div initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }} className="glass-3d p-16 max-w-4xl w-full text-center">
-            <h2 className="text-5xl font-black uppercase mb-12 italic">Diagnostic Results.</h2>
+            <div className="w-20 h-20 rounded-3xl bg-indigo-500/10 flex items-center justify-center border border-indigo-500/20 mx-auto mb-8">
+               <Target className="w-10 h-10 text-indigo-400" />
+            </div>
+            <h2 className="text-5xl font-black uppercase mb-12 italic tracking-tighter">Diagnostic Results.</h2>
             <div className="grid grid-cols-3 gap-8 mb-16">
               <div className="p-8 bg-white/5 rounded-3xl border border-white/5">
-                <p className="text-[10px] font-black uppercase text-white/20 mb-2">Math</p>
-                <p className="text-4xl font-black">{results.math}</p>
+                <p className="text-[10px] font-black uppercase text-white/20 mb-2">Math Proficiency</p>
+                <p className="text-4xl font-black italic">{results.math}</p>
               </div>
-              <div className="p-10 bg-indigo-600 rounded-3xl shadow-2xl">
-                <p className="text-[10px] font-black uppercase text-white/60 mb-2">Total Score</p>
-                <p className="text-7xl font-black">{results.total}</p>
+              <div className="p-10 bg-indigo-600 rounded-3xl shadow-[0_30px_60px_rgba(79,70,229,0.3)] border border-indigo-400/20">
+                <p className="text-[10px] font-black uppercase text-white/60 mb-2">Estimated SAT</p>
+                <p className="text-7xl font-black italic tracking-tighter">{results.total}</p>
               </div>
               <div className="p-8 bg-white/5 rounded-3xl border border-white/5">
-                <p className="text-[10px] font-black uppercase text-white/20 mb-2">R&W</p>
-                <p className="text-4xl font-black">{results.rw}</p>
+                <p className="text-[10px] font-black uppercase text-white/20 mb-2">R&W Proficiency</p>
+                <p className="text-4xl font-black italic">{results.rw}</p>
               </div>
             </div>
-            <Button onClick={() => navigate('/sat/study-plan')} className="w-full h-20 bg-white text-black font-black uppercase tracking-widest text-xs rounded-2xl">Initialize Study Plan</Button>
+            
+            <div className="grid md:grid-cols-2 gap-6 mb-12">
+               <div className="p-6 bg-white/5 rounded-2xl border border-white/5 text-left">
+                  <h4 className="text-[10px] font-black uppercase text-indigo-400 mb-4 tracking-widest">Initial Weaknesses</h4>
+                  <div className="space-y-2">
+                     {results.weakTopics?.slice(0,3).map((t: string) => (
+                        <div key={t} className="text-xs font-bold text-white/40 uppercase">→ {t.replace('_', ' ')}</div>
+                     )) || <div className="text-xs font-bold text-white/40">None identified</div>}
+                  </div>
+               </div>
+               <div className="p-6 bg-emerald-500/5 rounded-2xl border border-emerald-500/10 text-left">
+                  <h4 className="text-[10px] font-black uppercase text-emerald-400 mb-4 tracking-widest">Profile Strengths</h4>
+                  <div className="space-y-2">
+                     <div className="text-xs font-bold text-emerald-400/60 uppercase">✓ High Potential</div>
+                     <div className="text-xs font-bold text-emerald-400/60 uppercase">✓ Academic Foundation</div>
+                  </div>
+               </div>
+            </div>
+
+            <Button onClick={() => navigate('/sat/roadmap')} className="w-full h-20 bg-white text-black font-black uppercase tracking-widest text-xs rounded-2xl hover:bg-gray-100 transition-all shadow-2xl">Initialize Strategic Roadmap</Button>
           </motion.div>
         </div>
       </Layout>
@@ -149,38 +165,71 @@ export default function SATDiagnostic() {
 
   return (
     <Layout>
-      <div className="min-h-screen bg-black text-white relative overflow-hidden flex flex-col">
-        <div className="max-w-[1600px] mx-auto w-full px-10 pt-24 pb-6 relative z-10 flex flex-col flex-1">
-          <div className="flex items-center justify-between mb-8">
-            <div className="flex items-center gap-4">
-              <div className="w-12 h-12 bg-white/5 rounded-2xl flex items-center justify-center border border-white/10"><Target className="w-6 h-6 text-indigo-400" /></div>
-              <div><h2 className="text-xl font-black uppercase">SAT Diagnostic</h2><p className="text-[10px] font-black text-white/20 uppercase">Question {currentIdx + 1} of {questions?.length}</p></div>
+      <div className="min-h-screen bg-black text-white relative overflow-hidden flex flex-col pt-16">
+        <div className="bg-sphere top-[-10%] right-[-5%] opacity-20" />
+        <div className="max-w-[1600px] mx-auto w-full px-10 py-12 relative z-10 flex flex-col flex-1">
+          <div className="flex items-center justify-between mb-12">
+            <div className="flex items-center gap-6">
+              <div className="w-16 h-16 bg-white/5 rounded-2xl flex items-center justify-center border border-white/10"><Brain className="w-8 h-8 text-indigo-400" /></div>
+              <div>
+                 <h2 className="text-2xl font-black uppercase italic tracking-tighter">SAT Diagnostic</h2>
+                 <p className="text-[10px] font-black text-white/20 uppercase tracking-[0.2em]">Evaluating Student Intelligence: Question {currentIdx + 1} / {questions?.length}</p>
+              </div>
             </div>
-            <div className="flex items-center gap-4 bg-white/5 px-6 py-3 rounded-xl border border-white/10"><Timer className="w-4 h-4 text-indigo-400" /><span className="text-xs font-black">ADAPTIVE EVALUATION</span></div>
+            <div className="flex items-center gap-6">
+               <div className="hidden md:flex items-center gap-3 bg-white/5 px-6 py-3 rounded-xl border border-white/10">
+                  <Timer className="w-4 h-4 text-indigo-400" />
+                  <span className="text-[10px] font-black uppercase tracking-widest">Adaptive Session</span>
+               </div>
+               <div className="h-2 w-48 bg-white/5 rounded-full overflow-hidden">
+                  <motion.div initial={{ width: 0 }} animate={{ width: `${((currentIdx + 1) / questions.length) * 100}%` }} className="h-full bg-indigo-500" />
+               </div>
+            </div>
           </div>
 
-          <div className="grid lg:grid-cols-2 gap-10 flex-1 overflow-hidden">
-            <div className="glass-3d p-10 overflow-y-auto custom-scrollbar flex flex-col gap-8">
+          <div className="grid lg:grid-cols-2 gap-12 flex-1 overflow-hidden">
+            <div className="glass-3d p-12 overflow-y-auto custom-scrollbar flex flex-col gap-10">
               {q?.passage && (
-                <div className="p-8 bg-white/5 rounded-2xl border border-white/10">
-                  <div className="flex items-center gap-2 mb-4 opacity-30"><FileText className="w-4 h-4" /><span className="text-[9px] font-black uppercase tracking-widest">Passage</span></div>
-                  <p className="text-lg leading-relaxed font-medium text-white/80">{q.passage}</p>
+                <div className="p-10 bg-white/[0.02] rounded-3xl border border-white/5 relative">
+                  <div className="flex items-center gap-2 mb-6 opacity-20"><FileText className="w-4 h-4" /><span className="text-[9px] font-black uppercase tracking-widest">Instructional Context</span></div>
+                  <p className="text-xl leading-relaxed font-medium text-white/70 italic leading-loose">{q.passage}</p>
                 </div>
               )}
-              <div className="text-2xl font-black leading-tight tracking-tight" dangerouslySetInnerHTML={{ __html: renderText(q.question) }} />
+              <div className="text-3xl font-black leading-[1.1] tracking-tight uppercase italic" dangerouslySetInnerHTML={{ __html: renderText(q.question) }} />
             </div>
 
             <div className="space-y-4">
-              {q?.options?.map((opt: string, i: number) => (
-                <button key={i} onClick={() => handleSelect(i)} className={`w-full p-8 text-left rounded-2xl border transition-all flex items-center justify-between group ${answers?.[currentIdx] === i ? 'bg-white text-black border-white' : 'bg-white/5 border-white/5 hover:border-white/20'}`}>
-                  <span className="text-lg font-bold" dangerouslySetInnerHTML={{ __html: renderText(opt) }} />
-                  <div className={`w-8 h-8 rounded-xl border flex items-center justify-center text-[10px] font-black ${answers?.[currentIdx] === i ? 'border-black' : 'border-white/10'}`}>{String.fromCharCode(65 + i)}</div>
-                </button>
-              ))}
+              <div className="grid grid-cols-1 gap-4">
+                {q?.options?.map((opt: string, i: number) => (
+                  <button 
+                    key={i} 
+                    onClick={() => handleSelect(i)} 
+                    className={`w-full p-10 text-left rounded-3xl border transition-all flex items-center justify-between group h-24 ${answers?.[currentIdx] === i ? 'bg-white text-black border-white shadow-[0_20px_40px_rgba(255,255,255,0.1)]' : 'bg-white/5 border-white/5 hover:border-white/10 hover:bg-white/[0.08]'}`}
+                  >
+                    <span className="text-lg font-black uppercase italic tracking-tight" dangerouslySetInnerHTML={{ __html: renderText(opt) }} />
+                    <div className={`w-10 h-10 rounded-xl border flex items-center justify-center text-[11px] font-black ${answers?.[currentIdx] === i ? 'border-black' : 'border-white/10'}`}>
+                       {String.fromCharCode(65 + i)}
+                    </div>
+                  </button>
+                ))}
+              </div>
 
-              <div className="flex items-center justify-between mt-12 pt-8 border-t border-white/5">
-                <Button variant="ghost" onClick={prev} disabled={currentIdx === 0} className="text-[10px] font-black uppercase text-white/40">Back</Button>
-                <Button onClick={next} disabled={answers?.[currentIdx] === -1 || isSubmitting} className="bg-indigo-600 px-12 h-16 font-black uppercase text-xs rounded-xl">{currentIdx === (questions?.length || 0) - 1 ? "Complete" : "Next"}</Button>
+              <div className="flex items-center justify-between mt-16 pt-10 border-t border-white/5">
+                <Button 
+                  variant="ghost" 
+                  onClick={prev} 
+                  disabled={currentIdx === 0} 
+                  className="h-16 px-8 text-[10px] font-black uppercase text-white/20 hover:text-white"
+                >
+                   <ChevronLeft className="w-4 h-4 mr-2" /> Previous
+                </Button>
+                <Button 
+                  onClick={next} 
+                  disabled={answers?.[currentIdx] === -1 || isSubmitting} 
+                  className="bg-indigo-600 hover:bg-indigo-500 px-16 h-20 font-black uppercase text-xs rounded-2xl shadow-2xl transition-all hover:scale-105"
+                >
+                   {currentIdx === (questions?.length || 0) - 1 ? "Complete Evaluation" : "Confirm Answer"} <ArrowRight className="ml-3 w-5 h-5" />
+                </Button>
               </div>
             </div>
           </div>

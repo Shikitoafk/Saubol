@@ -35,17 +35,21 @@ function App() {
         <TooltipProvider>
           <BrowserRouter basename={import.meta.env.BASE_URL?.replace(/\/$/, "") || ""}>
             <Routes>
+              {/* Home */}
               <Route path="/" element={<Home />} />
-              <Route path="/programs" element={<Programs />} />
-              <Route path="/ielts" element={<IeltsPrep />} />
-              <Route path="/ielts/writing-checker" element={<IELTSWritingChecker />} />
-              <Route path="/ielts/test/:slug" element={<IELTSTestViewer />} />
+              <Route path="/login" element={<Login />} />
+              <Route path="/dashboard" element={
+                <ProtectedRoute>
+                  <Dashboard />
+                </ProtectedRoute>
+              } />
               
+              {/* SAT Ecosystem */}
               <Route path="/sat" element={<SatPrep />} />
-              <Route path="/sat/practice" element={<SATPractice />} />
               <Route path="/sat/diagnostic" element={<SATDiagnostic />} />
-              <Route path="/sat/study-plan" element={<SATStudyPlan />} />
               <Route path="/sat/learn" element={<SATLearn />} />
+              <Route path="/sat/practice" element={<SATPractice />} />
+              <Route path="/sat/study-plan" element={<SATStudyPlan />} />
               <Route path="/sat/tests" element={<SATTests />} />
               <Route path="/sat/roadmap" element={<SATRoadmap />} />
               <Route path="/sat/dashboard" element={
@@ -55,14 +59,17 @@ function App() {
               } />
               <Route path="/sat/test/:section/:slug" element={<SATTestViewer />} />
               
+              {/* IELTS Ecosystem */}
+              <Route path="/ielts" element={<IeltsPrep />} />
+              <Route path="/ielts/writing-checker" element={<IELTSWritingChecker />} />
+              <Route path="/ielts/test/:slug" element={<IELTSTestViewer />} />
+              
+              {/* Admissions Intelligence */}
               <Route path="/admissions" element={<Admissions />} />
               <Route path="/admissions/calculator" element={<AdmissionsCalculator />} />
-              <Route path="/login" element={<Login />} />
-              <Route path="/dashboard" element={
-                <ProtectedRoute>
-                  <Dashboard />
-                </ProtectedRoute>
-              } />
+              
+              {/* Others */}
+              <Route path="/programs" element={<Programs />} />
               <Route path="*" element={<NotFound />} />
             </Routes>
           </BrowserRouter>

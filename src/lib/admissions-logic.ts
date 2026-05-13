@@ -1,192 +1,168 @@
-/**
- * Admissions Logic v4.0 - Global Intelligence Engine
- * Realistic admission probability modeling based on international applicant data.
- */
+import { University } from "@/data/universities";
 
-export interface ApplicantProfile {
-  // Academics
+export interface FullApplicantProfile {
+  // Step 1: Academics
   gpa: number;
   gpaScale: number; // 4.0, 5.0, 100
-  classRank: 'top5' | 'top10' | 'top25' | 'unknown';
-  sat?: number;
-  ielts?: number;
-  curriculum: 'IB' | 'AP' | 'ALevel' | 'National';
-  curriculumCount: number; // # of IB/AP/A-Levels
-  gradeTrend: 'Improving' | 'Stable' | 'Declining';
+  sat: number;
+  ielts: number;
+  gradeTrend: 'improving' | 'stable' | 'declining';
+  ibApCourses: 'none' | '1-2' | '3-5' | '6+';
 
-  // Research
-  hasPublishedPaper: boolean;
-  paperStatus: 'Published' | 'UnderReview' | 'None';
-  labExperience: boolean;
-  independentResearch: boolean;
-
-  // Olympiads
-  olympiadLevel: 'International' | 'NationalGold' | 'NationalSilverBronze' | 'None';
+  // Step 2: Research & Olympiads
+  research: 'none' | 'lab' | 'project' | 'submitted' | 'published';
+  olympiad: 'none' | 'regional' | 'national_other' | 'national_gold' | 'international';
   competitionMedals: string[];
 
-  // Extracurriculars
-  foundedOrg: boolean;
-  orgReach: number; // # of users/members
-  leadershipRole: boolean;
-  communityService: boolean;
-  sportsCompetitive: boolean;
-  artsCompetitive: boolean;
-
-  // Personal
-  country: string;
-  isFirstGen: boolean;
+  // Step 3: Activities & Background
+  ec: 'none' | 'member' | 'leadership' | 'founded_small' | 'founded_large';
+  firstGen: boolean;
   financialHardship: boolean;
-  speaksThreeLanguages: boolean;
-
-  // Search
-  targetRegions: ('US' | 'UK' | 'Canada' | 'Asia' | 'Australia')[];
+  languages3plus: boolean;
+  uniqueStory: boolean;
+  
+  region: 'usa_canada' | 'uk_europe' | 'asia_global';
 }
 
-export interface AdmissionResult {
+export interface DetailedAdmissionResult {
   schoolName: string;
   region: string;
-  estimatedChance: number;
+  low: number;
+  high: number;
   pros: string[];
   cons: string[];
   recommendations: string[];
 }
 
-export const UNIVERSITIES = [
-  // US
-  { name: "Harvard University", region: "US", baseRate: 0.03, medianSAT: 1540 },
-  { name: "MIT", region: "US", baseRate: 0.04, medianSAT: 1550 },
-  { name: "Stanford University", region: "US", baseRate: 0.04, medianSAT: 1530 },
-  { name: "Princeton University", region: "US", baseRate: 0.04, medianSAT: 1540 },
-  { name: "Yale University", region: "US", baseRate: 0.05, medianSAT: 1530 },
-  { name: "Columbia University", region: "US", baseRate: 0.06, medianSAT: 1520 },
-  { name: "UPenn", region: "US", baseRate: 0.07, medianSAT: 1520 },
-  { name: "Cornell University", region: "US", baseRate: 0.08, medianSAT: 1510 },
-  { name: "UC Berkeley", region: "US", baseRate: 0.12, medianSAT: 1480 },
-  { name: "NYU", region: "US", baseRate: 0.13, medianSAT: 1460 },
-
-  // UK
-  { name: "University of Oxford", region: "UK", baseRate: 0.15, medianSAT: 1520 },
-  { name: "University of Cambridge", region: "UK", baseRate: 0.16, medianSAT: 1510 },
-  { name: "Imperial College London", region: "UK", baseRate: 0.18, medianSAT: 1500 },
-  { name: "UCL", region: "UK", baseRate: 0.22, medianSAT: 1480 },
-  { name: "LSE", region: "UK", baseRate: 0.09, medianSAT: 1500 },
-
-  // Canada
-  { name: "University of Toronto", region: "Canada", baseRate: 0.40, medianSAT: 1450 },
-  { name: "McGill University", region: "Canada", baseRate: 0.35, medianSAT: 1440 },
-  { name: "UBC", region: "Canada", baseRate: 0.38, medianSAT: 1420 },
-
-  // Asia
-  { name: "NUS", region: "Asia", baseRate: 0.07, medianSAT: 1530 },
-  { name: "NTU", region: "Asia", baseRate: 0.09, medianSAT: 1510 },
-  { name: "KAIST", region: "Asia", baseRate: 0.15, medianSAT: 1480 },
-  { name: "Tsinghua University", region: "Asia", baseRate: 0.02, medianSAT: 1550 },
-  { name: "HKU", region: "Asia", baseRate: 0.12, medianSAT: 1480 }
-];
-
-export function calculateDetailedAdmissions(profile: ApplicantProfile): AdmissionResult[] {
-  return UNIVERSITIES
-    .filter(u => profile.targetRegions.includes(u.region as any))
-    .map(school => {
-      let chance = school.baseRate;
-      const pros: string[] = [];
-      const cons: string[] = [];
-      const recommendations: string[] = [];
-
-      // Academic Modifiers
-      if (profile.sat && profile.sat > school.medianSAT) {
-        chance += 0.05;
-        pros.push(`SAT ${profile.sat} above median (+5%)`);
-      } else if (profile.sat && profile.sat < school.medianSAT) {
-        chance -= 0.08;
-        cons.push(`SAT ${profile.sat} below median ${school.medianSAT} (-8%)`);
-        recommendations.push(`Improve SAT to ${school.medianSAT + 20} (+5-8%)`);
-      }
-
-      if (profile.curriculumCount >= 3) {
-        chance += 0.03;
-        pros.push(`Rigorous curriculum (3+ AP/IB) (+3%)`);
-      }
-
-      if (profile.gradeTrend === 'Improving') {
-        chance += 0.03;
-        pros.push("Improving grade trend (+3%)");
-      } else if (profile.gradeTrend === 'Declining') {
-        chance -= 0.07;
-        cons.push("Declining grade trend (-7%)");
-      }
-
-      // Research Modifiers
-      if (profile.paperStatus === 'Published') {
-        chance += 0.12;
-        pros.push("Published research paper (+12%)");
-      } else if (profile.paperStatus === 'UnderReview') {
-        chance += 0.07;
-        pros.push("Research paper under review (+7%)");
-        recommendations.push("Successfully publish your paper (+5%)");
-      } else if (profile.labExperience) {
-        chance += 0.05;
-        pros.push("Lab research experience (+5%)");
-      } else {
-        chance -= 0.03;
-        cons.push("No research experience (-3%)");
-      }
-
-      // Olympiad Modifiers
-      if (profile.olympiadLevel === 'International') {
-        chance += 0.15;
-        pros.push("International Olympiad medal (+15%)");
-      } else if (profile.olympiadLevel === 'NationalGold') {
-        chance += 0.08;
-        pros.push("National Olympiad Gold (+8%)");
-      } else if (profile.olympiadLevel === 'NationalSilverBronze') {
-        chance += 0.04;
-        pros.push("National Olympiad medal (+4%)");
-      }
-
-      // EC Modifiers
-      if (profile.foundedOrg) {
-        const reachMod = profile.orgReach >= 100 ? 0.08 : 0.03;
-        chance += reachMod;
-        pros.push(`Founded organization (${profile.orgReach}+ users) (+${Math.round(reachMod * 100)}%)`);
-      }
-
-      if (profile.leadershipRole) {
-        chance += 0.03;
-        pros.push("Significant leadership role (+3%)");
-      }
-
-      if (!profile.foundedOrg && !profile.leadershipRole && !profile.communityService) {
-        chance -= 0.05;
-        cons.push("Weak extracurricular profile (-5%)");
-      }
-
-      // Personal Modifiers
-      if (profile.isFirstGen) chance += 0.02;
-      if (profile.speaksThreeLanguages) chance += 0.01;
-
-      // Hard Caps
-      let finalChance = chance;
-      const rank = UNIVERSITIES.indexOf(school) + 1; // Simplified rank
-      if (rank <= 5) finalChance = Math.min(finalChance, 0.40);
-      else if (rank <= 20) finalChance = Math.min(finalChance, 0.50);
-      else finalChance = Math.min(finalChance, 0.65);
-
-      return {
-        schoolName: school.name,
-        region: school.region,
-        estimatedChance: Math.round(finalChance * 100),
-        pros,
-        cons,
-        recommendations
-      };
-    });
+function normalizeGPA(gpa: number, scale: number): number {
+  if (scale === 4.0) return gpa;
+  if (scale === 5.0) return (gpa / 5) * 4;
+  if (scale === 100) return (gpa / 100) * 4;
+  return gpa;
 }
 
-/**
- * Helper for legacy components to calculate chance for one school
- */
-export function calculateAdmissionChance(profile: ApplicantProfile, schoolName: string): AdmissionResult | undefined {
-  const results = calculateDetailedAdmissions(profile);
-  return results.find(r => r.schoolName === schoolName);
+export function calculateChances(profile: FullApplicantProfile, university: University): DetailedAdmissionResult {
+  let chance = university.baseRateInternational;
+  const pros: string[] = [];
+  const cons: string[] = [];
+  const recommendations: string[] = [];
+
+  // SAT Scoring
+  if (profile.sat >= 1550) {
+    chance += 0.08;
+    pros.push("Elite SAT score 1550+ (+8%)");
+  } else if (profile.sat >= 1500) {
+    chance += 0.04;
+    pros.push("Strong SAT score 1500+ (+4%)");
+  } else if (profile.sat >= 1450) {
+    // Neutral
+  } else if (profile.sat >= 1400) {
+    chance -= 0.05;
+    cons.push("SAT score below 1450 (-5%)");
+    recommendations.push("Retake SAT to reach 1500+ (+5-9%)");
+  } else if (profile.sat > 0) {
+    chance -= 0.10;
+    cons.push("SAT score significantly below target (-10%)");
+    recommendations.push("Intensive SAT prep required for 1500+");
+  }
+
+  // GPA Scoring
+  const normGPA = normalizeGPA(profile.gpa, profile.gpaScale);
+  if (normGPA >= 3.9) {
+    chance += 0.05;
+    pros.push("Elite academic performance GPA 3.9+ (+5%)");
+  } else if (normGPA >= 3.7) {
+    chance += 0.02;
+    pros.push("Strong GPA 3.7+ (+2%)");
+  } else if (normGPA < 3.5 && normGPA > 0) {
+    chance -= 0.05;
+    cons.push("GPA below 3.5 competitive threshold (-5%)");
+  }
+
+  // Research Scoring
+  if (profile.research === 'published') {
+    chance += 0.12;
+    pros.push("Published research paper (+12%)");
+  } else if (profile.research === 'submitted') {
+    chance += 0.07;
+    pros.push("Research paper submitted for review (+7%)");
+    recommendations.push("Finalize and publish your research paper (+5%)");
+  } else if (profile.research === 'project') {
+    chance += 0.03;
+    pros.push("Independent research project (+3%)");
+  } else if (profile.research === 'lab') {
+    chance += 0.02;
+    pros.push("Lab/Research experience (+2%)");
+  }
+
+  // Olympiad Scoring
+  if (profile.olympiad === 'international') {
+    chance += 0.15;
+    pros.push("International Olympiad medalist (+15%)");
+  } else if (profile.olympiad === 'national_gold') {
+    chance += 0.08;
+    pros.push("National Olympiad Gold (+8%)");
+  } else if (profile.olympiad === 'national_other') {
+    chance += 0.04;
+    pros.push("National Olympiad medalist (+4%)");
+  } else if (profile.olympiad === 'regional') {
+    chance += 0.01;
+    pros.push("Regional competition recognition (+1%)");
+  }
+
+  // Extracurriculars
+  if (profile.ec === 'founded_large') {
+    chance += 0.08;
+    pros.push("Founded major organization/platform (+8%)");
+  } else if (profile.ec === 'founded_small') {
+    chance += 0.04;
+    pros.push("Founded local organization/initiative (+4%)");
+  } else if (profile.ec === 'leadership') {
+    chance += 0.03;
+    pros.push("Significant leadership role (+3%)");
+  }
+
+  // Background
+  if (profile.firstGen) {
+    chance += 0.02;
+    pros.push("First-generation college student (+2%)");
+  }
+  if (profile.financialHardship) {
+    chance += 0.02;
+    pros.push("Significant financial hardship (+2%)");
+  }
+  if (profile.languages3plus) {
+    chance += 0.01;
+    pros.push("Polyglot (3+ languages) (+1%)");
+  }
+
+  // Grade Trend
+  if (profile.gradeTrend === 'improving') {
+    chance += 0.03;
+    pros.push("Positive grade trajectory (+3%)");
+  } else if (profile.gradeTrend === 'declining') {
+    chance -= 0.07;
+    cons.push("Negative grade trajectory (-7%)");
+  }
+
+  // Curriculum Rigor
+  if (profile.ibApCourses === '6+') chance += 0.04;
+  else if (profile.ibApCourses === '3-5') chance += 0.02;
+
+  // HARD CAPS based on University Rank
+  if (university.rank <= 5) chance = Math.min(chance, 0.40);
+  else if (university.rank <= 20) chance = Math.min(chance, 0.50);
+  else if (university.rank <= 50) chance = Math.min(chance, 0.65);
+
+  chance = Math.max(chance, 0.01); // Minimum 1%
+
+  return {
+    schoolName: university.name,
+    region: university.region,
+    low: Math.round(Math.max(0, chance - 0.04) * 100),
+    high: Math.round(Math.min(1, chance + 0.04) * 100),
+    pros,
+    cons,
+    recommendations
+  };
 }
