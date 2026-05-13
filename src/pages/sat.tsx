@@ -84,7 +84,13 @@ export default function SatPrep() {
                <p className="text-white/60 text-sm font-medium leading-relaxed mb-10">
                  Ваш план подготовки еще не активен. Пройдите диагностику, чтобы система построила ваш личный путь к 1550+.
                </p>
-               <div className="flex items-center gap-3 text-xs font-bla          {/* Strategic Modules */}
+               <div className="flex items-center gap-3 text-xs font-black uppercase tracking-widest text-white/20">
+                  <History className="w-4 h-4" /> Last analyzed: Never
+               </div>
+            </div>
+          </motion.div>
+
+          {/* Strategic Modules */}
           <div className="grid lg:grid-cols-2 gap-10">
              {/* Learn Hub */}
              <motion.div 
