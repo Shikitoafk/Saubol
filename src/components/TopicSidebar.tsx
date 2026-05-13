@@ -5,17 +5,19 @@ import {
   ChevronRight, 
   Lock, 
   CheckCircle2,
-  BookOpen
+  BookOpen,
+  Circle
 } from "lucide-react";
 
-interface Topic {
+export interface Topic {
+  id: string;
   name: string;
   progress: number;
   isLocked: boolean;
   isCompleted: boolean;
 }
 
-interface Category {
+export interface Category {
   name: string;
   icon: any;
   topics: Topic[];
@@ -23,73 +25,89 @@ interface Category {
 
 interface TopicSidebarProps {
   categories: Category[];
-  activeTopic: string;
-  onSelectTopic: (topic: string) => void;
+  activeTopicId: string;
+  onSelectTopic: (topicId: string) => void;
 }
 
-export default function TopicSidebar({ categories, activeTopic, onSelectTopic }: TopicSidebarProps) {
+export default function TopicSidebar({ categories, activeTopicId, onSelectTopic }: TopicSidebarProps) {
   return (
     <div className="w-80 h-full bg-black border-r border-white/5 flex flex-col overflow-y-auto custom-scrollbar">
       <div className="p-8 border-b border-white/5">
-        <h2 className="text-[10px] font-black uppercase tracking-[0.4em] text-white/20 mb-2">Curriculum</h2>
-        <h1 className="text-xl font-black uppercase italic tracking-tighter">SAT Mastery.</h1>
+        <div className="flex items-center gap-3 mb-4 opacity-30">
+           <BookOpen className="w-4 h-4" />
+           <span className="text-[10px] font-black uppercase tracking-widest">Library</span>
+        </div>
+        <h1 className="text-2xl font-black uppercase italic tracking-tighter">CURRICULUM.</h1>
       </div>
 
-      <div className="p-4 space-y-8">
+      <div className="p-4 space-y-10">
         {categories.map((cat) => (
           <div key={cat.name} className="space-y-4">
             <div className="flex items-center gap-3 px-4 opacity-40">
               <cat.icon className="w-4 h-4" />
-              <span className="text-[9px] font-black uppercase tracking-widest">{cat.name}</span>
+              <span className="text-[9px] font-black uppercase tracking-[0.3em]">{cat.name}</span>
             </div>
             
             <div className="space-y-1">
               {cat.topics.map((topic) => {
-                const isActive = activeTopic === topic.name;
+                const isActive = activeTopicId === topic.id;
+                const status = topic.isCompleted ? 'completed' : topic.isLocked ? 'locked' : isActive ? 'active' : 'available';
+
                 return (
                   <button
-                    key={topic.name}
+                    key={topic.id}
                     disabled={topic.isLocked}
-                    onClick={() => onSelectTopic(topic.name)}
-                    className={`w-full p-4 rounded-xl transition-all flex flex-col gap-3 group relative overflow-hidden ${
+                    onClick={() => onSelectTopic(topic.id)}
+                    className={`w-full p-4 rounded-xl transition-all flex flex-col gap-3 group relative overflow-hidden border ${
                       isActive 
-                        ? 'bg-indigo-600/10 border border-indigo-500/20' 
-                        : 'hover:bg-white/5 border border-transparent'
+                        ? 'bg-white/10 border-white/20' 
+                        : 'hover:bg-white/5 border-transparent'
                     } ${topic.isLocked ? 'opacity-30 grayscale cursor-not-allowed' : 'cursor-pointer'}`}
                   >
                     <div className="flex items-center justify-between relative z-10">
-                      <span className={`text-[10px] font-black uppercase tracking-tight transition-colors ${
-                        isActive ? 'text-indigo-400' : 'text-white/60 group-hover:text-white'
-                      }`}>
-                        {topic.name}
-                      </span>
+                      <div className="flex items-center gap-3">
+                        <div className={`w-1.5 h-1.5 rounded-full ${
+                          topic.isCompleted ? 'bg-emerald-500' : 
+                          isActive ? 'bg-white' : 
+                          'bg-white/20'
+                        }`} />
+                        <span className={`text-[11px] font-black uppercase tracking-tight transition-colors ${
+                          isActive ? 'text-white' : 
+                          topic.isCompleted ? 'text-emerald-400' :
+                          'text-white/40 group-hover:text-white'
+                        }`}>
+                          {topic.name}
+                        </span>
+                      </div>
                       {topic.isCompleted ? (
                         <CheckCircle2 className="w-3.5 h-3.5 text-emerald-500" />
                       ) : topic.isLocked ? (
                         <Lock className="w-3.5 h-3.5 text-white/20" />
                       ) : (
-                        <ChevronRight className={`w-3.5 h-3.5 transition-transform ${isActive ? 'rotate-90 text-indigo-400' : 'text-white/10 group-hover:translate-x-1'}`} />
+                        <Circle className={`w-3.5 h-3.5 text-white/10 ${isActive ? 'fill-white/10' : ''}`} />
                       )}
                     </div>
 
-                    <div className="space-y-1.5 relative z-10">
-                      <div className="flex justify-between items-center text-[8px] font-black uppercase tracking-widest">
-                        <span className="text-white/20">Mastery</span>
-                        <span className={topic.progress >= 70 ? 'text-emerald-400' : 'text-indigo-400'}>{topic.progress}%</span>
+                    {!topic.isLocked && (
+                      <div className="space-y-1.5 relative z-10">
+                        <div className="h-1 w-full bg-white/5 rounded-full overflow-hidden">
+                          <motion.div 
+                            initial={false}
+                            animate={{ width: `${topic.progress}%` }}
+                            className={`h-full ${topic.isCompleted ? 'bg-emerald-500' : 'bg-white/20'}`}
+                          />
+                        </div>
+                        <div className="flex justify-between items-center text-[8px] font-black uppercase tracking-widest opacity-30">
+                          <span>Mastery</span>
+                          <span>{topic.progress}%</span>
+                        </div>
                       </div>
-                      <div className="h-1 w-full bg-white/5 rounded-full overflow-hidden">
-                        <motion.div 
-                          initial={{ width: 0 }}
-                          animate={{ width: `${topic.progress}%` }}
-                          className={`h-full ${topic.progress >= 70 ? 'bg-emerald-500' : 'bg-indigo-500'}`}
-                        />
-                      </div>
-                    </div>
+                    )}
 
                     {isActive && (
                       <motion.div 
-                        layoutId="active-bg"
-                        className="absolute inset-0 bg-indigo-500/5 z-0"
+                        layoutId="active-highlight"
+                        className="absolute left-0 w-1 h-8 bg-white my-auto inset-y-0"
                       />
                     )}
                   </button>
@@ -100,14 +118,17 @@ export default function TopicSidebar({ categories, activeTopic, onSelectTopic }:
         ))}
       </div>
 
-      <div className="mt-auto p-6 border-t border-white/5 bg-white/[0.02]">
-        <div className="flex items-center gap-4">
-           <div className="w-10 h-10 rounded-xl bg-white/5 flex items-center justify-center border border-white/10">
-              <BookOpen className="w-5 h-5 text-indigo-400" />
+      <div className="mt-auto p-8 border-t border-white/5 bg-white/[0.02]">
+        <div className="space-y-4">
+           <div className="flex justify-between items-end">
+              <div>
+                 <p className="text-[9px] font-black text-white/20 uppercase tracking-widest mb-1">Total Progress</p>
+                 <p className="text-xl font-black italic">12.5%</p>
+              </div>
+              <TrendingUp className="w-6 h-6 text-white/10" />
            </div>
-           <div>
-              <p className="text-[9px] font-black text-white/20 uppercase tracking-widest">Global Progress</p>
-              <p className="text-lg font-black italic">24.5% Mastery</p>
+           <div className="h-1 w-full bg-white/5 rounded-full overflow-hidden">
+              <div className="h-full w-1/8 bg-white/20" />
            </div>
         </div>
       </div>

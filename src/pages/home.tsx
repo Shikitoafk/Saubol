@@ -4,16 +4,15 @@ import {
   ArrowRight, 
   Target, 
   Brain, 
-  Globe, 
   ChevronRight,
-  Headphones,
-  LayoutDashboard,
   Clock,
   Zap,
   Sparkles,
-  FileText,
-  MessageSquare,
-  Code
+  BookOpen,
+  Calculator,
+  ShieldCheck,
+  TrendingUp,
+  Calendar
 } from 'lucide-react';
 import { Layout } from "@/components/layout";
 import { motion } from "framer-motion";
@@ -22,183 +21,209 @@ import { Badge } from "@/components/ui/badge";
 export default function Home() {
   const navigate = useNavigate();
 
+  const container = {
+    hidden: { opacity: 0 },
+    show: { opacity: 1, transition: { staggerChildren: 0.1 } }
+  };
+
+  const item = {
+    hidden: { opacity: 0, y: 20 },
+    show: { opacity: 1, y: 0, transition: { duration: 0.8, ease: "easeOut" } }
+  };
+
   return (
     <Layout>
       <div className="min-h-screen bg-[#000000] text-white selection:bg-white/10 font-sans relative overflow-hidden">
         {/* Deep Ambient Background */}
         <div className="bg-vignette" />
         <div className="bg-sphere top-[-20%] left-[-10%] opacity-40 animate-pulse" style={{ width: '1200px', height: '1200px', background: 'radial-gradient(circle, rgba(79, 70, 229, 0.1) 0%, transparent 70%)' }} />
-        <div className="bg-sphere bottom-[-10%] right-[-10%] opacity-30" style={{ width: '1000px', height: '1000px', background: 'radial-gradient(circle, rgba(59, 130, 246, 0.1) 0%, transparent 70%)' }} />
-
+        
         <main className="relative z-10">
-          {/* Hero Section - The "WOW" Opener */}
-          <section className="pt-64 pb-32 px-10">
-            <div className="max-w-[1400px] mx-auto">
-              <motion.div 
-                initial={{ opacity: 0, y: 30 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 1, ease: "easeOut" }}
-                className="flex flex-col gap-12"
-              >
-                <div className="flex items-center gap-4 opacity-60">
-                  <div className="w-12 h-[1px] bg-blue-500" />
-                  <span className="text-[10px] font-black tracking-[0.6em] uppercase text-blue-400">Next Generation Education Platform</span>
-                </div>
-                
-                <h1 className="text-6xl md:text-8xl font-black tracking-tighter leading-[0.8] text-shimmer mb-8">
-                  DREAM. <br />
-                  SUCCEED. <br />
-                  REPEAT.
-                </h1>
-
-                <div className="grid lg:grid-cols-2 gap-20 items-end">
-                  <p className="text-3xl text-[#666] leading-tight font-medium max-w-2xl">
-                    Saubol — это твой персональный штаб для поступления в топ-100 вузов мира. Мы объединили AI-технологии и экспертный опыт.
-                  </p>
-                  <div className="flex flex-col sm:flex-row items-center gap-8">
-                    <Button 
-                      size="lg" 
-                      className="bg-white text-black hover:bg-gray-100 rounded-2xl px-16 h-24 text-2xl font-black transition-all hover:scale-105 active:scale-95 shadow-[0_30px_60px_rgba(255,255,255,0.1)] group"
-                      onClick={() => navigate('/login')}
-                    >
-                      START JOURNEY <ArrowRight className="ml-4 w-8 h-8 group-hover:translate-x-2 transition-transform" />
-                    </Button>
-                    <div className="flex -space-x-4">
-                      {[1, 2, 3, 4].map(i => (
-                        <div key={i} className="w-14 h-14 rounded-full border-4 border-black bg-white/10 backdrop-blur-md flex items-center justify-center overflow-hidden">
-                           <img src={`https://i.pravatar.cc/100?img=${i+10}`} alt="Student" className="w-full h-full object-cover" />
-                        </div>
-                      ))}
-                      <div className="w-14 h-14 rounded-full border-4 border-black bg-blue-600 flex items-center justify-center text-[10px] font-black">
-                        500+
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </motion.div>
-            </div>
-          </section>
-
-
-          {/* Main Features Grid */}
-          <section className="py-48 px-10 max-w-[1400px] mx-auto">
-            <div className="flex flex-col md:flex-row justify-between items-end mb-24 gap-8">
-               <div>
-                  <div className="flex items-center gap-3 mb-6 opacity-60">
-                    <Zap className="w-5 h-5 text-indigo-400" />
-                    <span className="text-[10px] font-black tracking-[0.4em] uppercase text-indigo-400">Core Ecosystem</span>
-                  </div>
-                  <h2 className="text-5xl font-black tracking-tighter uppercase">Powering your <br /> potential.</h2>
-               </div>
-               <p className="text-[#666] text-xl font-medium max-w-sm mb-4">
-                 Инструменты мирового уровня, доступные каждому абитуриенту Saubol.
-               </p>
-            </div>
-
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-12 gap-8">
-              {/* IELTS - Huge Card */}
-              <div className="lg:col-span-8 glass-3d p-16 min-h-[600px] flex flex-col justify-between group cursor-pointer overflow-hidden relative" onClick={() => navigate('/ielts')}>
-                <div className="absolute top-0 right-0 p-12 opacity-10 group-hover:opacity-30 transition-opacity">
-                  <Headphones className="w-64 h-64 rotate-12" />
-                </div>
-                <div className="relative z-10">
-                  <div className="w-16 h-16 bg-white/5 rounded-2xl flex items-center justify-center border border-white/10 mb-12 group-hover:border-white/40 transition-all">
-                    <Brain className="w-8 h-8 text-white" />
-                  </div>
-                  <h3 className="text-5xl font-black mb-8 leading-tight">IELTS <br /> MASTERING.</h3>
-                  <p className="text-[#888] text-2xl leading-relaxed max-w-lg font-medium">
-                    Адаптивная система подготовки с искусственным интеллектом для анализа твоего Writing и Speaking.
-                  </p>
-                </div>
-                <div className="flex items-center gap-4 text-[10px] font-black uppercase tracking-[0.4em] text-blue-400 mt-12">
-                  Explore Module <ChevronRight className="w-4 h-4" />
-                </div>
+          <motion.div 
+            variants={container}
+            initial="hidden"
+            animate="show"
+            className="max-w-[1400px] mx-auto px-10 py-32"
+          >
+            {/* Hero Section */}
+            <motion.div variants={item} className="text-center mb-32 pt-20">
+              <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-indigo-500/10 border border-indigo-500/20 text-indigo-400 text-[10px] font-black uppercase tracking-[0.2em] mb-8">
+                <Sparkles className="w-3 h-3" />
+                Adaptive Intelligence Preparation
               </div>
+              
+              <h1 className="text-7xl md:text-[140px] font-black tracking-tighter text-shimmer mb-12 uppercase italic leading-[0.85]">
+                SAT <br /> STRATEGIST.
+              </h1>
+              
+              <p className="text-xl md:text-2xl text-white/40 max-w-2xl mx-auto font-medium mb-16 leading-relaxed">
+                Learn every concept. Practice every question type. <br />
+                <span className="text-white">Score 1550+ with the world's most advanced SAT platform.</span>
+              </p>
+            </motion.div>
 
-              {/* SAT - Vertical Card */}
-              <div className="lg:col-span-4 glass-3d p-16 flex flex-col justify-between min-h-[600px] group cursor-pointer" onClick={() => navigate('/sat')}>
-                <div>
-                   <div className="w-16 h-16 bg-white/5 rounded-2xl flex items-center justify-center border border-white/10 mb-12 group-hover:border-white/40 transition-all">
-                    <Target className="w-8 h-8 text-white" />
-                  </div>
-                  <h3 className="text-5xl font-black mb-8 leading-tight">SAT <br /> HUB.</h3>
-                  <p className="text-[#888] text-xl leading-relaxed font-medium">
-                    Полный банк вопросов Digital SAT с подробными разборами и стратегиями.
-                  </p>
-                </div>
-                <div className="w-full h-24 bg-white/5 rounded-2xl border border-white/5 flex items-center justify-center overflow-hidden">
-                   <div className="flex gap-2 animate-pulse">
-                      {[1, 2, 3, 4, 5].map(i => <div key={i} className="w-8 h-8 rounded bg-white/10" />)}
-                   </div>
-                </div>
-              </div>
-
-              {/* Programs - Bottom Left */}
-              <div className="lg:col-span-5 glass-3d p-16 min-h-[500px] group cursor-pointer" onClick={() => navigate('/programs')}>
-                 <div className="flex justify-between items-start mb-12">
-                    <div className="w-16 h-16 bg-white/5 rounded-2xl flex items-center justify-center border border-white/10 group-hover:border-white/40 transition-all">
-                      <Globe className="w-8 h-8 text-white" />
-                    </div>
-                    <Badge className="bg-indigo-600 text-white border-none font-black text-[8px] uppercase tracking-widest px-4 py-2">500+ Programs</Badge>
-                 </div>
-                 <h3 className="text-5xl font-black mb-6 uppercase">Opportunities.</h3>
-                 <p className="text-[#666] text-xl leading-relaxed font-medium">Летние школы и лагеря по всему миру.</p>
-              </div>
-
-              {/* Admissions - Bottom Right */}
-              <div className="lg:col-span-7 glass-3d p-16 min-h-[500px] group cursor-pointer" onClick={() => navigate('/admissions')}>
-                 <div className="flex justify-between items-start mb-12">
-                    <div className="w-16 h-16 bg-white/5 rounded-2xl flex items-center justify-center border border-white/10 group-hover:border-white/40 transition-all">
-                      <Sparkles className="w-8 h-8 text-white" />
-                    </div>
-                 </div>
-                 <h3 className="text-6xl font-black mb-6 uppercase tracking-tighter">Admissions.</h3>
-                 <p className="text-[#666] text-2xl leading-relaxed font-medium max-w-md">Пошаговый гид по поступлению: от выбора вуза до получения оффера.</p>
-              </div>
-            </div>
-          </section>
-
-          {/* AI Advantage Section */}
-          <section className="py-48 px-10 bg-white/[0.02] border-y border-white/5 relative overflow-hidden">
-             <div className="bg-sphere top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 opacity-20" style={{ width: '800px', height: '800px' }} />
-             <div className="max-w-[1400px] mx-auto text-center relative z-10">
-                <div className="flex items-center justify-center gap-3 mb-12 opacity-60">
-                   <Brain className="w-6 h-6 text-indigo-400" />
-                   <span className="text-[12px] font-black tracking-[0.6em] uppercase text-indigo-400">Intelligence Accelerated</span>
-                </div>
-                <h2 className="text-5xl md:text-7xl font-black tracking-tighter mb-16 leading-none">THE AI <br /> ADVANTAGE.</h2>
-                <div className="grid md:grid-cols-3 gap-12 text-left">
-                   {[
-                     { title: "Smart Scoring", desc: "Мгновенная оценка эссе по официальным критериям IELTS с детальным разбором ошибок." },
-                     { title: "Predictive Analytics", desc: "Прогнозируем твой результат на основе текущей динамики и пробелов в знаниях." },
-                     { title: "Personalized Path", desc: "AI адаптирует сложность вопросов под твой уровень, экономя время на обучение." }
-                   ].map((item, i) => (
-                     <div key={i} className="glass-3d p-12 hover:bg-white/5 transition-colors">
-                        <h4 className="text-2xl font-black mb-6 uppercase text-indigo-400">{item.title}</h4>
-                        <p className="text-[#666] leading-relaxed font-medium">{item.desc}</p>
+            {/* Three Clear Paths */}
+            <div className="grid lg:grid-cols-3 gap-8 mb-48">
+               {/* Path 1: Diagnostic */}
+               <motion.div 
+                 variants={item}
+                 whileHover={{ translateY: -10 }}
+                 className="glass-3d p-12 flex flex-col justify-between min-h-[450px] border-emerald-500/10 hover:border-emerald-500/30 group cursor-pointer"
+                 onClick={() => navigate("/sat/diagnostic")}
+               >
+                  <div>
+                     <div className="w-20 h-20 rounded-2xl bg-emerald-500/10 flex items-center justify-center border border-emerald-500/20 mb-10 group-hover:bg-emerald-500/20 transition-all">
+                        <Target className="w-10 h-10 text-emerald-400" />
                      </div>
-                   ))}
-                </div>
-             </div>
-          </section>
+                     <h3 className="text-4xl font-black uppercase italic mb-6">1. START HERE.</h3>
+                     <p className="text-white/40 text-lg font-medium leading-relaxed mb-10">
+                        Diagnostic Test: Find your weak spots in 20 minutes with our blueprint-aligned exam.
+                     </p>
+                  </div>
+                  <Button className="w-full h-16 bg-white text-black font-black uppercase text-xs rounded-xl hover:scale-[1.02] transition-transform shadow-[0_20px_40px_rgba(255,255,255,0.05)]">
+                     Begin Analysis <ArrowRight className="ml-2 w-4 h-4" />
+                  </Button>
+               </motion.div>
 
-          {/* Footer CTA */}
-          <section className="py-64 px-10">
-            <div className="max-w-[1400px] mx-auto glass-3d p-32 text-center relative overflow-hidden group">
-               <div className="absolute inset-0 bg-gradient-to-r from-blue-600/10 to-indigo-600/10 opacity-0 group-hover:opacity-100 transition-opacity duration-1000" />
-               <div className="relative z-10">
-                  <h2 className="text-5xl md:text-[80px] font-black mb-16 tracking-tighter leading-none text-shimmer">UNLEASH <br /> YOUR FUTURE.</h2>
-                  <p className="text-2xl text-[#666] mb-20 font-medium max-w-2xl mx-auto">Присоединяйся к сообществу Saubol и начни свой путь в лучшие университеты мира уже сегодня.</p>
+               {/* Path 2: Learn */}
+               <motion.div 
+                 variants={item}
+                 whileHover={{ translateY: -10 }}
+                 className="glass-3d p-12 flex flex-col justify-between min-h-[450px] border-indigo-500/10 hover:border-indigo-500/30 group cursor-pointer"
+                 onClick={() => navigate("/sat/learn")}
+               >
+                  <div>
+                     <div className="w-20 h-20 rounded-2xl bg-indigo-500/10 flex items-center justify-center border border-indigo-500/20 mb-10 group-hover:bg-indigo-500/20 transition-all">
+                        <BookOpen className="w-10 h-10 text-indigo-400" />
+                     </div>
+                     <h3 className="text-4xl font-black uppercase italic mb-6">2. LEARN.</h3>
+                     <p className="text-white/40 text-lg font-medium leading-relaxed mb-10">
+                        Topic Library: Master every SAT concept with interactive lessons and video-first practice.
+                     </p>
+                  </div>
+                  <Button className="w-full h-16 bg-indigo-600 text-white font-black uppercase text-xs rounded-xl hover:scale-[1.02] transition-transform shadow-[0_20px_40px_rgba(79,70,229,0.1)]">
+                     Open Library <ArrowRight className="ml-2 w-4 h-4" />
+                  </Button>
+               </motion.div>
+
+               {/* Path 3: Test */}
+               <motion.div 
+                 variants={item}
+                 whileHover={{ translateY: -10 }}
+                 className="glass-3d p-12 flex flex-col justify-between min-h-[450px] border-rose-500/10 hover:border-rose-500/30 group cursor-pointer"
+                 onClick={() => navigate("/sat/tests")}
+               >
+                  <div>
+                     <div className="w-20 h-20 rounded-2xl bg-rose-500/10 flex items-center justify-center border border-rose-500/20 mb-10 group-hover:bg-rose-500/20 transition-all">
+                        <Clock className="w-10 h-10 text-rose-400" />
+                     </div>
+                     <h3 className="text-4xl font-black uppercase italic mb-6">3. TEST.</h3>
+                     <p className="text-white/40 text-lg font-medium leading-relaxed mb-10">
+                        Practice Tests: Timed simulations in the official Digital SAT format. Real-time scoring.
+                     </p>
+                  </div>
+                  <Button className="w-full h-16 bg-rose-600 text-white font-black uppercase text-xs rounded-xl hover:scale-[1.02] transition-transform shadow-[0_20px_40px_rgba(225,29,72,0.1)]">
+                     Enter Simulation <ArrowRight className="ml-2 w-4 h-4" />
+                  </Button>
+               </motion.div>
+            </div>
+
+            {/* Admissions Separate Section */}
+            <motion.div 
+              variants={item}
+              whileHover={{ scale: 1.01 }}
+              className="glass-3d p-16 border-white/5 bg-white/[0.02] flex flex-col md:flex-row items-center justify-between gap-16 mb-48"
+            >
+               <div className="max-w-2xl">
+                  <div className="flex items-center gap-3 mb-6 opacity-30">
+                     <ShieldCheck className="w-5 h-5" />
+                     <span className="text-[10px] font-black uppercase tracking-widest">Global Admissions Intelligence</span>
+                  </div>
+                  <h4 className="text-6xl font-black uppercase italic mb-6 tracking-tighter">Admissions Calculator.</h4>
+                  <p className="text-white/40 text-xl font-medium leading-relaxed">
+                     Upload your full profile including research, olympiads, and extracurriculars. Get realistic admission chances for top universities globally.
+                  </p>
+               </div>
+               <div className="flex flex-col gap-6 w-full md:w-auto">
+                  <div className="flex items-center gap-4 px-6 py-4 bg-white/5 rounded-2xl border border-white/5">
+                     <TrendingUp className="w-5 h-5 text-emerald-400" />
+                     <span className="text-xs font-black uppercase tracking-widest text-white/60">International Data Engine</span>
+                  </div>
                   <Button 
-                    size="lg" 
-                    className="bg-white text-black hover:bg-gray-100 rounded-3xl px-20 h-28 text-3xl font-black shadow-[0_40px_80px_rgba(255,255,255,0.1)] transition-all hover:scale-110 active:scale-95"
-                    onClick={() => navigate('/login')}
+                    onClick={() => navigate("/admissions/calculator")}
+                    className="h-24 px-16 border border-white/10 bg-white text-black hover:bg-gray-100 font-black uppercase text-sm rounded-3xl transition-all shadow-2xl"
                   >
-                    JOIN SAUBOL
+                     Analyze my CV <Calculator className="ml-4 w-6 h-6" />
                   </Button>
                </div>
+            </motion.div>
+
+            {/* SAT Study Roadmap - Visual Timeline */}
+            <motion.div variants={item} className="mb-48">
+               <div className="flex flex-col md:flex-row justify-between items-end mb-16 gap-8">
+                  <div>
+                     <div className="flex items-center gap-3 mb-4 opacity-40">
+                        <Calendar className="w-5 h-5 text-indigo-400" />
+                        <span className="text-[10px] font-black uppercase tracking-[0.4em]">12-Week Strategic Protocol</span>
+                     </div>
+                     <h2 className="text-6xl font-black italic tracking-tighter uppercase leading-none">STUDY <br /> ROADMAP.</h2>
+                  </div>
+                  <Button 
+                    onClick={() => navigate("/sat/roadmap")}
+                    variant="link" 
+                    className="text-white/40 hover:text-white uppercase font-black tracking-widest text-[10px] p-0 h-auto"
+                  >
+                     View Full Strategy <ArrowRight className="ml-2 w-3 h-3" />
+                  </Button>
+               </div>
+
+               <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
+                  {[
+                    { id: 1, title: "GRAMMAR", dur: "3-4 days", prog: 100, active: true },
+                    { id: 2, title: "EXPRESSION", dur: "3-4 days", prog: 0 },
+                    { id: 3, title: "MATH", dur: "1-2 weeks", prog: 0 },
+                    { id: 4, title: "READING", dur: "May-July", prog: 0 },
+                    { id: 5, title: "TESTS", dur: "August", prog: 0 }
+                  ].map((s, i) => (
+                    <motion.div 
+                      key={i}
+                      whileHover={{ scale: 1.02 }}
+                      onClick={() => navigate("/sat/roadmap")}
+                      className={`glass-3d p-6 border-white/5 cursor-pointer group transition-all ${s.active ? 'bg-indigo-500/5 border-indigo-500/20' : ''}`}
+                    >
+                       <div className="flex justify-between items-center mb-6">
+                          <span className={`text-[9px] font-black italic ${s.prog === 100 ? 'text-emerald-400' : 'text-white/20'}`}>
+                             {s.prog === 100 ? '✓' : `[${s.id}]`}
+                          </span>
+                          <span className="text-[8px] font-black uppercase tracking-widest opacity-20">{s.dur}</span>
+                       </div>
+                       <h4 className={`text-sm font-black uppercase italic mb-4 ${s.active ? 'text-indigo-400' : 'text-white/60'}`}>{s.title}</h4>
+                       <div className="h-1 w-full bg-white/5 rounded-full overflow-hidden">
+                          <div className={`h-full transition-all ${s.prog === 100 ? 'bg-emerald-500' : 'bg-white/10'}`} style={{ width: `${s.prog || 0}%` }} />
+                       </div>
+                       {s.active && (
+                          <p className="text-[8px] font-black uppercase tracking-widest text-indigo-400 mt-4 animate-pulse">Current Focus</p>
+                       )}
+                    </motion.div>
+                  ))}
+               </div>
+            </motion.div>
+
+            {/* AI Core Stats */}
+            <div className="grid md:grid-cols-3 gap-12 mb-48 text-center">
+               {[
+                 { label: "Concepts Mastered", value: "250+", icon: Brain, color: "text-indigo-400" },
+                 { label: "Practice Questions", value: "8,000+", icon: Zap, color: "text-yellow-400" },
+                 { label: "Target Score", value: "1550+", icon: Sparkles, color: "text-emerald-400" }
+               ].map((stat, i) => (
+                 <motion.div key={i} variants={item} className="p-10 glass-3d border-white/5">
+                    <stat.icon className={`w-10 h-10 ${stat.color} mx-auto mb-6`} />
+                    <p className="text-5xl font-black mb-2 italic tracking-tighter">{stat.value}</p>
+                    <p className="text-[10px] font-black uppercase tracking-[0.4em] text-white/20">{stat.label}</p>
+                 </motion.div>
+               ))}
             </div>
-          </section>
+          </motion.div>
         </main>
       </div>
     </Layout>
