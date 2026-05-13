@@ -51,7 +51,7 @@ export interface AdmissionResult {
   recommendations: string[];
 }
 
-const UNIVERSITIES = [
+export const UNIVERSITIES = [
   // US
   { name: "Harvard University", region: "US", baseRate: 0.03, medianSAT: 1540 },
   { name: "MIT", region: "US", baseRate: 0.04, medianSAT: 1550 },
@@ -181,4 +181,12 @@ export function calculateDetailedAdmissions(profile: ApplicantProfile): Admissio
         recommendations
       };
     });
+}
+
+/**
+ * Helper for legacy components to calculate chance for one school
+ */
+export function calculateAdmissionChance(profile: ApplicantProfile, schoolName: string): AdmissionResult | undefined {
+  const results = calculateDetailedAdmissions(profile);
+  return results.find(r => r.schoolName === schoolName);
 }
