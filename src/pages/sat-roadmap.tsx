@@ -20,6 +20,8 @@ import {
 import { SAT_ROADMAP } from "@/data/sat-roadmap";
 import RoadmapStageCard from "@/components/RoadmapStage";
 import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
+
 
 export default function SATRoadmap() {
   const [completedStages, setCompletedStages] = useState<number[]>([]);

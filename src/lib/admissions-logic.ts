@@ -166,3 +166,33 @@ export function calculateChances(profile: FullApplicantProfile, university: Univ
     recommendations
   };
 }
+
+/**
+ * Backward compatibility helpers
+ */
+export type ApplicantProfile = FullApplicantProfile;
+export type AdmissionResult = {
+  schoolName: string;
+  region: string;
+  estimatedChance: number;
+  pros: string[];
+  cons: string[];
+  recommendations: string[];
+};
+
+export function calculateAdmissionChance(profile: any, schoolName: string): AdmissionResult | undefined {
+  const university = UNIVERSITIES.find(u => u.name === schoolName);
+  if (!university) return undefined;
+  
+  const res = calculateChances(profile, university);
+  return {
+    schoolName: res.schoolName,
+    region: res.region,
+    estimatedChance: Math.round((res.low + res.high) / 2),
+    pros: res.pros,
+    cons: res.cons,
+    recommendations: res.recommendations
+  };
+}
+
+export { UNIVERSITIES } from "@/data/universities";
