@@ -13,6 +13,7 @@ import { Button } from "@/components/ui/button";
 import { SATQuestion } from "@/data/sat-questions-bank";
 import katex from 'katex';
 import 'katex/dist/katex.min.css';
+import { saveSATAnswer } from "@/lib/progress-service";
 
 interface PracticeSessionProps {
   topic: string;
@@ -33,9 +34,15 @@ export default function PracticeSession({ topic, questions, onComplete }: Practi
     if (showFeedback) return;
     setSelected(idx);
     setShowFeedback(true);
-    if (idx === currentQuestion.correctAnswer) {
+    const isCorrect = idx === currentQuestion.correctAnswer;
+    if (isCorrect) {
       setCorrectCount(prev => prev + 1);
     }
+    
+    // Save SAT Answer immediately in background
+    const isMath = ["linear_equations", "systems_equations", "quadratic", "inequalities"].includes(currentQuestion.topic);
+    const category = isMath ? "Math" : "RW";
+    saveSATAnswer(category, currentQuestion.topic || "General", isCorrect).catch(console.error);
   };
 
   const handleNext = () => {

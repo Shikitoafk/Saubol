@@ -1,4 +1,4 @@
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import { Layout } from "@/components/layout";
 import { motion, AnimatePresence } from "framer-motion";
 import { 
@@ -20,6 +20,7 @@ import { SAT_VIDEO_LIBRARY } from "@/data/sat-video-library";
 import { SAT_QUESTION_BANK } from "@/data/sat-question-bank";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { supabase } from "@/lib/supabase";
 
 type Phase = "video" | "practice" | "complete";
 
@@ -35,6 +36,42 @@ export default function SATLearn() {
     central_ideas: 0,
     grammar_boundaries: 0
   });
+
+  useEffect(() => {
+    const fetchProgress = async () => {
+      try {
+        const { data: { session } } = await supabase.auth.getSession();
+        if (!session) return;
+
+        const { data: progressRows } = await supabase
+          .from('sat_progress')
+          .select('*')
+          .eq('user_id', session.user.id);
+
+        if (progressRows) {
+          const loadedMastery: Record<string, number> = {
+            linear_equations: 0,
+            systems_equations: 0,
+            quadratic: 0,
+            inequalities: 0,
+            transitions: 0,
+            central_ideas: 0,
+            grammar_boundaries: 0
+          };
+          progressRows.forEach(row => {
+            if (row.subtopic && row.subtopic in loadedMastery) {
+              loadedMastery[row.subtopic] = row.mastery_percent || 0;
+            }
+          });
+          setMasteryData(loadedMastery);
+        }
+      } catch (err) {
+        console.error("Failed to fetch SAT mastery progress:", err);
+      }
+    };
+
+    fetchProgress();
+  }, [activeTopicId, phase]);
 
   const categories: Category[] = useMemo(() => [
     {

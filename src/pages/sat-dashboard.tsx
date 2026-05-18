@@ -49,14 +49,14 @@ export default function SATDashboard() {
 
         // Fetch Diagnostics
         const { data: diagnostics } = await supabase
-          .from('sat_diagnostics')
+          .from('sat_diagnostic')
           .select('*')
           .eq('user_id', session.user.id)
           .order('completed_at', { ascending: false });
 
         // Fetch Topic Performance
         const { data: topicPerformance } = await supabase
-          .from('topic_performance')
+          .from('sat_progress')
           .select('*')
           .eq('user_id', session.user.id);
 
@@ -82,9 +82,9 @@ export default function SATDashboard() {
 
         // Process topic accuracy
         const topicData = topicPerformance?.map(t => ({
-          name: t.topic,
-          accuracy: Math.round((t.questions_correct / Math.max(1, t.questions_answered)) * 100),
-          section: t.section
+          name: t.subtopic || t.topic,
+          accuracy: t.mastery_percent || 0,
+          section: t.topic
         })) || [
           { name: 'Algebra', accuracy: 0, section: 'Math' },
           { name: 'Geometry', accuracy: 0, section: 'Math' }

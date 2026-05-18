@@ -28,6 +28,7 @@ import {
 } from "lucide-react";
 import IELTSScoringEngine, { ScoringResult } from "@/lib/ielts-scoring-engine";
 import { supabase } from "@/lib/supabase";
+import { saveIELTSAnswer } from "@/lib/progress-service";
 
 type TaskType = "task1" | "task2";
 
@@ -70,19 +71,12 @@ const IELTSWritingChecker = () => {
       }
       
       if (session?.user) {
-        const { error: insertError } = await supabase.from("ielts_progress").insert({
-          user_id: session.user.id,
-          test_name: `Writing (${taskType === "task1" ? "Task 1" : "Task 2"})`,
-          skill: "writing",
-          score: Math.round(scoringResult.overallBand * 10),
-          total: 90,
-        });
-
-        if (insertError) {
-          console.error('Error saving progress:', insertError);
-        } else {
-          console.log('IELTS progress saved successfully');
-        }
+        await saveIELTSAnswer(
+          "writing",
+          taskType === "task1" ? "task1" : "task2",
+          scoringResult.overallBand >= 6.0,
+          scoringResult.overallBand
+        );
       } else {
         console.warn('No active session found, progress not saved');
       }

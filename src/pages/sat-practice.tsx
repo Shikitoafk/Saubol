@@ -21,6 +21,7 @@ import { SAT_QUESTION_BANK } from "@/data/sat-questions";
 import katex from 'katex';
 import 'katex/dist/katex.min.css';
 import { motion, AnimatePresence } from "framer-motion";
+import { saveSATAnswer } from "@/lib/progress-service";
 
 export default function SATPractice() {
   const navigate = useNavigate();
@@ -54,19 +55,10 @@ export default function SATPractice() {
     setAnswerState({ selected: idx, correct });
     setSessionAnswers(p => ({ ...p, [q?.id]: { correct } }));
 
-    // Sync to Supabase
-    try {
-      const { data: { session } } = await supabase.auth.getSession();
-      if (session) {
-        await supabase.from('user_progress').insert({
-          user_id: session.user.id,
-          question_id: q?.id,
-          correct
-        });
-      }
-    } catch (err) {
-      console.error("Progress sync failed:", err);
-    }
+    // Sync to Supabase in background via progress service
+    const topicVal = q?.category || q?.section || 'General';
+    const subtopicVal = q?.topic || 'General';
+    saveSATAnswer(topicVal, subtopicVal, correct).catch(console.error);
   };
 
   const nextQuestion = () => {

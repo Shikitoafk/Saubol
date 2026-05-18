@@ -67,10 +67,9 @@ export default function Dashboard() {
 
         // Fetch SAT Progress
         const { data: progressData, error: progressError } = await supabase
-          .from('user_progress')
+          .from('sat_progress')
           .select('*')
-          .eq('user_id', session.user.id)
-          .order('answered_at', { ascending: false });
+          .eq('user_id', session.user.id);
         
         console.log('SAT Progress Data:', progressData);
         if (progressError) console.error('SAT Fetch Error:', progressError);
@@ -80,16 +79,35 @@ export default function Dashboard() {
           .from('ielts_progress')
           .select('*')
           .eq('user_id', session.user.id)
-          .order('completed_at', { ascending: false });
+          .order('updated_at', { ascending: false });
 
         console.log('IELTS Progress Data:', ieltsData);
         if (ieltsError) console.error('IELTS Fetch Error:', ieltsError);
 
+        // Fetch IELTS Sessions
+        const { data: ieltsSessions } = await supabase
+          .from('ielts_sessions')
+          .select('*')
+          .eq('user_id', session.user.id)
+          .order('completed_at', { ascending: false });
+
+        // Fetch Streak
+        const { data: streakData } = await supabase
+          .from('user_streaks')
+          .select('*')
+          .eq('user_id', session.user.id)
+          .maybeSingle();
+
         const rawProgress = progressData || [];
         const rawIelts = ieltsData || [];
+        const rawIeltsSessions = ieltsSessions || [];
 
-        const totalQuestions = rawProgress.length;
-        const correctAnswers = rawProgress.filter(d => d.correct).length;
+        let totalQuestions = 0;
+        let correctAnswers = 0;
+        rawProgress.forEach(row => {
+          totalQuestions += row.questions_attempted || 0;
+          correctAnswers += row.questions_correct || 0;
+        });
         const accuracy = totalQuestions > 0 ? Math.round((correctAnswers / totalQuestions) * 100) : 0;
 
         const last7Days = [...Array(7)].map((_, i) => {
@@ -98,41 +116,54 @@ export default function Dashboard() {
           return d.toISOString().split('T')[0];
         }).reverse();
 
-        const dailyActivity = last7Days.map(dateStr => ({
-          date: dateStr,
-          questions_answered: rawProgress.filter(d => (d.answered_at || d.created_at || "").startsWith(dateStr)).length
-        }));
+        const dailyActivity = last7Days.map(dateStr => {
+          let count = 0;
+          rawProgress.forEach(p => {
+            if ((p.updated_at || "").startsWith(dateStr)) {
+              count += p.questions_attempted || 0;
+            }
+          });
+          return {
+            date: dateStr,
+            questions_answered: count
+          };
+        });
 
         const getAvgBySkill = (skill: string) => {
-          const filtered = rawIelts.filter(d => d.skill?.toLowerCase() === skill.toLowerCase());
-          console.log(`Avg for ${skill}:`, filtered);
-          return filtered.length === 0 ? 0 : Number((filtered.reduce((acc, curr) => acc + (curr.score || 0), 0) / filtered.length / 10).toFixed(1));
+          const filtered = rawIelts.filter(d => d.section?.toLowerCase() === skill.toLowerCase());
+          if (filtered.length === 0) return 0;
+          const totalScores = filtered.reduce((acc, curr) => acc + Number(curr.best_score || 0), 0);
+          return Number((totalScores / filtered.length).toFixed(1));
         };
+
+        const overallIelts = rawIelts.length > 0
+          ? Number((rawIelts.reduce((acc, curr) => acc + Number(curr.best_score || 0), 0) / rawIelts.length).toFixed(1))
+          : 0;
 
         setProgress({
           total_questions: totalQuestions,
           correct_answers: correctAnswers,
           accuracy,
-          current_streak: 0,
+          current_streak: streakData?.current_streak || 0,
           favorite_section: 'Writing',
           recent_activity: rawProgress.slice(0, 5).map(d => ({
-            section: d.section,
-            topic: d.topic || 'General',
-            correct: d.correct,
-            date: d.answered_at
+            section: d.topic,
+            topic: d.subtopic || 'General',
+            correct: true,
+            date: d.updated_at
           })),
           daily_activity: dailyActivity,
-          ielts_activity: rawIelts.slice(0, 10).map(d => ({
-            test_name: d.test_name,
-            score: d.score,
-            skill: d.skill,
+          ielts_activity: rawIeltsSessions.slice(0, 10).map(d => ({
+            test_name: d.subsection || d.section || "Practice",
+            score: Math.round(Number(d.score || 0) * 10), // Convert e.g. 7.5 to 75
+            skill: d.section,
             completed_at: d.completed_at
           })),
           ielts_stats: {
             writing: getAvgBySkill('writing'),
             listening: getAvgBySkill('listening'),
             reading: getAvgBySkill('reading'),
-            overall: rawIelts.length > 0 ? Number((rawIelts.reduce((acc, curr) => acc + (curr.score || 0), 0) / rawIelts.length / 10).toFixed(1)) : 0
+            overall: overallIelts
           }
         });
         setLoading(false);

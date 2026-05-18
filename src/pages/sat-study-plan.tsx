@@ -38,7 +38,7 @@ export default function SATStudyPlan() {
         }
 
         const { data: diagnostic } = await supabase
-          .from('sat_diagnostics')
+          .from('sat_diagnostic')
           .select('*')
           .eq('user_id', session.user.id)
           .order('completed_at', { ascending: false })
@@ -50,14 +50,14 @@ export default function SATStudyPlan() {
 
         // Fetch mastery data
         const { data: topicPerformance } = await supabase
-          .from('topic_performance')
+          .from('sat_progress')
           .select('*')
           .eq('user_id', session.user.id);
         
         setMasteryData(topicPerformance?.map(t => ({
-          name: t.topic,
-          accuracy: Math.round((t.questions_correct / Math.max(1, t.questions_answered)) * 100),
-          section: t.section
+          name: t.subtopic,
+          accuracy: t.mastery_percent || 0,
+          section: t.topic
         })) || []);
 
       } catch (error) {

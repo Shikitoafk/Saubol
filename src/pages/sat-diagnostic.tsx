@@ -12,7 +12,8 @@ import {
   Target, 
   FileText,
   AlertCircle,
-  CheckCircle2
+  CheckCircle2,
+  ArrowRight
 } from "lucide-react";
 import { supabase } from "@/lib/supabase";
 import { calculateWeightedScore } from "@/lib/sat-logic";
@@ -77,7 +78,7 @@ export default function SATDiagnostic() {
     try {
       const { data: { session } } = await supabase.auth.getSession();
       if (session) {
-        await supabase.from('sat_diagnostics').insert({
+        await supabase.from('sat_diagnostic').insert({
           user_id: session.user.id,
           overall_score: score.total,
           math_score: score.math,
