@@ -60,7 +60,7 @@ const testTypes: { id: TestType; icon: typeof GraduationCap; title: string; desc
 
 const CAMBRIDGE_ACADEMIC_BOOKS = [19, 18, 17, 16, 15, 14, 13, 12, 11, 10] as const;
 
-const listeningPredictionTests: TestItem[] = Array.from({ length: 15 }, (_, i) => ({
+const listeningPredictionTests: TestItem[] = Array.from({ length: 60 }, (_, i) => ({
   id: `L${i+1}`,
   name: `Full Listening Test ${i+1}`,
   topic: "Full Practice",
@@ -70,7 +70,7 @@ const listeningPredictionTests: TestItem[] = Array.from({ length: 15 }, (_, i) =
   slug: `full-listening-${i+1}`
 }));
 
-const readingPredictionTests: TestItem[] = Array.from({ length: 15 }, (_, i) => ({
+const readingPredictionTests: TestItem[] = Array.from({ length: 190 }, (_, i) => ({
   id: `${i+1}`,
   name: `Reading Passage ${i+1}`,
   topic: "Academic Training",
