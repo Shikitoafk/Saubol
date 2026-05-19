@@ -1,4 +1,4 @@
-import { University } from "@/data/universities";
+import { University, UNIVERSITIES } from "@/data/universities";
 
 export interface FullApplicantProfile {
   // Step 1: Academics

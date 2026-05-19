@@ -10,7 +10,7 @@ import {
   BarChart3
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { SATQuestion } from "@/data/sat-questions-bank";
+import { SATQuestion } from "@/data/sat-question-bank";
 import katex from 'katex';
 import 'katex/dist/katex.min.css';
 import { saveSATAnswer } from "@/lib/progress-service";

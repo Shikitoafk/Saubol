@@ -46,12 +46,17 @@ function App() {
               
               {/* SAT Ecosystem */}
               <Route path="/sat" element={<SatPrep />} />
+              <Route path="/sat-strategist" element={<SatPrep />} />
               <Route path="/sat/diagnostic" element={<SATDiagnostic />} />
+              <Route path="/sat-diagnostic" element={<SATDiagnostic />} />
               <Route path="/sat/learn" element={<SATLearn />} />
+              <Route path="/sat-learn" element={<SATLearn />} />
               <Route path="/sat/practice" element={<SATPractice />} />
               <Route path="/sat/study-plan" element={<SATStudyPlan />} />
               <Route path="/sat/tests" element={<SATTests />} />
+              <Route path="/sat-tests" element={<SATTests />} />
               <Route path="/sat/roadmap" element={<SATRoadmap />} />
+              <Route path="/sat-roadmap" element={<SATRoadmap />} />
               <Route path="/sat/dashboard" element={
                 <ProtectedRoute>
                   <SATDashboard />

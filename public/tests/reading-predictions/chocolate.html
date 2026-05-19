@@ -4,26 +4,16 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
     <title>Reading Passage 1 – The history and production of chocolate</title>
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script>
-    const SUPABASE_URL = 'https://qdpejhmgocaisywzgfra.supabase.co';
-    const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InFkcGVqaG1nb2NhaXN5d3pnZnJhIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MDk3MzQ0NDksImV4cCI6MjAyNTMxMDQ0OX0.3Jc5hGGnZQzP3kY2FhP5nB6kX8wR9kY7mQ2L4J7K8Wc';
-    const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
-
     async function saveIELTSProgress(skill, score, total, testName) {
-      try {
-        const { data: { session } } = await supabase.auth.getSession();
-        if (!session) return;
-        await supabase.from('ielts_progress').insert({
-          user_id: session.user.id,
-          test_name: testName,
-          skill: skill,
+      if (window.parent) {
+        window.parent.postMessage({
+          type: 'ielts-test-result',
           score: score,
           total: total,
-        });
-        console.log('IELTS progress saved!');
-      } catch(e) {
-        console.error('Error saving IELTS progress:', e);
+          skill: skill.toLowerCase(),
+          slug: window.location.pathname.split('/').pop().replace('.html', '')
+        }, '*');
       }
     }
     </script>

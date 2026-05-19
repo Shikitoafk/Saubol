@@ -5,7 +5,10 @@ export async function saveIELTSAnswer(
   section: string,
   subsection: string, 
   isCorrect: boolean,
-  score?: number
+  score?: number,
+  questionsAttempted: number = 1,
+  questionsCorrect: number = isCorrect ? 1 : 0,
+  timeSpentMinutes?: number
 ) {
   try {
     const { data: { user } } = await supabase.auth.getUser()
@@ -23,11 +26,12 @@ export async function saveIELTSAnswer(
       console.error('Error fetching existing IELTS progress:', error)
     }
 
-    const newAttempted = (existing?.questions_attempted || 0) + 1
-    const newCorrect = (existing?.questions_correct || 0) + (isCorrect ? 1 : 0)
+    const newAttempted = (existing?.questions_attempted || 0) + questionsAttempted
+    const newCorrect = (existing?.questions_correct || 0) + questionsCorrect
     const newBestScore = score 
       ? Math.max(score, existing?.best_score || 0)
       : existing?.best_score
+    const newTimeSpent = (existing?.time_spent_minutes || 0) + (timeSpentMinutes || 0)
 
     const { error: upsertError } = await supabase
       .from('ielts_progress')
@@ -39,11 +43,28 @@ export async function saveIELTSAnswer(
         questions_correct: newCorrect,
         last_score: score || existing?.last_score,
         best_score: newBestScore,
+        time_spent_minutes: newTimeSpent,
         updated_at: new Date().toISOString()
       }, { onConflict: 'user_id,section,subsection' })
 
     if (upsertError) {
       console.error('Error upserting IELTS progress:', upsertError)
+    }
+
+    // Also save this attempt to session history (ielts_sessions)
+    const { error: sessionError } = await supabase
+      .from('ielts_sessions')
+      .insert({
+        user_id: user.id,
+        section,
+        subsection,
+        score: score || 0,
+        time_spent_minutes: timeSpentMinutes || 0,
+        completed_at: new Date().toISOString()
+      })
+
+    if (sessionError) {
+      console.error('Error inserting IELTS session:', sessionError)
     }
   } catch (err) {
     console.error('Failed to save IELTS answer:', err)

@@ -69,8 +69,8 @@ export default function SATDiagnostic() {
     
     const formatted = questions.map((q, i) => ({
       correct: answers?.[i] === q?.correctAnswer,
-      difficulty: q?.difficulty || 'medium',
-      section: q?.topic === 'linear_equations' || q?.topic === 'systems_equations' || q?.topic === 'quadratic' ? 'Math' : 'RW'
+      difficulty: q?.difficulty ? (q.difficulty.charAt(0).toUpperCase() + q.difficulty.slice(1)) : 'Medium',
+      section: (q?.topic === 'linear_equations' || q?.topic === 'systems_equations' || q?.topic === 'quadratic' ? 'Math' : 'RW') as 'Math' | 'RW'
     }));
 
     const score = calculateWeightedScore(formatted);

@@ -6,7 +6,8 @@ import {
   Lock, 
   CheckCircle2,
   BookOpen,
-  Circle
+  Circle,
+  TrendingUp
 } from "lucide-react";
 
 export interface Topic {

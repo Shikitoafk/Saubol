@@ -22,37 +22,35 @@ export default function AIMatchmakerResults({ data, onReset }: { data: Matchmake
   const gpa = parseFloat(data.gpa) || 3.5;
   const ielts = parseFloat(data.ielts) || 6.5;
 
+  let normalizedRegion: 'usa_canada' | 'uk_europe' | 'asia_global' = 'usa_canada';
+  const regionLower = (data.region || '').toLowerCase();
+  if (regionLower.includes('europe') || regionLower.includes('uk') || regionLower.includes('london')) {
+    normalizedRegion = 'uk_europe';
+  } else if (regionLower.includes('asia') || regionLower.includes('global') || regionLower.includes('singapore')) {
+    normalizedRegion = 'asia_global';
+  }
+
   // Map to new profile format with defaults for missing CV fields
   const profile: ApplicantProfile = {
     gpa,
     gpaScale: gpa > 5 ? 100 : gpa > 4 ? 5.0 : 4.0,
-    classRank: 'unknown',
     sat,
     ielts,
-    curriculum: 'National',
-    curriculumCount: 0,
-    gradeTrend: 'Stable',
-    hasPublishedPaper: false,
-    paperStatus: 'None',
-    labExperience: false,
-    independentResearch: false,
-    olympiadLevel: 'None',
+    gradeTrend: 'stable',
+    ibApCourses: 'none',
+    research: 'none',
+    olympiad: 'none',
     competitionMedals: [],
-    foundedOrg: false,
-    orgReach: 0,
-    leadershipRole: false,
-    communityService: false,
-    sportsCompetitive: false,
-    artsCompetitive: false,
-    country: 'Kazakhstan',
-    isFirstGen: false,
+    ec: 'none',
+    firstGen: false,
     financialHardship: false,
-    speaksThreeLanguages: false,
-    targetRegions: [data.region as any]
+    languages3plus: false,
+    uniqueStory: false,
+    region: normalizedRegion
   };
 
   // Filter universities by region and take first 5
-  const regionUniversities = UNIVERSITIES.filter(u => u.region === data.region).slice(0, 5);
+  const regionUniversities = UNIVERSITIES.filter(u => u.region === normalizedRegion).slice(0, 5);
   
   const schools = regionUniversities.map(u => {
     const res = calculateAdmissionChance(profile, u.name);

@@ -1,3 +1,9 @@
+export interface GeminiFeedback {
+  errorText: string;
+  correction: string;
+  explanation: string;
+}
+
 export interface GeminiResponse {
   scores: {
     TR: number;
@@ -17,11 +23,7 @@ export interface GeminiResponse {
     cc: string;
     lr: string;
     gra: string;
-    sentences: Array<{
-      errorText: string;
-      correction: string;
-      explanation: string;
-    }>;
+    sentences: GeminiFeedback[];
   };
   rewrittenEssay: string;
   wordCount: number;

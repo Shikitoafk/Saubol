@@ -80,6 +80,32 @@ const readingPredictionTests: TestItem[] = Array.from({ length: 15 }, (_, i) => 
   slug: `reading-${i+1}`
 }));
 
+const writingPredictionTests: TestItem[] = Array.from({ length: 4 }, (_, i) => ({
+  id: `W${i+1}`,
+  name: `Academic Writing Test ${i+1}`,
+  topic: "Task 1 & Task 2 Mock",
+  difficulty: "Medium",
+  questions: 2,
+  time: "60 min",
+  slug: `mock-${i+25}-writing`
+}));
+
+const speakingPredictionTests: TestItem[] = Array.from({ length: 5 }, (_, i) => ({
+  id: `S${i+1}`,
+  name: `Speaking Practice Topic ${i+1}`,
+  topic: [
+    "Work & Study",
+    "Hometown & Culture",
+    "Artificial Intelligence",
+    "Environmental Protection",
+    "Leisure & Hobbies"
+  ][i],
+  difficulty: ["Easy", "Medium", "Hard", "Medium", "Easy"][i] as Difficulty,
+  questions: 3,
+  time: "15 min",
+  slug: `speaking-topic-${i+1}`
+}));
+
 const container = {
   hidden: { opacity: 0 },
   show: { opacity: 1, transition: { staggerChildren: 0.1 } }
@@ -87,7 +113,7 @@ const container = {
 
 const item = {
   hidden: { opacity: 0, y: 20 },
-  show: { opacity: 1, y: 0, transition: { duration: 0.8, ease: "easeOut" } }
+  show: { opacity: 1, y: 0, transition: { duration: 0.8, ease: "easeOut" as const } }
 };
 
 const IELTSPrep = () => {
@@ -110,6 +136,8 @@ const IELTSPrep = () => {
     setTimeout(() => {
       if (selectedSkill === "reading") setTests(readingPredictionTests);
       else if (selectedSkill === "listening") setTests(listeningPredictionTests);
+      else if (selectedSkill === "writing") setTests(writingPredictionTests);
+      else if (selectedSkill === "speaking") setTests(speakingPredictionTests);
       else setTests([]);
       setLoading(false);
     }, 400);
