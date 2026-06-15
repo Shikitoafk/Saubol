@@ -346,7 +346,7 @@ export default function SATPractice() {
           <div className="max-w-[1300px] mx-auto px-10 py-32 relative z-10">
             <div className="flex items-center gap-3 mb-10 opacity-60">
               <Target className="w-5 h-5 text-indigo-400" />
-              <span className="text-[10px] font-black tracking-[0.4em] uppercase text-indigo-400">SAT Adaptive Core</span>
+              <span className="text-[10px] font-black tracking-[0.4em] uppercase text-indigo-400">SAT Practice</span>
             </div>
             
             <h1 className="text-6xl md:text-8xl font-black italic tracking-tighter uppercase mb-20 leading-none">
