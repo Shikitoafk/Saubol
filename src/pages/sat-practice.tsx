@@ -19,7 +19,10 @@ import {
   Plus,
   ArrowRight,
   CheckSquare,
-  Square
+  Square,
+  Sun,
+  Moon,
+  Highlighter
 } from "lucide-react";
 import { Layout } from "@/components/layout";
 import { Button } from "@/components/ui/button";
@@ -57,6 +60,10 @@ export default function SATPractice() {
   const [questionsError, setQuestionsError] = useState<string | null>(null);
   const [elapsed, setElapsed] = useState(0);
   const [timerInterval, setTimerInterval] = useState<NodeJS.Timeout | null>(null);
+  const [theme, setTheme] = useState<'dark' | 'light'>(() => (localStorage.getItem('sat-theme') as 'dark' | 'light') || 'dark');
+  const [freeResponseInput, setFreeResponseInput] = useState("");
+  const [totalRwCount, setTotalRwCount] = useState(329);
+  const [totalMathCount, setTotalMathCount] = useState(346);
 
   // Dynamic user progress states populated with exact broad topic values from the database
   const [rwProgress, setRwProgress] = useState<DomainInfo[]>([
@@ -80,10 +87,71 @@ export default function SATPractice() {
     }
   ]);
 
-  // Load actual user progress from Supabase if available
+  // Save theme state
   useEffect(() => {
-    const fetchSupabaseProgress = async () => {
+    localStorage.setItem('sat-theme', theme);
+  }, [theme]);
+
+  // Load actual user progress from Supabase and dynamic question counts
+  useEffect(() => {
+    const fetchCountsAndProgress = async () => {
       try {
+        // 1. Fetch exact Reading & Writing question count
+        const { count: rwCount, error: rwErr } = await supabase
+          .from('EBRW_MCQ')
+          .select('*', { count: 'exact', head: true });
+        
+        if (!rwErr && rwCount !== null) {
+          setTotalRwCount(rwCount);
+          setRwProgress(prev => prev.map(dom => ({
+            ...dom,
+            subtopics: dom.subtopics.map(sub => 
+              sub.id === "Reading & Writing" ? { ...sub, totalQuestions: rwCount } : sub
+            )
+          })));
+        }
+
+        // 2. Fetch Math MCQ and Open counts by topic
+        const [mcqRes, openRes] = await Promise.all([
+          supabase.from('Math_MCQ').select('topic'),
+          supabase.from('Math_Open').select('topic')
+        ]);
+
+        if (!mcqRes.error && !openRes.error && mcqRes.data && openRes.data) {
+          const counts: Record<string, number> = {
+            "Algebra": 0,
+            "Advanced Math": 0,
+            "Geometry": 0,
+            "Statistics": 0
+          };
+
+          mcqRes.data.forEach((row: any) => {
+            if (row.topic && counts[row.topic] !== undefined) {
+              counts[row.topic]++;
+            }
+          });
+
+          openRes.data.forEach((row: any) => {
+            if (row.topic && counts[row.topic] !== undefined) {
+              counts[row.topic]++;
+            }
+          });
+
+          const mathSum = Object.values(counts).reduce((a, b) => a + b, 0);
+          setTotalMathCount(mathSum);
+
+          setMathProgress(prev => prev.map(dom => ({
+            ...dom,
+            subtopics: dom.subtopics.map(sub => {
+              if (counts[sub.id] !== undefined) {
+                return { ...sub, totalQuestions: counts[sub.id] };
+              }
+              return sub;
+            })
+          })));
+        }
+
+        // 3. Fetch user progress
         const { data: { session } } = await supabase.auth.getSession();
         if (!session) return;
 
@@ -93,7 +161,6 @@ export default function SATPractice() {
           .eq('user_id', session.user.id);
 
         if (progressRows && progressRows.length > 0) {
-          // Map database stats into progress state dynamically
           const updateSubtopics = (domains: DomainInfo[]) => {
             return domains.map(dom => ({
               ...dom,
@@ -114,10 +181,10 @@ export default function SATPractice() {
           setMathProgress(prev => updateSubtopics(prev));
         }
       } catch (err) {
-        console.error("Failed to load custom progress:", err);
+        console.error("Failed to load progress or counts:", err);
       }
     };
-    fetchSupabaseProgress();
+    fetchCountsAndProgress();
   }, []);
 
   // Timer simulation
@@ -136,10 +203,9 @@ export default function SATPractice() {
   // Fetch questions from Supabase for the selected subtopic
   const loadQuestionsForSubtopic = async (subtopicId: string, isMath: boolean): Promise<any[]> => {
     const section = isMath ? "Math" : "RW";
-    // TODO: Pass subtopicId for filtering once real column values are mapped
     const questions = await fetchPracticeQuestions(section, {
       subtopic: subtopicId,
-      limit: 10,
+      limit: 1000,
     });
     return questions;
   };
@@ -161,6 +227,7 @@ export default function SATPractice() {
       setElapsed(0);
       setSessionAnswers({});
       setAnswerState(null);
+      setFreeResponseInput("");
     } catch (err: any) {
       console.error("Failed to load questions:", err);
       setQuestionsError(err?.message || "Failed to load questions. Please try again.");
@@ -193,24 +260,88 @@ export default function SATPractice() {
     }
   };
 
+  const handleFreeResponseSubmit = () => {
+    if (answerState || !freeResponseInput.trim()) return;
+    const q = questions[currentIdx];
+    const userAns = freeResponseInput.trim().toLowerCase();
+    const correctAns = (q.correctAnswerText || "").trim().toLowerCase();
+    const correct = userAns === correctAns;
+
+    setAnswerState({ selected: -1, correct, input: freeResponseInput });
+    setSessionAnswers(prev => ({ ...prev, [q.id]: { correct } }));
+
+    if (currentSubtopic) {
+      saveSATAnswer(
+        "Math",
+        currentSubtopic.name,
+        correct
+      ).catch(console.error);
+    }
+  };
+
+  const highlightSelectedText = () => {
+    const selection = window.getSelection();
+    if (!selection || selection.rangeCount === 0) return;
+    const range = selection.getRangeAt(0);
+    if (range.toString().trim() === "") return;
+
+    const span = document.createElement("span");
+    span.className = "bg-yellow-400/50 dark:bg-yellow-500/40 text-current px-0.5 rounded";
+
+    try {
+      range.surroundContents(span);
+    } catch (e) {
+      try {
+        span.appendChild(range.extractContents());
+        range.insertNode(span);
+      } catch (err) {
+        console.error("Failed to highlight text:", err);
+      }
+    }
+    selection.removeAllRanges();
+  };
+
   const nextQuestion = () => {
     if (currentIdx < questions.length - 1) {
       setCurrentIdx(prev => prev + 1);
       setAnswerState(null);
+      setFreeResponseInput("");
     } else {
-      setPhase("results");
+      // Endless practice: loop back to the first question
+      setCurrentIdx(0);
+      setAnswerState(null);
+      setFreeResponseInput("");
     }
   };
 
   const renderKatexText = (text: string) => {
     if (!text) return "";
     try {
-      return text.replace(/\$\$([\s\S]+?)\$\$/g, (_, math) => 
-        katex.renderToString(math, { displayMode: true, throwOnError: false })
-      ).replace(/\$([\s\S]+?)\$/g, (_, math) => 
-        katex.renderToString(math, { displayMode: false, throwOnError: false })
+      let processed = text;
+      
+      // Handle block math: \\[ ... \\] or \[ ... \]
+      processed = processed.replace(/\\+\[([\s\S]+?)\\+\]/g, (_, math) => {
+        return katex.renderToString(math.trim(), { displayMode: true, throwOnError: false });
+      });
+
+      // Handle inline math: \\( ... \\) or \( ... \)
+      processed = processed.replace(/\\+\(([\s\S]+?)\\+\)/g, (_, math) => {
+        return katex.renderToString(math.trim(), { displayMode: false, throwOnError: false });
+      });
+
+      // Handle double dollar block math: $$ ... $$
+      processed = processed.replace(/\$\$([\s\S]+?)\$\$/g, (_, math) => 
+        katex.renderToString(math.trim(), { displayMode: true, throwOnError: false })
       );
+
+      // Handle single dollar inline math: $ ... $
+      processed = processed.replace(/\$([\s\S]+?)\$/g, (_, math) => 
+        katex.renderToString(math.trim(), { displayMode: false, throwOnError: false })
+      );
+
+      return processed;
     } catch (e) {
+      console.error("KaTeX rendering error:", e);
       return text;
     }
   };
@@ -223,9 +354,124 @@ export default function SATPractice() {
 
   return (
     <Layout>
-      <div className="min-h-screen bg-black text-white relative overflow-hidden font-sans selection:bg-white/10">
+      <div className={`min-h-screen bg-black text-white relative overflow-hidden font-sans selection:bg-white/10 ${theme === 'light' ? 'light-theme' : ''}`}>
+        <style>{`
+          .light-theme {
+            background-color: #f8fafc !important;
+            color: #0f172a !important;
+          }
+          .light-theme .bg-vignette {
+            background: radial-gradient(circle, transparent 40%, rgba(248, 250, 252, 0.8) 100%) !important;
+          }
+          .light-theme .glass-3d {
+            background: rgba(255, 255, 255, 0.7) !important;
+            backdrop-filter: blur(16px) !important;
+            border-color: rgba(99, 102, 241, 0.15) !important;
+            box-shadow: 0 4px 30px rgba(0, 0, 0, 0.03), inset 0 1px 1px rgba(255, 255, 255, 0.8) !important;
+            color: #0f172a !important;
+          }
+          .light-theme .glass-3d:hover {
+            border-color: rgba(99, 102, 241, 0.4) !important;
+          }
+          .light-theme .text-shimmer {
+            background: linear-gradient(135deg, #0f172a 0%, #4338ca 100%) !important;
+            -webkit-background-clip: text !important;
+            -webkit-text-fill-color: transparent !important;
+          }
+          .light-theme .text-white {
+            color: #0f172a !important;
+          }
+          .light-theme .text-white\\/80 {
+            color: #334155 !important;
+          }
+          .light-theme .text-white\\/70 {
+            color: #475569 !important;
+          }
+          .light-theme .text-white\\/60 {
+            color: #475569 !important;
+          }
+          .light-theme .text-white\\/40 {
+            color: #64748b !important;
+          }
+          .light-theme .text-\\[\\#444\\] {
+            color: #64748b !important;
+          }
+          .light-theme .text-\\[\\#666\\] {
+            color: #475569 !important;
+          }
+          .light-theme .divide-white\\/5 > * {
+            border-color: rgba(99, 102, 241, 0.1) !important;
+          }
+          .light-theme .border-white\\/5 {
+            border-color: rgba(99, 102, 241, 0.1) !important;
+          }
+          .light-theme .border-white\\/10 {
+            border-color: rgba(99, 102, 241, 0.15) !important;
+          }
+          .light-theme .bg-white\\/5 {
+            background-color: rgba(99, 102, 241, 0.03) !important;
+          }
+          .light-theme .bg-white\\/10 {
+            background-color: rgba(99, 102, 241, 0.06) !important;
+          }
+          .light-theme .hover\\:bg-white\\/5:hover {
+            background-color: rgba(99, 102, 241, 0.04) !important;
+          }
+          .light-theme .hover\\:bg-white\\/10:hover {
+            background-color: rgba(99, 102, 241, 0.08) !important;
+          }
+          .light-theme .hover\\:text-white:hover {
+            color: #4f46e5 !important;
+          }
+          .light-theme button.glass-3d:hover {
+            background-color: rgba(99, 102, 241, 0.05) !important;
+          }
+          .light-theme .text-indigo-400 {
+            color: #4f46e5 !important;
+          }
+          .light-theme .border-indigo-500\\/10 {
+            border-color: rgba(79, 70, 229, 0.15) !important;
+          }
+          .light-theme .bg-indigo-500\\/5 {
+            background-color: rgba(79, 70, 229, 0.04) !important;
+          }
+          .light-theme .text-blue-400 {
+            color: #2563eb !important;
+          }
+          .light-theme .border-blue-500\\/10 {
+            border-color: rgba(37, 99, 235, 0.15) !important;
+          }
+          .light-theme .bg-blue-500\\/5 {
+            background-color: rgba(37, 99, 235, 0.04) !important;
+          }
+          .light-theme .selection\\:bg-white\\/10::selection {
+            background-color: rgba(79, 70, 229, 0.15) !important;
+          }
+          .light-theme input {
+            background-color: #ffffff !important;
+            color: #0f172a !important;
+            border-color: #cbd5e1 !important;
+          }
+          .light-theme input:focus {
+            border-color: #4f46e5 !important;
+            outline: none !important;
+          }
+        `}</style>
         <div className="bg-vignette" />
         <div className="bg-sphere top-[-20%] right-[-10%] opacity-35" style={{ background: 'radial-gradient(circle, rgba(139, 92, 246, 0.08) 0%, transparent 70%)' }} />
+
+        {/* Floating Theme Toggle for Bank & Subtopic phases */}
+        {(phase === "bank" || phase === "subtopics") && (
+          <div className="absolute top-8 right-10 z-50">
+            <Button
+              onClick={() => setTheme(prev => prev === 'dark' ? 'light' : 'dark')}
+              className="bg-white/5 border border-white/10 text-white hover:bg-white/10 w-12 h-12 rounded-xl flex items-center justify-center p-0"
+              title={theme === 'dark' ? 'Switch to Day Mode' : 'Switch to Night Mode'}
+            >
+              {theme === 'dark' ? <Moon className="w-5 h-5" /> : <Sun className="w-5 h-5 text-amber-500" />}
+            </Button>
+          </div>
+        )}
 
         {/* Phase 1: High Fidelity Section Grid Selection Card */}
         {phase === "bank" && (
@@ -256,7 +502,7 @@ export default function SATPractice() {
                   <h2 className="text-5xl font-black mb-4 tracking-tighter uppercase italic leading-none text-shimmer">
                     Reading & <br /> Writing
                   </h2>
-                  <p className="text-sm font-black text-indigo-400 uppercase tracking-widest mb-10">1492 questions</p>
+                  <p className="text-sm font-black text-indigo-400 uppercase tracking-widest mb-10">{totalRwCount} questions</p>
                 </div>
                 
                 <div className="flex items-center justify-between relative z-10 mt-auto">
@@ -282,7 +528,7 @@ export default function SATPractice() {
                   <h2 className="text-5xl font-black mb-4 tracking-tighter uppercase italic leading-none text-shimmer">
                     Math
                   </h2>
-                  <p className="text-sm font-black text-blue-400 uppercase tracking-widest mb-10">2390 questions</p>
+                  <p className="text-sm font-black text-blue-400 uppercase tracking-widest mb-10">{totalMathCount} questions</p>
                 </div>
 
                 <div className="flex items-center justify-between relative z-10 mt-auto">
@@ -406,7 +652,7 @@ export default function SATPractice() {
 
         {/* Phase 3: Split-Screen Interactive Quiz Sandbox */}
         {phase === "quiz" && questions.length > 0 && (
-          <div className="min-h-screen bg-black text-white relative overflow-hidden flex flex-col">
+          <div className="min-h-screen bg-transparent relative overflow-hidden flex flex-col">
             {isDesmosOpen && (
               <div className="fixed inset-y-0 right-0 w-[600px] z-[100] bg-black border-l border-white/10 shadow-2xl animate-in slide-in-from-right duration-300">
                 <div className="flex items-center justify-between p-4 border-b border-white/10 bg-white/5">
@@ -446,6 +692,14 @@ export default function SATPractice() {
                 </div>
 
                 <div className="flex items-center gap-4">
+                  <Button 
+                    onClick={highlightSelectedText} 
+                    className="bg-white/5 border border-white/10 text-white hover:bg-white/10 px-6 h-12 rounded-xl font-black uppercase text-[10px] tracking-widest flex items-center gap-2"
+                    title="Highlight Selected Text"
+                  >
+                    <Highlighter className="w-4 h-4 text-yellow-400" /> Highlight
+                  </Button>
+
                   {selectedSection === 'Math' && (
                     <Button 
                       onClick={() => setIsDesmosOpen(!isDesmosOpen)} 
@@ -454,6 +708,14 @@ export default function SATPractice() {
                       <Calculator className="w-4 h-4" /> Desmos
                     </Button>
                   )}
+
+                  <Button
+                    onClick={() => setTheme(prev => prev === 'dark' ? 'light' : 'dark')}
+                    className="bg-white/5 border border-white/10 text-white hover:bg-white/10 w-12 h-12 rounded-xl font-black flex items-center justify-center p-0"
+                    title={theme === 'dark' ? 'Switch to Day Mode' : 'Switch to Night Mode'}
+                  >
+                    {theme === 'dark' ? <Moon className="w-4 h-4" /> : <Sun className="w-4 h-4 text-amber-500" />}
+                  </Button>
                 </div>
               </div>
 
@@ -487,24 +749,84 @@ export default function SATPractice() {
 
                 {/* Right Options Column */}
                 <div className="flex flex-col gap-4 overflow-y-auto custom-scrollbar">
-                  {questions[currentIdx]?.options?.map((opt: string, i: number) => (
-                    <button
-                      key={i}
-                      onClick={() => handleAnswerSelection(i)}
-                      className={`glass-3d p-8 text-left transition-all ${
-                        answerState 
-                          ? (i === questions[currentIdx].correctAnswer 
-                            ? 'bg-emerald-500/10 border-emerald-500/30 text-emerald-400' 
-                            : (answerState.selected === i ? 'bg-rose-500/10 border-rose-500/30 text-rose-400' : 'opacity-20')) 
-                          : 'bg-white/5 hover:bg-white/10 hover:translate-x-2'
-                      }`}
-                    >
-                      <div className="flex items-center gap-6">
-                        <div className="w-10 h-10 rounded-xl bg-white/5 flex items-center justify-center border border-white/10 font-black text-sm">{String.fromCharCode(65 + i)}</div>
-                        <div className="text-base font-bold" dangerouslySetInnerHTML={{ __html: renderKatexText(opt) }} />
+                  {questions[currentIdx]?.isFreeResponse ? (
+                    <div className="glass-3d p-10 flex flex-col gap-6">
+                      <div className="flex items-center gap-3">
+                        <FileText className="w-5 h-5 text-indigo-400" />
+                        <h3 className="text-sm font-black uppercase tracking-widest text-indigo-400">Student-Produced Response</h3>
                       </div>
-                    </button>
-                  ))}
+                      <p className="text-xs text-white/50 leading-relaxed">
+                        Enter your answer in the box below. You can enter integers, decimals, or fractions.
+                      </p>
+                      <div className="flex flex-col sm:flex-row gap-4">
+                        <input
+                          type="text"
+                          value={freeResponseInput}
+                          onChange={(e) => setFreeResponseInput(e.target.value)}
+                          disabled={!!answerState}
+                          placeholder="Type your answer here..."
+                          className="flex-1 px-6 h-16 bg-white/5 border border-white/10 rounded-xl text-lg font-bold text-white placeholder-white/20 focus:outline-none focus:border-indigo-500 transition-colors disabled:opacity-50"
+                          onKeyDown={(e) => {
+                            if (e.key === 'Enter') {
+                              handleFreeResponseSubmit();
+                            }
+                          }}
+                        />
+                        <Button
+                          onClick={handleFreeResponseSubmit}
+                          disabled={!!answerState || !freeResponseInput.trim()}
+                          className="bg-white text-black hover:bg-gray-100 disabled:opacity-50 h-16 px-10 rounded-xl font-black uppercase text-xs tracking-widest"
+                        >
+                          Confirm
+                        </Button>
+                      </div>
+
+                      {answerState && (
+                        <div className={`mt-4 p-6 rounded-xl border flex items-center gap-4 ${
+                          answerState.correct
+                            ? 'bg-emerald-500/10 border-emerald-500/30 text-emerald-400'
+                            : 'bg-rose-500/10 border-rose-500/30 text-rose-400'
+                        }`}>
+                          {answerState.correct ? (
+                            <>
+                              <CheckCircle2 className="w-6 h-6 shrink-0" />
+                              <div>
+                                <p className="text-sm font-black uppercase tracking-widest">Correct Answer</p>
+                                <p className="text-xs opacity-80">Your response "{answerState.input}" is correct.</p>
+                              </div>
+                            </>
+                          ) : (
+                            <>
+                              <AlertCircle className="w-6 h-6 shrink-0" />
+                              <div>
+                                <p className="text-sm font-black uppercase tracking-widest">Incorrect Answer</p>
+                                <p className="text-xs opacity-80">Correct answer is: <strong className="font-bold">{questions[currentIdx]?.correctAnswerText}</strong></p>
+                              </div>
+                            </>
+                          )}
+                        </div>
+                      )}
+                    </div>
+                  ) : (
+                    questions[currentIdx]?.options?.map((opt: string, i: number) => (
+                      <button
+                        key={i}
+                        onClick={() => handleAnswerSelection(i)}
+                        className={`glass-3d p-8 text-left transition-all ${
+                          answerState 
+                            ? (i === questions[currentIdx].correctAnswer 
+                              ? 'bg-emerald-500/10 border-emerald-500/30 text-emerald-400' 
+                              : (answerState.selected === i ? 'bg-rose-500/10 border-rose-500/30 text-rose-400' : 'opacity-20')) 
+                            : 'bg-white/5 hover:bg-white/10 hover:translate-x-2'
+                        }`}
+                      >
+                        <div className="flex items-center gap-6">
+                          <div className="w-10 h-10 rounded-xl bg-white/5 flex items-center justify-center border border-white/10 font-black text-sm">{String.fromCharCode(65 + i)}</div>
+                          <div className="text-base font-bold" dangerouslySetInnerHTML={{ __html: renderKatexText(opt) }} />
+                        </div>
+                      </button>
+                    ))
+                  )}
 
                   <AnimatePresence>
                     {answerState && (
@@ -538,7 +860,7 @@ export default function SATPractice() {
 
         {/* Phase 4: Results Feedback Display */}
         {phase === "results" && (
-          <div className="min-h-screen bg-black text-white pt-24 p-10 flex flex-col items-center justify-center relative overflow-hidden">
+          <div className="min-h-screen bg-transparent pt-24 p-10 flex flex-col items-center justify-center relative overflow-hidden">
             <div className="max-w-[1200px] mx-auto text-center relative z-10 w-full">
               <h1 className="text-7xl font-black text-shimmer leading-none mb-12 uppercase italic tracking-tighter">Session Over.</h1>
               
