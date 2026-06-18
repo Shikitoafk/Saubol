@@ -13,41 +13,31 @@ type SeoEntry = {
 };
 
 const DEFAULT_SEO: SeoEntry = {
-  title: "Saubol | Top Universities & Test Prep",
+  title: "Saubol | IELTS & SAT Practice",
   description:
-    "Saubol helps students prepare for IELTS and SAT, explore programs, and navigate admissions to top universities worldwide.",
+    "Free IELTS practice tests and SAT question bank with filters by section, category, and difficulty.",
 };
 
 const SEO_BY_PATH: Record<string, SeoEntry> = {
   "/": {
-    title: "Saubol | Top Universities & Test Prep",
+    title: "Saubol | IELTS & SAT Practice",
     description:
-      "Expert guidance for admissions, IELTS/SAT preparation, and global education opportunities.",
-  },
-  "/programs": {
-    title: "Programs & Camps | Saubol",
-    description:
-      "Explore curated academic programs, camps, and opportunities to strengthen your profile.",
+      "Free IELTS practice tests and SAT question bank for standardized test preparation.",
   },
   "/ielts": {
-    title: "IELTS Preparation | Saubol",
+    title: "IELTS Practice Tests | Saubol",
     description:
-      "Practice IELTS with structured skill paths, prediction tests, and focused preparation resources.",
+      "Practice IELTS reading and listening with prediction tests in a timed exam interface.",
   },
   "/sat": {
-    title: "SAT Preparation | Saubol",
+    title: "SAT Question Bank | Saubol",
     description:
-      "Build SAT performance with adaptive practice questions, explanations, and smart filtering.",
+      "Practice SAT questions with filters by section, category, and difficulty.",
   },
   "/sat/practice": {
     title: "SAT Practice Questions | Saubol",
     description:
       "Train with SAT practice questions by section, category, and difficulty level.",
-  },
-  "/admissions": {
-    title: "Admissions Guide | Saubol",
-    description:
-      "A clear admissions roadmap for students applying to universities abroad.",
   },
 };
 
