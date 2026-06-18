@@ -40,7 +40,7 @@ export default function PracticeSession({ topic, questions, onComplete }: Practi
     }
     
     // Save SAT Answer immediately in background
-    const isMath = ["linear_equations", "systems_equations", "quadratic", "inequalities"].includes(currentQuestion.topic || "");
+    const isMath = currentQuestion.section === "Math";
     const category = isMath ? "Math" : "RW";
     saveSATAnswer(category, currentQuestion.topic || "General", isCorrect).catch(console.error);
   };

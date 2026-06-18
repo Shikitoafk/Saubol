@@ -25,16 +25,14 @@ import { supabase } from "@/lib/supabase";
 type Phase = "video" | "practice" | "complete";
 
 export default function SATLearn() {
-  const [activeTopicId, setActiveTopicId] = useState("linear_equations");
+  const [activeTopicId, setActiveTopicId] = useState("Algebra");
   const [phase, setPhase] = useState<Phase>("video");
   const [masteryData, setMasteryData] = useState<Record<string, number>>({
-    linear_equations: 0,
-    systems_equations: 0,
-    quadratic: 0,
-    inequalities: 0,
-    transitions: 0,
-    central_ideas: 0,
-    grammar_boundaries: 0
+    "Algebra": 0,
+    "Advanced Math": 0,
+    "Geometry": 0,
+    "Statistics": 0,
+    "Reading & Writing": 0
   });
   const [currentQuestions, setCurrentQuestions] = useState<SATQuestion[]>([]);
   const [questionsLoading, setQuestionsLoading] = useState(false);
@@ -53,17 +51,18 @@ export default function SATLearn() {
 
         if (progressRows) {
           const loadedMastery: Record<string, number> = {
-            linear_equations: 0,
-            systems_equations: 0,
-            quadratic: 0,
-            inequalities: 0,
-            transitions: 0,
-            central_ideas: 0,
-            grammar_boundaries: 0
+            "Algebra": 0,
+            "Advanced Math": 0,
+            "Geometry": 0,
+            "Statistics": 0,
+            "Reading & Writing": 0
           };
           progressRows.forEach(row => {
-            if (row.subtopic && row.subtopic in loadedMastery) {
-              loadedMastery[row.subtopic] = row.mastery_percent || 0;
+            const topicKey = Object.keys(loadedMastery).find(
+              key => row.subtopic?.toLowerCase() === key.toLowerCase()
+            );
+            if (topicKey) {
+              loadedMastery[topicKey] = row.mastery_percent || 0;
             }
           });
           setMasteryData(loadedMastery);
@@ -78,28 +77,37 @@ export default function SATLearn() {
 
   const categories: Category[] = useMemo(() => [
     {
-      name: "Math - Algebra",
+      name: "Math Domains",
       icon: Calculator,
       topics: [
-        { id: "linear_equations", name: "Linear Equations", progress: masteryData.linear_equations, isLocked: false, isCompleted: masteryData.linear_equations >= 100 },
-        { id: "systems_equations", name: "Systems of Equations", progress: masteryData.systems_equations, isLocked: false, isCompleted: masteryData.systems_equations >= 100 },
-        { id: "quadratic", name: "Quadratic Equations", progress: masteryData.quadratic, isLocked: false, isCompleted: false },
-        { id: "inequalities", name: "Linear Inequalities", progress: masteryData.inequalities, isLocked: false, isCompleted: false },
+        { id: "Algebra", name: "Algebra", progress: masteryData["Algebra"] || 0, isLocked: false, isCompleted: (masteryData["Algebra"] || 0) >= 100 },
+        { id: "Advanced Math", name: "Advanced Math", progress: masteryData["Advanced Math"] || 0, isLocked: false, isCompleted: (masteryData["Advanced Math"] || 0) >= 100 },
+        { id: "Geometry", name: "Geometry", progress: masteryData["Geometry"] || 0, isLocked: false, isCompleted: (masteryData["Geometry"] || 0) >= 100 },
+        { id: "Statistics", name: "Statistics", progress: masteryData["Statistics"] || 0, isLocked: false, isCompleted: (masteryData["Statistics"] || 0) >= 100 },
       ]
     },
     {
-      name: "Reading & Writing",
+      name: "Reading & Writing Domains",
       icon: FileText,
       topics: [
-        { id: "central_ideas", name: "Central Ideas", progress: masteryData.central_ideas, isLocked: false, isCompleted: masteryData.central_ideas >= 100 },
-        { id: "transitions", name: "Transitions", progress: masteryData.transitions, isLocked: false, isCompleted: false },
-        { id: "grammar_boundaries", name: "Grammar & Punctuation", progress: masteryData.grammar_boundaries, isLocked: false, isCompleted: false },
+        { id: "Reading & Writing", name: "Reading & Writing", progress: masteryData["Reading & Writing"] || 0, isLocked: false, isCompleted: (masteryData["Reading & Writing"] || 0) >= 100 },
       ]
     }
   ], [masteryData]);
 
   const currentVideo = useMemo(() => {
-    return SAT_VIDEO_LIBRARY.math[activeTopicId] || SAT_VIDEO_LIBRARY.reading_writing[activeTopicId];
+    const videoMapping: Record<string, { category: "math" | "reading_writing"; key: string }> = {
+      "Algebra": { category: "math", key: "linear_equations" },
+      "Advanced Math": { category: "math", key: "quadratic" },
+      "Geometry": { category: "math", key: "geometry" },
+      "Statistics": { category: "math", key: "statistics" },
+      "Reading & Writing": { category: "reading_writing", key: "transitions" }
+    };
+    const mapped = videoMapping[activeTopicId];
+    if (mapped) {
+      return SAT_VIDEO_LIBRARY[mapped.category][mapped.key];
+    }
+    return null;
   }, [activeTopicId]);
 
   // Fetch questions from Supabase when active topic changes
@@ -108,9 +116,7 @@ export default function SATLearn() {
       setQuestionsLoading(true);
       setQuestionsError(null);
       try {
-        // Determine section from topic ID
-        const mathTopics = ["linear_equations", "systems_equations", "quadratic", "inequalities"];
-        const section: "RW" | "Math" = mathTopics.includes(activeTopicId) ? "Math" : "RW";
+        const section: "RW" | "Math" = activeTopicId === "Reading & Writing" ? "RW" : "Math";
         const fetched = await fetchPracticeQuestions(section, {
           subtopic: activeTopicId,
           limit: 15,

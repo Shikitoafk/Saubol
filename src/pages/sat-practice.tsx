@@ -58,78 +58,24 @@ export default function SATPractice() {
   const [elapsed, setElapsed] = useState(0);
   const [timerInterval, setTimerInterval] = useState<NodeJS.Timeout | null>(null);
 
-  // Dynamic user progress states populated with exact screenshot matching values
+  // Dynamic user progress states populated with exact broad topic values from the database
   const [rwProgress, setRwProgress] = useState<DomainInfo[]>([
     {
-      name: "Craft and Structure",
+      name: "Reading & Writing Domains",
       subtopics: [
-        { id: "cross_text_connections", name: "Cross-Text Connections", totalQuestions: 57, solvedQuestions: 2, accuracy: 100 },
-        { id: "text_structure_purpose", name: "Text Structure and Purpose", totalQuestions: 115, solvedQuestions: 11, accuracy: 100 },
-        { id: "words_in_context", name: "Words in Context", totalQuestions: 219, solvedQuestions: 15, accuracy: 100 }
-      ]
-    },
-    {
-      name: "Expression of Ideas",
-      subtopics: [
-        { id: "rhetorical_synthesis", name: "Rhetorical Synthesis", totalQuestions: 171, solvedQuestions: 22, accuracy: 96 },
-        { id: "transitions", name: "Transitions", totalQuestions: 140, solvedQuestions: 46, accuracy: 98 }
-      ]
-    },
-    {
-      name: "Information and Ideas",
-      subtopics: [
-        { id: "central_ideas_details", name: "Central Ideas and Details", totalQuestions: 121, solvedQuestions: 9, accuracy: 100 },
-        { id: "command_of_evidence", name: "Command of Evidence", totalQuestions: 196, solvedQuestions: 8, accuracy: 100 },
-        { id: "inferences", name: "Inferences", totalQuestions: 97, solvedQuestions: 3, accuracy: 100 }
-      ]
-    },
-    {
-      name: "Standard English Conventions",
-      subtopics: [
-        { id: "boundaries", name: "Boundaries", totalQuestions: 185, solvedQuestions: 109, accuracy: 79 },
-        { id: "form_structure_sense", name: "Form, Structure, and Sense", totalQuestions: 180, solvedQuestions: 145, accuracy: 99 }
+        { id: "Reading & Writing", name: "Reading & Writing", totalQuestions: 329, solvedQuestions: 0, accuracy: 0 }
       ]
     }
   ]);
 
   const [mathProgress, setMathProgress] = useState<DomainInfo[]>([
     {
-      name: "Algebra",
+      name: "Math Domains",
       subtopics: [
-        { id: "linear_eq_1var", name: "Linear equations in 1 variable", totalQuestions: 120, solvedQuestions: 12, accuracy: 100 },
-        { id: "linear_eq_2var", name: "Linear equations in 2 variables", totalQuestions: 150, solvedQuestions: 8, accuracy: 92 },
-        { id: "linear_functions", name: "Linear functions", totalQuestions: 180, solvedQuestions: 45, accuracy: 96 },
-        { id: "systems_linear_eq", name: "Systems of two linear equations in 2 variables", totalQuestions: 140, solvedQuestions: 20, accuracy: 88 },
-        { id: "linear_inequalities", name: "Linear inequalities in 1 or 2 variables", totalQuestions: 130, solvedQuestions: 15, accuracy: 90 }
-      ]
-    },
-    {
-      name: "Advanced Math",
-      subtopics: [
-        { id: "equivalent_expressions", name: "Equivalent expressions", totalQuestions: 210, solvedQuestions: 18, accuracy: 100 },
-        { id: "nonlinear_eq_systems", name: "Nonlinear equations in 1 variable and systems of equations", totalQuestions: 190, solvedQuestions: 12, accuracy: 85 },
-        { id: "nonlinear_functions", name: "Nonlinear functions", totalQuestions: 200, solvedQuestions: 25, accuracy: 95 }
-      ]
-    },
-    {
-      name: "Problem-Solving and Data Analysis",
-      subtopics: [
-        { id: "ratios_rates_proportions", name: "Ratios, rates, proportional relationships, and units", totalQuestions: 160, solvedQuestions: 14, accuracy: 93 },
-        { id: "percentages", name: "Percentages", totalQuestions: 150, solvedQuestions: 30, accuracy: 100 },
-        { id: "one_var_data", name: "1-variable data: distributions and measures", totalQuestions: 120, solvedQuestions: 10, accuracy: 80 },
-        { id: "two_var_data", name: "2-variable data: models and scatterplots", totalQuestions: 130, solvedQuestions: 5, accuracy: 100 },
-        { id: "probability_conditional", name: "Probability and conditional probability", totalQuestions: 140, solvedQuestions: 18, accuracy: 89 },
-        { id: "inference_statistics", name: "Inference from sample statistics and margin of error", totalQuestions: 110, solvedQuestions: 2, accuracy: 100 },
-        { id: "evaluating_claims", name: "Evaluating statistical claims and observational studies", totalQuestions: 100, solvedQuestions: 0, accuracy: 0 }
-      ]
-    },
-    {
-      name: "Geometry and Trigonometry",
-      subtopics: [
-        { id: "area_volume", name: "Area and volume", totalQuestions: 120, solvedQuestions: 10, accuracy: 90 },
-        { id: "lines_angles_triangles", name: "Lines, angles, and triangles", totalQuestions: 110, solvedQuestions: 24, accuracy: 95 },
-        { id: "right_triangles_trig", name: "Right triangles and trigonometry", totalQuestions: 100, solvedQuestions: 5, accuracy: 100 },
-        { id: "circles", name: "Circles", totalQuestions: 110, solvedQuestions: 8, accuracy: 88 }
+        { id: "Algebra", name: "Algebra", totalQuestions: 221, solvedQuestions: 0, accuracy: 0 },
+        { id: "Advanced Math", name: "Advanced Math", totalQuestions: 48, solvedQuestions: 0, accuracy: 0 },
+        { id: "Geometry", name: "Geometry", totalQuestions: 49, solvedQuestions: 0, accuracy: 0 },
+        { id: "Statistics", name: "Statistics", totalQuestions: 28, solvedQuestions: 0, accuracy: 0 }
       ]
     }
   ]);
@@ -156,8 +102,8 @@ export default function SATPractice() {
                 if (match) {
                   return {
                     ...sub,
-                    solvedQuestions: match.correct_count || sub.solvedQuestions,
-                    accuracy: match.mastery_percent || sub.accuracy
+                    solvedQuestions: match.questions_correct ?? 0,
+                    accuracy: match.mastery_percent ?? 0
                   };
                 }
                 return sub;
@@ -373,7 +319,7 @@ export default function SATPractice() {
               <div>
                 <h3 className="text-lg font-black uppercase tracking-tight text-white mb-2">Practice all topics</h3>
                 <p className="text-xs text-white/50 font-bold uppercase tracking-widest">
-                  Start practicing all {selectedSection === 'Math' ? '17 skills in Math' : '10 skills in Reading & Writing'}.
+                  Start practicing all {selectedSection === 'Math' ? '4 domains in Math' : 'domains in Reading & Writing'}.
                 </p>
               </div>
               <Button 

@@ -107,8 +107,9 @@ export async function fetchRWQuestions(options?: {
 }): Promise<SATQuestion[]> {
   let query = supabase.from("EBRW_MCQ").select("*");
 
-  // TODO: Map UI subtopic IDs to real `section` column values in Supabase.
-  // Example:  if (options?.subtopic) query = query.eq("section", mapSubtopicToSection(options.subtopic));
+  if (options?.subtopic && options.subtopic !== "All") {
+    query = query.eq("section", options.subtopic);
+  }
   if (options?.difficulty && options.difficulty !== "All") {
     query = query.eq("difficulty", options.difficulty);
   }
@@ -123,10 +124,6 @@ export async function fetchRWQuestions(options?: {
 
 /**
  * Fetch Math MCQ questions from `Math_MCQ`.
- *
- * TODO: Once real `topic` column values are known, add mapping from
- * UI subtopic IDs (e.g. "linear_eq_1var", "quadratic") to
- * the actual column values stored in Supabase.
  */
 export async function fetchMathMCQQuestions(options?: {
   subtopic?: string;
@@ -135,8 +132,9 @@ export async function fetchMathMCQQuestions(options?: {
 }): Promise<SATQuestion[]> {
   let query = supabase.from("Math_MCQ").select("*");
 
-  // TODO: Map UI subtopic IDs to real `topic` column values in Supabase.
-  // Example:  if (options?.subtopic) query = query.eq("topic", mapSubtopicToTopic(options.subtopic));
+  if (options?.subtopic && options.subtopic !== "All") {
+    query = query.eq("topic", options.subtopic);
+  }
   if (options?.difficulty && options.difficulty !== "All") {
     query = query.eq("difficulty", options.difficulty);
   }
@@ -159,7 +157,9 @@ export async function fetchMathOpenQuestions(options?: {
 }): Promise<SATQuestion[]> {
   let query = supabase.from("Math_Open").select("*");
 
-  // TODO: Map UI subtopic IDs to real `topic` column values in Supabase.
+  if (options?.subtopic && options.subtopic !== "All") {
+    query = query.eq("topic", options.subtopic);
+  }
   if (options?.difficulty && options.difficulty !== "All") {
     query = query.eq("difficulty", options.difficulty);
   }
