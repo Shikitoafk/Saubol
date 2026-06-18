@@ -1,5 +1,3 @@
-import { SAT_QUESTION_BANK } from "@/data/sat-questions";
-
 /**
  * SAT Logic Engine v3.0
  * Mastery, Intelligent Study Planning, and Adaptive Scoring.

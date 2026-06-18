@@ -17,7 +17,7 @@ import TopicVideoPage from "@/components/TopicVideoPage";
 import PracticeSession from "@/components/PracticeSession";
 import PracticeComplete from "@/components/PracticeComplete";
 import { SAT_VIDEO_LIBRARY } from "@/data/sat-video-library";
-import { SAT_QUESTION_BANK } from "@/data/sat-question-bank";
+import { fetchPracticeQuestions, SATQuestion } from "@/lib/sat-questions-service";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { supabase } from "@/lib/supabase";
@@ -99,8 +99,29 @@ export default function SATLearn() {
     return SAT_VIDEO_LIBRARY.math[activeTopicId] || SAT_VIDEO_LIBRARY.reading_writing[activeTopicId];
   }, [activeTopicId]);
 
-  const currentQuestions = useMemo(() => {
-    return SAT_QUESTION_BANK[activeTopicId] || [];
+  // Fetch questions from Supabase when active topic changes
+  useEffect(() => {
+    const loadTopicQuestions = async () => {
+      setQuestionsLoading(true);
+      setQuestionsError(null);
+      try {
+        // Determine section from topic ID
+        const mathTopics = ["linear_equations", "systems_equations", "quadratic", "inequalities"];
+        const section: "RW" | "Math" = mathTopics.includes(activeTopicId) ? "Math" : "RW";
+        const fetched = await fetchPracticeQuestions(section, {
+          subtopic: activeTopicId,
+          limit: 15,
+        });
+        setCurrentQuestions(fetched);
+      } catch (err: any) {
+        console.error("Failed to load topic questions:", err);
+        setQuestionsError(err?.message || "Failed to load questions.");
+        setCurrentQuestions([]);
+      } finally {
+        setQuestionsLoading(false);
+      }
+    };
+    loadTopicQuestions();
   }, [activeTopicId]);
 
   const handleTopicSelect = (id: string) => {

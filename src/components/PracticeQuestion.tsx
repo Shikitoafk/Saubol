@@ -11,7 +11,7 @@ import {
   BarChart3
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { SATQuestion } from "@/data/sat-questions-bank";
+import { SATQuestion } from "@/lib/sat-questions-service";
 import katex from 'katex';
 import 'katex/dist/katex.min.css';
 
@@ -79,6 +79,12 @@ export default function PracticeQuestion({
 
       {/* Main Question Card */}
       <div className="glass-3d p-12 border-white/5">
+        {question.imageUrl && (
+          <div className="mb-8">
+            <img src={question.imageUrl} alt="Question visual" className="max-w-full rounded-2xl border border-white/10" />
+          </div>
+        )}
+
         {question.passage && (
           <div className="p-8 bg-white/5 rounded-2xl border border-white/10 mb-10">
             <div className="flex items-center gap-2 mb-4 opacity-30">

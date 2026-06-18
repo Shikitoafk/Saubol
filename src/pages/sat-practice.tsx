@@ -25,6 +25,7 @@ import { Layout } from "@/components/layout";
 import { Button } from "@/components/ui/button";
 import { supabase } from "@/lib/supabase";
 import { saveSATAnswer } from "@/lib/progress-service";
+import { fetchPracticeQuestions, SATQuestion } from "@/lib/sat-questions-service";
 import katex from 'katex';
 import 'katex/dist/katex.min.css';
 import { motion, AnimatePresence } from "framer-motion";
@@ -52,6 +53,8 @@ export default function SATPractice() {
   const [answerState, setAnswerState] = useState<any>(null);
   const [sessionAnswers, setSessionAnswers] = useState<Record<string, any>>({});
   const [isDesmosOpen, setIsDesmosOpen] = useState(false);
+  const [questionsLoading, setQuestionsLoading] = useState(false);
+  const [questionsError, setQuestionsError] = useState<string | null>(null);
   const [elapsed, setElapsed] = useState(0);
   const [timerInterval, setTimerInterval] = useState<NodeJS.Timeout | null>(null);
 
@@ -184,110 +187,47 @@ export default function SATPractice() {
     }
   }, [phase]);
 
-  // Premium SAT Academic Question Generator
-  const generateQuestionsForSubtopic = (subtopicId: string, isMath: boolean): any[] => {
-    if (isMath) {
-      return [
-        {
-          id: `${subtopicId}-q1`,
-          difficulty: "Easy",
-          question: "If $3x + 15 = 36$, what is the value of $2x - 3$?",
-          options: ["11", "14", "21", "29"],
-          correctAnswer: 0,
-          explanation: "First, solve for $x$: \n$$3x + 15 = 36 \\Rightarrow 3x = 21 \\Rightarrow x = 7$$\nThen evaluate $2x - 3$:\n$$2(7) - 3 = 14 - 3 = 11$$",
-          category: "Math",
-          topic: subtopicId,
-          section: "Math",
-          hasKaTeX: true
-        },
-        {
-          id: `${subtopicId}-q2`,
-          difficulty: "Medium",
-          question: "The function $f(x) = k(x-3)(x+5)$ represents a parabola in the $xy$-plane. If the vertex of the parabola is located at $(h, 32)$, what is the value of the constant $k$?",
-          options: ["-2", "-4", "2", "4"],
-          correctAnswer: 0,
-          explanation: "The $x$-coordinate of the vertex $h$ is the midpoint of the roots: \n$$h = \\frac{3 + (-5)}{2} = \\frac{-2}{2} = -1$$\nSince $( -1, 32 )$ lies on the parabola, substitute $x = -1$ and $f(x) = 32$:\n$$32 = k(-1-3)(-1+5) \\Rightarrow 32 = k(-4)(4) \\Rightarrow 32 = -16k \\Rightarrow k = -2$$",
-          category: "Math",
-          topic: subtopicId,
-          section: "Math",
-          hasKaTeX: true
-        },
-        {
-          id: `${subtopicId}-q3`,
-          difficulty: "Hard",
-          question: "A right triangle has legs of length $a$ and $b$, and hypotenuse of length $c$. If the area of the triangle is $24$ and $a + b = 14$, what is the length of the hypotenuse $c$?",
-          options: ["8", "10", "12", "13"],
-          correctAnswer: 1,
-          explanation: "The area of a right triangle is $\\frac{1}{2}ab = 24 \\Rightarrow ab = 48$.\nWe are given $a + b = 14$. Squaring both sides yields:\n$$(a+b)^2 = 14^2 \\Rightarrow a^2 + 2ab + b^2 = 196$$\nSubstitute $ab = 48$:\n$$a^2 + 2(48) + b^2 = 196 \\Rightarrow a^2 + b^2 + 96 = 196 \\Rightarrow a^2 + b^2 = 100$$\nBy the Pythagorean theorem, $c^2 = a^2 + b^2 = 100$. Thus, $c = 10$.",
-          category: "Math",
-          topic: subtopicId,
-          section: "Math",
-          hasKaTeX: true
-        }
-      ];
-    } else {
-      return [
-        {
-          id: `${subtopicId}-q1`,
-          difficulty: "Medium",
-          passage: "Linguists studying ancient manuscripts often encounter high levels of variation in orthography, as spelling conventions were far from standardized. For instance, in 14th-century English texts, the word 'should' appeared in over a dozen distinct forms, ranging from 'scholde' to 'ssolden'. This orthographic variability has led some scholars to conclude that spelling was entirely arbitrary. However, a closer statistical analysis of these manuscripts reveals that scribes consistently favored specific variations based on regional phonetic patterns rather than random personal whim.",
-          question: "Which choice best states the main purpose of the text?",
-          options: [
-            "To argue that 14th-century English writers were highly creative in their language usage.",
-            "To prove that orthographic standardisation occurred much earlier than previously assumed.",
-            "To challenge the notion that ancient spelling variation lacked systematic underlying patterns.",
-            "To describe how regional phonetics influenced the evolution of modern spelling conventions."
-          ],
-          correctAnswer: 2,
-          explanation: "The text starts by noting the variability and that some scholars thought it was 'entirely arbitrary', then introduces the contrast ('However...') showing systematic regional phonetic patterns. This directly challenges the notion of arbitrariness.",
-          category: "RW",
-          topic: subtopicId,
-          section: "RW"
-        },
-        {
-          id: `${subtopicId}-q2`,
-          difficulty: "Easy",
-          passage: "Though modern consumer society frequently associates leisure with passive relaxation, historical records suggest that classical philosophers viewed self-directed intellectual inquiry as the highest and most active form of ___.",
-          question: "Which choice completes the text with the most logical and precise word?",
-          options: ["leisure", "exertion", "subjugation", "procrastination"],
-          correctAnswer: 0,
-          explanation: "The passage sets up a contrast between 'modern associates leisure with passive relaxation' and 'classical philosophers viewed self-directed intellectual inquiry as the highest and most active form of [leisure]'.",
-          category: "RW",
-          topic: subtopicId,
-          section: "RW"
-        },
-        {
-          id: `${subtopicId}-q3`,
-          difficulty: "Hard",
-          passage: "The expansion of the Roman Empire created vast commercial networks that connected distant provinces. Olive oil from Hispania, grain from Egypt, and wool from Britannia were shipped regularly across the Mediterranean Sea. ___ these goods were not merely distributed to wealthy elites; they also supplied urban markets, significantly altering the dietary habits and daily life of ordinary Roman citizens.",
-          question: "Which choice completes the text with the most logical transition?",
-          options: ["Crucially,", "In contrast,", "Instead,", "Likewise,"],
-          correctAnswer: 0,
-          explanation: "'Crucially' is the correct choice because it adds an important, high-impact detail about the distribution of goods beyond just the existence of commercial networks.",
-          category: "RW",
-          topic: subtopicId,
-          section: "RW"
-        }
-      ];
+  // Fetch questions from Supabase for the selected subtopic
+  const loadQuestionsForSubtopic = async (subtopicId: string, isMath: boolean): Promise<any[]> => {
+    const section = isMath ? "Math" : "RW";
+    // TODO: Pass subtopicId for filtering once real column values are mapped
+    const questions = await fetchPracticeQuestions(section, {
+      subtopic: subtopicId,
+      limit: 10,
+    });
+    return questions;
+  };
+
+  const startPracticeForSubtopic = async (subtopic: SubtopicInfo) => {
+    setCurrentSubtopic(subtopic);
+    setQuestionsLoading(true);
+    setQuestionsError(null);
+    try {
+      const loaded = await loadQuestionsForSubtopic(subtopic.id, selectedSection === 'Math');
+      if (loaded.length === 0) {
+        setQuestionsError("No questions found for this topic. Please try another.");
+        setQuestionsLoading(false);
+        return;
+      }
+      setQuestions(loaded);
+      setPhase("quiz");
+      setCurrentIdx(0);
+      setElapsed(0);
+      setSessionAnswers({});
+      setAnswerState(null);
+    } catch (err: any) {
+      console.error("Failed to load questions:", err);
+      setQuestionsError(err?.message || "Failed to load questions. Please try again.");
+    } finally {
+      setQuestionsLoading(false);
     }
   };
 
-  const startPracticeForSubtopic = (subtopic: SubtopicInfo) => {
-    setCurrentSubtopic(subtopic);
-    const generated = generateQuestionsForSubtopic(subtopic.id, selectedSection === 'Math');
-    setQuestions(generated);
-    setPhase("quiz");
-    setCurrentIdx(0);
-    setElapsed(0);
-    setSessionAnswers({});
-    setAnswerState(null);
-  };
-
-  const startPracticeAll = () => {
+  const startPracticeAll = async () => {
     const list = selectedSection === 'Math' ? mathProgress : rwProgress;
     const allSubtopics = list.flatMap(d => d.subtopics);
     const randomSub = allSubtopics[Math.floor(Math.random() * allSubtopics.length)];
-    startPracticeForSubtopic(randomSub);
+    await startPracticeForSubtopic(randomSub);
   };
 
   const handleAnswerSelection = (idx: number) => {
@@ -444,6 +384,19 @@ export default function SATPractice() {
               </Button>
             </div>
 
+            {/* Loading / Error Overlay */}
+            {questionsLoading && (
+              <div className="glass-3d p-8 mb-12 flex items-center justify-center gap-4 border-indigo-500/10 bg-indigo-500/5">
+                <div className="w-6 h-6 border-2 border-indigo-400 border-t-transparent rounded-full animate-spin" />
+                <span className="text-sm font-bold text-white/60">Loading questions from database...</span>
+              </div>
+            )}
+            {questionsError && (
+              <div className="glass-3d p-8 mb-12 flex items-center justify-center gap-4 border-rose-500/10 bg-rose-500/5">
+                <span className="text-sm font-bold text-rose-400">{questionsError}</span>
+              </div>
+            )}
+
             {/* Blueprint Domains & Subtopic Listing */}
             <div className="space-y-12">
               {(selectedSection === 'Math' ? mathProgress : rwProgress).map((domain, i) => (
@@ -562,6 +515,15 @@ export default function SATPractice() {
               <div className="flex-1 overflow-hidden grid lg:grid-cols-2 gap-10">
                 {/* Left Prompt / Passage Column */}
                 <div className="glass-3d p-10 overflow-y-auto custom-scrollbar flex flex-col gap-8">
+                  {questions[currentIdx]?.imageUrl && (
+                    <div className="mb-6">
+                      <img
+                        src={questions[currentIdx].imageUrl}
+                        alt="Question visual"
+                        className="max-w-full rounded-2xl border border-white/10"
+                      />
+                    </div>
+                  )}
                   {questions[currentIdx]?.passage && (
                     <div className="p-8 bg-white/5 rounded-2xl border border-white/10">
                       <div className="flex items-center gap-2 mb-4 opacity-30">

@@ -17,7 +17,7 @@ import {
 } from "lucide-react";
 import { supabase } from "@/lib/supabase";
 import { calculateWeightedScore } from "@/lib/sat-logic";
-import { SAT_QUESTION_BANK } from "@/data/sat-question-bank";
+import { fetchDiagnosticQuestions, SATQuestion } from "@/lib/sat-questions-service";
 import katex from 'katex';
 import 'katex/dist/katex.min.css';
 
@@ -30,20 +30,27 @@ export default function SATDiagnostic() {
   const [results, setResults] = useState<any>(null);
   const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
-    // Generate a 20-question diagnostic from the bank
-    const diagQs: any[] = [];
-    
-    // Flatten all questions from all topics
-    Object.keys(SAT_QUESTION_BANK).forEach(topicId => {
-      diagQs.push(...SAT_QUESTION_BANK[topicId]);
-    });
+  const [fetchError, setFetchError] = useState<string | null>(null);
 
-    // Shuffle and pick 20
-    const shuffled = [...diagQs].sort(() => 0.5 - Math.random()).slice(0, 20);
-    setQuestions(shuffled);
-    setAnswers(new Array(shuffled.length).fill(-1));
-    setLoading(false);
+  useEffect(() => {
+    const loadQuestions = async () => {
+      try {
+        const fetched = await fetchDiagnosticQuestions(20);
+        if (fetched.length === 0) {
+          setFetchError("No questions available. Please check your database.");
+          setLoading(false);
+          return;
+        }
+        setQuestions(fetched);
+        setAnswers(new Array(fetched.length).fill(-1));
+      } catch (err: any) {
+        console.error("Failed to fetch diagnostic questions:", err);
+        setFetchError(err?.message || "Failed to load questions. Please try again later.");
+      } finally {
+        setLoading(false);
+      }
+    };
+    loadQuestions();
   }, []);
 
   const handleSelect = (idx: number) => {
@@ -70,7 +77,7 @@ export default function SATDiagnostic() {
     const formatted = questions.map((q, i) => ({
       correct: answers?.[i] === q?.correctAnswer,
       difficulty: q?.difficulty ? (q.difficulty.charAt(0).toUpperCase() + q.difficulty.slice(1)) : 'Medium',
-      section: (q?.topic === 'linear_equations' || q?.topic === 'systems_equations' || q?.topic === 'quadratic' ? 'Math' : 'RW') as 'Math' | 'RW'
+      section: (q?.section === 'Math' ? 'Math' : 'RW') as 'Math' | 'RW'
     }));
 
     const score = calculateWeightedScore(formatted);
@@ -110,7 +117,17 @@ export default function SATDiagnostic() {
     }
   };
 
-  if (loading) return <Layout><div className="min-h-screen bg-black flex items-center justify-center"><Brain className="w-12 h-12 animate-spin text-indigo-500" /></div></Layout>;
+  if (loading) return <Layout><div className="min-h-screen bg-black flex items-center justify-center flex-col gap-4"><Brain className="w-12 h-12 animate-spin text-indigo-500" /><p className="text-sm text-white/40 font-bold uppercase tracking-widest">Loading diagnostic...</p></div></Layout>;
+
+  if (fetchError) return (
+    <Layout>
+      <div className="min-h-screen bg-black flex items-center justify-center flex-col gap-6">
+        <AlertCircle className="w-12 h-12 text-rose-400" />
+        <p className="text-lg font-bold text-rose-400">{fetchError}</p>
+        <Button onClick={() => window.location.reload()} className="bg-white text-black font-black uppercase text-xs px-8 h-12 rounded-xl">Retry</Button>
+      </div>
+    </Layout>
+  );
 
   if (results) {
     return (
@@ -190,6 +207,11 @@ export default function SATDiagnostic() {
 
           <div className="grid lg:grid-cols-2 gap-12 flex-1 overflow-hidden">
             <div className="glass-3d p-12 overflow-y-auto custom-scrollbar flex flex-col gap-10">
+              {q?.imageUrl && (
+                <div className="mb-8">
+                  <img src={q.imageUrl} alt="Question visual" className="max-w-full rounded-3xl border border-white/5" />
+                </div>
+              )}
               {q?.passage && (
                 <div className="p-10 bg-white/[0.02] rounded-3xl border border-white/5 relative">
                   <div className="flex items-center gap-2 mb-6 opacity-20"><FileText className="w-4 h-4" /><span className="text-[9px] font-black uppercase tracking-widest">Instructional Context</span></div>

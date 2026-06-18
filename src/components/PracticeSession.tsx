@@ -10,7 +10,7 @@ import {
   BarChart3
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { SATQuestion } from "@/data/sat-question-bank";
+import { SATQuestion } from "@/lib/sat-questions-service";
 import katex from 'katex';
 import 'katex/dist/katex.min.css';
 import { saveSATAnswer } from "@/lib/progress-service";
@@ -100,6 +100,12 @@ export default function PracticeSession({ topic, questions, onComplete }: Practi
       </div>
 
       <div className="glass-3d p-12 border-white/5 relative overflow-hidden">
+         {currentQuestion.imageUrl && (
+            <div className="mb-8">
+              <img src={currentQuestion.imageUrl} alt="Question visual" className="max-w-full rounded-2xl border border-white/5" />
+            </div>
+         )}
+
          {currentQuestion.passage && (
             <div className="mb-12 p-10 bg-white/5 rounded-2xl border border-white/5 border-l-4 border-l-indigo-500">
                <p className="text-[9px] font-black uppercase tracking-widest text-indigo-400 mb-6">Reading Passage</p>
