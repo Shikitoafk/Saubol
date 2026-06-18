@@ -1,9 +1,9 @@
 import type { VercelRequest, VercelResponse } from "@vercel/node";
 import { supabase } from "../_lib/supabase";
 
-function mapMCQ(r: any) {
+function mapMCQRow(r: any, tablePrefix: string) {
   return {
-    id: `mcq-${r.id}`,
+    id: `${tablePrefix}-${r.id}`,
     question: r.question ?? "",
     optionA: r.option_a ?? "",
     optionB: r.option_b ?? "",
@@ -12,13 +12,15 @@ function mapMCQ(r: any) {
     correctAnswer: (r.correct_answer ?? "").trim().toUpperCase(),
     explanation: r.explanation ?? "",
     difficulty: r.difficulty ?? "Medium",
-    category: r.category ?? "",
-    section: r.section ?? "",
+    category: r.topic ?? r.section ?? "",
+    section: tablePrefix === "ebrw" ? "RW" : "Math",
     isFreeResponse: false,
+    imageUrl: r.image_url ?? undefined,
+    source: r.source ?? "",
   };
 }
 
-function mapOpen(r: any) {
+function mapOpenRow(r: any) {
   return {
     id: `open-${r.id}`,
     question: r.question ?? "",
@@ -29,9 +31,11 @@ function mapOpen(r: any) {
     correctAnswer: (r.correct_answer ?? "").trim(),
     explanation: r.explanation ?? "",
     difficulty: r.difficulty ?? "Medium",
-    category: r.category ?? "",
-    section: r.section ?? "",
+    category: r.topic ?? "",
+    section: "Math",
     isFreeResponse: true,
+    imageUrl: r.image_url ?? undefined,
+    source: r.source ?? "",
   };
 }
 
@@ -43,24 +47,44 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     const fetchOpen = type === "all" || type === "open";
     let questions: any[] = [];
 
+    // Map section names to canonical "RW" / "Math"
+    let canonicalSection = section;
+    if (section === "Reading & Writing" || section === "RW") {
+      canonicalSection = "RW";
+    }
+
     if (fetchMCQ) {
-      let q = supabase.from("SAT_MCQ").select("*");
-      if (difficulty && difficulty !== "All") q = q.eq("difficulty", difficulty);
-      if (category) q = q.eq("category", category);
-      if (section) q = q.eq("section", section);
-      const { data, error } = await q;
-      if (error) throw error;
-      questions = questions.concat((data ?? []).map(mapMCQ));
+      // 1. Fetch from EBRW_MCQ if not filtered to Math
+      if (!canonicalSection || canonicalSection === "RW") {
+        let q = supabase.from("EBRW_MCQ").select("*");
+        if (difficulty && difficulty !== "All") q = q.eq("difficulty", difficulty);
+        if (category) q = q.eq("section", category);
+        const { data, error } = await q;
+        if (error) throw error;
+        questions = questions.concat((data ?? []).map((r) => mapMCQRow(r, "ebrw")));
+      }
+
+      // 2. Fetch from Math_MCQ if not filtered to RW
+      if (!canonicalSection || canonicalSection === "Math") {
+        let q = supabase.from("Math_MCQ").select("*");
+        if (difficulty && difficulty !== "All") q = q.eq("difficulty", difficulty);
+        if (category) q = q.eq("topic", category);
+        const { data, error } = await q;
+        if (error) throw error;
+        questions = questions.concat((data ?? []).map((r) => mapMCQRow(r, "math")));
+      }
     }
 
     if (fetchOpen) {
-      let q = supabase.from("SAT_Open").select("*");
-      if (difficulty && difficulty !== "All") q = q.eq("difficulty", difficulty);
-      if (category) q = q.eq("category", category);
-      if (section) q = q.eq("section", section);
-      const { data, error } = await q;
-      if (error) throw error;
-      questions = questions.concat((data ?? []).map(mapOpen));
+      // 3. Fetch from Math_Open if not filtered to RW
+      if (!canonicalSection || canonicalSection === "Math") {
+        let q = supabase.from("Math_Open").select("*");
+        if (difficulty && difficulty !== "All") q = q.eq("difficulty", difficulty);
+        if (category) q = q.eq("topic", category);
+        const { data, error } = await q;
+        if (error) throw error;
+        questions = questions.concat((data ?? []).map(mapOpenRow));
+      }
     }
 
     res.json(questions);

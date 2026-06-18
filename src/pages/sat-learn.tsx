@@ -36,6 +36,9 @@ export default function SATLearn() {
     central_ideas: 0,
     grammar_boundaries: 0
   });
+  const [currentQuestions, setCurrentQuestions] = useState<SATQuestion[]>([]);
+  const [questionsLoading, setQuestionsLoading] = useState(false);
+  const [questionsError, setQuestionsError] = useState<string | null>(null);
 
   useEffect(() => {
     const fetchProgress = async () => {

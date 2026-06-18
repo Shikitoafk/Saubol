@@ -30,16 +30,35 @@ function buildMeta(rows: { section: string; category: string; difficulty: string
 
 export default async function handler(_req: VercelRequest, res: VercelResponse) {
   try {
-    const [mcqRes, openRes] = await Promise.all([
-      supabase.from("SAT_MCQ").select("section, category, difficulty"),
-      supabase.from("SAT_Open").select("section, category, difficulty"),
+    const [rwRes, mathRes, openRes] = await Promise.all([
+      supabase.from("EBRW_MCQ").select("section, difficulty"),
+      supabase.from("Math_MCQ").select("topic, difficulty"),
+      supabase.from("Math_Open").select("topic, difficulty"),
     ]);
 
-    if (mcqRes.error) throw mcqRes.error;
+    if (rwRes.error) throw rwRes.error;
+    if (mathRes.error) throw mathRes.error;
     if (openRes.error) throw openRes.error;
 
-    const mcqRows = mcqRes.data ?? [];
-    const openRows = openRes.data ?? [];
+    const rwRows = (rwRes.data ?? []).map((r) => ({
+      section: "Reading & Writing",
+      category: r.section ?? "General",
+      difficulty: r.difficulty ?? "Medium",
+    }));
+
+    const mathRows = (mathRes.data ?? []).map((r) => ({
+      section: "Math",
+      category: r.topic ?? "General",
+      difficulty: r.difficulty ?? "Medium",
+    }));
+
+    const openRows = (openRes.data ?? []).map((r) => ({
+      section: "Math",
+      category: r.topic ?? "General",
+      difficulty: r.difficulty ?? "Medium",
+    }));
+
+    const mcqRows = [...rwRows, ...mathRows];
 
     res.json({
       all: buildMeta([...mcqRows, ...openRows]),

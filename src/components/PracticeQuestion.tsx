@@ -151,7 +151,7 @@ export default function PracticeQuestion({
               <div className="space-y-4 pt-8 border-t border-white/5">
                  <h5 className="text-[9px] font-black uppercase text-white/20 tracking-widest mb-4">Strategic Error Analysis</h5>
                  <div className="grid md:grid-cols-2 gap-4">
-                    {question.wrongExplanations.map((msg, i) => (
+                    {question.wrongExplanations?.map((msg, i) => (
                        <div key={i} className="flex gap-3 p-4 bg-black/20 rounded-xl border border-white/5 opacity-60">
                           <Info className="w-3.5 h-3.5 text-[#444] shrink-0 mt-0.5" />
                           <p className="text-[11px] font-medium text-white/40 leading-relaxed italic">{msg}</p>
