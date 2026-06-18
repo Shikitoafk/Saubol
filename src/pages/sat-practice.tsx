@@ -26,6 +26,7 @@ import {
 } from "lucide-react";
 import { Layout } from "@/components/layout";
 import { Button } from "@/components/ui/button";
+import { ResizablePanelGroup, ResizablePanel, ResizableHandle } from "@/components/ui/resizable";
 import { supabase } from "@/lib/supabase";
 import { saveSATAnswer } from "@/lib/progress-service";
 import { fetchPracticeQuestions, SATQuestion } from "@/lib/sat-questions-service";
@@ -456,6 +457,35 @@ export default function SATPractice() {
             border-color: #4f46e5 !important;
             outline: none !important;
           }
+
+          /* KaTeX overrides */
+          .katex {
+            font-size: 1.1em !important;
+            color: inherit !important;
+            line-height: 1.25 !important;
+            display: inline-block;
+          }
+          .katex-display {
+            margin: 1.2em 0 !important;
+            overflow-x: auto;
+            overflow-y: hidden;
+            padding: 0.5rem 0;
+            color: inherit !important;
+          }
+          .katex-html {
+            color: inherit !important;
+          }
+
+          /* Light theme overrides for options circular labels */
+          .light-theme .group .rounded-full {
+            border-color: rgba(99, 102, 241, 0.25) !important;
+            color: #334155 !important;
+          }
+          .light-theme .group:hover .rounded-full {
+            border-color: #4f46e5 !important;
+            color: #4f46e5 !important;
+            background-color: rgba(99, 102, 241, 0.05) !important;
+          }
         `}</style>
         <div className="bg-vignette" />
         <div className="bg-sphere top-[-20%] right-[-10%] opacity-35" style={{ background: 'radial-gradient(circle, rgba(139, 92, 246, 0.08) 0%, transparent 70%)' }} />
@@ -663,9 +693,9 @@ export default function SATPractice() {
               </div>
             )}
 
-            <div className="max-w-[1600px] mx-auto w-full px-10 pt-24 pb-6 relative z-10 flex flex-col flex-1">
+            <div className="max-w-[1600px] mx-auto w-full px-10 pt-24 pb-6 relative z-10 flex flex-col flex-1 overflow-hidden">
               {/* Diagnostic Top bar */}
-              <div className="flex items-center justify-between mb-8 shrink-0">
+              <div className="flex items-center justify-between mb-6 shrink-0">
                 <Button 
                   variant="ghost" 
                   onClick={() => setPhase("subtopics")} 
@@ -720,139 +750,364 @@ export default function SATPractice() {
               </div>
 
               {/* Main Content Arena */}
-              <div className="flex-1 overflow-hidden grid lg:grid-cols-2 gap-10">
-                {/* Left Prompt / Passage Column */}
-                <div className="glass-3d p-10 overflow-y-auto custom-scrollbar flex flex-col gap-8">
-                  {questions[currentIdx]?.imageUrl && (
-                    <div className="mb-6">
-                      <img
-                        src={questions[currentIdx].imageUrl}
-                        alt="Question visual"
-                        className="max-w-full rounded-2xl border border-white/10"
-                      />
-                    </div>
-                  )}
-                  {questions[currentIdx]?.passage && (
-                    <div className="p-8 bg-white/5 rounded-2xl border border-white/10">
-                      <div className="flex items-center gap-2 mb-4 opacity-30">
-                        <FileText className="w-4 h-4" />
-                        <span className="text-[9px] font-black uppercase tracking-widest">Directions / Passage</span>
+              {questions[currentIdx]?.passage ? (
+                <div className="flex-1 overflow-hidden mb-6 flex">
+                  <ResizablePanelGroup direction="horizontal" className="flex-1 w-full min-h-0">
+                    <ResizablePanel defaultSize={50} minSize={25} maxSize={75} className="flex flex-col min-h-0">
+                      <div className="glass-3d p-10 overflow-y-auto custom-scrollbar flex flex-col gap-6 h-full mr-2">
+                        <div className="flex items-center gap-2 mb-2 opacity-30">
+                          <FileText className="w-4 h-4" />
+                          <span className="text-[9px] font-black uppercase tracking-widest">Directions / Passage</span>
+                        </div>
+                        <p className="text-base leading-relaxed font-medium text-white/80">{questions[currentIdx].passage}</p>
                       </div>
-                      <p className="text-base leading-relaxed font-medium text-white/80">{questions[currentIdx].passage}</p>
-                    </div>
-                  )}
-                  <div 
-                    className="text-xl font-black leading-tight tracking-tight" 
-                    dangerouslySetInnerHTML={{ __html: renderKatexText(questions[currentIdx]?.question || "") }} 
-                  />
-                </div>
+                    </ResizablePanel>
 
-                {/* Right Options Column */}
-                <div className="flex flex-col gap-4 overflow-y-auto custom-scrollbar">
-                  {questions[currentIdx]?.isFreeResponse ? (
-                    <div className="glass-3d p-10 flex flex-col gap-6">
-                      <div className="flex items-center gap-3">
-                        <FileText className="w-5 h-5 text-indigo-400" />
-                        <h3 className="text-sm font-black uppercase tracking-widest text-indigo-400">Student-Produced Response</h3>
-                      </div>
-                      <p className="text-xs text-white/50 leading-relaxed">
-                        Enter your answer in the box below. You can enter integers, decimals, or fractions.
-                      </p>
-                      <div className="flex flex-col sm:flex-row gap-4">
-                        <input
-                          type="text"
-                          value={freeResponseInput}
-                          onChange={(e) => setFreeResponseInput(e.target.value)}
-                          disabled={!!answerState}
-                          placeholder="Type your answer here..."
-                          className="flex-1 px-6 h-16 bg-white/5 border border-white/10 rounded-xl text-lg font-bold text-white placeholder-white/20 focus:outline-none focus:border-indigo-500 transition-colors disabled:opacity-50"
-                          onKeyDown={(e) => {
-                            if (e.key === 'Enter') {
-                              handleFreeResponseSubmit();
-                            }
-                          }}
-                        />
-                        <Button
-                          onClick={handleFreeResponseSubmit}
-                          disabled={!!answerState || !freeResponseInput.trim()}
-                          className="bg-white text-black hover:bg-gray-100 disabled:opacity-50 h-16 px-10 rounded-xl font-black uppercase text-xs tracking-widest"
-                        >
-                          Confirm
-                        </Button>
-                      </div>
+                    <ResizableHandle className="w-[6px] hover:bg-indigo-500/50 bg-white/10 transition-colors cursor-col-resize rounded-full" />
 
-                      {answerState && (
-                        <div className={`mt-4 p-6 rounded-xl border flex items-center gap-4 ${
-                          answerState.correct
-                            ? 'bg-emerald-500/10 border-emerald-500/30 text-emerald-400'
-                            : 'bg-rose-500/10 border-rose-500/30 text-rose-400'
-                        }`}>
-                          {answerState.correct ? (
-                            <>
-                              <CheckCircle2 className="w-6 h-6 shrink-0" />
-                              <div>
-                                <p className="text-sm font-black uppercase tracking-widest">Correct Answer</p>
-                                <p className="text-xs opacity-80">Your response "{answerState.input}" is correct.</p>
+                    <ResizablePanel defaultSize={50} minSize={25} maxSize={75} className="flex flex-col min-h-0">
+                      <div className="flex flex-col gap-4 overflow-y-auto custom-scrollbar h-full pl-2">
+                        <div className="glass-3d p-8 flex flex-col gap-6 mb-2">
+                          {questions[currentIdx]?.imageUrl && (
+                            <div className="my-2 p-6 bg-white rounded-2xl border border-slate-200 flex justify-center items-center max-w-md mx-auto shadow-sm">
+                              <img
+                                src={questions[currentIdx].imageUrl}
+                                alt="Question visual"
+                                className="max-h-[260px] object-contain"
+                              />
+                            </div>
+                          )}
+                          <div 
+                            className="text-lg font-bold leading-relaxed tracking-tight" 
+                            dangerouslySetInnerHTML={{ __html: renderKatexText(questions[currentIdx]?.question || "") }} 
+                          />
+                        </div>
+
+                        {/* Options List */}
+                        <div className="flex flex-col gap-4">
+                          {questions[currentIdx]?.isFreeResponse ? (
+                            <div className="glass-3d p-10 flex flex-col gap-6">
+                              <div className="flex items-center gap-3">
+                                <FileText className="w-5 h-5 text-indigo-400" />
+                                <h3 className="text-sm font-black uppercase tracking-widest text-indigo-400">Student-Produced Response</h3>
                               </div>
-                            </>
+                              <p className="text-xs text-white/50 leading-relaxed">
+                                Enter your answer in the box below. You can enter integers, decimals, or fractions.
+                              </p>
+                              <div className="flex flex-col sm:flex-row gap-4">
+                                <input
+                                  type="text"
+                                  value={freeResponseInput}
+                                  onChange={(e) => setFreeResponseInput(e.target.value)}
+                                  disabled={!!answerState}
+                                  placeholder="Type your answer here..."
+                                  className="flex-1 px-6 h-16 bg-white/5 border border-white/10 rounded-xl text-lg font-bold text-white placeholder-white/20 focus:outline-none focus:border-indigo-500 transition-colors disabled:opacity-50"
+                                  onKeyDown={(e) => {
+                                    if (e.key === 'Enter') {
+                                      handleFreeResponseSubmit();
+                                    }
+                                  }}
+                                />
+                                <Button
+                                  onClick={handleFreeResponseSubmit}
+                                  disabled={!!answerState || !freeResponseInput.trim()}
+                                  className="bg-white text-black hover:bg-gray-100 disabled:opacity-50 h-16 px-10 rounded-xl font-black uppercase text-xs tracking-widest"
+                                >
+                                  Confirm
+                                </Button>
+                              </div>
+
+                              {answerState && (
+                                <div className={`mt-4 p-6 rounded-xl border flex items-center gap-4 ${
+                                  answerState.correct
+                                    ? 'bg-emerald-500/10 border-emerald-500/30 text-emerald-400'
+                                    : 'bg-rose-500/10 border-rose-500/30 text-rose-400'
+                                }`}>
+                                  {answerState.correct ? (
+                                    <>
+                                      <CheckCircle2 className="w-6 h-6 shrink-0" />
+                                      <div>
+                                        <p className="text-sm font-black uppercase tracking-widest">Correct Answer</p>
+                                        <p className="text-xs opacity-80">Your response "{answerState.input}" is correct.</p>
+                                      </div>
+                                    </>
+                                  ) : (
+                                    <>
+                                      <AlertCircle className="w-6 h-6 shrink-0" />
+                                      <div>
+                                        <p className="text-sm font-black uppercase tracking-widest">Incorrect Answer</p>
+                                        <p className="text-xs opacity-80">Correct answer is: <strong className="font-bold">{questions[currentIdx]?.correctAnswerText}</strong></p>
+                                      </div>
+                                    </>
+                                  )}
+                                </div>
+                              )}
+                            </div>
                           ) : (
-                            <>
-                              <AlertCircle className="w-6 h-6 shrink-0" />
-                              <div>
-                                <p className="text-sm font-black uppercase tracking-widest">Incorrect Answer</p>
-                                <p className="text-xs opacity-80">Correct answer is: <strong className="font-bold">{questions[currentIdx]?.correctAnswerText}</strong></p>
-                              </div>
-                            </>
+                            questions[currentIdx]?.options?.map((opt: string, i: number) => {
+                              const letter = String.fromCharCode(65 + i);
+                              const isSelected = answerState?.selected === i;
+                              const isCorrectOption = i === questions[currentIdx].correctAnswer;
+                              const isWrongSelected = isSelected && !answerState.correct;
+                              
+                              let btnClass = "glass-3d p-6 text-left transition-all flex items-center gap-6 border-white/10 hover:border-white/20 hover:bg-white/[0.02]";
+                              let circleClass = "w-10 h-10 rounded-full flex items-center justify-center border border-white/25 text-sm font-bold transition-all";
+                              
+                              if (answerState) {
+                                if (isCorrectOption) {
+                                  btnClass = "glass-3d p-6 text-left transition-all flex items-center gap-6 border-emerald-500 bg-emerald-500/10 text-emerald-400";
+                                  circleClass = "w-10 h-10 rounded-full flex items-center justify-center bg-emerald-500 text-white text-sm font-bold border-emerald-500";
+                                } else if (isWrongSelected) {
+                                  btnClass = "glass-3d p-6 text-left transition-all flex items-center gap-6 border-rose-500 bg-rose-500/10 text-rose-400";
+                                  circleClass = "w-10 h-10 rounded-full flex items-center justify-center bg-rose-500 text-white text-sm font-bold border-rose-500";
+                                } else {
+                                  btnClass = "glass-3d p-6 text-left transition-all flex items-center gap-6 opacity-30 border-white/5 cursor-default";
+                                  circleClass = "w-10 h-10 rounded-full flex items-center justify-center border border-white/10 text-sm font-bold text-white/30";
+                                }
+                              } else {
+                                btnClass = "glass-3d p-6 text-left transition-all flex items-center gap-6 border-white/10 hover:border-indigo-500/40 hover:bg-white/5 active:scale-[0.99]";
+                                circleClass = "w-10 h-10 rounded-full flex items-center justify-center border border-white/20 text-sm font-bold text-white/80 group-hover:border-indigo-400 group-hover:text-indigo-400 group-hover:bg-indigo-500/5";
+                              }
+
+                              return (
+                                <button
+                                  key={i}
+                                  onClick={() => handleAnswerSelection(i)}
+                                  className={`group ${btnClass}`}
+                                >
+                                  <div className={circleClass}>{letter}</div>
+                                  <div 
+                                    className="text-base font-medium flex-1" 
+                                    dangerouslySetInnerHTML={{ __html: renderKatexText(opt) }} 
+                                  />
+                                </button>
+                              );
+                            })
                           )}
                         </div>
+
+                        <AnimatePresence>
+                          {answerState && (
+                            <motion.div 
+                              initial={{ opacity: 0, y: 20 }} 
+                              animate={{ opacity: 1, y: 0 }} 
+                              className="glass-3d p-10 border-indigo-500/20 bg-indigo-500/5 mt-2"
+                            >
+                              <div className="flex items-center gap-3 mb-6">
+                                <Sparkles className="w-4 h-4 text-indigo-400" />
+                                <h4 className="text-[10px] font-black uppercase tracking-widest text-indigo-400">EXPLANATION</h4>
+                              </div>
+                              <div 
+                                className="text-white/70 font-medium text-sm block leading-relaxed mb-10" 
+                                dangerouslySetInnerHTML={{ __html: renderKatexText(questions[currentIdx]?.explanation || "") }} 
+                              />
+                              <Button 
+                                onClick={nextQuestion} 
+                                className="bg-white text-black hover:bg-gray-100 w-full h-16 font-black uppercase text-xs rounded-xl flex items-center justify-center gap-2"
+                              >
+                                Next Question <ChevronRight className="w-4 h-4" />
+                              </Button>
+                            </motion.div>
+                          )}
+                        </AnimatePresence>
+                      </div>
+                    </ResizablePanel>
+                  </ResizablePanelGroup>
+                </div>
+              ) : (
+                <div className="flex-1 overflow-hidden grid lg:grid-cols-2 gap-8 mb-6">
+                  {/* Left Pane (Question text/graphics) */}
+                  <div className="glass-3d p-10 overflow-y-auto custom-scrollbar flex flex-col gap-6">
+                    {questions[currentIdx]?.imageUrl && (
+                      <div className="my-2 p-6 bg-white rounded-2xl border border-slate-200 flex justify-center items-center max-w-md mx-auto shadow-sm">
+                        <img
+                          src={questions[currentIdx].imageUrl}
+                          alt="Question visual"
+                          className="max-h-[260px] object-contain"
+                        />
+                      </div>
+                    )}
+                    <div className="flex items-center gap-2 mb-2 opacity-30">
+                      <Brain className="w-4 h-4" />
+                      <span className="text-[9px] font-black uppercase tracking-widest">Question</span>
+                    </div>
+                    <div 
+                      className="text-lg font-bold leading-relaxed tracking-tight" 
+                      dangerouslySetInnerHTML={{ __html: renderKatexText(questions[currentIdx]?.question || "") }} 
+                    />
+                  </div>
+
+                  {/* Right Pane (Options only) */}
+                  <div className="flex flex-col gap-4 overflow-y-auto custom-scrollbar">
+                    {/* Options List */}
+                    <div className="flex flex-col gap-4">
+                      {questions[currentIdx]?.isFreeResponse ? (
+                        <div className="glass-3d p-10 flex flex-col gap-6">
+                          <div className="flex items-center gap-3">
+                            <FileText className="w-5 h-5 text-indigo-400" />
+                            <h3 className="text-sm font-black uppercase tracking-widest text-indigo-400">Student-Produced Response</h3>
+                          </div>
+                          <p className="text-xs text-white/50 leading-relaxed">
+                            Enter your answer in the box below. You can enter integers, decimals, or fractions.
+                          </p>
+                          <div className="flex flex-col sm:flex-row gap-4">
+                            <input
+                              type="text"
+                              value={freeResponseInput}
+                              onChange={(e) => setFreeResponseInput(e.target.value)}
+                              disabled={!!answerState}
+                              placeholder="Type your answer here..."
+                              className="flex-1 px-6 h-16 bg-white/5 border border-white/10 rounded-xl text-lg font-bold text-white placeholder-white/20 focus:outline-none focus:border-indigo-500 transition-colors disabled:opacity-50"
+                              onKeyDown={(e) => {
+                                if (e.key === 'Enter') {
+                                  handleFreeResponseSubmit();
+                                }
+                              }}
+                            />
+                            <Button
+                              onClick={handleFreeResponseSubmit}
+                              disabled={!!answerState || !freeResponseInput.trim()}
+                              className="bg-white text-black hover:bg-gray-100 disabled:opacity-50 h-16 px-10 rounded-xl font-black uppercase text-xs tracking-widest"
+                            >
+                              Confirm
+                            </Button>
+                          </div>
+
+                          {answerState && (
+                            <div className={`mt-4 p-6 rounded-xl border flex items-center gap-4 ${
+                              answerState.correct
+                                ? 'bg-emerald-500/10 border-emerald-500/30 text-emerald-400'
+                                : 'bg-rose-500/10 border-rose-500/30 text-rose-400'
+                            }`}>
+                              {answerState.correct ? (
+                                <>
+                                  <CheckCircle2 className="w-6 h-6 shrink-0" />
+                                  <div>
+                                    <p className="text-sm font-black uppercase tracking-widest">Correct Answer</p>
+                                    <p className="text-xs opacity-80">Your response "{answerState.input}" is correct.</p>
+                                  </div>
+                                </>
+                              ) : (
+                                <>
+                                  <AlertCircle className="w-6 h-6 shrink-0" />
+                                  <div>
+                                    <p className="text-sm font-black uppercase tracking-widest">Incorrect Answer</p>
+                                    <p className="text-xs opacity-80">Correct answer is: <strong className="font-bold">{questions[currentIdx]?.correctAnswerText}</strong></p>
+                                  </div>
+                                </>
+                              )}
+                            </div>
+                          )}
+                        </div>
+                      ) : (
+                        questions[currentIdx]?.options?.map((opt: string, i: number) => {
+                          const letter = String.fromCharCode(65 + i);
+                          const isSelected = answerState?.selected === i;
+                          const isCorrectOption = i === questions[currentIdx].correctAnswer;
+                          const isWrongSelected = isSelected && !answerState.correct;
+                          
+                          let btnClass = "glass-3d p-6 text-left transition-all flex items-center gap-6 border-white/10 hover:border-white/20 hover:bg-white/[0.02]";
+                          let circleClass = "w-10 h-10 rounded-full flex items-center justify-center border border-white/25 text-sm font-bold transition-all";
+                          
+                          if (answerState) {
+                            if (isCorrectOption) {
+                              btnClass = "glass-3d p-6 text-left transition-all flex items-center gap-6 border-emerald-500 bg-emerald-500/10 text-emerald-400";
+                              circleClass = "w-10 h-10 rounded-full flex items-center justify-center bg-emerald-500 text-white text-sm font-bold border-emerald-500";
+                            } else if (isWrongSelected) {
+                              btnClass = "glass-3d p-6 text-left transition-all flex items-center gap-6 border-rose-500 bg-rose-500/10 text-rose-400";
+                              circleClass = "w-10 h-10 rounded-full flex items-center justify-center bg-rose-500 text-white text-sm font-bold border-rose-500";
+                            } else {
+                              btnClass = "glass-3d p-6 text-left transition-all flex items-center gap-6 opacity-30 border-white/5 cursor-default";
+                              circleClass = "w-10 h-10 rounded-full flex items-center justify-center border border-white/10 text-sm font-bold text-white/30";
+                            }
+                          } else {
+                            btnClass = "glass-3d p-6 text-left transition-all flex items-center gap-6 border-white/10 hover:border-indigo-500/40 hover:bg-white/5 active:scale-[0.99]";
+                            circleClass = "w-10 h-10 rounded-full flex items-center justify-center border border-white/20 text-sm font-bold text-white/80 group-hover:border-indigo-400 group-hover:text-indigo-400 group-hover:bg-indigo-500/5";
+                          }
+
+                          return (
+                            <button
+                              key={i}
+                              onClick={() => handleAnswerSelection(i)}
+                              className={`group ${btnClass}`}
+                            >
+                              <div className={circleClass}>{letter}</div>
+                              <div 
+                                className="text-base font-medium flex-1" 
+                                dangerouslySetInnerHTML={{ __html: renderKatexText(opt) }} 
+                              />
+                            </button>
+                          );
+                        })
                       )}
                     </div>
-                  ) : (
-                    questions[currentIdx]?.options?.map((opt: string, i: number) => (
-                      <button
-                        key={i}
-                        onClick={() => handleAnswerSelection(i)}
-                        className={`glass-3d p-8 text-left transition-all ${
-                          answerState 
-                            ? (i === questions[currentIdx].correctAnswer 
-                              ? 'bg-emerald-500/10 border-emerald-500/30 text-emerald-400' 
-                              : (answerState.selected === i ? 'bg-rose-500/10 border-rose-500/30 text-rose-400' : 'opacity-20')) 
-                            : 'bg-white/5 hover:bg-white/10 hover:translate-x-2'
-                        }`}
-                      >
-                        <div className="flex items-center gap-6">
-                          <div className="w-10 h-10 rounded-xl bg-white/5 flex items-center justify-center border border-white/10 font-black text-sm">{String.fromCharCode(65 + i)}</div>
-                          <div className="text-base font-bold" dangerouslySetInnerHTML={{ __html: renderKatexText(opt) }} />
-                        </div>
-                      </button>
-                    ))
-                  )}
 
-                  <AnimatePresence>
-                    {answerState && (
-                      <motion.div 
-                        initial={{ opacity: 0, y: 20 }} 
-                        animate={{ opacity: 1, y: 0 }} 
-                        className="glass-3d p-10 border-indigo-500/20 bg-indigo-500/5 mt-6"
-                      >
-                        <div className="flex items-center gap-3 mb-6">
-                          <Sparkles className="w-4 h-4 text-indigo-400" />
-                          <h4 className="text-[10px] font-black uppercase tracking-widest text-indigo-400">EXPLANATION</h4>
-                        </div>
-                        <div 
-                          className="text-white/70 font-medium text-sm block leading-relaxed mb-10" 
-                          dangerouslySetInnerHTML={{ __html: renderKatexText(questions[currentIdx]?.explanation || "") }} 
-                        />
-                        <Button 
-                          onClick={nextQuestion} 
-                          className="bg-white text-black hover:bg-gray-100 w-full h-16 font-black uppercase text-xs rounded-xl flex items-center justify-center gap-2"
+                    <AnimatePresence>
+                      {answerState && (
+                        <motion.div 
+                          initial={{ opacity: 0, y: 20 }} 
+                          animate={{ opacity: 1, y: 0 }} 
+                          className="glass-3d p-10 border-indigo-500/20 bg-indigo-500/5 mt-2"
                         >
-                          Next Question <ChevronRight className="w-4 h-4" />
-                        </Button>
-                      </motion.div>
-                    )}
-                  </AnimatePresence>
+                          <div className="flex items-center gap-3 mb-6">
+                            <Sparkles className="w-4 h-4 text-indigo-400" />
+                            <h4 className="text-[10px] font-black uppercase tracking-widest text-indigo-400">EXPLANATION</h4>
+                          </div>
+                          <div 
+                            className="text-white/70 font-medium text-sm block leading-relaxed mb-10" 
+                            dangerouslySetInnerHTML={{ __html: renderKatexText(questions[currentIdx]?.explanation || "") }} 
+                          />
+                          <Button 
+                            onClick={nextQuestion} 
+                            className="bg-white text-black hover:bg-gray-100 w-full h-16 font-black uppercase text-xs rounded-xl flex items-center justify-center gap-2"
+                          >
+                            Next Question <ChevronRight className="w-4 h-4" />
+                          </Button>
+                        </motion.div>
+                      )}
+                    </AnimatePresence>
+                  </div>
                 </div>
+              )}
+
+              {/* Bottom Navigation Bar */}
+              <div className="mt-auto pt-6 border-t border-white/10 flex items-center justify-between shrink-0">
+                <Button
+                  onClick={() => {
+                    if (currentIdx > 0) {
+                      setCurrentIdx(prev => prev - 1);
+                      setAnswerState(null);
+                      setFreeResponseInput("");
+                    }
+                  }}
+                  disabled={currentIdx === 0}
+                  variant="ghost"
+                  className="bg-white/5 border border-white/10 text-white hover:bg-white/10 px-8 h-14 rounded-xl font-black uppercase text-[10px] tracking-widest flex items-center gap-2 disabled:opacity-35"
+                >
+                  <ChevronLeft className="w-4 h-4" /> Previous
+                </Button>
+
+                <div className="bg-white/5 border border-white/10 rounded-xl px-6 h-14 flex items-center justify-center font-bold text-sm">
+                  Question {currentIdx + 1} of {questions.length}
+                </div>
+
+                <Button
+                  onClick={() => {
+                    if (currentIdx < questions.length - 1) {
+                      setCurrentIdx(prev => prev + 1);
+                      setAnswerState(null);
+                      setFreeResponseInput("");
+                    } else {
+                      // loop back
+                      setCurrentIdx(0);
+                      setAnswerState(null);
+                      setFreeResponseInput("");
+                    }
+                  }}
+                  className="bg-white text-black hover:bg-gray-100 px-8 h-14 rounded-xl font-black uppercase text-[10px] tracking-widest flex items-center gap-2"
+                >
+                  Next <ChevronRight className="w-4 h-4" />
+                </Button>
               </div>
             </div>
           </div>
