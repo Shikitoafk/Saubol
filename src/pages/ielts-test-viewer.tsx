@@ -635,12 +635,24 @@ const IELTSTestViewer = () => {
 
   // Handle standard listening/reading iframe loading
   let testUrl: string;
-  const cambridgeMatch = /^cambridge-ielts-(\d+)-academic-test-([1-4])-(reading|listening)$/.exec(slug);
-  if (cambridgeMatch) {
-    const book = cambridgeMatch[1];
-    const testNum = cambridgeMatch[2];
-    const skill = cambridgeMatch[3];
-    testUrl = `/tests/cambridge/cambridge-ielts-${book}-academic/test-${testNum}/${skill === "reading" ? "Reading.html" : "Listening.html"}`;
+  const cambridgeShort = /^cambridge-(\d+)-test-([1-4])-(reading|listening|writing)$/.exec(slug);
+  const cambridgeLong = /^cambridge-ielts-(\d+)-academic-test-([1-4])-(reading|listening)$/.exec(slug);
+  const fileBySkill: Record<string, string> = {
+    reading: "Reading.html",
+    listening: "Listening.html",
+    writing: "Writing.html",
+  };
+
+  if (cambridgeShort) {
+    const book = cambridgeShort[1];
+    const testNum = cambridgeShort[2];
+    const skill = cambridgeShort[3];
+    testUrl = `/tests/cambridge/cambridge-${book}/test-${testNum}/${fileBySkill[skill] ?? "Reading.html"}`;
+  } else if (cambridgeLong) {
+    const book = cambridgeLong[1];
+    const testNum = cambridgeLong[2];
+    const skill = cambridgeLong[3];
+    testUrl = `/tests/cambridge/cambridge-ielts-${book}-academic/test-${testNum}/${fileBySkill[skill] ?? "Reading.html"}`;
   } else if (slug.startsWith("mock-")) {
     const parts = slug.split("-");
     testUrl = `/tests/mock-tests/mock-${parts[1]}/${parts[2] === "writing" ? "Writing.html" : parts[2] === "listening" ? "Listening.html" : "Reading.html"}`;
