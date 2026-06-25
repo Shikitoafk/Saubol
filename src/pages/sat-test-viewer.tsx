@@ -23,7 +23,7 @@ const SATTestViewer = () => {
     return null;
   }
 
-  const testUrl = `/tests/sat/${section}/${slug}.html`;
+  const testUrl = `/tests/sat/${section.toLowerCase()}/${slug.toLowerCase()}.html`;
 
   return (
     <div className="fixed inset-0 z-50 bg-[#000000] flex flex-col font-sans">
