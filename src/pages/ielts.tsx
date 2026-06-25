@@ -31,6 +31,12 @@ import {
 import { useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import { Badge } from "@/components/ui/badge";
+import {
+  getCambridgeBooks,
+  getCambridgeTests,
+  getPredictionTests,
+  type TestRegistryEntry,
+} from "@/data/test-registry";
 
 type Skill = "reading" | "listening" | "writing" | "speaking";
 type TestType = "predictions" | "cambridge";
@@ -43,7 +49,19 @@ interface TestItem {
   difficulty: Difficulty;
   questions: number;
   time: string;
-  slug?: string;
+  slug: string;
+}
+
+function registryToTestItem(entry: TestRegistryEntry): TestItem {
+  return {
+    id: entry.slug,
+    name: entry.title,
+    topic: entry.topic,
+    difficulty: entry.difficulty,
+    questions: entry.questions,
+    time: `${entry.timeMinutes} min`,
+    slug: entry.slug,
+  };
 }
 
 const skills: { id: Skill; icon: typeof BookOpen; title: string; description: string; color: string; bg: string }[] = [
@@ -58,53 +76,7 @@ const testTypes: { id: TestType; icon: typeof GraduationCap; title: string; desc
   { id: "cambridge", icon: GraduationCap, title: "CAMBRIDGE TESTS", description: "Official Cambridge IELTS books 1–19" },
 ];
 
-const CAMBRIDGE_ACADEMIC_BOOKS = [19, 18, 17, 16, 15, 14, 13, 12, 11, 10] as const;
-
-const listeningPredictionTests: TestItem[] = Array.from({ length: 60 }, (_, i) => ({
-  id: `L${i+1}`,
-  name: `Full Listening Test ${i+1}`,
-  topic: "Full Practice",
-  difficulty: "Hard",
-  questions: 40,
-  time: "40 min",
-  slug: `full-listening-${i+1}`
-}));
-
-const readingPredictionTests: TestItem[] = Array.from({ length: 190 }, (_, i) => ({
-  id: `${i+1}`,
-  name: `Reading Passage ${i+1}`,
-  topic: "Academic Training",
-  difficulty: "Medium",
-  questions: 13,
-  time: "20 min",
-  slug: `reading-${i+1}`
-}));
-
-const writingPredictionTests: TestItem[] = Array.from({ length: 4 }, (_, i) => ({
-  id: `W${i+1}`,
-  name: `Academic Writing Test ${i+1}`,
-  topic: "Task 1 & Task 2 Mock",
-  difficulty: "Medium",
-  questions: 2,
-  time: "60 min",
-  slug: `mock-${i+25}-writing`
-}));
-
-const speakingPredictionTests: TestItem[] = Array.from({ length: 5 }, (_, i) => ({
-  id: `S${i+1}`,
-  name: `Speaking Practice Topic ${i+1}`,
-  topic: [
-    "Work & Study",
-    "Hometown & Culture",
-    "Artificial Intelligence",
-    "Environmental Protection",
-    "Leisure & Hobbies"
-  ][i],
-  difficulty: ["Easy", "Medium", "Hard", "Medium", "Easy"][i] as Difficulty,
-  questions: 3,
-  time: "15 min",
-  slug: `speaking-topic-${i+1}`
-}));
+const CAMBRIDGE_ACADEMIC_BOOKS = getCambridgeBooks();
 
 const container = {
   hidden: { opacity: 0 },
@@ -134,11 +106,13 @@ const IELTSPrep = () => {
     if (!selectedSkill || !selectedType) return;
     setLoading(true);
     setTimeout(() => {
-      if (selectedSkill === "reading") setTests(readingPredictionTests);
-      else if (selectedSkill === "listening") setTests(listeningPredictionTests);
-      else if (selectedSkill === "writing") setTests(writingPredictionTests);
-      else if (selectedSkill === "speaking") setTests(speakingPredictionTests);
-      else setTests([]);
+      if (selectedType === "cambridge") {
+        setTests([]);
+      } else if (selectedSkill) {
+        setTests(getPredictionTests(selectedSkill).map(registryToTestItem));
+      } else {
+        setTests([]);
+      }
       setLoading(false);
     }, 400);
   }, [selectedSkill, selectedType]);
@@ -280,7 +254,12 @@ const IELTSPrep = () => {
                    ) : (
                      <div className="grid gap-8 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
                         {selectedType === 'cambridge' ? (
-                          CAMBRIDGE_ACADEMIC_BOOKS.map(book => (
+                          CAMBRIDGE_ACADEMIC_BOOKS.map(book => {
+                            const bookTests = selectedSkill
+                              ? getCambridgeTests(book, selectedSkill)
+                              : [];
+                            if (bookTests.length === 0) return null;
+                            return (
                             <div key={book} className="glass-3d p-10 border-white/5 hover:border-white/20 transition-all group">
                                <div className="flex justify-between items-center mb-10">
                                   <Badge className="bg-indigo-600/10 text-indigo-400 border-none font-black text-[9px] uppercase tracking-widest">Official Vol.</Badge>
@@ -288,14 +267,15 @@ const IELTSPrep = () => {
                                </div>
                                <h3 className="text-2xl font-black mb-10 tracking-tight italic uppercase">CAMBRIDGE {book}</h3>
                                <div className="flex flex-col gap-4">
-                                  {[1, 2, 3, 4].map(test => (
-                                    <Button key={test} variant="ghost" className="h-14 justify-between text-[11px] font-black uppercase tracking-[0.2em] text-[#444] hover:text-white border border-white/5 hover:border-white/10 rounded-xl transition-all hover:bg-white/5" onClick={() => nav(`/ielts/test/cambridge-${book}-test-${test}-${selectedSkill}`)}>
-                                      Test Module {test} <ArrowRight className="w-4 h-4 opacity-30 group-hover:opacity-100" />
+                                  {bookTests.map((test) => (
+                                    <Button key={test.slug} variant="ghost" className="h-14 justify-between text-[11px] font-black uppercase tracking-[0.2em] text-[#444] hover:text-white border border-white/5 hover:border-white/10 rounded-xl transition-all hover:bg-white/5" onClick={() => nav(`/ielts/test/${test.slug}`)}>
+                                      Test Module {test.testNum} <ArrowRight className="w-4 h-4 opacity-30 group-hover:opacity-100" />
                                     </Button>
                                   ))}
                                </div>
                             </div>
-                          ))
+                            );
+                          })
                         ) : (
                           tests.map((t, i) => (
                             <div key={t.id} className="glass-3d p-10 hover:border-white/20 transition-all group relative overflow-hidden">
@@ -312,7 +292,7 @@ const IELTSPrep = () => {
                                   <span className="flex items-center gap-2 group-hover:text-blue-400 transition-colors"><Clock className="w-4 h-4" /> {t.time}</span>
                                   <span className="flex items-center gap-2 group-hover:text-indigo-400 transition-colors"><HelpCircle className="w-4 h-4" /> {t.questions} Q</span>
                                </div>
-                               <Button className="w-full bg-white text-black hover:bg-gray-100 rounded-2xl font-black uppercase text-[11px] tracking-widest h-16 shadow-[0_10px_20px_rgba(255,255,255,0.1)] transition-all hover:scale-105" onClick={() => t.slug && nav(`/ielts/test/${t.slug}`)}>Initialize Test</Button>
+                               <Button className="w-full bg-white text-black hover:bg-gray-100 rounded-2xl font-black uppercase text-[11px] tracking-widest h-16 shadow-[0_10px_20px_rgba(255,255,255,0.1)] transition-all hover:scale-105" onClick={() => nav(`/ielts/test/${t.slug}`)}>Initialize Test</Button>
                             </div>
                           ))
                         )}

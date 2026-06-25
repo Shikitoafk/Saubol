@@ -2,6 +2,17 @@
   command = "npm run build"
   publish = "dist"
 
+# Serve static test assets before SPA fallback
+[[redirects]]
+  from = "/tests/*"
+  to = "/tests/:splat"
+  status = 200
+
+[[redirects]]
+  from = "/api/*"
+  to = "/.netlify/functions/:splat"
+  status = 200
+
 [[redirects]]
   from = "/*"
   to = "/index.html"

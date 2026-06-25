@@ -3,8 +3,11 @@ import { ChevronRight, ClipboardList } from "lucide-react";
 import { Layout } from "@/components/layout";
 import { Button } from "@/components/ui/button";
 
+import { getSatTests } from "@/data/test-registry";
+
 export default function SatPrep() {
   const nav = useNavigate();
+  const satModules = getSatTests();
 
   return (
     <Layout>
@@ -39,6 +42,28 @@ export default function SatPrep() {
             </Button>
           </div>
         </div>
+
+        {satModules.length > 0 && (
+          <div className="mx-auto mt-8 max-w-4xl">
+            <h3 className="mb-4 text-lg font-semibold text-card-foreground">Full Test Modules</h3>
+            <div className="grid gap-4 sm:grid-cols-2">
+              {satModules.map((mod) => {
+                const legacy = mod.legacySlugs[0] ?? mod.slug.split("-").slice(2).join("-");
+                const section = mod.skill;
+                return (
+                  <Button
+                    key={mod.slug}
+                    variant="outline"
+                    className="h-auto justify-start py-4 text-left"
+                    onClick={() => nav(`/sat/test/${section}/${legacy}`)}
+                  >
+                    <span className="font-semibold">{mod.title}</span>
+                  </Button>
+                );
+              })}
+            </div>
+          </div>
+        )}
       </section>
     </Layout>
   );

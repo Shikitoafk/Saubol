@@ -2,6 +2,7 @@ import { useParams, useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { ChevronLeft, Loader2, Target } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { resolveSatAsset } from "@/lib/resolve-test-asset";
 
 const SATTestViewer = () => {
   const { section, slug } = useParams<{ section: string; slug: string }>();
@@ -23,7 +24,11 @@ const SATTestViewer = () => {
     return null;
   }
 
-  const testUrl = `/tests/sat/${section.toLowerCase()}/${slug.toLowerCase()}.html`;
+  const testUrl = resolveSatAsset(section, slug);
+  if (!testUrl) {
+    navigate("/sat");
+    return null;
+  }
 
   return (
     <div className="fixed inset-0 z-50 bg-[#000000] flex flex-col font-sans">
