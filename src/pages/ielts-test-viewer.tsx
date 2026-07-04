@@ -18,6 +18,7 @@ import {
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { saveIELTSAnswer } from "@/lib/progress-service";
+import { resolveTestAsset } from "@/lib/resolve-test-asset";
 
 function calculateIELTSBand(correct: number, total: number = 40): number {
   if (total === 0) return 0;
@@ -633,21 +634,13 @@ const IELTSTestViewer = () => {
     );
   }
 
-  // Handle standard listening/reading iframe loading
-  let testUrl: string;
-  const cambridgeMatch = /^cambridge-ielts-(\d+)-academic-test-([1-4])-(reading|listening)$/.exec(slug);
-  if (cambridgeMatch) {
-    const book = cambridgeMatch[1];
-    const testNum = cambridgeMatch[2];
-    const skill = cambridgeMatch[3];
-    testUrl = `/tests/cambridge/cambridge-ielts-${book}-academic/test-${testNum}/${skill === "reading" ? "Reading.html" : "Listening.html"}`;
-  } else if (slug.startsWith("mock-")) {
-    const parts = slug.split("-");
-    testUrl = `/tests/mock-tests/mock-${parts[1]}/${parts[2] === "writing" ? "Writing.html" : parts[2] === "listening" ? "Listening.html" : "Reading.html"}`;
-  } else {
-    const isListening = slug.startsWith("listening-") || slug.startsWith("full-listening-");
-    testUrl = `/tests/${isListening ? "listening-predictions" : "reading-predictions"}/${slug}.html`;
+  // Handle standard listening/reading iframe loading via unified registry
+  const resolved = resolveTestAsset(slug);
+  if (!resolved || resolved.mode === "speaking") {
+    navigate("/ielts");
+    return null;
   }
+  const testUrl = resolved.url;
 
   return (
     <div className="fixed inset-0 z-50 bg-[#000000] flex flex-col font-sans">
