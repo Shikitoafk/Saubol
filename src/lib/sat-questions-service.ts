@@ -30,6 +30,7 @@ export interface SATQuestion {
   hasKaTeX?: boolean;
   wrongExplanations?: string[];
   source?: string;
+  rawCorrectAnswer?: string;
 }
 
 /* ------------------------------------------------------------------ */
@@ -65,6 +66,7 @@ function mapMCQRow(row: any, tablePrefix: string): SATQuestion {
     isFreeResponse: false,
     hasKaTeX: false,
     source: row.source ?? "",
+    rawCorrectAnswer: row.correct_answer ?? "",
   };
 }
 
@@ -86,6 +88,7 @@ function mapOpenRow(row: any): SATQuestion {
     isFreeResponse: true,
     hasKaTeX: false,
     source: row.source ?? "",
+    rawCorrectAnswer: row.correct_answer ?? "",
   };
 }
 
@@ -223,3 +226,95 @@ export async function fetchDiagnosticQuestions(
   }
   return all.slice(0, count);
 }
+
+/* ------------------------------------------------------------------ */
+/*  Past Papers API                                                    */
+/* ------------------------------------------------------------------ */
+
+export interface PastPaper {
+  test_period: string;
+  test_version: string;
+  totalQuestions: number;
+  rwQuestions: number;
+  mathQuestions: number;
+}
+
+export async function fetchAvailablePastPapers(): Promise<PastPaper[]> {
+  try {
+    const [rwRes, mathRes, openRes] = await Promise.all([
+      supabase.from("EBRW_MCQ").select("test_period, test_version").eq("source_type", "past_paper"),
+      supabase.from("Math_MCQ").select("test_period, test_version").eq("source_type", "past_paper"),
+      supabase.from("Math_Open").select("test_period, test_version").eq("source_type", "past_paper"),
+    ]);
+
+    const papersMap: Record<string, { test_period: string; test_version: string; rwCount: number; mathCount: number }> = {};
+
+    const processRows = (rows: any[] | null, type: "rw" | "math") => {
+      rows?.forEach(r => {
+        const period = r.test_period?.trim();
+        if (!period) return;
+        const version = r.test_version?.trim() || "";
+        const key = `${period}|||${version}`;
+        if (!papersMap[key]) {
+          papersMap[key] = { test_period: period, test_version: version, rwCount: 0, mathCount: 0 };
+        }
+        if (type === "rw") {
+          papersMap[key].rwCount++;
+        } else {
+          papersMap[key].mathCount++;
+        }
+      });
+    };
+
+    processRows(rwRes.data, "rw");
+    processRows(mathRes.data, "math");
+    processRows(openRes.data, "math");
+
+    return Object.values(papersMap).map(p => ({
+      test_period: p.test_period,
+      test_version: p.test_version,
+      totalQuestions: p.rwCount + p.mathCount,
+      rwQuestions: p.rwCount,
+      mathQuestions: p.mathCount,
+    }));
+  } catch (e) {
+    console.error("fetchAvailablePastPapers error:", e);
+    return [];
+  }
+}
+
+export async function fetchPastPaperQuestions(
+  test_period: string,
+  test_version?: string
+): Promise<SATQuestion[]> {
+  let rwQuery = supabase.from("EBRW_MCQ").select("*").eq("test_period", test_period).eq("source_type", "past_paper");
+  let mathMcqQuery = supabase.from("Math_MCQ").select("*").eq("test_period", test_period).eq("source_type", "past_paper");
+  let mathOpenQuery = supabase.from("Math_Open").select("*").eq("test_period", test_period).eq("source_type", "past_paper");
+
+  if (test_version) {
+    rwQuery = rwQuery.eq("test_version", test_version);
+    mathMcqQuery = mathMcqQuery.eq("test_version", test_version);
+    mathOpenQuery = mathOpenQuery.eq("test_version", test_version);
+  }
+
+  rwQuery = rwQuery.order("id", { ascending: true });
+  mathMcqQuery = mathMcqQuery.order("id", { ascending: true });
+  mathOpenQuery = mathOpenQuery.order("id", { ascending: true });
+
+  const [rwRes, mathMcqRes, mathOpenRes] = await Promise.all([
+    rwQuery,
+    mathMcqQuery,
+    mathOpenQuery
+  ]);
+
+  if (rwRes.error) throw new Error(`EBRW_MCQ fetch failed: ${rwRes.error.message}`);
+  if (mathMcqRes.error) throw new Error(`Math_MCQ fetch failed: ${mathMcqRes.error.message}`);
+  if (mathOpenRes.error) throw new Error(`Math_Open fetch failed: ${mathOpenRes.error.message}`);
+
+  const rwQuestions = (rwRes.data ?? []).map((r) => mapMCQRow(r, "ebrw"));
+  const mathMcqQuestions = (mathMcqRes.data ?? []).map((r) => mapMCQRow(r, "math"));
+  const mathOpenQuestions = (mathOpenRes.data ?? []).map(mapOpenRow);
+
+  return [...rwQuestions, ...mathMcqQuestions, ...mathOpenQuestions];
+}
+
