@@ -356,7 +356,7 @@ export default function SATPractice() {
 
   return (
     <Layout>
-      <div className={`min-h-screen bg-black text-white relative overflow-hidden font-sans selection:bg-white/10 ${theme === 'light' ? 'light-theme' : ''}`}>
+      <div className={`min-h-screen bg-canvas text-ink relative overflow-hidden font-sans selection:bg-surface-2 ${theme === 'light' ? 'light-theme' : ''}`}>
         <style>{`
           .light-theme {
             background-color: #f8fafc !important;
@@ -380,19 +380,19 @@ export default function SATPractice() {
             -webkit-background-clip: text !important;
             -webkit-text-fill-color: transparent !important;
           }
-          .light-theme .text-white {
+          .light-theme .text-ink {
             color: #0f172a !important;
           }
-          .light-theme .text-white\\/80 {
+          .light-theme .text-ink\\/80 {
             color: #334155 !important;
           }
-          .light-theme .text-white\\/70 {
+          .light-theme .text-ink\\/70 {
             color: #475569 !important;
           }
-          .light-theme .text-white\\/60 {
+          .light-theme .text-ink\\/60 {
             color: #475569 !important;
           }
-          .light-theme .text-white\\/40 {
+          .light-theme .text-ink\\/40 {
             color: #64748b !important;
           }
           .light-theme .text-\\[\\#444\\] {
@@ -422,7 +422,7 @@ export default function SATPractice() {
           .light-theme .hover\\:bg-white\\/10:hover {
             background-color: rgba(99, 102, 241, 0.08) !important;
           }
-          .light-theme .hover\\:text-white:hover {
+          .light-theme .hover\\:text-ink:hover {
             color: #4f46e5 !important;
           }
           .light-theme button.glass-3d:hover {
@@ -496,7 +496,7 @@ export default function SATPractice() {
           <div className="absolute top-8 right-10 z-50">
             <Button
               onClick={() => setTheme(prev => prev === 'dark' ? 'light' : 'dark')}
-              className="bg-white/5 border border-white/10 text-white hover:bg-white/10 w-12 h-12 rounded-xl flex items-center justify-center p-0"
+              className="bg-surface border border-line text-ink hover:bg-surface-2 w-12 h-12 rounded-xl flex items-center justify-center p-0"
               title={theme === 'dark' ? 'Switch to Day Mode' : 'Switch to Night Mode'}
             >
               {theme === 'dark' ? <Moon className="w-5 h-5" /> : <Sun className="w-5 h-5 text-amber-500" />}
@@ -579,14 +579,14 @@ export default function SATPractice() {
               <Button 
                 onClick={() => { setPhase('bank'); setSelectedSection(null); }}
                 variant="ghost" 
-                className="text-[10px] font-black uppercase tracking-[0.2em] text-[#8b8b93] hover:text-white p-0 mb-6 flex items-center gap-2"
+                className="text-[10px] font-black uppercase tracking-[0.2em] text-ink-subtle hover:text-ink p-0 mb-6 flex items-center gap-2"
               >
                 <ChevronLeft className="w-4 h-4" /> Back to Question Bank
               </Button>
               <h1 className="text-5xl md:text-7xl font-black italic tracking-tighter uppercase leading-none mb-4">
                 {selectedSection === 'Math' ? 'MATH BANK' : 'READING & WRITING'}
               </h1>
-              <p className="text-sm text-[#a6a6ae] font-semibold max-w-xl">
+              <p className="text-sm text-ink-muted font-semibold max-w-xl">
                 Choose a specific domain and select a topic to solve adaptive blueprints.
               </p>
             </header>
@@ -594,8 +594,8 @@ export default function SATPractice() {
             {/* General Practice all Banner */}
             <div className="glass-3d p-8 mb-12 flex flex-col md:flex-row items-center justify-between gap-6 border-indigo-500/10 bg-indigo-500/5">
               <div>
-                <h3 className="text-lg font-black uppercase tracking-tight text-white mb-2">Practice all topics</h3>
-                <p className="text-xs text-white/65 font-bold uppercase tracking-widest">
+                <h3 className="text-lg font-black uppercase tracking-tight text-ink mb-2">Practice all topics</h3>
+                <p className="text-xs text-ink-muted font-bold uppercase tracking-widest">
                   Start practicing all {selectedSection === 'Math' ? '4 domains in Math' : 'domains in Reading & Writing'}.
                 </p>
               </div>
@@ -611,7 +611,7 @@ export default function SATPractice() {
             {questionsLoading && (
               <div className="glass-3d p-8 mb-12 flex items-center justify-center gap-4 border-indigo-500/10 bg-indigo-500/5">
                 <div className="w-6 h-6 border-2 border-indigo-400 border-t-transparent rounded-full animate-spin" />
-                <span className="text-sm font-bold text-white/75">Loading questions from database...</span>
+                <span className="text-sm font-bold text-ink-muted">Loading questions from database...</span>
               </div>
             )}
             {questionsError && (
@@ -624,8 +624,8 @@ export default function SATPractice() {
             <div className="space-y-12">
               {(selectedSection === 'Math' ? mathProgress : rwProgress).map((domain, i) => (
                 <div key={i} className="space-y-4">
-                  <h3 className="text-xs font-black uppercase tracking-widest text-[#8b8b93]">{domain.name}</h3>
-                  <div className="glass-3d overflow-hidden border-white/5">
+                  <h3 className="text-xs font-black uppercase tracking-widest text-ink-subtle">{domain.name}</h3>
+                  <div className="glass-3d overflow-hidden border-line">
                     <div className="divide-y divide-white/5">
                       {domain.subtopics.map((sub, idx) => {
                         const solvedPercent = Math.round((sub.solvedQuestions / sub.totalQuestions) * 100);
@@ -633,25 +633,25 @@ export default function SATPractice() {
                           <div 
                             key={idx} 
                             onClick={() => startPracticeForSubtopic(sub)}
-                            className="p-6 md:p-8 flex flex-col md:flex-row items-start md:items-center justify-between gap-6 hover:bg-white/[0.02] cursor-pointer transition-colors group"
+                            className="p-6 md:p-8 flex flex-col md:flex-row items-start md:items-center justify-between gap-6 hover:bg-surface cursor-pointer transition-colors group"
                           >
                             <div className="flex items-center gap-4 min-w-[280px]">
-                              <div className="w-5 h-5 rounded-md border border-white/20 flex items-center justify-center group-hover:border-indigo-400 transition-colors">
+                              <div className="w-5 h-5 rounded-md border border-line-strong flex items-center justify-center group-hover:border-indigo-400 transition-colors">
                                 {sub.solvedQuestions > 0 ? (
                                   <CheckCircle2 className="w-4 h-4 text-indigo-400" />
                                 ) : (
-                                  <div className="w-1.5 h-1.5 rounded-full bg-white/20 group-hover:bg-indigo-400/40" />
+                                  <div className="w-1.5 h-1.5 rounded-full bg-surface-2 group-hover:bg-indigo-400/40" />
                                 )}
                               </div>
-                              <span className="text-sm font-bold text-white/80 group-hover:text-white transition-colors">{sub.name}</span>
+                              <span className="text-sm font-bold text-ink group-hover:text-ink transition-colors">{sub.name}</span>
                             </div>
 
                             {/* Progress bar */}
                             <div className="flex items-center gap-4 flex-1 max-w-xs w-full">
-                              <div className="h-1.5 bg-white/5 rounded-full overflow-hidden flex-1">
+                              <div className="h-1.5 bg-surface rounded-full overflow-hidden flex-1">
                                 <div className="h-full bg-indigo-500" style={{ width: `${solvedPercent}%` }} />
                               </div>
-                              <span className="text-[10px] font-black text-white/60 uppercase tracking-widest whitespace-nowrap">
+                              <span className="text-[10px] font-black text-ink-muted uppercase tracking-widest whitespace-nowrap">
                                 {sub.solvedQuestions}/{sub.totalQuestions}
                               </span>
                             </div>
@@ -667,7 +667,7 @@ export default function SATPractice() {
                                   ● {sub.accuracy}%
                                 </span>
                               ) : (
-                                <span className="text-[10px] font-black text-white/40 uppercase tracking-widest">—</span>
+                                <span className="text-[10px] font-black text-ink-subtle uppercase tracking-widest">—</span>
                               )}
                             </div>
                           </div>
@@ -685,8 +685,8 @@ export default function SATPractice() {
         {phase === "quiz" && questions.length > 0 && (
           <div className="min-h-screen bg-transparent relative overflow-hidden flex flex-col">
             {isDesmosOpen && (
-              <div className="fixed inset-y-0 right-0 w-[600px] z-[100] bg-black border-l border-white/10 shadow-2xl animate-in slide-in-from-right duration-300">
-                <div className="flex items-center justify-between p-4 border-b border-white/10 bg-white/5">
+              <div className="fixed inset-y-0 right-0 w-[600px] z-[100] bg-canvas border-l border-line shadow-2xl animate-in slide-in-from-right duration-300">
+                <div className="flex items-center justify-between p-4 border-b border-line bg-surface">
                   <span className="text-[10px] font-black uppercase tracking-widest text-indigo-400">Desmos Calculator</span>
                   <Button size="icon" variant="ghost" onClick={() => setIsDesmosOpen(false)}><X className="w-4 h-4" /></Button>
                 </div>
@@ -700,24 +700,24 @@ export default function SATPractice() {
                 <Button 
                   variant="ghost" 
                   onClick={() => setPhase("subtopics")} 
-                  className="text-[10px] font-black uppercase tracking-widest text-[#8b8b93] hover:text-white"
+                  className="text-[10px] font-black uppercase tracking-widest text-ink-subtle hover:text-ink"
                 >
                   <ChevronLeft className="w-4 h-4 mr-2" /> Exit Session
                 </Button>
 
-                <div className="flex items-center gap-8 bg-white/5 px-8 py-3 rounded-2xl border border-white/10">
+                <div className="flex items-center gap-8 bg-surface px-8 py-3 rounded-2xl border border-line">
                   <div className="text-center">
                     <p className="text-[8px] font-black text-indigo-400 uppercase tracking-widest mb-1">Topic</p>
                     <p className="text-xs font-black uppercase max-w-[200px] truncate">{currentSubtopic?.name}</p>
                   </div>
-                  <div className="w-px h-8 bg-white/10" />
+                  <div className="w-px h-8 bg-surface-2" />
                   <div className="text-center">
-                    <p className="text-[8px] font-black text-white/60 uppercase tracking-widest mb-1">Question</p>
+                    <p className="text-[8px] font-black text-ink-muted uppercase tracking-widest mb-1">Question</p>
                     <p className="text-sm font-black">{currentIdx + 1} of {questions.length}</p>
                   </div>
-                  <div className="w-px h-8 bg-white/10" />
+                  <div className="w-px h-8 bg-surface-2" />
                   <div className="text-center">
-                    <p className="text-[8px] font-black text-white/60 uppercase tracking-widest mb-1">Timer</p>
+                    <p className="text-[8px] font-black text-ink-muted uppercase tracking-widest mb-1">Timer</p>
                     <p className="text-sm font-black font-mono">{formatTime(elapsed)}</p>
                   </div>
                 </div>
@@ -725,7 +725,7 @@ export default function SATPractice() {
                 <div className="flex items-center gap-4">
                   <Button 
                     onClick={highlightSelectedText} 
-                    className="bg-white/5 border border-white/10 text-white hover:bg-white/10 px-6 h-12 rounded-xl font-black uppercase text-[10px] tracking-widest flex items-center gap-2"
+                    className="bg-surface border border-line text-ink hover:bg-surface-2 px-6 h-12 rounded-xl font-black uppercase text-[10px] tracking-widest flex items-center gap-2"
                     title="Highlight Selected Text"
                   >
                     <Highlighter className="w-4 h-4 text-yellow-400" /> Highlight
@@ -734,7 +734,7 @@ export default function SATPractice() {
                   {selectedSection === 'Math' && (
                     <Button 
                       onClick={() => setIsDesmosOpen(!isDesmosOpen)} 
-                      className="bg-white/5 border border-white/10 text-white hover:bg-white/10 px-6 h-12 rounded-xl font-black uppercase text-[10px] tracking-widest flex items-center gap-2"
+                      className="bg-surface border border-line text-ink hover:bg-surface-2 px-6 h-12 rounded-xl font-black uppercase text-[10px] tracking-widest flex items-center gap-2"
                     >
                       <Calculator className="w-4 h-4" /> Desmos
                     </Button>
@@ -742,7 +742,7 @@ export default function SATPractice() {
 
                   <Button
                     onClick={() => setTheme(prev => prev === 'dark' ? 'light' : 'dark')}
-                    className="bg-white/5 border border-white/10 text-white hover:bg-white/10 w-12 h-12 rounded-xl font-black flex items-center justify-center p-0"
+                    className="bg-surface border border-line text-ink hover:bg-surface-2 w-12 h-12 rounded-xl font-black flex items-center justify-center p-0"
                     title={theme === 'dark' ? 'Switch to Day Mode' : 'Switch to Night Mode'}
                   >
                     {theme === 'dark' ? <Moon className="w-4 h-4" /> : <Sun className="w-4 h-4 text-amber-500" />}
@@ -760,11 +760,11 @@ export default function SATPractice() {
                           <FileText className="w-4 h-4" />
                           <span className="text-[9px] font-black uppercase tracking-widest">Directions / Passage</span>
                         </div>
-                        <p className="text-base leading-relaxed font-medium text-white/80">{questions[currentIdx].passage}</p>
+                        <p className="text-base leading-relaxed font-medium text-ink">{questions[currentIdx].passage}</p>
                       </div>
                     </ResizablePanel>
 
-                    <ResizableHandle className="w-[6px] hover:bg-indigo-500/50 bg-white/10 transition-colors cursor-col-resize rounded-full" />
+                    <ResizableHandle className="w-[6px] hover:bg-indigo-500/50 bg-surface-2 transition-colors cursor-col-resize rounded-full" />
 
                     <ResizablePanel defaultSize={50} minSize={25} maxSize={75} className="flex flex-col min-h-0">
                       <div className="flex flex-col gap-4 overflow-y-auto custom-scrollbar h-full pl-2">
@@ -792,7 +792,7 @@ export default function SATPractice() {
                                 <FileText className="w-5 h-5 text-indigo-400" />
                                 <h3 className="text-sm font-black uppercase tracking-widest text-indigo-400">Student-Produced Response</h3>
                               </div>
-                              <p className="text-xs text-white/65 leading-relaxed">
+                              <p className="text-xs text-ink-muted leading-relaxed">
                                 Enter your answer in the box below. You can enter integers, decimals, or fractions.
                               </p>
                               <div className="flex flex-col sm:flex-row gap-4">
@@ -802,7 +802,7 @@ export default function SATPractice() {
                                   onChange={(e) => setFreeResponseInput(e.target.value)}
                                   disabled={!!answerState}
                                   placeholder="Type your answer here..."
-                                  className="flex-1 px-6 h-16 bg-white/5 border border-white/10 rounded-xl text-lg font-bold text-white placeholder-white/20 focus:outline-none focus:border-indigo-500 transition-colors disabled:opacity-50"
+                                  className="flex-1 px-6 h-16 bg-surface border border-line rounded-xl text-lg font-bold text-ink placeholder-white/20 focus:outline-none focus:border-indigo-500 transition-colors disabled:opacity-50"
                                   onKeyDown={(e) => {
                                     if (e.key === 'Enter') {
                                       handleFreeResponseSubmit();
@@ -851,23 +851,23 @@ export default function SATPractice() {
                               const isCorrectOption = i === questions[currentIdx].correctAnswer;
                               const isWrongSelected = isSelected && !answerState.correct;
                               
-                              let btnClass = "glass-3d p-6 text-left transition-all flex items-center gap-6 border-white/10 hover:border-white/20 hover:bg-white/[0.02]";
-                              let circleClass = "w-10 h-10 rounded-full flex items-center justify-center border border-white/25 text-sm font-bold transition-all";
+                              let btnClass = "glass-3d p-6 text-left transition-all flex items-center gap-6 border-line hover:border-line-strong hover:bg-surface";
+                              let circleClass = "w-10 h-10 rounded-full flex items-center justify-center border border-line-strong text-sm font-bold transition-all";
                               
                               if (answerState) {
                                 if (isCorrectOption) {
                                   btnClass = "glass-3d p-6 text-left transition-all flex items-center gap-6 border-emerald-500 bg-emerald-500/10 text-emerald-400";
-                                  circleClass = "w-10 h-10 rounded-full flex items-center justify-center bg-emerald-500 text-white text-sm font-bold border-emerald-500";
+                                  circleClass = "w-10 h-10 rounded-full flex items-center justify-center bg-emerald-500 text-ink text-sm font-bold border-emerald-500";
                                 } else if (isWrongSelected) {
                                   btnClass = "glass-3d p-6 text-left transition-all flex items-center gap-6 border-rose-500 bg-rose-500/10 text-rose-400";
-                                  circleClass = "w-10 h-10 rounded-full flex items-center justify-center bg-rose-500 text-white text-sm font-bold border-rose-500";
+                                  circleClass = "w-10 h-10 rounded-full flex items-center justify-center bg-rose-500 text-ink text-sm font-bold border-rose-500";
                                 } else {
-                                  btnClass = "glass-3d p-6 text-left transition-all flex items-center gap-6 opacity-30 border-white/5 cursor-default";
-                                  circleClass = "w-10 h-10 rounded-full flex items-center justify-center border border-white/10 text-sm font-bold text-white/45";
+                                  btnClass = "glass-3d p-6 text-left transition-all flex items-center gap-6 opacity-30 border-line cursor-default";
+                                  circleClass = "w-10 h-10 rounded-full flex items-center justify-center border border-line text-sm font-bold text-ink-subtle";
                                 }
                               } else {
-                                btnClass = "glass-3d p-6 text-left transition-all flex items-center gap-6 border-white/10 hover:border-indigo-500/40 hover:bg-white/5 active:scale-[0.99]";
-                                circleClass = "w-10 h-10 rounded-full flex items-center justify-center border border-white/20 text-sm font-bold text-white/80 group-hover:border-indigo-400 group-hover:text-indigo-400 group-hover:bg-indigo-500/5";
+                                btnClass = "glass-3d p-6 text-left transition-all flex items-center gap-6 border-line hover:border-indigo-500/40 hover:bg-surface active:scale-[0.99]";
+                                circleClass = "w-10 h-10 rounded-full flex items-center justify-center border border-line-strong text-sm font-bold text-ink group-hover:border-indigo-400 group-hover:text-indigo-400 group-hover:bg-indigo-500/5";
                               }
 
                               return (
@@ -899,7 +899,7 @@ export default function SATPractice() {
                                 <h4 className="text-[10px] font-black uppercase tracking-widest text-indigo-400">EXPLANATION</h4>
                               </div>
                               <div 
-                                className="text-white/80 font-medium text-sm block leading-relaxed mb-10" 
+                                className="text-ink font-medium text-sm block leading-relaxed mb-10" 
                                 dangerouslySetInnerHTML={{ __html: renderKatexText(questions[currentIdx]?.explanation || "") }} 
                               />
                               <Button 
@@ -948,7 +948,7 @@ export default function SATPractice() {
                             <FileText className="w-5 h-5 text-indigo-400" />
                             <h3 className="text-sm font-black uppercase tracking-widest text-indigo-400">Student-Produced Response</h3>
                           </div>
-                          <p className="text-xs text-white/65 leading-relaxed">
+                          <p className="text-xs text-ink-muted leading-relaxed">
                             Enter your answer in the box below. You can enter integers, decimals, or fractions.
                           </p>
                           <div className="flex flex-col sm:flex-row gap-4">
@@ -958,7 +958,7 @@ export default function SATPractice() {
                               onChange={(e) => setFreeResponseInput(e.target.value)}
                               disabled={!!answerState}
                               placeholder="Type your answer here..."
-                              className="flex-1 px-6 h-16 bg-white/5 border border-white/10 rounded-xl text-lg font-bold text-white placeholder-white/20 focus:outline-none focus:border-indigo-500 transition-colors disabled:opacity-50"
+                              className="flex-1 px-6 h-16 bg-surface border border-line rounded-xl text-lg font-bold text-ink placeholder-white/20 focus:outline-none focus:border-indigo-500 transition-colors disabled:opacity-50"
                               onKeyDown={(e) => {
                                 if (e.key === 'Enter') {
                                   handleFreeResponseSubmit();
@@ -1007,23 +1007,23 @@ export default function SATPractice() {
                           const isCorrectOption = i === questions[currentIdx].correctAnswer;
                           const isWrongSelected = isSelected && !answerState.correct;
                           
-                          let btnClass = "glass-3d p-6 text-left transition-all flex items-center gap-6 border-white/10 hover:border-white/20 hover:bg-white/[0.02]";
-                          let circleClass = "w-10 h-10 rounded-full flex items-center justify-center border border-white/25 text-sm font-bold transition-all";
+                          let btnClass = "glass-3d p-6 text-left transition-all flex items-center gap-6 border-line hover:border-line-strong hover:bg-surface";
+                          let circleClass = "w-10 h-10 rounded-full flex items-center justify-center border border-line-strong text-sm font-bold transition-all";
                           
                           if (answerState) {
                             if (isCorrectOption) {
                               btnClass = "glass-3d p-6 text-left transition-all flex items-center gap-6 border-emerald-500 bg-emerald-500/10 text-emerald-400";
-                              circleClass = "w-10 h-10 rounded-full flex items-center justify-center bg-emerald-500 text-white text-sm font-bold border-emerald-500";
+                              circleClass = "w-10 h-10 rounded-full flex items-center justify-center bg-emerald-500 text-ink text-sm font-bold border-emerald-500";
                             } else if (isWrongSelected) {
                               btnClass = "glass-3d p-6 text-left transition-all flex items-center gap-6 border-rose-500 bg-rose-500/10 text-rose-400";
-                              circleClass = "w-10 h-10 rounded-full flex items-center justify-center bg-rose-500 text-white text-sm font-bold border-rose-500";
+                              circleClass = "w-10 h-10 rounded-full flex items-center justify-center bg-rose-500 text-ink text-sm font-bold border-rose-500";
                             } else {
-                              btnClass = "glass-3d p-6 text-left transition-all flex items-center gap-6 opacity-30 border-white/5 cursor-default";
-                              circleClass = "w-10 h-10 rounded-full flex items-center justify-center border border-white/10 text-sm font-bold text-white/45";
+                              btnClass = "glass-3d p-6 text-left transition-all flex items-center gap-6 opacity-30 border-line cursor-default";
+                              circleClass = "w-10 h-10 rounded-full flex items-center justify-center border border-line text-sm font-bold text-ink-subtle";
                             }
                           } else {
-                            btnClass = "glass-3d p-6 text-left transition-all flex items-center gap-6 border-white/10 hover:border-indigo-500/40 hover:bg-white/5 active:scale-[0.99]";
-                            circleClass = "w-10 h-10 rounded-full flex items-center justify-center border border-white/20 text-sm font-bold text-white/80 group-hover:border-indigo-400 group-hover:text-indigo-400 group-hover:bg-indigo-500/5";
+                            btnClass = "glass-3d p-6 text-left transition-all flex items-center gap-6 border-line hover:border-indigo-500/40 hover:bg-surface active:scale-[0.99]";
+                            circleClass = "w-10 h-10 rounded-full flex items-center justify-center border border-line-strong text-sm font-bold text-ink group-hover:border-indigo-400 group-hover:text-indigo-400 group-hover:bg-indigo-500/5";
                           }
 
                           return (
@@ -1055,7 +1055,7 @@ export default function SATPractice() {
                             <h4 className="text-[10px] font-black uppercase tracking-widest text-indigo-400">EXPLANATION</h4>
                           </div>
                           <div 
-                            className="text-white/80 font-medium text-sm block leading-relaxed mb-10" 
+                            className="text-ink font-medium text-sm block leading-relaxed mb-10" 
                             dangerouslySetInnerHTML={{ __html: renderKatexText(questions[currentIdx]?.explanation || "") }} 
                           />
                           <Button 
@@ -1072,7 +1072,7 @@ export default function SATPractice() {
               )}
 
               {/* Bottom Navigation Bar */}
-              <div className="mt-auto pt-6 border-t border-white/10 flex items-center justify-between shrink-0">
+              <div className="mt-auto pt-6 border-t border-line flex items-center justify-between shrink-0">
                 <Button
                   onClick={() => {
                     if (currentIdx > 0) {
@@ -1083,12 +1083,12 @@ export default function SATPractice() {
                   }}
                   disabled={currentIdx === 0}
                   variant="ghost"
-                  className="bg-white/5 border border-white/10 text-white hover:bg-white/10 px-8 h-14 rounded-xl font-black uppercase text-[10px] tracking-widest flex items-center gap-2 disabled:opacity-35"
+                  className="bg-surface border border-line text-ink hover:bg-surface-2 px-8 h-14 rounded-xl font-black uppercase text-[10px] tracking-widest flex items-center gap-2 disabled:opacity-35"
                 >
                   <ChevronLeft className="w-4 h-4" /> Previous
                 </Button>
 
-                <div className="bg-white/5 border border-white/10 rounded-xl px-6 h-14 flex items-center justify-center font-bold text-sm">
+                <div className="bg-surface border border-line rounded-xl px-6 h-14 flex items-center justify-center font-bold text-sm">
                   Question {currentIdx + 1} of {questions.length}
                 </div>
 
@@ -1126,7 +1126,7 @@ export default function SATPractice() {
                   <div className="text-8xl font-black tracking-tighter mb-4">
                     {Math.round((Object.values(sessionAnswers).filter((a: any) => a.correct).length / (questions.length || 1)) * 100)}%
                   </div>
-                  <div className="text-xs font-bold text-white/40 uppercase tracking-widest">
+                  <div className="text-xs font-bold text-ink-subtle uppercase tracking-widest">
                     {Object.values(sessionAnswers).filter((a: any) => a.correct).length} / {questions.length} correct
                   </div>
                 </div>
@@ -1136,12 +1136,12 @@ export default function SATPractice() {
                     <Brain className="w-6 h-6 text-indigo-400" />
                     <h3 className="text-2xl font-black uppercase tracking-tight">Intelligence Feedback</h3>
                   </div>
-                  <p className="text-xl font-medium text-white/75 leading-relaxed mb-8">
+                  <p className="text-xl font-medium text-ink-muted leading-relaxed mb-8">
                     Great effort! Your performance updates your daily mastery charts. Keep expanding your accuracy index to secure a 1550+ estimation.
                   </p>
                   <div className="flex gap-4">
-                    <div className="px-6 py-3 bg-white/5 rounded-xl border border-white/5 text-[9px] font-black uppercase tracking-widest text-emerald-400">Mastery Updated</div>
-                    <div className="px-6 py-3 bg-white/5 rounded-xl border border-white/5 text-[9px] font-black uppercase tracking-widest text-blue-400">Streak Maintained</div>
+                    <div className="px-6 py-3 bg-surface rounded-xl border border-line text-[9px] font-black uppercase tracking-widest text-emerald-400">Mastery Updated</div>
+                    <div className="px-6 py-3 bg-surface rounded-xl border border-line text-[9px] font-black uppercase tracking-widest text-blue-400">Streak Maintained</div>
                   </div>
                 </div>
               </div>
@@ -1150,7 +1150,7 @@ export default function SATPractice() {
                 <Button 
                   onClick={() => setPhase("subtopics")} 
                   variant="outline" 
-                  className="h-18 px-12 rounded-2xl border-white/10 text-white font-black uppercase text-xs"
+                  className="h-18 px-12 rounded-2xl border-line text-ink font-black uppercase text-xs"
                 >
                   Return to Blueprints
                 </Button>

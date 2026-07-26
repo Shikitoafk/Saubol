@@ -87,7 +87,7 @@ export default function Programs() {
 
   return (
     <Layout>
-      <div className="min-h-screen bg-[#000000] text-white selection:bg-white/10 relative overflow-hidden font-sans">
+      <div className="min-h-screen bg-canvas text-ink selection:bg-surface-2 relative overflow-hidden font-sans">
         <div className="bg-vignette" />
         <div className="bg-sphere top-[-10%] right-[-5%] opacity-30" />
         
@@ -101,7 +101,7 @@ export default function Programs() {
             <h1 className="text-6xl md:text-8xl font-black tracking-tighter text-shimmer leading-[0.85] mb-8 uppercase">
               PROGRAMS <br /> & CAMPS.
             </h1>
-            <p className="text-xl text-[#a6a6ae] font-medium max-w-2xl leading-relaxed">
+            <p className="text-xl text-ink-muted font-medium max-w-2xl leading-relaxed">
               Открой для себя лучшие летние школы, стажировки и исследовательские программы, которые выделят тебя среди тысяч абитуриентов.
             </p>
           </div>
@@ -115,12 +115,12 @@ export default function Programs() {
                     <Brain className="w-5 h-5 text-indigo-400" />
                     <span className="text-[10px] font-black tracking-widest uppercase text-indigo-400">AI Matchmaker</span>
                   </div>
-                  <p className="text-xs font-bold text-white/75 uppercase tracking-widest leading-relaxed mb-8">Опиши свои интересы, и AI подберет идеальный лагерь.</p>
+                  <p className="text-xs font-bold text-ink-muted uppercase tracking-widest leading-relaxed mb-8">Опиши свои интересы, и AI подберет идеальный лагерь.</p>
                   <textarea 
                     value={aiQuery}
                     onChange={(e) => setAiQuery(e.target.value)}
                     placeholder="e.g. I want a free STEM camp in USA..."
-                    className="w-full bg-white/5 border border-white/10 rounded-xl p-4 text-xs font-medium focus:outline-none focus:border-indigo-500/50 transition-all h-32 mb-6 placeholder:text-white/40"
+                    className="w-full bg-surface border border-line rounded-xl p-4 text-xs font-medium focus:outline-none focus:border-indigo-500/50 transition-all h-32 mb-6 placeholder:text-ink-subtle"
                   />
                   <Button onClick={handleAiSearch} disabled={isAiSearching} className="w-full bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl h-12 font-black uppercase text-[10px] tracking-widest">
                     {isAiSearching ? <Loader2 className="w-4 h-4 animate-spin" /> : "FIND MY PATH"}
@@ -130,18 +130,18 @@ export default function Programs() {
                {/* Standard Filters */}
                <div className="space-y-10">
                   <div>
-                    <h3 className="text-[10px] font-black text-white/60 uppercase tracking-[0.3em] mb-6">Subject Area</h3>
+                    <h3 className="text-[10px] font-black text-ink-muted uppercase tracking-[0.3em] mb-6">Subject Area</h3>
                     <div className="flex flex-wrap gap-2">
                        {SUBJECT_FILTERS.map(f => (
-                         <button key={f} onClick={() => setSelectedSubject(f)} className={`px-4 py-2 rounded-lg text-[10px] font-black uppercase tracking-widest border transition-all ${selectedSubject === f ? 'bg-white text-black border-white' : 'bg-transparent border-white/5 text-white/75 hover:border-white/20'}`}>{f}</button>
+                         <button key={f} onClick={() => setSelectedSubject(f)} className={`px-4 py-2 rounded-lg text-[10px] font-black uppercase tracking-widest border transition-all ${selectedSubject === f ? 'bg-white text-black border-white' : 'bg-transparent border-line text-ink-muted hover:border-line-strong'}`}>{f}</button>
                        ))}
                     </div>
                   </div>
                   <div>
-                    <h3 className="text-[10px] font-black text-white/60 uppercase tracking-[0.3em] mb-6">Format</h3>
+                    <h3 className="text-[10px] font-black text-ink-muted uppercase tracking-[0.3em] mb-6">Format</h3>
                     <div className="flex flex-wrap gap-2">
                        {FORMAT_FILTERS.map(f => (
-                         <button key={f} onClick={() => setSelectedFormat(f)} className={`px-4 py-2 rounded-lg text-[10px] font-black uppercase tracking-widest border transition-all ${selectedFormat === f ? 'bg-white text-black border-white' : 'bg-transparent border-white/5 text-white/75 hover:border-white/20'}`}>{f}</button>
+                         <button key={f} onClick={() => setSelectedFormat(f)} className={`px-4 py-2 rounded-lg text-[10px] font-black uppercase tracking-widest border transition-all ${selectedFormat === f ? 'bg-white text-black border-white' : 'bg-transparent border-line text-ink-muted hover:border-line-strong'}`}>{f}</button>
                        ))}
                     </div>
                   </div>
@@ -159,51 +159,51 @@ export default function Programs() {
                ) : (
                  <div className="grid gap-8 md:grid-cols-2">
                     {filteredPrograms.map((p) => (
-                      <div key={p.id} className="glass-3d p-10 flex flex-col group hover:border-white/20 transition-all">
+                      <div key={p.id} className="glass-3d p-10 flex flex-col group hover:border-line-strong transition-all">
                          <div className="flex justify-between items-start mb-10">
                             <div className="flex flex-wrap gap-2">
                                <Badge className="bg-indigo-500/10 text-indigo-400 border-none text-[8px] font-black uppercase tracking-widest">{p.subject}</Badge>
                                <Badge className={`${p.price === 'Free' ? 'bg-emerald-500/10 text-emerald-400' : 'bg-amber-500/10 text-amber-400'} border-none text-[8px] font-black uppercase tracking-widest`}>{p.price}</Badge>
                                {p.score !== undefined && (
-                                 <Badge className="bg-white/10 text-white border-none text-[8px] font-black uppercase tracking-widest flex items-center gap-1">
+                                 <Badge className="bg-surface-2 text-ink border-none text-[8px] font-black uppercase tracking-widest flex items-center gap-1">
                                    <Sparkles className="w-2 h-2" /> Match: {Math.round(p.score * 100)}%
                                  </Badge>
                                )}
                             </div>
                             {user && (
-                              <button onClick={() => toggleBookmark(p)} className="text-[#222] hover:text-white transition-colors">
+                              <button onClick={() => toggleBookmark(p)} className="text-[#222] hover:text-ink transition-colors">
                                 {savedPrograms.has(p.name) ? <BookmarkCheck className="w-5 h-5 text-indigo-400" /> : <Bookmark className="w-5 h-5" />}
                               </button>
                             )}
                          </div>
                          <h3 className="text-2xl font-black mb-4 tracking-tight group-hover:text-shimmer transition-all uppercase leading-tight">{p.name}</h3>
-                         <p className="text-xs font-medium text-[#a6a6ae] leading-relaxed mb-10 line-clamp-2">{p.details}</p>
+                         <p className="text-xs font-medium text-ink-muted leading-relaxed mb-10 line-clamp-2">{p.details}</p>
                          
-                         <div className="mt-auto pt-8 border-t border-white/5 flex items-center justify-between">
-                            <div className="flex items-center gap-2 text-[9px] font-black text-white/60 uppercase tracking-widest">
+                         <div className="mt-auto pt-8 border-t border-line flex items-center justify-between">
+                            <div className="flex items-center gap-2 text-[9px] font-black text-ink-muted uppercase tracking-widest">
                                <MapPin className="w-3 h-3" /> {p.location}
                             </div>
                             <Sheet>
                                <SheetTrigger asChild>
-                                  <Button variant="ghost" className="text-[10px] font-black uppercase tracking-widest text-indigo-400 hover:text-white hover:bg-transparent p-0">Details <ChevronRight className="w-4 h-4 ml-1" /></Button>
+                                  <Button variant="ghost" className="text-[10px] font-black uppercase tracking-widest text-indigo-400 hover:text-ink hover:bg-transparent p-0">Details <ChevronRight className="w-4 h-4 ml-1" /></Button>
                                </SheetTrigger>
-                               <SheetContent className="bg-black border-white/10 text-white">
+                               <SheetContent className="bg-canvas border-line text-ink">
                                   <SheetHeader className="text-left py-10">
                                      <div className="flex gap-2 mb-6">
                                         <Badge className="bg-indigo-500/10 text-indigo-400">{p.subject}</Badge>
-                                        <Badge className="bg-white/5 text-white">{p.price}</Badge>
+                                        <Badge className="bg-surface text-ink">{p.price}</Badge>
                                      </div>
                                      <SheetTitle className="text-4xl font-black text-shimmer uppercase tracking-tighter mb-4">{p.name}</SheetTitle>
-                                     <SheetDescription className="text-[#a6a6ae] font-medium leading-relaxed">{p.details}</SheetDescription>
+                                     <SheetDescription className="text-ink-muted font-medium leading-relaxed">{p.details}</SheetDescription>
                                   </SheetHeader>
                                   <div className="space-y-12 py-10">
                                      {p.overview && (
                                        <div>
-                                          <h4 className="text-[10px] font-black uppercase tracking-[0.3em] text-white/40 mb-4">Program Overview</h4>
-                                          <p className="text-sm font-medium leading-relaxed text-[#c2c2c9]">{p.overview}</p>
+                                          <h4 className="text-[10px] font-black uppercase tracking-[0.3em] text-ink-subtle mb-4">Program Overview</h4>
+                                          <p className="text-sm font-medium leading-relaxed text-ink-muted">{p.overview}</p>
                                        </div>
                                      )}
-                                     <div className="p-8 bg-white/5 rounded-2xl border border-white/10">
+                                     <div className="p-8 bg-surface rounded-2xl border border-line">
                                         <div className="flex items-center gap-4 text-xs font-black uppercase tracking-widest">
                                            <Target className="w-4 h-4 text-indigo-400" />
                                            <span>Location: {p.location}</span>

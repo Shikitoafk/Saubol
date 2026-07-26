@@ -57,14 +57,14 @@ const SATAITutor = ({ passage, question }: SATAITutorProps) => {
       </div>
 
       <div className="space-y-6 relative z-10">
-        <p className="text-[10px] font-bold text-[#8b8b93] uppercase tracking-widest leading-relaxed">
+        <p className="text-[10px] font-bold text-ink-subtle uppercase tracking-widest leading-relaxed">
           Highlight any complex text in the passage to receive an AI-powered semantic breakdown.
         </p>
 
         {selectedText && (
-          <div className="p-6 bg-white/5 rounded-2xl border border-white/5 animate-in slide-in-from-bottom-2 duration-500">
+          <div className="p-6 bg-surface rounded-2xl border border-line animate-in slide-in-from-bottom-2 duration-500">
             <div className="text-[8px] font-black text-[#222] uppercase tracking-[0.3em] mb-3">Target Text</div>
-            <div className="text-sm font-medium text-white/90 leading-relaxed italic mb-6">"{selectedText}"</div>
+            <div className="text-sm font-medium text-ink leading-relaxed italic mb-6">"{selectedText}"</div>
             <Button
               onClick={explainSelection}
               disabled={isExplaining || !selectedText.trim()}
@@ -102,7 +102,7 @@ const SATAITutor = ({ passage, question }: SATAITutorProps) => {
                   <Zap className="w-3 h-3 text-indigo-400" />
                   <span className="text-[8px] font-black text-indigo-400 uppercase tracking-[0.3em]">AI Insight</span>
                 </div>
-                <div className="text-sm font-medium text-[#c2c2c9] leading-relaxed">
+                <div className="text-sm font-medium text-ink-muted leading-relaxed">
                   {explanation.text}
                 </div>
               </>
@@ -111,7 +111,7 @@ const SATAITutor = ({ passage, question }: SATAITutorProps) => {
         )}
       </div>
 
-      <div className="mt-8 pt-6 border-t border-white/5 text-[8px] font-black text-[#111] uppercase tracking-[0.4em] text-center">
+      <div className="mt-8 pt-6 border-t border-line text-[8px] font-black text-[#111] uppercase tracking-[0.4em] text-center">
         Edge Computing Runtime — Private & Local
       </div>
     </div>

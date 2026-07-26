@@ -8,7 +8,7 @@ export default function SatPrep() {
 
   return (
     <Layout>
-      <div className="min-h-screen bg-black text-white py-32 px-10 relative overflow-hidden font-sans">
+      <div className="min-h-screen bg-canvas text-ink py-32 px-10 relative overflow-hidden font-sans">
         {/* Background vignette & glow sphere */}
         <div className="absolute inset-0 bg-vignette" />
         <div 
@@ -26,7 +26,7 @@ export default function SatPrep() {
             <h1 className="text-6xl md:text-8xl font-black italic tracking-tighter uppercase mb-6 leading-none text-shimmer">
               SAT ARENA.
             </h1>
-            <p className="text-sm text-[#a6a6ae] font-semibold max-w-xl leading-relaxed">
+            <p className="text-sm text-ink-muted font-semibold max-w-xl leading-relaxed">
               Prepare for the Digital SAT using adaptive tools, real exam timing, and granular topic diagnostics.
             </p>
           </header>
@@ -49,7 +49,7 @@ export default function SatPrep() {
                   <h2 className="text-5xl font-black mb-4 tracking-tighter uppercase italic leading-none text-shimmer">
                     Past Papers
                   </h2>
-                  <p className="text-[#a6a6ae] font-medium text-sm leading-relaxed max-w-sm">
+                  <p className="text-ink-muted font-medium text-sm leading-relaxed max-w-sm">
                     Solve real Digital SAT tests from concrete exam dates under true timed or untimed practice conditions.
                   </p>
                 </div>
@@ -65,16 +65,16 @@ export default function SatPrep() {
             {/* Card 2: Question Bank */}
             <motion.div 
               whileHover={{ y: -8, scale: 1.01 }}
-              className="glass-3d p-16 flex flex-col justify-between min-h-[460px] cursor-pointer border-white/5 hover:border-indigo-500/20 transition-all relative overflow-hidden group"
+              className="glass-3d p-16 flex flex-col justify-between min-h-[460px] cursor-pointer border-line hover:border-indigo-500/20 transition-all relative overflow-hidden group"
               onClick={() => navigate("/sat/question-bank")}
             >
-              <div className="absolute top-0 right-0 w-64 h-64 bg-white/5 blur-[100px] opacity-0 group-hover:opacity-100 transition-opacity" />
+              <div className="absolute top-0 right-0 w-64 h-64 bg-surface blur-[100px] opacity-0 group-hover:opacity-100 transition-opacity" />
               
               <div className="relative z-10 flex-1 flex flex-col justify-between">
                 <div>
                   <div className="flex justify-between items-start mb-16">
-                    <div className="w-20 h-20 bg-white/5 rounded-3xl flex items-center justify-center border border-white/10 group-hover:bg-white/10 transition-all duration-700">
-                      <Brain className="w-10 h-10 text-white/60 shadow-[0_0_30px_rgba(255,255,255,0.1)] group-hover:text-indigo-400 group-hover:shadow-[0_0_30px_rgba(99,102,241,0.3)] transition-all" />
+                    <div className="w-20 h-20 bg-surface rounded-3xl flex items-center justify-center border border-line group-hover:bg-surface-2 transition-all duration-700">
+                      <Brain className="w-10 h-10 text-ink-muted shadow-[0_0_30px_rgba(255,255,255,0.1)] group-hover:text-indigo-400 group-hover:shadow-[0_0_30px_rgba(99,102,241,0.3)] transition-all" />
                     </div>
                     <span className="px-4 py-1.5 bg-indigo-500/10 rounded-full border border-indigo-500/20 text-[9px] font-black tracking-widest uppercase text-indigo-400">
                       Coming Soon
@@ -84,13 +84,13 @@ export default function SatPrep() {
                   <h2 className="text-5xl font-black mb-4 tracking-tighter uppercase italic leading-none text-shimmer">
                     Question Bank
                   </h2>
-                  <p className="text-[#a6a6ae] font-medium text-sm leading-relaxed max-w-sm">
+                  <p className="text-ink-muted font-medium text-sm leading-relaxed max-w-sm">
                     Granular practice sorted by specific subtopic domains and difficulty levels with performance analytics.
                   </p>
                 </div>
                 
                 <div className="flex items-center justify-between mt-auto">
-                  <span className="px-6 h-12 bg-white/5 border border-white/10 text-white/60 rounded-xl font-black uppercase text-[10px] tracking-widest flex items-center gap-2 group-hover:bg-white group-hover:text-black transition-all">
+                  <span className="px-6 h-12 bg-surface border border-line text-ink-muted rounded-xl font-black uppercase text-[10px] tracking-widest flex items-center gap-2 group-hover:bg-white group-hover:text-black transition-all">
                     Preview Details <ChevronRight className="w-4 h-4" />
                   </span>
                 </div>

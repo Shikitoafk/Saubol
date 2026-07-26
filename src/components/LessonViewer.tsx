@@ -44,9 +44,9 @@ export default function LessonViewer({ lesson, onStartPractice }: LessonViewerPr
           {lesson.topic}.
         </h1>
         <div className="flex items-center gap-6">
-          <div className="flex items-center gap-2 px-3 py-1 bg-white/5 rounded-full border border-white/5">
-             <Clock className="w-3 h-3 text-white/60" />
-             <span className="text-[9px] font-black uppercase text-white/60">{lesson.readTime} Read</span>
+          <div className="flex items-center gap-2 px-3 py-1 bg-surface rounded-full border border-line">
+             <Clock className="w-3 h-3 text-ink-muted" />
+             <span className="text-[9px] font-black uppercase text-ink-muted">{lesson.readTime} Read</span>
           </div>
           <div className="flex items-center gap-2 px-3 py-1 bg-indigo-500/10 rounded-full border border-indigo-500/20">
              <Zap className="w-3 h-3 text-indigo-400" />
@@ -63,18 +63,18 @@ export default function LessonViewer({ lesson, onStartPractice }: LessonViewerPr
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: i * 0.1 }}
-            className="glass-3d p-10 border-white/5 relative overflow-hidden group"
+            className="glass-3d p-10 border-line relative overflow-hidden group"
           >
             <div className="absolute top-0 left-0 w-1 h-full bg-indigo-500/20 group-hover:bg-indigo-500 transition-colors" />
             <h3 className="text-2xl font-black uppercase tracking-tight mb-4 flex items-center gap-3">
               <span className="text-indigo-400 opacity-20">0{i + 1}</span>
               {concept.title}
             </h3>
-            <p className="text-white/75 text-lg leading-relaxed mb-6 font-medium" dangerouslySetInnerHTML={{ __html: renderText(concept.description) }} />
+            <p className="text-ink-muted text-lg leading-relaxed mb-6 font-medium" dangerouslySetInnerHTML={{ __html: renderText(concept.description) }} />
             {concept.example && (
-              <div className="p-6 bg-black/40 rounded-2xl border border-white/5 font-mono text-sm">
+              <div className="p-6 bg-canvas/40 rounded-2xl border border-line font-mono text-sm">
                  <div className="text-[9px] font-black uppercase text-indigo-400 mb-3 opacity-40">Interactive Example</div>
-                 <div className="text-white" dangerouslySetInnerHTML={{ __html: renderText(concept.example) }} />
+                 <div className="text-ink" dangerouslySetInnerHTML={{ __html: renderText(concept.example) }} />
               </div>
             )}
           </motion.div>
@@ -88,10 +88,10 @@ export default function LessonViewer({ lesson, onStartPractice }: LessonViewerPr
           <h3 className="text-2xl font-black uppercase tracking-tight italic">Worked Example.</h3>
         </div>
         <div className="space-y-8">
-           <div className="text-xl font-bold leading-relaxed border-b border-white/10 pb-8" dangerouslySetInnerHTML={{ __html: renderText(lesson.workedExample.question) }} />
+           <div className="text-xl font-bold leading-relaxed border-b border-line pb-8" dangerouslySetInnerHTML={{ __html: renderText(lesson.workedExample.question) }} />
            <div>
               <div className="text-[9px] font-black uppercase text-indigo-400 mb-4 tracking-widest">Step-by-Step Solution</div>
-              <div className="text-white/80 whitespace-pre-line leading-loose font-medium" dangerouslySetInnerHTML={{ __html: renderText(lesson.workedExample.solution) }} />
+              <div className="text-ink whitespace-pre-line leading-loose font-medium" dangerouslySetInnerHTML={{ __html: renderText(lesson.workedExample.solution) }} />
            </div>
         </div>
       </section>
@@ -103,11 +103,11 @@ export default function LessonViewer({ lesson, onStartPractice }: LessonViewerPr
         </h4>
         <div className="grid gap-4">
           {lesson.commonMistakes.map((mistake, i) => (
-            <div key={i} className="flex gap-4 p-6 bg-white/5 rounded-2xl border border-white/5">
+            <div key={i} className="flex gap-4 p-6 bg-surface rounded-2xl border border-line">
                <div className="w-6 h-6 rounded-full bg-rose-500/10 flex items-center justify-center shrink-0 border border-rose-500/20">
                   <span className="text-[10px] font-black text-rose-500">!</span>
                </div>
-               <p className="text-white/75 font-medium text-sm leading-relaxed" dangerouslySetInnerHTML={{ __html: renderText(mistake) }} />
+               <p className="text-ink-muted font-medium text-sm leading-relaxed" dangerouslySetInnerHTML={{ __html: renderText(mistake) }} />
             </div>
           ))}
         </div>

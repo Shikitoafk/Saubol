@@ -70,6 +70,24 @@
   --radius-md: calc(var(--radius) - 2px);
   --radius-lg: var(--radius);
   --radius-xl: calc(var(--radius) + 4px);
+
+  /* ---------------------------------------------------------------- */
+  /*  Палитра интерфейса                                              */
+  /*                                                                  */
+  /*  Раньше цвета были вписаны прямо в разметку: text-white 334 раза, */
+  /*  bg-white/5 — 131, bg-black — 44. Это значило «белый на чёрном»   */
+  /*  буквально, и сменить тему было нельзя, не переписав семь сотен   */
+  /*  строк. Теперь есть смысловые названия, а какой они краски —      */
+  /*  решает тема ниже.                                                */
+  /* ---------------------------------------------------------------- */
+  --color-canvas: var(--c-canvas);           /* фон страницы */
+  --color-surface: var(--c-surface);         /* карточка */
+  --color-surface-2: var(--c-surface-2);     /* карточка над карточкой */
+  --color-ink: var(--c-ink);                 /* основной текст */
+  --color-ink-muted: var(--c-ink-muted);     /* пояснения, подписи */
+  --color-ink-subtle: var(--c-ink-subtle);   /* мелкие метки */
+  --color-line: var(--c-line);               /* границы */
+  --color-line-strong: var(--c-line-strong);
 }
 
 :root {
@@ -95,17 +113,61 @@
   --bg-black: #000000;
   --text-white: #FFFFFF;
   --glass-border: rgba(255, 255, 255, 0.08);
+
+  /* --------------------------------------------------------------- */
+  /*  Светлая тема — основная.                                        */
+  /*                                                                  */
+  /*  Выбрана не ради вкуса: настоящий Digital SAT сдаётся в Bluebook  */
+  /*  на светлом фоне, а сессия длится больше двух часов подряд.      */
+  /*  Читать длинные пассажи белым по чёрному на такой дистанции      */
+  /*  тяжело — буквы «расплываются» (halation), и это заметно сильнее  */
+  /*  у тех, кто читает быстро. Фон не чисто белый: #f7f8fa мягче для  */
+  /*  глаз и не бликует.                                              */
+  /* --------------------------------------------------------------- */
+  --c-canvas: #f6f7f9;
+  --c-surface: #ffffff;
+  --c-surface-2: #f0f2f6;
+  --c-ink: #10131a;           /* 16.8:1 к фону */
+  --c-ink-muted: #4a5160;     /* 7.9:1  — пояснения */
+  --c-ink-subtle: #697084;    /* 4.9:1  — мелкие метки, порог AA */
+  --c-line: #e3e6ec;
+  --c-line-strong: #cbd1dc;
+
+  --glass-shadow: 0 1px 2px rgba(16, 19, 26, 0.04), 0 8px 24px rgba(16, 19, 26, 0.06);
+  --glass-shadow-hover: 0 2px 4px rgba(16, 19, 26, 0.06), 0 18px 40px rgba(16, 19, 26, 0.10);
+}
+
+/* Тёмная тема остаётся — на неё переключает класс .dark на <html>.
+   Значения не «чёрное на чёрном», как было раньше, а тёмно-синие: на
+   чистом #000 контраст режет глаза сильнее, чем помогает. */
+.dark {
+  --c-canvas: #0b0d12;
+  --c-surface: #141821;
+  --c-surface-2: #1c212c;
+  --c-ink: #f2f4f8;
+  --c-ink-muted: #a8b0c0;
+  --c-ink-subtle: #7d8698;
+  --c-line: #232936;
+  --c-line-strong: #333b4c;
+
+  --glass-shadow: 0 1px 2px rgba(0, 0, 0, 0.4), 0 8px 24px rgba(0, 0, 0, 0.5);
+  --glass-shadow-hover: 0 2px 4px rgba(0, 0, 0, 0.5), 0 18px 40px rgba(0, 0, 0, 0.6);
 }
 
 html {
   scroll-behavior: smooth;
-  background-color: var(--bg-black);
+  background-color: var(--c-canvas);
+  color-scheme: light;
+}
+
+html.dark {
+  color-scheme: dark;
 }
 
 body {
   margin: 0;
-  background-color: var(--bg-black);
-  color: var(--text-white);
+  background-color: var(--c-canvas);
+  color: var(--c-ink);
   overflow-x: hidden;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
@@ -149,8 +211,8 @@ body {
 }
 
 ::selection {
-  background: rgba(255, 255, 255, 0.99);
-  color: #000;
+  background: rgba(79, 70, 229, 0.18);
+  color: inherit;
 }
 
 /* Видимый фокус для навигации с клавиатуры. Своих стилей фокуса в проекте
@@ -192,30 +254,31 @@ body::before {
   width: 100%;
   height: 100%;
   background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
-  opacity: 0.02;
+  opacity: 0.015;
   pointer-events: none;
   z-index: 9999;
+  mix-blend-mode: multiply;
 }
 
-/* 3D Glass Effect - Prestigious V2 */
+/* Карточка. На светлом фоне «стекло» с размытием не читается — форму
+   держат граница и мягкая тень, а не прозрачность. Скругление уменьшено
+   с 32px: на карточках обычного размера такой радиус выглядит надувным. */
 .glass-3d {
-  background: linear-gradient(135deg, rgba(255,255,255,0.03) 0%, rgba(255,255,255,0.01) 100%);
-  backdrop-filter: blur(25px);
-  border: 1px solid var(--glass-border);
-  box-shadow: 
-    inset 0 1px 1px rgba(255,255,255,0.05),
-    0 10px 40px rgba(0,0,0,0.8);
-  border-radius: 32px;
-  transition: all 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+  background: var(--c-surface);
+  border: 1px solid var(--c-line);
+  box-shadow: var(--glass-shadow);
+  border-radius: 20px;
+  transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1),
+              box-shadow 0.25s cubic-bezier(0.16, 1, 0.3, 1),
+              border-color 0.25s ease;
 }
 
+/* Подъём был -12px и scale(1.01) — на списке карточек это выглядело как
+   прыжок и сбивало прицел мыши. */
 .glass-3d:hover {
-  transform: translateY(-12px) scale(1.01);
-  border-color: rgba(255,255,255,0.2);
-  background: linear-gradient(135deg, rgba(255,255,255,0.06) 0%, rgba(255,255,255,0.02) 100%);
-  box-shadow: 
-    inset 0 1px 2px rgba(255,255,255,0.1),
-    0 30px 60px rgba(0,0,0,0.9);
+  transform: translateY(-3px);
+  border-color: var(--c-line-strong);
+  box-shadow: var(--glass-shadow-hover);
 }
 
 /* Shimmer Animation */
@@ -224,28 +287,47 @@ body::before {
   100% { background-position: 200% 0; }
 }
 
+/* Раньше это был градиент #fff -> #444 -> #fff: самый крупный текст на
+   странице половину времени оказывался серым с контрастом 2.8:1, и это
+   бесконечно мигало. Теперь заголовок просто плотный, а «блик» — короткая
+   подсветка акцентом, без потери читаемости. */
 .text-shimmer {
-  background: linear-gradient(90deg, #fff 0%, #444 50%, #fff 100%);
-  background-size: 200% auto;
+  color: var(--c-ink);
+  background: linear-gradient(
+    100deg,
+    var(--c-ink) 0%,
+    var(--c-ink) 42%,
+    #4f46e5 50%,
+    var(--c-ink) 58%,
+    var(--c-ink) 100%
+  );
+  background-size: 260% auto;
   -webkit-background-clip: text;
+  background-clip: text;
   -webkit-text-fill-color: transparent;
-  animation: shimmer 8s infinite linear;
+  animation: shimmer 12s infinite linear;
 }
 
 /* High-Tech Vignette */
 .bg-vignette {
   position: fixed;
   inset: 0;
-  background: radial-gradient(circle at center, transparent 0%, rgba(0,0,0,0.9) 100%);
+  /* Виньетка затемняла углы до чёрного — на светлом фоне это грязь.
+     Оставлен едва заметный тёплый спад, чтобы центр читался как фокус. */
+  background: radial-gradient(circle at center, transparent 45%, rgba(16, 19, 26, 0.035) 100%);
   pointer-events: none;
   z-index: 1;
+}
+
+.dark .bg-vignette {
+  background: radial-gradient(circle at center, transparent 40%, rgba(0, 0, 0, 0.55) 100%);
 }
 
 .bg-sphere {
   position: absolute;
   width: 1000px;
   height: 1000px;
-  background: radial-gradient(circle, rgba(255, 255, 255, 0.03) 0%, transparent 70%);
+  background: radial-gradient(circle, rgba(79, 70, 229, 0.07) 0%, transparent 70%);
   filter: blur(100px);
   pointer-events: none;
   z-index: 0;
@@ -257,16 +339,16 @@ body::before {
 }
 
 ::-webkit-scrollbar-track {
-  background: #000;
+  background: transparent;
 }
 
 ::-webkit-scrollbar-thumb {
-  background: #111;
+  background: var(--c-line-strong);
   border-radius: 10px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: #222;
+  background: var(--c-ink-subtle);
 }
 
 @layer utilities {

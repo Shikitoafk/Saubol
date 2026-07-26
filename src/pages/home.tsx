@@ -19,7 +19,7 @@ export default function Home() {
 
   return (
     <Layout>
-      <div className="min-h-screen bg-[#000000] text-white selection:bg-white/10 font-sans relative overflow-hidden">
+      <div className="min-h-screen bg-canvas text-ink selection:bg-surface-2 font-sans relative overflow-hidden">
         <div className="bg-vignette" />
         <div
           className="bg-sphere top-[-20%] left-[-10%] opacity-40 animate-pulse"
@@ -43,7 +43,7 @@ export default function Home() {
                 <br />
                 Practice
               </h1>
-              <p className="text-xl md:text-2xl text-white/60 max-w-2xl mx-auto font-medium mb-12 leading-relaxed">
+              <p className="text-xl md:text-2xl text-ink-muted max-w-2xl mx-auto font-medium mb-12 leading-relaxed">
                 Free IELTS tests and SAT question bank. No extra paths — just study materials.
               </p>
             </motion.div>
@@ -60,7 +60,7 @@ export default function Home() {
                     <BookOpen className="w-10 h-10 text-indigo-400" />
                   </div>
                   <h2 className="text-4xl font-black uppercase italic mb-6">IELTS Tests</h2>
-                  <p className="text-white/60 text-lg font-medium leading-relaxed">
+                  <p className="text-ink-muted text-lg font-medium leading-relaxed">
                     Reading and listening prediction tests in a timed exam interface.
                   </p>
                 </div>
@@ -80,7 +80,7 @@ export default function Home() {
                     <ClipboardList className="w-10 h-10 text-violet-400" />
                   </div>
                   <h2 className="text-4xl font-black uppercase italic mb-6">SAT Question Bank</h2>
-                  <p className="text-white/60 text-lg font-medium leading-relaxed">
+                  <p className="text-ink-muted text-lg font-medium leading-relaxed">
                     Practice questions with filters by section, category, and difficulty.
                   </p>
                 </div>

@@ -38,6 +38,26 @@ export interface SATQuestion {
 /*  Internal helpers                                                   */
 /* ------------------------------------------------------------------ */
 
+/**
+ * Приводит значение image_url к ссылке, которую поймёт браузер.
+ *
+ * Парсер кладёт в CSV путь вида `math_mcq/December_2023_..._p04_q11.png` —
+ * это путь внутри папки со скринами, а не URL. Браузер такой путь
+ * открыть не может, поэтому картинки не показывались. Полные ссылки
+ * (например из Supabase Storage) пропускаем как есть.
+ *
+ * База задаётся через VITE_SAT_IMAGE_BASE; по умолчанию `/sat-images/`,
+ * то есть достаточно положить папку со скринами в `public/sat-images/`.
+ */
+const IMAGE_BASE = (import.meta.env.VITE_SAT_IMAGE_BASE?.trim() || "/sat-images/").replace(/\/+$/, "") + "/";
+
+export function resolveImageUrl(raw: unknown): string | undefined {
+  const value = typeof raw === "string" ? raw.trim() : "";
+  if (!value) return undefined;
+  if (/^(https?:|data:|blob:)/i.test(value)) return value;
+  return IMAGE_BASE + value.replace(/^\/+/, "");
+}
+
 /** Map "A"|"B"|"C"|"D" → 0|1|2|3 */
 function letterToIndex(letter: string): number {
   const map: Record<string, number> = { A: 0, B: 1, C: 2, D: 3 };
@@ -63,7 +83,7 @@ function mapMCQRow(row: any, tablePrefix: string): SATQuestion {
     topic: row.topic ?? row.section ?? "",
     section: tablePrefix === "ebrw" ? "RW" : "Math",
     category: row.section ?? row.topic ?? "",
-    imageUrl: row.image_url || undefined,
+    imageUrl: resolveImageUrl(row.image_url),
     isFreeResponse: false,
     hasKaTeX: false,
     source: row.source ?? "",
@@ -85,7 +105,7 @@ function mapOpenRow(row: any): SATQuestion {
     topic: row.topic ?? "",
     section: "Math",
     category: row.topic ?? "",
-    imageUrl: row.image_url || undefined,
+    imageUrl: resolveImageUrl(row.image_url),
     isFreeResponse: true,
     hasKaTeX: false,
     source: row.source ?? "",

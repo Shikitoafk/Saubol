@@ -32,8 +32,8 @@ interface TopicSidebarProps {
 
 export default function TopicSidebar({ categories, activeTopicId, onSelectTopic }: TopicSidebarProps) {
   return (
-    <div className="w-80 h-full bg-black border-r border-white/5 flex flex-col overflow-y-auto custom-scrollbar">
-      <div className="p-8 border-b border-white/5">
+    <div className="w-80 h-full bg-canvas border-r border-line flex flex-col overflow-y-auto custom-scrollbar">
+      <div className="p-8 border-b border-line">
         <div className="flex items-center gap-3 mb-4 opacity-30">
            <BookOpen className="w-4 h-4" />
            <span className="text-[10px] font-black uppercase tracking-widest">Library</span>
@@ -61,8 +61,8 @@ export default function TopicSidebar({ categories, activeTopicId, onSelectTopic 
                     onClick={() => onSelectTopic(topic.id)}
                     className={`w-full p-4 rounded-xl transition-all flex flex-col gap-3 group relative overflow-hidden border ${
                       isActive 
-                        ? 'bg-white/10 border-white/20' 
-                        : 'hover:bg-white/5 border-transparent'
+                        ? 'bg-surface-2 border-line-strong' 
+                        : 'hover:bg-surface border-transparent'
                     } ${topic.isLocked ? 'opacity-30 grayscale cursor-not-allowed' : 'cursor-pointer'}`}
                   >
                     <div className="flex items-center justify-between relative z-10">
@@ -70,12 +70,12 @@ export default function TopicSidebar({ categories, activeTopicId, onSelectTopic 
                         <div className={`w-1.5 h-1.5 rounded-full ${
                           topic.isCompleted ? 'bg-emerald-500' : 
                           isActive ? 'bg-white' : 
-                          'bg-white/20'
+                          'bg-surface-2'
                         }`} />
                         <span className={`text-[11px] font-black uppercase tracking-tight transition-colors ${
-                          isActive ? 'text-white' : 
+                          isActive ? 'text-ink' : 
                           topic.isCompleted ? 'text-emerald-400' :
-                          'text-white/60 group-hover:text-white'
+                          'text-ink-muted group-hover:text-ink'
                         }`}>
                           {topic.name}
                         </span>
@@ -83,19 +83,19 @@ export default function TopicSidebar({ categories, activeTopicId, onSelectTopic 
                       {topic.isCompleted ? (
                         <CheckCircle2 className="w-3.5 h-3.5 text-emerald-500" />
                       ) : topic.isLocked ? (
-                        <Lock className="w-3.5 h-3.5 text-white/40" />
+                        <Lock className="w-3.5 h-3.5 text-ink-subtle" />
                       ) : (
-                        <Circle className={`w-3.5 h-3.5 text-white/10 ${isActive ? 'fill-white/10' : ''}`} />
+                        <Circle className={`w-3.5 h-3.5 text-ink/10 ${isActive ? 'fill-white/10' : ''}`} />
                       )}
                     </div>
 
                     {!topic.isLocked && (
                       <div className="space-y-1.5 relative z-10">
-                        <div className="h-1 w-full bg-white/5 rounded-full overflow-hidden">
+                        <div className="h-1 w-full bg-surface rounded-full overflow-hidden">
                           <motion.div 
                             initial={false}
                             animate={{ width: `${topic.progress}%` }}
-                            className={`h-full ${topic.isCompleted ? 'bg-emerald-500' : 'bg-white/20'}`}
+                            className={`h-full ${topic.isCompleted ? 'bg-emerald-500' : 'bg-surface-2'}`}
                           />
                         </div>
                         <div className="flex justify-between items-center text-[8px] font-black uppercase tracking-widest opacity-30">
@@ -119,17 +119,17 @@ export default function TopicSidebar({ categories, activeTopicId, onSelectTopic 
         ))}
       </div>
 
-      <div className="mt-auto p-8 border-t border-white/5 bg-white/[0.02]">
+      <div className="mt-auto p-8 border-t border-line bg-surface">
         <div className="space-y-4">
            <div className="flex justify-between items-end">
               <div>
-                 <p className="text-[9px] font-black text-white/40 uppercase tracking-widest mb-1">Total Progress</p>
+                 <p className="text-[9px] font-black text-ink-subtle uppercase tracking-widest mb-1">Total Progress</p>
                  <p className="text-xl font-black italic">12.5%</p>
               </div>
-              <TrendingUp className="w-6 h-6 text-white/10" />
+              <TrendingUp className="w-6 h-6 text-ink/10" />
            </div>
-           <div className="h-1 w-full bg-white/5 rounded-full overflow-hidden">
-              <div className="h-full w-1/8 bg-white/20" />
+           <div className="h-1 w-full bg-surface rounded-full overflow-hidden">
+              <div className="h-full w-1/8 bg-surface-2" />
            </div>
         </div>
       </div>

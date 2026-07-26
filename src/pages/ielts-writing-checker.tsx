@@ -104,7 +104,7 @@ const IELTSWritingChecker = () => {
     const sortedErrors = [...result.grammarErrors].sort((a, b) => b.errorText.length - a.errorText.length);
     
     return (
-      <div className="text-lg leading-relaxed font-medium text-white/90 whitespace-pre-wrap">
+      <div className="text-lg leading-relaxed font-medium text-ink whitespace-pre-wrap">
         {essay.split(/(\s+)/).map((word, i) => {
           const error = result.grammarErrors.find((e: any) => 
             word.toLowerCase().replace(/[.,!?]/g, '') === e.errorText.toLowerCase().replace(/[.,!?]/g, '')
@@ -114,11 +114,11 @@ const IELTSWritingChecker = () => {
             return (
               <span key={i} className="relative group cursor-help border-b-2 border-rose-500/50 bg-rose-500/10 px-1 rounded">
                 {word}
-                <span className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 w-64 p-4 bg-black border border-white/10 rounded-xl shadow-2xl opacity-0 group-hover:opacity-100 transition-opacity z-50 pointer-events-none">
+                <span className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 w-64 p-4 bg-canvas border border-line rounded-xl shadow-2xl opacity-0 group-hover:opacity-100 transition-opacity z-50 pointer-events-none">
                   <p className="text-[10px] font-black uppercase text-rose-400 mb-1">Correction</p>
-                  <p className="text-white font-bold mb-2">{error.correction}</p>
-                  <p className="text-[10px] font-black uppercase text-white/60 mb-1">Reason</p>
-                  <p className="text-xs text-white/75 normal-case">{error.explanation}</p>
+                  <p className="text-ink font-bold mb-2">{error.correction}</p>
+                  <p className="text-[10px] font-black uppercase text-ink-muted mb-1">Reason</p>
+                  <p className="text-xs text-ink-muted normal-case">{error.explanation}</p>
                 </span>
               </span>
             );
@@ -135,7 +135,7 @@ const IELTSWritingChecker = () => {
 
   return (
     <Layout>
-      <div className="min-h-screen bg-[#000000] text-white selection:bg-white/10 relative overflow-hidden font-sans print:bg-white print:text-black">
+      <div className="min-h-screen bg-canvas text-ink selection:bg-surface-2 relative overflow-hidden font-sans print:bg-white print:text-black">
         {/* Depth Background */}
         <div className="bg-vignette print:hidden" />
         <div className="bg-sphere top-[-10%] right-[-5%] opacity-30 print:hidden" style={{ background: 'radial-gradient(circle, rgba(139, 92, 246, 0.08) 0%, transparent 70%)' }} />
@@ -150,7 +150,7 @@ const IELTSWritingChecker = () => {
                 </BreadcrumbItem>
                 <BreadcrumbSeparator />
                 <BreadcrumbItem>
-                  <BreadcrumbPage className="font-black uppercase tracking-widest text-[10px] text-white">Writing Checker</BreadcrumbPage>
+                  <BreadcrumbPage className="font-black uppercase tracking-widest text-[10px] text-ink">Writing Checker</BreadcrumbPage>
                 </BreadcrumbItem>
               </BreadcrumbList>
             </Breadcrumb>
@@ -165,7 +165,7 @@ const IELTSWritingChecker = () => {
             <h1 className="text-6xl md:text-8xl font-black tracking-tighter text-shimmer leading-[0.85] mb-8 print:text-4xl print:text-black print:mb-4">
               WRITING <br /> CHECKER.
             </h1>
-            <p className="text-xl text-[#a6a6ae] font-medium max-w-2xl leading-relaxed print:text-sm print:text-gray-600">
+            <p className="text-xl text-ink-muted font-medium max-w-2xl leading-relaxed print:text-sm print:text-gray-600">
               Мгновенный разбор твоего эссе с помощью Gemini AI. Оценка по критериям IELTS, исправление ошибок и Band 9.0 версия твоего текста.
             </p>
           </div>
@@ -182,7 +182,7 @@ const IELTSWritingChecker = () => {
                 className={`px-8 py-4 rounded-xl font-black uppercase tracking-widest text-[10px] transition-all border ${
                   taskType === type.id 
                   ? "bg-white text-black border-white shadow-[0_10px_20px_rgba(255,255,255,0.1)]" 
-                  : "bg-white/5 text-[#8b8b93] border-white/5 hover:border-white/20"
+                  : "bg-surface text-ink-subtle border-line hover:border-line-strong"
                 }`}
               >
                 {type.label}
@@ -195,9 +195,9 @@ const IELTSWritingChecker = () => {
             {/* Prompt Panel */}
             <div className="glass-3d p-10 flex flex-col gap-6">
               <div className="flex items-center justify-between">
-                <label className="text-xs font-black uppercase tracking-widest text-[#8b8b93]">Question / Prompt</label>
+                <label className="text-xs font-black uppercase tracking-widest text-ink-subtle">Question / Prompt</label>
                 {taskType === 'task1' && (
-                  <label className="flex items-center gap-2 px-4 py-2 bg-white/5 rounded-lg border border-white/10 cursor-pointer hover:bg-white/10 transition-all text-[10px] font-black uppercase tracking-widest">
+                  <label className="flex items-center gap-2 px-4 py-2 bg-surface rounded-lg border border-line cursor-pointer hover:bg-surface-2 transition-all text-[10px] font-black uppercase tracking-widest">
                     <ImageIcon className="w-3 h-3" />
                     {taskImage ? 'Replace Image' : 'Upload Image'}
                     <input type="file" className="hidden" accept="image/*" onChange={handleImageUpload} />
@@ -206,14 +206,14 @@ const IELTSWritingChecker = () => {
               </div>
               <textarea
                 placeholder="Paste the writing prompt here..."
-                className="w-full h-80 bg-transparent border-none resize-none focus:outline-none font-medium text-lg text-white/80 placeholder:text-[#222]"
+                className="w-full h-80 bg-transparent border-none resize-none focus:outline-none font-medium text-lg text-ink placeholder:text-[#222]"
                 value={prompt}
                 onChange={(e) => setPrompt(e.target.value)}
               />
               {taskImage && (
-                <div className="relative w-32 h-20 rounded-xl overflow-hidden border border-white/10 group">
+                <div className="relative w-32 h-20 rounded-xl overflow-hidden border border-line group">
                   <img src={taskImage} className="w-full h-full object-cover" />
-                  <button onClick={() => setTaskImage(null)} className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 flex items-center justify-center transition-opacity">
+                  <button onClick={() => setTaskImage(null)} className="absolute inset-0 bg-canvas/60 opacity-0 group-hover:opacity-100 flex items-center justify-center transition-opacity">
                     <X className="w-4 h-4" />
                   </button>
                 </div>
@@ -222,14 +222,14 @@ const IELTSWritingChecker = () => {
 
             {/* Essay Panel */}
             <div className="glass-3d p-10 flex flex-col gap-6 border-indigo-500/20 shadow-[0_20px_40px_rgba(99,102,241,0.05)]">
-              <label className="text-xs font-black uppercase tracking-widest text-[#8b8b93]">Your Writing</label>
+              <label className="text-xs font-black uppercase tracking-widest text-ink-subtle">Your Writing</label>
               <textarea
                 placeholder="Start typing or paste your essay here..."
-                className="w-full h-[500px] bg-transparent border-none resize-none focus:outline-none font-medium text-lg text-white/80 placeholder:text-[#222]"
+                className="w-full h-[500px] bg-transparent border-none resize-none focus:outline-none font-medium text-lg text-ink placeholder:text-[#222]"
                 value={essay}
                 onChange={(e) => setEssay(e.target.value)}
               />
-              <div className="flex justify-between items-center pt-6 border-t border-white/5">
+              <div className="flex justify-between items-center pt-6 border-t border-line">
                 <div className="flex flex-col">
                   <span className="text-[10px] font-black text-[#333] uppercase tracking-widest">{essay.trim().split(/\s+/).filter(x => x).length} Words</span>
                   <span className="text-[8px] font-black text-[#222] uppercase tracking-widest">Minimum 250 Recommended</span>
@@ -249,12 +249,12 @@ const IELTSWritingChecker = () => {
           {result && (
             <div className="space-y-12 animate-in fade-in slide-in-from-bottom-10 duration-1000">
               {/* Main Score Banner */}
-              <div className="glass-3d p-16 flex flex-col md:flex-row items-center justify-between gap-12 bg-white/5 border-white/20 print:border-none print:bg-white print:p-0 print:mb-10 print:text-black">
+              <div className="glass-3d p-16 flex flex-col md:flex-row items-center justify-between gap-12 bg-surface border-line-strong print:border-none print:bg-white print:p-0 print:mb-10 print:text-black">
                  <div className="flex items-center gap-10">
                     <div className="text-9xl font-black text-shimmer leading-none print:text-black print:text-7xl">{result.bandScore}</div>
                     <div>
                       <h3 className="text-4xl font-black tracking-tight mb-2 print:text-2xl print:text-black">OVERALL BAND</h3>
-                      <p className="text-xs font-black text-[#8b8b93] uppercase tracking-[0.3em] print:text-black">Official Scoring Estimation</p>
+                      <p className="text-xs font-black text-ink-subtle uppercase tracking-[0.3em] print:text-black">Official Scoring Estimation</p>
                     </div>
                  </div>
                  <Button onClick={downloadReport} className="bg-white text-black hover:bg-gray-200 rounded-xl px-10 h-16 font-black tracking-widest uppercase text-xs print:hidden">
@@ -304,10 +304,10 @@ const IELTSWritingChecker = () => {
                        ].map((item) => (
                          <div key={item.id}>
                             <div className="flex items-center gap-3 mb-4">
-                               <div className="w-8 h-8 rounded bg-white/5 flex items-center justify-center font-black text-[10px] text-white/60 border border-white/10 print:text-black print:border-gray-200">{item.id}</div>
-                               <h5 className="text-[10px] font-black uppercase tracking-widest text-[#8b8b93] print:text-black">{item.title}</h5>
+                               <div className="w-8 h-8 rounded bg-surface flex items-center justify-center font-black text-[10px] text-ink-muted border border-line print:text-black print:border-gray-200">{item.id}</div>
+                               <h5 className="text-[10px] font-black uppercase tracking-widest text-ink-subtle print:text-black">{item.title}</h5>
                             </div>
-                            <p className="text-[#c2c2c9] leading-relaxed font-medium print:text-black print:text-sm">{item.content}</p>
+                            <p className="text-ink-muted leading-relaxed font-medium print:text-black print:text-sm">{item.content}</p>
                          </div>
                        ))}
                     </div>
@@ -323,13 +323,13 @@ const IELTSWritingChecker = () => {
                    </h4>
                    <Button variant="ghost" onClick={() => { navigator.clipboard.writeText(result.rewrittenEssay); }} className="text-[10px] font-black uppercase text-indigo-400 print:hidden">Copy Version</Button>
                 </div>
-                <div className="text-lg leading-relaxed font-medium text-white/75 bg-white/5 p-10 rounded-2xl border border-white/5 print:bg-gray-50 print:text-black print:text-sm">
+                <div className="text-lg leading-relaxed font-medium text-ink-muted bg-surface p-10 rounded-2xl border border-line print:bg-gray-50 print:text-black print:text-sm">
                    {result.rewrittenEssay}
                 </div>
               </div>
               
               <div className="flex justify-center pt-10 print:hidden">
-                 <Button onClick={() => setResult(null)} variant="ghost" className="text-[10px] font-black uppercase tracking-[0.5em] text-[#8b8b93] hover:text-white">
+                 <Button onClick={() => setResult(null)} variant="ghost" className="text-[10px] font-black uppercase tracking-[0.5em] text-ink-subtle hover:text-ink">
                     Start New Analysis
                  </Button>
               </div>

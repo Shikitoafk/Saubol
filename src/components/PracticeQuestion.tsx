@@ -59,39 +59,39 @@ export default function PracticeQuestion({
       <div className="flex items-center justify-between mb-12">
         <div className="flex items-center gap-6">
            <div className="text-center">
-              <p className="text-[9px] font-black text-white/40 uppercase tracking-[0.3em] mb-1">Topic</p>
-              <p className="text-sm font-black uppercase tracking-tight text-white/75">{question.topic}</p>
+              <p className="text-[9px] font-black text-ink-subtle uppercase tracking-[0.3em] mb-1">Topic</p>
+              <p className="text-sm font-black uppercase tracking-tight text-ink-muted">{question.topic}</p>
            </div>
-           <div className="w-px h-8 bg-white/10" />
+           <div className="w-px h-8 bg-surface-2" />
            <div className="text-center">
-              <p className="text-[9px] font-black text-white/40 uppercase tracking-[0.3em] mb-1">Difficulty</p>
+              <p className="text-[9px] font-black text-ink-subtle uppercase tracking-[0.3em] mb-1">Difficulty</p>
               <p className={`text-sm font-black uppercase tracking-tight ${
                 question.difficulty === 'Easy' ? 'text-emerald-400' : 
                 question.difficulty === 'Medium' ? 'text-indigo-400' : 'text-rose-400'
               }`}>{question.difficulty}</p>
            </div>
         </div>
-        <div className="flex items-center gap-4 bg-white/5 px-6 py-3 rounded-2xl border border-white/10">
+        <div className="flex items-center gap-4 bg-surface px-6 py-3 rounded-2xl border border-line">
            <BarChart3 className="w-4 h-4 text-indigo-400" />
-           <span className="text-[10px] font-black uppercase tracking-widest text-white/60">Question {currentIndex + 1} / {total}</span>
+           <span className="text-[10px] font-black uppercase tracking-widest text-ink-muted">Question {currentIndex + 1} / {total}</span>
         </div>
       </div>
 
       {/* Main Question Card */}
-      <div className="glass-3d p-12 border-white/5">
+      <div className="glass-3d p-12 border-line">
         {question.imageUrl && (
           <div className="mb-8">
-            <img src={question.imageUrl} alt="Question visual" className="max-w-full rounded-2xl border border-white/10" />
+            <img src={question.imageUrl} alt="Question visual" className="max-w-full rounded-2xl border border-line" />
           </div>
         )}
 
         {question.passage && (
-          <div className="p-8 bg-white/5 rounded-2xl border border-white/10 mb-10">
+          <div className="p-8 bg-surface rounded-2xl border border-line mb-10">
             <div className="flex items-center gap-2 mb-4 opacity-30">
               <Target className="w-4 h-4" />
               <span className="text-[9px] font-black uppercase tracking-widest">Passage Analysis</span>
             </div>
-            <p className="text-lg leading-relaxed font-medium text-white/80">{question.passage}</p>
+            <p className="text-lg leading-relaxed font-medium text-ink">{question.passage}</p>
           </div>
         )}
         
@@ -112,14 +112,14 @@ export default function PracticeQuestion({
                 className={`w-full p-8 text-left rounded-2xl border transition-all flex items-center justify-between group ${
                   status === 'correct' ? 'bg-emerald-500/10 border-emerald-500/30 text-emerald-400 shadow-[0_0_40px_rgba(16,185,129,0.1)]' :
                   status === 'wrong' ? 'bg-rose-500/10 border-rose-500/30 text-rose-400' :
-                  'bg-white/5 border-white/5 hover:border-white/20 hover:bg-white/10'
+                  'bg-surface border-line hover:border-line-strong hover:bg-surface-2'
                 }`}
               >
                 <div className="flex items-center gap-6">
                   <div className={`w-10 h-10 rounded-xl flex items-center justify-center border font-black text-sm transition-colors ${
                     status === 'correct' ? 'bg-emerald-500 border-emerald-400 text-black' :
                     status === 'wrong' ? 'bg-rose-500 border-rose-400 text-black' :
-                    'bg-white/5 border-white/10 text-white/40'
+                    'bg-surface border-line text-ink-subtle'
                   }`}>
                     {String.fromCharCode(65 + i)}
                   </div>
@@ -146,15 +146,15 @@ export default function PracticeQuestion({
                  <Sparkles className="w-5 h-5 text-indigo-400" />
                  <h4 className="text-[10px] font-black uppercase tracking-widest text-indigo-400">Mastery Explanation</h4>
               </div>
-              <div className="text-white/80 font-medium text-lg leading-relaxed mb-8" dangerouslySetInnerHTML={{ __html: renderText(question.explanation) }} />
+              <div className="text-ink font-medium text-lg leading-relaxed mb-8" dangerouslySetInnerHTML={{ __html: renderText(question.explanation) }} />
               
-              <div className="space-y-4 pt-8 border-t border-white/5">
-                 <h5 className="text-[9px] font-black uppercase text-white/40 tracking-widest mb-4">Strategic Error Analysis</h5>
+              <div className="space-y-4 pt-8 border-t border-line">
+                 <h5 className="text-[9px] font-black uppercase text-ink-subtle tracking-widest mb-4">Strategic Error Analysis</h5>
                  <div className="grid md:grid-cols-2 gap-4">
                     {question.wrongExplanations?.map((msg, i) => (
-                       <div key={i} className="flex gap-3 p-4 bg-black/20 rounded-xl border border-white/5 opacity-60">
-                          <Info className="w-3.5 h-3.5 text-[#8b8b93] shrink-0 mt-0.5" />
-                          <p className="text-[11px] font-medium text-white/60 leading-relaxed italic">{msg}</p>
+                       <div key={i} className="flex gap-3 p-4 bg-canvas/20 rounded-xl border border-line opacity-60">
+                          <Info className="w-3.5 h-3.5 text-ink-subtle shrink-0 mt-0.5" />
+                          <p className="text-[11px] font-medium text-ink-muted leading-relaxed italic">{msg}</p>
                        </div>
                     ))}
                  </div>

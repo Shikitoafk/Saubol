@@ -74,12 +74,12 @@ export default function PracticeSession({ topic, questions, onComplete }: Practi
       <div className="flex items-center justify-between mb-16">
         <div className="flex items-center gap-6">
            <div>
-              <p className="text-[9px] font-black text-white/40 uppercase tracking-[0.3em] mb-1">Current Focus</p>
+              <p className="text-[9px] font-black text-ink-subtle uppercase tracking-[0.3em] mb-1">Current Focus</p>
               <p className="text-sm font-black uppercase text-indigo-400">{topic}</p>
            </div>
-           <div className="w-px h-8 bg-white/10" />
+           <div className="w-px h-8 bg-surface-2" />
            <div>
-              <p className="text-[9px] font-black text-white/40 uppercase tracking-[0.3em] mb-1">Complexity</p>
+              <p className="text-[9px] font-black text-ink-subtle uppercase tracking-[0.3em] mb-1">Complexity</p>
               <p className={`text-sm font-black uppercase tracking-tight ${
                 index < 8 ? 'text-emerald-400' : index < 18 ? 'text-indigo-400' : 'text-rose-400'
               }`}>
@@ -90,26 +90,26 @@ export default function PracticeSession({ topic, questions, onComplete }: Practi
 
         <div className="flex flex-col items-end gap-3">
            <div className="flex items-center gap-3">
-              <BarChart3 className="w-4 h-4 text-white/40" />
-              <span className="text-[10px] font-black uppercase tracking-widest text-white/60">Question {index + 1} of {questions.length}</span>
+              <BarChart3 className="w-4 h-4 text-ink-subtle" />
+              <span className="text-[10px] font-black uppercase tracking-widest text-ink-muted">Question {index + 1} of {questions.length}</span>
            </div>
-           <div className="w-48 h-1 bg-white/5 rounded-full overflow-hidden">
+           <div className="w-48 h-1 bg-surface rounded-full overflow-hidden">
               <motion.div animate={{ width: `${progress}%` }} className="h-full bg-indigo-500" />
            </div>
         </div>
       </div>
 
-      <div className="glass-3d p-12 border-white/5 relative overflow-hidden">
+      <div className="glass-3d p-12 border-line relative overflow-hidden">
          {currentQuestion.imageUrl && (
             <div className="mb-8">
-              <img src={currentQuestion.imageUrl} alt="Question visual" className="max-w-full rounded-2xl border border-white/5" />
+              <img src={currentQuestion.imageUrl} alt="Question visual" className="max-w-full rounded-2xl border border-line" />
             </div>
          )}
 
          {currentQuestion.passage && (
-            <div className="mb-12 p-10 bg-white/5 rounded-2xl border border-white/5 border-l-4 border-l-indigo-500">
+            <div className="mb-12 p-10 bg-surface rounded-2xl border border-line border-l-4 border-l-indigo-500">
                <p className="text-[9px] font-black uppercase tracking-widest text-indigo-400 mb-6">Reading Passage</p>
-               <p className="text-xl leading-relaxed text-white/80 font-medium">{currentQuestion.passage}</p>
+               <p className="text-xl leading-relaxed text-ink font-medium">{currentQuestion.passage}</p>
             </div>
          )}
 
@@ -129,14 +129,14 @@ export default function PracticeSession({ topic, questions, onComplete }: Practi
                     className={`w-full p-8 rounded-2xl border transition-all flex items-center justify-between group ${
                       status === 'correct' ? 'bg-emerald-500/10 border-emerald-500/40 text-emerald-400' :
                       status === 'wrong' ? 'bg-rose-500/10 border-rose-500/40 text-rose-400' :
-                      'bg-white/5 border-white/5 hover:bg-white/10 hover:border-white/20'
+                      'bg-surface border-line hover:bg-surface-2 hover:border-line-strong'
                     }`}
                   >
                      <div className="flex items-center gap-6">
                         <div className={`w-10 h-10 rounded-xl flex items-center justify-center border font-black text-sm transition-all ${
                            status === 'correct' ? 'bg-emerald-500 border-emerald-400 text-black' :
                            status === 'wrong' ? 'bg-rose-500 border-rose-400 text-black' :
-                           'bg-white/5 border-white/10 text-white/40'
+                           'bg-surface border-line text-ink-subtle'
                         }`}>
                            {String.fromCharCode(65 + i)}
                         </div>
@@ -153,7 +153,7 @@ export default function PracticeSession({ topic, questions, onComplete }: Practi
       <AnimatePresence>
         {showFeedback && (
           <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="mt-8 space-y-6">
-             <div className={`glass-3d p-10 border-white/5 ${selected === currentQuestion.correctAnswer ? 'bg-emerald-500/5 border-emerald-500/20' : 'bg-rose-500/5 border-rose-500/20'}`}>
+             <div className={`glass-3d p-10 border-line ${selected === currentQuestion.correctAnswer ? 'bg-emerald-500/5 border-emerald-500/20' : 'bg-rose-500/5 border-rose-500/20'}`}>
                 <div className="flex items-center gap-3 mb-6">
                    <Sparkles className={`w-5 h-5 ${selected === currentQuestion.correctAnswer ? 'text-emerald-400' : 'text-rose-400'}`} />
                    <h4 className="text-[10px] font-black uppercase tracking-widest">
@@ -161,15 +161,15 @@ export default function PracticeSession({ topic, questions, onComplete }: Practi
                    </h4>
                 </div>
                 
-                <div className="text-white/80 text-lg leading-relaxed mb-8" dangerouslySetInnerHTML={{ __html: renderText(currentQuestion.explanation) }} />
+                <div className="text-ink text-lg leading-relaxed mb-8" dangerouslySetInnerHTML={{ __html: renderText(currentQuestion.explanation) }} />
 
                 {selected !== currentQuestion.correctAnswer && (
-                   <div className="pt-8 border-t border-white/5">
+                   <div className="pt-8 border-t border-line">
                       <div className="flex items-center gap-3 mb-4">
                          <ShieldAlert className="w-4 h-4 text-rose-400" />
                          <span className="text-[10px] font-black uppercase tracking-widest text-rose-400">The Trap</span>
                       </div>
-                      <p className="text-sm font-medium text-white/60 italic leading-relaxed">
+                      <p className="text-sm font-medium text-ink-muted italic leading-relaxed">
                          {currentQuestion.wrongExplanations?.[selected || 0] || "CollegeBoard often includes this option for students who miss a critical step in the procedure."}
                       </p>
                    </div>

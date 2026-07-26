@@ -37,19 +37,19 @@ export default function PracticeComplete({ topic, score, total, onRetry, onNext 
         </div>
 
         <h1 className="text-6xl font-black uppercase italic tracking-tighter mb-4">{topic} COMPLETE.</h1>
-        <p className="text-white/60 font-black uppercase tracking-[0.4em] text-[10px] mb-16">Session performance summarized</p>
+        <p className="text-ink-muted font-black uppercase tracking-[0.4em] text-[10px] mb-16">Session performance summarized</p>
 
         <div className="grid md:grid-cols-3 gap-8 mb-16">
-           <div className="glass-3d p-10 border-white/5">
-              <p className="text-[9px] font-black uppercase text-white/40 mb-4 tracking-widest">Accuracy</p>
+           <div className="glass-3d p-10 border-line">
+              <p className="text-[9px] font-black uppercase text-ink-subtle mb-4 tracking-widest">Accuracy</p>
               <p className="text-4xl font-black italic tracking-tighter">{score}/{total}</p>
            </div>
-           <div className="glass-3d p-10 border-white/5 bg-indigo-500/5 border-indigo-500/20">
+           <div className="glass-3d p-10 border-line bg-indigo-500/5 border-indigo-500/20">
               <p className="text-[9px] font-black uppercase text-indigo-400 mb-4 tracking-widest">Mastery Level</p>
               <p className={`text-4xl font-black italic tracking-tighter ${isMastered ? 'text-emerald-400' : 'text-indigo-400'}`}>{percentage}%</p>
            </div>
-           <div className="glass-3d p-10 border-white/5">
-              <p className="text-[9px] font-black uppercase text-white/40 mb-4 tracking-widest">Global Rank</p>
+           <div className="glass-3d p-10 border-line">
+              <p className="text-[9px] font-black uppercase text-ink-subtle mb-4 tracking-widest">Global Rank</p>
               <p className="text-4xl font-black italic tracking-tighter text-shimmer">TOP 5%</p>
            </div>
         </div>
@@ -62,9 +62,9 @@ export default function PracticeComplete({ topic, score, total, onRetry, onNext 
                  <h4 className="text-[10px] font-black uppercase tracking-widest text-emerald-500">Core Strengths</h4>
               </div>
               <ul className="space-y-3">
-                 <li className="text-sm font-medium text-white/75">✓ Fundamental Principles</li>
-                 <li className="text-sm font-medium text-white/75">✓ Standard Procedures</li>
-                 <li className="text-sm font-medium text-white/75">✓ Basic Interpretation</li>
+                 <li className="text-sm font-medium text-ink-muted">✓ Fundamental Principles</li>
+                 <li className="text-sm font-medium text-ink-muted">✓ Standard Procedures</li>
+                 <li className="text-sm font-medium text-ink-muted">✓ Basic Interpretation</li>
               </ul>
            </div>
            <div className="glass-3d p-10 border-indigo-500/10 bg-indigo-500/[0.02]">
@@ -73,22 +73,22 @@ export default function PracticeComplete({ topic, score, total, onRetry, onNext 
                  <h4 className="text-[10px] font-black uppercase tracking-widest text-indigo-400">Target for Review</h4>
               </div>
               <ul className="space-y-3">
-                 <li className="text-sm font-medium text-white/75">• Complex Word Problems</li>
-                 <li className="text-sm font-medium text-white/75">• Time Management (Last 5 Qs)</li>
-                 <li className="text-sm font-medium text-white/75">• Multistep Equations</li>
+                 <li className="text-sm font-medium text-ink-muted">• Complex Word Problems</li>
+                 <li className="text-sm font-medium text-ink-muted">• Time Management (Last 5 Qs)</li>
+                 <li className="text-sm font-medium text-ink-muted">• Multistep Equations</li>
               </ul>
            </div>
         </div>
 
-        <div className="p-12 glass-3d border-white/5 mb-16">
+        <div className="p-12 glass-3d border-line mb-16">
            <div className="flex items-center justify-between gap-8 text-left">
               <div className="flex items-center gap-6">
-                 <div className="w-14 h-14 rounded-2xl bg-white/5 flex items-center justify-center border border-white/10">
+                 <div className="w-14 h-14 rounded-2xl bg-surface flex items-center justify-center border border-line">
                     <Brain className="w-7 h-7 text-indigo-400" />
                  </div>
                  <div>
                     <h5 className="text-xl font-black uppercase italic tracking-tight">AI Recommendation</h5>
-                    <p className="text-sm text-white/60 max-w-md mt-1">
+                    <p className="text-sm text-ink-muted max-w-md mt-1">
                        {isMastered 
                          ? `Excellent performance. You are ready to move on to the next topic.` 
                          : `You're close to mastery. We recommend reviewing the word problem sections before continuing.`
@@ -109,7 +109,7 @@ export default function PracticeComplete({ topic, score, total, onRetry, onNext 
            <Button 
              variant="outline" 
              onClick={onRetry}
-             className="flex-1 h-20 border-white/10 hover:bg-white/5 text-white/60 font-black uppercase text-xs rounded-2xl transition-all"
+             className="flex-1 h-20 border-line hover:bg-surface text-ink-muted font-black uppercase text-xs rounded-2xl transition-all"
            >
               <RotateCcw className="mr-3 w-4 h-4" /> Retry Session
            </Button>

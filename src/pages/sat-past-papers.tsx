@@ -573,7 +573,7 @@ export default function SATPastPapers() {
 
   return (
     <Layout>
-      <div className={`min-h-screen bg-black text-white relative overflow-hidden font-sans selection:bg-white/10 ${theme === 'light' ? 'light-theme' : ''}`}>
+      <div className={`min-h-screen bg-canvas text-ink relative overflow-hidden font-sans selection:bg-surface-2 ${theme === 'light' ? 'light-theme' : ''}`}>
         <style>{`
           .light-theme {
             background-color: #f8fafc !important;
@@ -597,19 +597,19 @@ export default function SATPastPapers() {
             -webkit-background-clip: text !important;
             -webkit-text-fill-color: transparent !important;
           }
-          .light-theme .text-white {
+          .light-theme .text-ink {
             color: #0f172a !important;
           }
-          .light-theme .text-white\\/80 {
+          .light-theme .text-ink\\/80 {
             color: #334155 !important;
           }
-          .light-theme .text-white\\/70 {
+          .light-theme .text-ink\\/70 {
             color: #475569 !important;
           }
-          .light-theme .text-white\\/60 {
+          .light-theme .text-ink\\/60 {
             color: #475569 !important;
           }
-          .light-theme .text-white\\/40 {
+          .light-theme .text-ink\\/40 {
             color: #64748b !important;
           }
           .light-theme .text-\\[\\#444\\] {
@@ -639,7 +639,7 @@ export default function SATPastPapers() {
           .light-theme .hover\\:bg-white\\/10:hover {
             background-color: rgba(99, 102, 241, 0.08) !important;
           }
-          .light-theme .hover\\:text-white:hover {
+          .light-theme .hover\\:text-ink:hover {
             color: #4f46e5 !important;
           }
           .light-theme button.glass-3d:hover {
@@ -717,7 +717,7 @@ export default function SATPastPapers() {
               <h1 className="text-6xl md:text-8xl font-black italic tracking-tighter uppercase mb-6 leading-none">
                 PAST PAPERS.
               </h1>
-              <p className="text-sm text-[#a6a6ae] font-semibold max-w-xl">
+              <p className="text-sm text-ink-muted font-semibold max-w-xl">
                 Solve authentic past Digital SAT exam modules by period with proper pacing, structure, and analytics.
               </p>
             </header>
@@ -725,7 +725,7 @@ export default function SATPastPapers() {
             {loading ? (
               <div className="glass-3d p-16 flex flex-col items-center justify-center border-indigo-500/10 min-h-[300px]">
                 <div className="w-10 h-10 border-4 border-indigo-500 border-t-transparent rounded-full animate-spin mb-4" />
-                <p className="text-xs uppercase tracking-widest text-[#8b8b93] font-bold">Scanning database for papers...</p>
+                <p className="text-xs uppercase tracking-widest text-ink-subtle font-bold">Scanning database for papers...</p>
               </div>
             ) : loadError ? (
               <div className="glass-3d p-12 border-rose-500/20 bg-rose-500/[0.03] min-h-[300px] flex flex-col justify-center">
@@ -733,22 +733,22 @@ export default function SATPastPapers() {
                   <AlertCircle className="w-6 h-6" />
                   <h3 className="text-xl font-black uppercase italic tracking-tight">Не удалось загрузить тесты</h3>
                 </div>
-                <p className="text-sm text-[#c2c2c9] font-medium mb-6 max-w-2xl leading-relaxed">
+                <p className="text-sm text-ink-muted font-medium mb-6 max-w-2xl leading-relaxed">
                   База ответила ошибкой. Проверь, что таблицы <code className="text-indigo-400">sat_ebrw_mcq</code>,{" "}
                   <code className="text-indigo-400">sat_math_mcq</code>, <code className="text-indigo-400">sat_math_open</code>{" "}
                   существуют и открыты на чтение (RLS) для анонимного ключа.
                 </p>
-                <pre className="text-xs text-rose-300/80 bg-black/40 border border-rose-500/10 rounded-xl p-4 overflow-x-auto">
+                <pre className="text-xs text-rose-300/80 bg-canvas/40 border border-rose-500/10 rounded-xl p-4 overflow-x-auto">
                   {loadError}
                 </pre>
               </div>
             ) : pastPapers.length === 0 ? (
-              <div className="glass-3d p-12 border-white/5 min-h-[300px] flex flex-col justify-center">
+              <div className="glass-3d p-12 border-line min-h-[300px] flex flex-col justify-center">
                 <div className="flex items-center gap-3 mb-4 text-indigo-400">
                   <FileText className="w-6 h-6" />
                   <h3 className="text-xl font-black uppercase italic tracking-tight">Пока нет ни одного теста</h3>
                 </div>
-                <p className="text-sm text-[#c2c2c9] font-medium max-w-2xl leading-relaxed">
+                <p className="text-sm text-ink-muted font-medium max-w-2xl leading-relaxed">
                   Запрос прошёл, но строк с заполненным <code className="text-indigo-400">test_period</code> не нашлось.
                   Загрузи вопросы в Supabase и убедись, что у них проставлен период — например «March 2026».
                 </p>
@@ -761,7 +761,7 @@ export default function SATPastPapers() {
                     <motion.div
                       key={key}
                       whileHover={{ y: -8, scale: 1.01 }}
-                      className="glass-3d p-10 flex flex-col justify-between min-h-[320px] cursor-pointer border-white/5 hover:border-indigo-500/40 transition-all relative overflow-hidden group"
+                      className="glass-3d p-10 flex flex-col justify-between min-h-[320px] cursor-pointer border-line hover:border-indigo-500/40 transition-all relative overflow-hidden group"
                       onClick={() => handleSelectPaper(paper)}
                     >
                       <div className="absolute top-0 right-0 w-64 h-64 bg-indigo-500/5 blur-[100px] opacity-0 group-hover:opacity-100 transition-opacity" />
@@ -772,7 +772,7 @@ export default function SATPastPapers() {
                             <span className="px-3.5 py-1.5 bg-indigo-500/10 rounded-full border border-indigo-500/20 text-[9px] font-black tracking-widest uppercase text-indigo-400">
                               Real Exam
                             </span>
-                            <span className="text-xs font-black text-white/60 uppercase">
+                            <span className="text-xs font-black text-ink-muted uppercase">
                               {paper.test_version || "Standard"}
                             </span>
                           </div>
@@ -780,23 +780,23 @@ export default function SATPastPapers() {
                           <h3 className="text-3xl font-black mb-4 tracking-tighter uppercase italic leading-none text-shimmer">
                             {paper.test_period}
                           </h3>
-                          <p className="text-xs font-bold text-white/60 uppercase tracking-widest">
+                          <p className="text-xs font-bold text-ink-muted uppercase tracking-widest">
                             {paper.totalQuestions} Questions Total
                           </p>
                         </div>
 
-                        <div className="mt-8 flex gap-3 text-[10px] font-black uppercase text-white/45">
-                          <div className="px-3 py-1.5 bg-white/5 rounded-lg border border-white/5">
+                        <div className="mt-8 flex gap-3 text-[10px] font-black uppercase text-ink-subtle">
+                          <div className="px-3 py-1.5 bg-surface rounded-lg border border-line">
                             RW: {paper.rwQuestions}
                           </div>
-                          <div className="px-3 py-1.5 bg-white/5 rounded-lg border border-white/5">
+                          <div className="px-3 py-1.5 bg-surface rounded-lg border border-line">
                             Math: {paper.mathQuestions}
                           </div>
                         </div>
                       </div>
 
-                      <div className="flex items-center justify-between mt-8 pt-6 border-t border-white/5 relative z-10">
-                        <span className="text-[10px] font-black uppercase tracking-wider text-indigo-400 group-hover:text-white transition-colors flex items-center gap-1">
+                      <div className="flex items-center justify-between mt-8 pt-6 border-t border-line relative z-10">
+                        <span className="text-[10px] font-black uppercase tracking-wider text-indigo-400 group-hover:text-ink transition-colors flex items-center gap-1">
                           Solve Test <ChevronRight className="w-3.5 h-3.5" />
                         </span>
                       </div>
@@ -814,7 +814,7 @@ export default function SATPastPapers() {
             <Button
               onClick={() => { setPhase("list"); setSelectedPaper(null); }}
               variant="ghost"
-              className="text-[10px] font-black uppercase tracking-[0.2em] text-[#8b8b93] hover:text-white p-0 mb-12 flex items-center gap-2"
+              className="text-[10px] font-black uppercase tracking-[0.2em] text-ink-subtle hover:text-ink p-0 mb-12 flex items-center gap-2"
             >
               <ChevronLeft className="w-4 h-4" /> Back to papers list
             </Button>
@@ -823,7 +823,7 @@ export default function SATPastPapers() {
               <h2 className="text-5xl md:text-7xl font-black italic tracking-tighter uppercase leading-none mb-4">
                 {selectedPaper.test_period}
               </h2>
-              <p className="text-sm text-[#a6a6ae] font-semibold uppercase tracking-widest">
+              <p className="text-sm text-ink-muted font-semibold uppercase tracking-widest">
                 Version: {selectedPaper.test_version || "Standard A"} • {selectedPaper.totalQuestions} Questions
               </p>
             </header>
@@ -846,7 +846,7 @@ export default function SATPastPapers() {
                     <Clock className="w-8 h-8" />
                   </div>
                   <h3 className="text-3xl font-black tracking-tight mb-4 uppercase italic">Exam Mode</h3>
-                  <p className="text-sm text-[#a6a6ae] leading-relaxed font-medium">
+                  <p className="text-sm text-ink-muted leading-relaxed font-medium">
                     Experience a simulated test environment. A single countdown of 134 minutes limits the entire session. Answers are graded at the very end.
                   </p>
                 </div>
@@ -866,7 +866,7 @@ export default function SATPastPapers() {
                     <Zap className="w-8 h-8" />
                   </div>
                   <h3 className="text-3xl font-black tracking-tight mb-4 uppercase italic">Practice Mode</h3>
-                  <p className="text-sm text-[#a6a6ae] leading-relaxed font-medium">
+                  <p className="text-sm text-ink-muted leading-relaxed font-medium">
                     Solve questions untimed at your own pace. Receive instant explanations and correctness feedback after each response. Navigate back and forth freely.
                   </p>
                 </div>
@@ -884,8 +884,8 @@ export default function SATPastPapers() {
             
             {/* Desmos Sidebar Modal */}
             {isDesmosOpen && (
-              <div className="fixed inset-y-0 right-0 w-[600px] z-[100] bg-black border-l border-white/10 shadow-2xl animate-in slide-in-from-right duration-300">
-                <div className="flex items-center justify-between p-4 border-b border-white/10 bg-white/5">
+              <div className="fixed inset-y-0 right-0 w-[600px] z-[100] bg-canvas border-l border-line shadow-2xl animate-in slide-in-from-right duration-300">
+                <div className="flex items-center justify-between p-4 border-b border-line bg-surface">
                   <span className="text-[10px] font-black uppercase tracking-widest text-indigo-400">Desmos Graphing Calculator</span>
                   <Button size="icon" variant="ghost" onClick={() => setIsDesmosOpen(false)}><X className="w-4 h-4" /></Button>
                 </div>
@@ -906,25 +906,25 @@ export default function SATPastPapers() {
                       setPhase("modes");
                     }
                   }}
-                  className="text-[10px] font-black uppercase tracking-widest text-[#8b8b93] hover:text-white"
+                  className="text-[10px] font-black uppercase tracking-widest text-ink-subtle hover:text-ink"
                 >
                   <ChevronLeft className="w-4 h-4 mr-2" /> {isReviewMode ? "Back to Results" : "Exit Session"}
                 </Button>
 
                 {/* Info HUD */}
-                <div className="flex items-center gap-8 bg-white/5 px-8 py-3 rounded-2xl border border-white/10">
+                <div className="flex items-center gap-8 bg-surface px-8 py-3 rounded-2xl border border-line">
                   <div className="text-center">
                     <p className="text-[8px] font-black text-indigo-400 uppercase tracking-widest mb-1">Subject</p>
                     <p className="text-xs font-black uppercase">{questions[currentIdx]?.section === "RW" ? "Reading & Writing" : "Mathematics"}</p>
                   </div>
-                  <div className="w-px h-8 bg-white/10" />
+                  <div className="w-px h-8 bg-surface-2" />
                   <div className="text-center">
-                    <p className="text-[8px] font-black text-white/60 uppercase tracking-widest mb-1">Question</p>
+                    <p className="text-[8px] font-black text-ink-muted uppercase tracking-widest mb-1">Question</p>
                     <p className="text-sm font-black">{currentIdx + 1} of {questions.length}</p>
                   </div>
-                  <div className="w-px h-8 bg-white/10" />
+                  <div className="w-px h-8 bg-surface-2" />
                   <div className="text-center">
-                    <p className="text-[8px] font-black text-white/60 uppercase tracking-widest mb-1">
+                    <p className="text-[8px] font-black text-ink-muted uppercase tracking-widest mb-1">
                       {isReviewMode ? "Session Mode" : (mode === "exam" ? "Time Remaining" : "Time Elapsed")}
                     </p>
                     <p className="text-sm font-black font-mono">
@@ -941,7 +941,7 @@ export default function SATPastPapers() {
                 <div className="flex items-center gap-4">
                   <Button 
                     onClick={highlightSelectedText} 
-                    className="bg-white/5 border border-white/10 text-white hover:bg-white/10 px-6 h-12 rounded-xl font-black uppercase text-[10px] tracking-widest flex items-center gap-2"
+                    className="bg-surface border border-line text-ink hover:bg-surface-2 px-6 h-12 rounded-xl font-black uppercase text-[10px] tracking-widest flex items-center gap-2"
                   >
                     <Highlighter className="w-4 h-4 text-yellow-400" /> Highlight
                   </Button>
@@ -949,7 +949,7 @@ export default function SATPastPapers() {
                   {questions[currentIdx]?.section === "Math" && (
                     <Button 
                       onClick={() => setIsDesmosOpen(!isDesmosOpen)} 
-                      className="bg-white/5 border border-white/10 text-white hover:bg-white/10 px-6 h-12 rounded-xl font-black uppercase text-[10px] tracking-widest flex items-center gap-2"
+                      className="bg-surface border border-line text-ink hover:bg-surface-2 px-6 h-12 rounded-xl font-black uppercase text-[10px] tracking-widest flex items-center gap-2"
                     >
                       <Calculator className="w-4 h-4" /> Desmos
                     </Button>
@@ -957,7 +957,7 @@ export default function SATPastPapers() {
 
                   <Button
                     onClick={() => setTheme(prev => prev === 'dark' ? 'light' : 'dark')}
-                    className="bg-white/5 border border-white/10 text-white hover:bg-white/10 w-12 h-12 rounded-xl font-black flex items-center justify-center p-0"
+                    className="bg-surface border border-line text-ink hover:bg-surface-2 w-12 h-12 rounded-xl font-black flex items-center justify-center p-0"
                   >
                     {theme === 'dark' ? <Moon className="w-4 h-4" /> : <Sun className="w-4 h-4 text-amber-500" />}
                   </Button>
@@ -975,11 +975,11 @@ export default function SATPastPapers() {
                           <FileText className="w-4 h-4" />
                           <span className="text-[9px] font-black uppercase tracking-widest">Passage</span>
                         </div>
-                        <p className="text-base leading-relaxed font-medium text-white/80">{questions[currentIdx].passage}</p>
+                        <p className="text-base leading-relaxed font-medium text-ink">{questions[currentIdx].passage}</p>
                       </div>
                     </ResizablePanel>
 
-                    <ResizableHandle className="w-[6px] hover:bg-indigo-500/50 bg-white/10 transition-colors cursor-col-resize rounded-full" />
+                    <ResizableHandle className="w-[6px] hover:bg-indigo-500/50 bg-surface-2 transition-colors cursor-col-resize rounded-full" />
 
                     <ResizablePanel defaultSize={50} minSize={25} maxSize={75} className="flex flex-col min-h-0">
                       <div className="flex flex-col gap-4 overflow-y-auto custom-scrollbar h-full pl-2">
@@ -1021,12 +1021,12 @@ export default function SATPastPapers() {
               )}
 
               {/* Bottom Test Navigator Grid / controls */}
-              <div className="mt-auto pt-6 border-t border-white/10 flex items-center justify-between shrink-0">
+              <div className="mt-auto pt-6 border-t border-line flex items-center justify-between shrink-0">
                 <Button
                   onClick={prevQuestion}
                   disabled={currentIdx === 0}
                   variant="ghost"
-                  className="bg-white/5 border border-white/10 text-white hover:bg-white/10 px-8 h-14 rounded-xl font-black uppercase text-[10px] tracking-widest flex items-center gap-2 disabled:opacity-35"
+                  className="bg-surface border border-line text-ink hover:bg-surface-2 px-8 h-14 rounded-xl font-black uppercase text-[10px] tracking-widest flex items-center gap-2 disabled:opacity-35"
                 >
                   <ChevronLeft className="w-4 h-4" /> Previous
                 </Button>
@@ -1046,10 +1046,10 @@ export default function SATPastPapers() {
                           }}
                           className={`w-9 h-9 rounded-lg font-bold text-xs border flex items-center justify-center transition-all ${
                             isCurrent
-                              ? "bg-indigo-500 border-indigo-400 text-white shadow-[0_0_12px_rgba(99,102,241,0.4)]"
+                              ? "bg-indigo-500 border-indigo-400 text-ink shadow-[0_0_12px_rgba(99,102,241,0.4)]"
                               : isAnswered
                               ? "bg-indigo-500/10 border-indigo-500/30 text-indigo-400"
-                              : "bg-white/5 border-white/5 text-white/60 hover:border-white/10"
+                              : "bg-surface border-line text-ink-muted hover:border-line"
                           }`}
                         >
                           {idx + 1}
@@ -1119,7 +1119,7 @@ export default function SATPastPapers() {
               <h1 className="text-7xl font-black text-shimmer leading-none mb-4 uppercase italic tracking-tighter">
                 Test Completed.
               </h1>
-              <p className="text-sm font-black text-white/60 uppercase tracking-widest mb-16">
+              <p className="text-sm font-black text-ink-muted uppercase tracking-widest mb-16">
                 {selectedPaper.test_period} • {mode === "exam" ? "Exam Mode" : "Practice Mode"} Results
               </p>
               
@@ -1131,7 +1131,7 @@ export default function SATPastPapers() {
                   <div className="text-7xl font-black tracking-tighter mb-4">
                     {stats.scorePercent}%
                   </div>
-                  <div className="text-xs font-bold text-white/40 uppercase tracking-widest">
+                  <div className="text-xs font-bold text-ink-subtle uppercase tracking-widest">
                     Of scored questions
                   </div>
                 </div>
@@ -1140,19 +1140,19 @@ export default function SATPastPapers() {
                 <div className="glass-3d p-8 flex flex-col items-center justify-center">
                   <div className="text-[9px] font-black text-emerald-400 uppercase tracking-widest mb-4">Correct Responses</div>
                   <div className="text-5xl font-black text-emerald-400 mb-2">{stats.correct}</div>
-                  <div className="text-[10px] font-bold text-white/40 uppercase tracking-widest">Questions</div>
+                  <div className="text-[10px] font-bold text-ink-subtle uppercase tracking-widest">Questions</div>
                 </div>
 
                 <div className="glass-3d p-8 flex flex-col items-center justify-center">
                   <div className="text-[9px] font-black text-rose-400 uppercase tracking-widest mb-4">Incorrect / Skipped</div>
                   <div className="text-5xl font-black text-rose-400 mb-2">{stats.incorrect + stats.skipped}</div>
-                  <div className="text-[10px] font-bold text-white/40 uppercase tracking-widest">{stats.skipped} Skipped</div>
+                  <div className="text-[10px] font-bold text-ink-subtle uppercase tracking-widest">{stats.skipped} Skipped</div>
                 </div>
 
                 <div className="glass-3d p-8 flex flex-col items-center justify-center">
-                  <div className="text-[9px] font-black text-white/60 uppercase tracking-widest mb-4">Unscored (No Answer)</div>
-                  <div className="text-5xl font-black text-white/75 mb-2">{stats.unscored}</div>
-                  <div className="text-[10px] font-bold text-white/40 uppercase tracking-widest">Skipped from score</div>
+                  <div className="text-[9px] font-black text-ink-muted uppercase tracking-widest mb-4">Unscored (No Answer)</div>
+                  <div className="text-5xl font-black text-ink-muted mb-2">{stats.unscored}</div>
+                  <div className="text-[10px] font-bold text-ink-subtle uppercase tracking-widest">Skipped from score</div>
                 </div>
               </div>
 
@@ -1168,9 +1168,9 @@ export default function SATPastPapers() {
                     const ans = userAnswers[q.id];
                     const emptyAnswer = isQuestionAnswerEmpty(q);
                     
-                    let bgClass = "bg-white/5 border-white/5 text-white/75 hover:bg-white/10";
+                    let bgClass = "bg-surface border-line text-ink-muted hover:bg-surface-2";
                     if (emptyAnswer) {
-                      bgClass = "bg-white/10 border-white/15 text-white/80 hover:bg-white/20";
+                      bgClass = "bg-surface-2 border-white/15 text-ink hover:bg-surface-2";
                     } else if (ans?.isCorrect) {
                       bgClass = "bg-emerald-500/10 border-emerald-500/30 text-emerald-400 hover:bg-emerald-500/20";
                     } else if (ans && !ans.isCorrect) {
@@ -1186,7 +1186,7 @@ export default function SATPastPapers() {
                       >
                         <span>{idx + 1}</span>
                         {emptyAnswer && (
-                          <span className="absolute bottom-1 text-[7px] text-white/60 uppercase scale-75">N/A</span>
+                          <span className="absolute bottom-1 text-[7px] text-ink-muted uppercase scale-75">N/A</span>
                         )}
                       </button>
                     );
@@ -1204,7 +1204,7 @@ export default function SATPastPapers() {
                     setTimeRemaining(134 * 60);
                   }} 
                   variant="outline" 
-                  className="h-18 px-12 rounded-2xl border-white/10 text-white font-black uppercase text-xs flex items-center gap-2"
+                  className="h-18 px-12 rounded-2xl border-line text-ink font-black uppercase text-xs flex items-center gap-2"
                 >
                   <RotateCcw className="w-4 h-4" /> Restart Test
                 </Button>
@@ -1246,7 +1246,7 @@ export default function SATPastPapers() {
         <div className="glass-3d p-10 flex flex-col items-center justify-center text-center gap-4 border-amber-500/10 bg-amber-500/5">
           <AlertCircle className="w-8 h-8 text-amber-400" />
           <h4 className="text-sm font-black uppercase tracking-widest text-amber-400">Answer not available</h4>
-          <p className="text-xs text-white/65 leading-relaxed max-w-sm">
+          <p className="text-xs text-ink-muted leading-relaxed max-w-sm">
             The correct answer for this question is not stored in the database. This question will not be scored.
           </p>
         </div>
@@ -1262,9 +1262,9 @@ export default function SATPastPapers() {
             
             {q.isFreeResponse ? (
               <div className="space-y-4">
-                <div className="p-5 rounded-xl border border-white/5 bg-white/5 text-sm">
-                  <span className="font-semibold text-white/60">Your Response: </span>
-                  <span className="font-bold text-white ml-2">"{ans?.text || "No Response"}"</span>
+                <div className="p-5 rounded-xl border border-line bg-surface text-sm">
+                  <span className="font-semibold text-ink-muted">Your Response: </span>
+                  <span className="font-bold text-ink ml-2">"{ans?.text || "No Response"}"</span>
                 </div>
                 <div className="p-5 rounded-xl border border-emerald-500/20 bg-emerald-500/5 text-sm text-emerald-400">
                   <span className="font-semibold">Correct Answer: </span>
@@ -1278,9 +1278,9 @@ export default function SATPastPapers() {
                   const isUserSelection = ans?.selected === i;
                   const isCorrectOption = i === q.correctAnswer;
                   
-                  let borderClass = "border-white/5";
-                  let bgClass = "bg-white/5";
-                  let textClass = "text-white/75";
+                  let borderClass = "border-line";
+                  let bgClass = "bg-surface";
+                  let textClass = "text-ink-muted";
 
                   if (isCorrectOption) {
                     borderClass = "border-emerald-500";
@@ -1311,7 +1311,7 @@ export default function SATPastPapers() {
               <Sparkles className="w-4 h-4 text-indigo-400" />
               <h4 className="text-[10px] font-black uppercase tracking-widest text-indigo-400">Mastery Explanation</h4>
             </div>
-            <div className="text-white/80 font-medium text-sm block leading-relaxed" dangerouslySetInnerHTML={{ __html: renderKatexText(q.explanation || "No explanation provided.") }} />
+            <div className="text-ink font-medium text-sm block leading-relaxed" dangerouslySetInnerHTML={{ __html: renderKatexText(q.explanation || "No explanation provided.") }} />
           </div>
         </div>
       );
@@ -1334,7 +1334,7 @@ export default function SATPastPapers() {
                   onChange={(e) => setFreeResponseInput(e.target.value)}
                   disabled={answerConfirmed}
                   placeholder="Type answer here..."
-                  className="flex-1 px-6 h-16 bg-white/5 border border-white/10 rounded-xl text-lg font-bold text-white focus:outline-none focus:border-indigo-500 disabled:opacity-50"
+                  className="flex-1 px-6 h-16 bg-surface border border-line rounded-xl text-lg font-bold text-ink focus:outline-none focus:border-indigo-500 disabled:opacity-50"
                 />
                 <Button
                   onClick={handlePracticeOpenConfirm}
@@ -1353,19 +1353,19 @@ export default function SATPastPapers() {
                 const isSelected = ans?.selected === i;
                 const isCorrectOption = i === q.correctAnswer;
                 
-                let btnClass = "glass-3d p-6 text-left transition-all flex items-center gap-6 border-white/10 hover:border-white/20 hover:bg-white/[0.02]";
-                let circleClass = "w-10 h-10 rounded-full flex items-center justify-center border border-white/25 text-sm font-bold";
+                let btnClass = "glass-3d p-6 text-left transition-all flex items-center gap-6 border-line hover:border-line-strong hover:bg-surface";
+                let circleClass = "w-10 h-10 rounded-full flex items-center justify-center border border-line-strong text-sm font-bold";
 
                 if (answerConfirmed) {
                   if (isCorrectOption) {
                     btnClass = "glass-3d p-6 text-left flex items-center gap-6 border-emerald-500 bg-emerald-500/10 text-emerald-400";
-                    circleClass = "w-10 h-10 rounded-full flex items-center justify-center bg-emerald-500 text-white text-sm font-bold border-emerald-500";
+                    circleClass = "w-10 h-10 rounded-full flex items-center justify-center bg-emerald-500 text-ink text-sm font-bold border-emerald-500";
                   } else if (isSelected) {
                     btnClass = "glass-3d p-6 text-left flex items-center gap-6 border-rose-500 bg-rose-500/10 text-rose-400";
-                    circleClass = "w-10 h-10 rounded-full flex items-center justify-center bg-rose-500 text-white text-sm font-bold border-rose-500";
+                    circleClass = "w-10 h-10 rounded-full flex items-center justify-center bg-rose-500 text-ink text-sm font-bold border-rose-500";
                   } else {
-                    btnClass = "glass-3d p-6 text-left opacity-30 border-white/5 cursor-default flex items-center gap-6";
-                    circleClass = "w-10 h-10 rounded-full flex items-center justify-center border border-white/10 text-white/45 text-sm font-bold";
+                    btnClass = "glass-3d p-6 text-left opacity-30 border-line cursor-default flex items-center gap-6";
+                    circleClass = "w-10 h-10 rounded-full flex items-center justify-center border border-line text-ink-subtle text-sm font-bold";
                   }
                 }
 
@@ -1400,7 +1400,7 @@ export default function SATPastPapers() {
                   </span>
                 </div>
                 
-                <div className="text-white/80 font-medium text-sm block leading-relaxed" dangerouslySetInnerHTML={{ __html: renderKatexText(q.explanation || "No explanation provided.") }} />
+                <div className="text-ink font-medium text-sm block leading-relaxed" dangerouslySetInnerHTML={{ __html: renderKatexText(q.explanation || "No explanation provided.") }} />
               </motion.div>
             )}
           </AnimatePresence>
@@ -1426,7 +1426,7 @@ export default function SATPastPapers() {
                   handleExamOpenSubmit(e.target.value);
                 }}
                 placeholder="Type answer here..."
-                className="flex-1 px-6 h-16 bg-white/5 border border-white/10 rounded-xl text-lg font-bold text-white focus:outline-none focus:border-indigo-500"
+                className="flex-1 px-6 h-16 bg-surface border border-line rounded-xl text-lg font-bold text-ink focus:outline-none focus:border-indigo-500"
               />
             </div>
           </div>
@@ -1436,12 +1436,12 @@ export default function SATPastPapers() {
               const letter = String.fromCharCode(65 + i);
               const isSelected = ans?.selected === i;
               
-              let btnClass = "glass-3d p-6 text-left transition-all flex items-center gap-6 border-white/10 hover:border-indigo-500/40 hover:bg-white/5";
-              let circleClass = "w-10 h-10 rounded-full flex items-center justify-center border border-white/20 text-sm font-bold text-white/80 group-hover:border-indigo-400 group-hover:text-indigo-400 group-hover:bg-indigo-500/5";
+              let btnClass = "glass-3d p-6 text-left transition-all flex items-center gap-6 border-line hover:border-indigo-500/40 hover:bg-surface";
+              let circleClass = "w-10 h-10 rounded-full flex items-center justify-center border border-line-strong text-sm font-bold text-ink group-hover:border-indigo-400 group-hover:text-indigo-400 group-hover:bg-indigo-500/5";
 
               if (isSelected) {
                 btnClass = "glass-3d p-6 text-left flex items-center gap-6 border-indigo-500 bg-indigo-500/10 text-indigo-400";
-                circleClass = "w-10 h-10 rounded-full flex items-center justify-center bg-indigo-500 text-white text-sm font-bold border-indigo-400";
+                circleClass = "w-10 h-10 rounded-full flex items-center justify-center bg-indigo-500 text-ink text-sm font-bold border-indigo-400";
               }
 
               return (

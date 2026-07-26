@@ -28,7 +28,7 @@ export default function Login() {
 
   return (
     <Layout>
-      <div className="min-h-screen bg-[#000000] text-white selection:bg-white/10 relative overflow-hidden flex items-center justify-center font-sans">
+      <div className="min-h-screen bg-canvas text-ink selection:bg-surface-2 relative overflow-hidden flex items-center justify-center font-sans">
         {/* Depth Background */}
         <div className="bg-vignette" />
         <div className="bg-sphere top-[-20%] left-[-10%] opacity-20" />
@@ -51,7 +51,7 @@ export default function Login() {
               WELCOME BACK.
             </h1>
             
-            <p className="text-[#a6a6ae] font-medium mb-16 leading-relaxed">
+            <p className="text-ink-muted font-medium mb-16 leading-relaxed">
               Входи в свой аккаунт, чтобы продолжить путь к топовому баллу и университету мечты.
             </p>
             
@@ -71,24 +71,24 @@ export default function Login() {
               </Button>
               
               <div className="flex items-center gap-4 py-4">
-                <div className="h-px flex-1 bg-white/5" />
+                <div className="h-px flex-1 bg-surface" />
                 <span className="text-[10px] font-black text-[#222] uppercase tracking-[0.3em]">Institutional Access</span>
-                <div className="h-px flex-1 bg-white/5" />
+                <div className="h-px flex-1 bg-surface" />
               </div>
 
               <div className="grid grid-cols-2 gap-4">
-                 <div className="p-6 bg-white/5 rounded-2xl border border-white/5 flex flex-col items-center">
+                 <div className="p-6 bg-surface rounded-2xl border border-line flex flex-col items-center">
                     <Zap className="w-5 h-5 text-indigo-400 mb-2" />
-                    <span className="text-[9px] font-black text-[#8b8b93] uppercase tracking-widest">Fast Access</span>
+                    <span className="text-[9px] font-black text-ink-subtle uppercase tracking-widest">Fast Access</span>
                  </div>
-                 <div className="p-6 bg-white/5 rounded-2xl border border-white/5 flex flex-col items-center">
+                 <div className="p-6 bg-surface rounded-2xl border border-line flex flex-col items-center">
                     <Sparkles className="w-5 h-5 text-yellow-400 mb-2" />
-                    <span className="text-[9px] font-black text-[#8b8b93] uppercase tracking-widest">Premium UI</span>
+                    <span className="text-[9px] font-black text-ink-subtle uppercase tracking-widest">Premium UI</span>
                  </div>
               </div>
             </div>
 
-            <div className="mt-16 pt-8 border-t border-white/5 text-[9px] font-bold text-[#333] uppercase tracking-[0.3em] leading-relaxed">
+            <div className="mt-16 pt-8 border-t border-line text-[9px] font-bold text-[#333] uppercase tracking-[0.3em] leading-relaxed">
               By authenticating, you confirm your adherence to the Saubol Academic Excellence Guidelines and Privacy Protocols.
             </div>
           </div>

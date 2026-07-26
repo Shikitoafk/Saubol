@@ -116,7 +116,7 @@ export default function SATDashboard() {
   if (loading) {
     return (
       <Layout>
-        <div className="min-h-screen bg-black flex items-center justify-center">
+        <div className="min-h-screen bg-canvas flex items-center justify-center">
           <div className="w-16 h-16 border-4 border-indigo-500/10 border-t-indigo-500 rounded-full animate-spin" />
         </div>
       </Layout>
@@ -125,7 +125,7 @@ export default function SATDashboard() {
 
   return (
     <Layout>
-      <div className="min-h-screen bg-[#000000] text-white selection:bg-white/10 relative overflow-hidden font-sans">
+      <div className="min-h-screen bg-canvas text-ink selection:bg-surface-2 relative overflow-hidden font-sans">
         <div className="bg-vignette" />
         <div className="bg-sphere top-[-20%] right-[-10%] opacity-40 animate-pulse" />
         
@@ -144,7 +144,7 @@ export default function SATDashboard() {
             
             <div className="flex items-center gap-8 p-12 glass-3d border-indigo-500/20 bg-indigo-500/5">
                <div className="relative">
-                  <div className="w-32 h-32 rounded-full border-4 border-white/5 flex flex-col items-center justify-center">
+                  <div className="w-32 h-32 rounded-full border-4 border-line flex flex-col items-center justify-center">
                      <p className="text-3xl font-black">{stats.readiness}%</p>
                      <p className="text-[8px] font-black uppercase text-indigo-400">Readiness</p>
                   </div>
@@ -152,9 +152,9 @@ export default function SATDashboard() {
                      <circle cx="64" cy="64" r="60" fill="transparent" stroke="currentColor" strokeWidth="4" className="text-indigo-500" strokeDasharray={`${stats.readiness * 3.77} 377`} />
                   </svg>
                </div>
-               <div className="w-px h-24 bg-white/10" />
+               <div className="w-px h-24 bg-surface-2" />
                <div>
-                  <p className="text-[10px] font-black text-white/40 uppercase tracking-[0.3em] mb-3 flex items-center gap-2">
+                  <p className="text-[10px] font-black text-ink-subtle uppercase tracking-[0.3em] mb-3 flex items-center gap-2">
                      <Zap className="w-3.5 h-3.5 text-yellow-500" /> Streak Consistency
                   </p>
                   <p className="text-6xl font-black tracking-tighter italic">{stats.streak} DAYS</p>
@@ -165,7 +165,7 @@ export default function SATDashboard() {
           {/* Key Metrics */}
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-32">
             {[
-              { label: 'Intelligence Base', val: stats.currentScore, sub: 'Weighted Diagnostic Score', icon: ShieldCheck, color: 'text-white' },
+              { label: 'Intelligence Base', val: stats.currentScore, sub: 'Weighted Diagnostic Score', icon: ShieldCheck, color: 'text-ink' },
               { label: 'Math Precision', val: stats.mathScore, sub: 'Algebra & Advanced Functions', icon: Activity, color: 'text-blue-400' },
               { label: 'R&W Semantic accuracy', val: stats.rwScore, sub: 'Context & Conventions', icon: Star, color: 'text-indigo-400' }
             ].map((stat, i) => (
@@ -174,29 +174,29 @@ export default function SATDashboard() {
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: i * 0.1 }}
-                className="glass-3d p-12 group hover:border-white/20 transition-all border-white/5"
+                className="glass-3d p-12 group hover:border-line-strong transition-all border-line"
               >
                 <div className="flex justify-between items-start mb-12">
                    <stat.icon className={`w-10 h-10 ${stat.color} opacity-20 group-hover:opacity-100 transition-opacity`} />
                    <div className="flex flex-col items-end">
-                      <span className="text-[9px] font-black uppercase tracking-widest text-[#8b8b93]">Level</span>
+                      <span className="text-[9px] font-black uppercase tracking-widest text-ink-subtle">Level</span>
                       <span className="text-xs font-black uppercase tracking-tighter">Certified</span>
                    </div>
                 </div>
                 <div className={`text-8xl font-black mb-4 ${stat.color} tracking-tighter italic`}>{stat.val}</div>
-                <div className="text-[10px] font-black text-white/40 uppercase tracking-[0.4em] mb-2">{stat.label}</div>
-                <p className="text-[11px] font-bold text-[#8b8b93] uppercase tracking-widest leading-none">{stat.sub}</p>
+                <div className="text-[10px] font-black text-ink-subtle uppercase tracking-[0.4em] mb-2">{stat.label}</div>
+                <p className="text-[11px] font-bold text-ink-subtle uppercase tracking-widest leading-none">{stat.sub}</p>
               </motion.div>
             ))}
           </div>
 
           {/* Charts Row */}
           <div className="grid lg:grid-cols-2 gap-12 mb-32">
-             <div className="glass-3d p-16 border-white/5">
+             <div className="glass-3d p-16 border-line">
                 <div className="flex items-center justify-between mb-16">
                    <div>
                       <h3 className="text-4xl font-black tracking-tighter uppercase italic">Score Velocity</h3>
-                      <p className="text-[10px] font-black text-white/40 uppercase tracking-widest mt-2">Aggregated performance trajectory</p>
+                      <p className="text-[10px] font-black text-ink-subtle uppercase tracking-widest mt-2">Aggregated performance trajectory</p>
                    </div>
                 </div>
                 <div className="h-[400px] w-full">
@@ -221,11 +221,11 @@ export default function SATDashboard() {
                 </div>
              </div>
 
-             <div className="glass-3d p-16 border-white/5">
+             <div className="glass-3d p-16 border-line">
                 <div className="flex items-center justify-between mb-16">
                    <div>
                       <h3 className="text-4xl font-black tracking-tighter uppercase italic">Topic Precision</h3>
-                      <p className="text-[10px] font-black text-white/40 uppercase tracking-widest mt-2">Semantic accuracy across SAT sectors</p>
+                      <p className="text-[10px] font-black text-ink-subtle uppercase tracking-widest mt-2">Semantic accuracy across SAT sectors</p>
                    </div>
                 </div>
                 <div className="h-[400px] w-full">
@@ -249,17 +249,17 @@ export default function SATDashboard() {
           </div>
 
           {/* Premium Call to Action */}
-          <div className="glass-3d p-20 flex flex-col md:flex-row items-center justify-between gap-12 bg-white/[0.02] border-white/10">
+          <div className="glass-3d p-20 flex flex-col md:flex-row items-center justify-between gap-12 bg-surface border-line">
              <div className="max-w-2xl">
                 <div className="flex items-center gap-3 mb-8">
                    <Sparkles className="w-8 h-8 text-yellow-500" />
                    <h3 className="text-6xl font-black uppercase tracking-tighter italic">Ready for 1550?</h3>
                 </div>
-                <p className="text-xl text-[#a6a6ae] font-medium leading-relaxed">Твоя готовность к экзамену составляет <span className="text-white">{stats.readiness}%</span>. Мы рекомендуем сфокусироваться на Advanced Math, чтобы достичь целевого показателя в этом месяце.</p>
+                <p className="text-xl text-ink-muted font-medium leading-relaxed">Твоя готовность к экзамену составляет <span className="text-ink">{stats.readiness}%</span>. Мы рекомендуем сфокусироваться на Advanced Math, чтобы достичь целевого показателя в этом месяце.</p>
              </div>
              <div className="flex gap-6">
                 <Button onClick={() => navigate('/sat/practice')} className="h-20 px-16 rounded-2xl bg-white text-black font-black uppercase text-xs shadow-2xl hover:scale-105 active:scale-95 transition-all">Engage Practice</Button>
-                <Button onClick={() => navigate('/sat/study-plan')} variant="outline" className="h-20 px-12 rounded-2xl border-white/10 text-white/60 font-black uppercase text-xs hover:bg-white/5">Update Strategy</Button>
+                <Button onClick={() => navigate('/sat/study-plan')} variant="outline" className="h-20 px-12 rounded-2xl border-line text-ink-muted font-black uppercase text-xs hover:bg-surface">Update Strategy</Button>
              </div>
           </div>
         </div>

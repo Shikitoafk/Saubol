@@ -6,7 +6,7 @@ export default function NotFound() {
   const navigate = useNavigate();
 
   return (
-    <div className="min-h-screen bg-[#000000] text-white flex items-center justify-center relative overflow-hidden font-sans">
+    <div className="min-h-screen bg-canvas text-ink flex items-center justify-center relative overflow-hidden font-sans">
       {/* Depth Background */}
       <div className="bg-vignette" />
       <div className="bg-sphere top-[-10%] right-[-10%] opacity-20" />
@@ -14,8 +14,8 @@ export default function NotFound() {
       <div className="max-w-xl w-full px-10 relative z-10 text-center">
         <div className="glass-3d p-16 group">
           <div className="flex justify-center mb-12">
-            <div className="w-20 h-20 bg-white/5 rounded-3xl flex items-center justify-center border border-white/10 shadow-[0_0_40px_rgba(255,255,255,0.05)] group-hover:scale-110 transition-transform duration-500">
-              <Compass className="w-10 h-10 text-white opacity-40 animate-spin-slow" />
+            <div className="w-20 h-20 bg-surface rounded-3xl flex items-center justify-center border border-line shadow-[0_0_40px_rgba(255,255,255,0.05)] group-hover:scale-110 transition-transform duration-500">
+              <Compass className="w-10 h-10 text-ink opacity-40 animate-spin-slow" />
             </div>
           </div>
           
@@ -28,7 +28,7 @@ export default function NotFound() {
             LOST IN <br /> SPACE.
           </h1>
           
-          <p className="text-[#a6a6ae] font-medium mb-12 leading-relaxed uppercase tracking-widest text-[10px]">
+          <p className="text-ink-muted font-medium mb-12 leading-relaxed uppercase tracking-widest text-[10px]">
             The academic resources you are looking for have drifted beyond the reach of our current network.
           </p>
           

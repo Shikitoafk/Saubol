@@ -122,7 +122,7 @@ const IELTSPrep = () => {
 
   return (
     <Layout>
-      <div className="min-h-screen bg-[#000000] text-white selection:bg-white/10 relative overflow-hidden font-sans">
+      <div className="min-h-screen bg-canvas text-ink selection:bg-surface-2 relative overflow-hidden font-sans">
         {/* Deep Ambient Background */}
         <div className="bg-vignette" />
         <div className="bg-sphere top-[-20%] right-[-10%] opacity-40 animate-pulse" style={{ width: '1200px', height: '1200px', background: 'radial-gradient(circle, rgba(79, 70, 229, 0.1) 0%, transparent 70%)' }} />
@@ -142,23 +142,23 @@ const IELTSPrep = () => {
             <h1 className="text-8xl md:text-[140px] font-black tracking-tighter text-shimmer leading-[0.8] mb-12 uppercase italic">
               IELTS <br /> MASTERY.
             </h1>
-            <p className="text-2xl text-[#a6a6ae] font-medium max-w-2xl leading-tight">
+            <p className="text-2xl text-ink-muted font-medium max-w-2xl leading-tight">
               Открой доступ к передовым методикам подготовки. Мы объединили официальные материалы Cambridge и AI-технологии для твоего успеха.
             </p>
           </motion.div>
 
           {/* Navigation & Status */}
-          <motion.div variants={item} className="mb-16 flex flex-col md:flex-row items-center justify-between gap-8 border-b border-white/5 pb-10">
+          <motion.div variants={item} className="mb-16 flex flex-col md:flex-row items-center justify-between gap-8 border-b border-line pb-10">
             <Breadcrumb className="opacity-60">
               <BreadcrumbList>
                 <BreadcrumbItem>
-                  <BreadcrumbLink onClick={() => { setSelectedSkill(null); setSelectedType(null); }} className="cursor-pointer font-black uppercase tracking-[0.2em] text-[10px] hover:text-white transition-colors">IELTS HUB</BreadcrumbLink>
+                  <BreadcrumbLink onClick={() => { setSelectedSkill(null); setSelectedType(null); }} className="cursor-pointer font-black uppercase tracking-[0.2em] text-[10px] hover:text-ink transition-colors">IELTS HUB</BreadcrumbLink>
                 </BreadcrumbItem>
                 {selectedSkill && (
                   <>
                     <BreadcrumbSeparator />
                     <BreadcrumbItem>
-                      <BreadcrumbLink onClick={() => setSelectedType(null)} className="cursor-pointer font-black uppercase tracking-[0.2em] text-[10px] hover:text-white transition-colors">{skillLabel}</BreadcrumbLink>
+                      <BreadcrumbLink onClick={() => setSelectedType(null)} className="cursor-pointer font-black uppercase tracking-[0.2em] text-[10px] hover:text-ink transition-colors">{skillLabel}</BreadcrumbLink>
                     </BreadcrumbItem>
                   </>
                 )}
@@ -174,7 +174,7 @@ const IELTSPrep = () => {
             </Breadcrumb>
             
             {level > 1 && (
-              <Button variant="ghost" onClick={goBack} className="h-14 px-8 rounded-xl border border-white/10 text-[10px] font-black uppercase tracking-widest text-[#8b8b93] hover:text-white hover:bg-white/5 group">
+              <Button variant="ghost" onClick={goBack} className="h-14 px-8 rounded-xl border border-line text-[10px] font-black uppercase tracking-widest text-ink-subtle hover:text-ink hover:bg-surface group">
                 <ChevronLeft className="w-4 h-4 mr-2 group-hover:-translate-x-1 transition-transform" /> Back to Selection
               </Button>
             )}
@@ -195,14 +195,14 @@ const IELTSPrep = () => {
                     <button
                       key={s.id}
                       onClick={() => setSelectedSkill(s.id)}
-                      className="glass-3d p-12 text-left group hover:scale-105 transition-all border-white/5 hover:border-white/20 relative overflow-hidden"
+                      className="glass-3d p-12 text-left group hover:scale-105 transition-all border-line hover:border-line-strong relative overflow-hidden"
                     >
                       <div className={`absolute top-0 right-0 w-32 h-32 ${s.bg} blur-3xl opacity-0 group-hover:opacity-100 transition-opacity`} />
-                      <div className={`w-16 h-16 rounded-2xl ${s.bg} flex items-center justify-center border border-white/5 mb-12 group-hover:border-white/20 transition-all`}>
+                      <div className={`w-16 h-16 rounded-2xl ${s.bg} flex items-center justify-center border border-line mb-12 group-hover:border-line-strong transition-all`}>
                         <s.icon className={`w-8 h-8 ${s.color}`} />
                       </div>
                       <h3 className="text-3xl font-black mb-6 tracking-tight uppercase">{s.title}</h3>
-                      <p className="text-xs font-bold text-[#8b8b93] uppercase tracking-widest leading-relaxed mb-12 group-hover:text-[#c2c2c9] transition-colors">{s.description}</p>
+                      <p className="text-xs font-bold text-ink-subtle uppercase tracking-widest leading-relaxed mb-12 group-hover:text-ink-muted transition-colors">{s.description}</p>
                       <div className={`text-[10px] font-black uppercase tracking-[0.4em] flex items-center gap-3 ${s.color}`}>
                         Select Module <ArrowRight className="w-4 h-4 group-hover:translate-x-2 transition-transform" />
                       </div>
@@ -223,14 +223,14 @@ const IELTSPrep = () => {
                     <button
                       key={t.id}
                       onClick={() => setSelectedType(t.id)}
-                      className="glass-3d p-16 text-left group hover:scale-105 transition-all border-white/5 hover:border-white/30"
+                      className="glass-3d p-16 text-left group hover:scale-105 transition-all border-line hover:border-line-strong"
                     >
                       <div className="w-20 h-20 bg-indigo-500/10 rounded-3xl flex items-center justify-center border border-indigo-500/20 mb-12 group-hover:bg-indigo-500/20 transition-all">
                         <t.icon className="w-10 h-10 text-indigo-400" />
                       </div>
                       <h3 className="text-5xl font-black mb-6 tracking-tighter uppercase italic">{t.title}</h3>
-                      <p className="text-sm font-bold text-[#8b8b93] uppercase tracking-widest mb-12 group-hover:text-[#c2c2c9] transition-colors">{t.description}</p>
-                      <div className="text-[10px] font-black uppercase tracking-[0.4em] flex items-center gap-3 text-white">
+                      <p className="text-sm font-bold text-ink-subtle uppercase tracking-widest mb-12 group-hover:text-ink-muted transition-colors">{t.description}</p>
+                      <div className="text-[10px] font-black uppercase tracking-[0.4em] flex items-center gap-3 text-ink">
                         Access Material <ChevronRight className="w-5 h-5 group-hover:translate-x-2 transition-transform" />
                       </div>
                     </button>
@@ -260,15 +260,15 @@ const IELTSPrep = () => {
                               : [];
                             if (bookTests.length === 0) return null;
                             return (
-                            <div key={book} className="glass-3d p-10 border-white/5 hover:border-white/20 transition-all group">
+                            <div key={book} className="glass-3d p-10 border-line hover:border-line-strong transition-all group">
                                <div className="flex justify-between items-center mb-10">
                                   <Badge className="bg-indigo-600/10 text-indigo-400 border-none font-black text-[9px] uppercase tracking-widest">Official Vol.</Badge>
-                                  <div className="w-8 h-8 rounded-full border border-white/5 flex items-center justify-center text-[10px] font-black text-[#222] group-hover:text-white transition-colors">{book}</div>
+                                  <div className="w-8 h-8 rounded-full border border-line flex items-center justify-center text-[10px] font-black text-[#222] group-hover:text-ink transition-colors">{book}</div>
                                </div>
                                <h3 className="text-2xl font-black mb-10 tracking-tight italic uppercase">CAMBRIDGE {book}</h3>
                                <div className="flex flex-col gap-4">
                                   {bookTests.map((test) => (
-                                    <Button key={test.slug} variant="ghost" className="h-14 justify-between text-[11px] font-black uppercase tracking-[0.2em] text-[#8b8b93] hover:text-white border border-white/5 hover:border-white/10 rounded-xl transition-all hover:bg-white/5" onClick={() => nav(`/ielts/test/${test.slug}`)}>
+                                    <Button key={test.slug} variant="ghost" className="h-14 justify-between text-[11px] font-black uppercase tracking-[0.2em] text-ink-subtle hover:text-ink border border-line hover:border-line rounded-xl transition-all hover:bg-surface" onClick={() => nav(`/ielts/test/${test.slug}`)}>
                                       Test Module {test.testNum} <ArrowRight className="w-4 h-4 opacity-30 group-hover:opacity-100" />
                                     </Button>
                                   ))}
@@ -278,16 +278,16 @@ const IELTSPrep = () => {
                           })
                         ) : (
                           tests.map((t, i) => (
-                            <div key={t.id} className="glass-3d p-10 hover:border-white/20 transition-all group relative overflow-hidden">
+                            <div key={t.id} className="glass-3d p-10 hover:border-line-strong transition-all group relative overflow-hidden">
                                <div className="absolute top-0 right-0 p-8 opacity-5 group-hover:opacity-10 transition-opacity">
                                   <Target className="w-24 h-24 rotate-12" />
                                </div>
                                <div className="flex justify-between items-start mb-12">
-                                  <span className="text-[11px] font-black text-[#222] group-hover:text-white uppercase tracking-widest transition-colors">Session 0{i+1}</span>
+                                  <span className="text-[11px] font-black text-[#222] group-hover:text-ink uppercase tracking-widest transition-colors">Session 0{i+1}</span>
                                   <Badge className={`border-none font-black text-[9px] uppercase tracking-widest ${t.difficulty === 'Hard' ? 'bg-rose-500/10 text-rose-500' : 'bg-emerald-500/10 text-emerald-500'}`}>{t.difficulty}</Badge>
                                </div>
                                <h3 className="text-2xl font-black mb-3 tracking-tighter group-hover:text-shimmer transition-all uppercase italic">{t.name}</h3>
-                               <p className="text-[10px] font-black text-[#8b8b93] uppercase tracking-[0.2em] mb-12">{t.topic}</p>
+                               <p className="text-[10px] font-black text-ink-subtle uppercase tracking-[0.2em] mb-12">{t.topic}</p>
                                <div className="flex items-center gap-8 mb-12 text-[10px] font-black text-[#222] uppercase tracking-widest">
                                   <span className="flex items-center gap-2 group-hover:text-blue-400 transition-colors"><Clock className="w-4 h-4" /> {t.time}</span>
                                   <span className="flex items-center gap-2 group-hover:text-indigo-400 transition-colors"><HelpCircle className="w-4 h-4" /> {t.questions} Q</span>
@@ -312,7 +312,7 @@ const IELTSPrep = () => {
                 </div>
                 <div>
                    <h3 className="text-5xl font-black tracking-tighter mb-4 uppercase italic">Neural Writing Check.</h3>
-                   <p className="text-sm font-black text-[#a6a6ae] uppercase tracking-[0.3em]">Advanced IELTS Band 9.0 Evaluation Engine</p>
+                   <p className="text-sm font-black text-ink-muted uppercase tracking-[0.3em]">Advanced IELTS Band 9.0 Evaluation Engine</p>
                 </div>
              </div>
              <Button onClick={() => nav("/ielts/writing-checker")} className="bg-white text-black hover:bg-gray-100 rounded-[2rem] px-16 h-24 font-black uppercase text-xl shadow-[0_30px_60px_rgba(255,255,255,0.15)] transition-all hover:scale-110 active:scale-95 relative z-10 group/btn">

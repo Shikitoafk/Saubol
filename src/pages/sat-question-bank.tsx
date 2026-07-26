@@ -9,7 +9,7 @@ export default function SATQuestionBank() {
 
   return (
     <Layout>
-      <div className="min-h-screen bg-black text-white flex flex-col items-center justify-center relative overflow-hidden font-sans">
+      <div className="min-h-screen bg-canvas text-ink flex flex-col items-center justify-center relative overflow-hidden font-sans">
         {/* Glowing radial vignettes */}
         <div className="absolute inset-0 bg-vignette" />
         <div 
@@ -59,7 +59,7 @@ export default function SATQuestionBank() {
             <h1 className="text-5xl md:text-6xl font-black italic tracking-tighter uppercase leading-none text-shimmer">
               COMING SOON.
             </h1>
-            <p className="text-sm font-bold uppercase tracking-widest text-[#a6a6ae] max-w-sm mx-auto leading-relaxed">
+            <p className="text-sm font-bold uppercase tracking-widest text-ink-muted max-w-sm mx-auto leading-relaxed">
               Practice by topic and difficulty with personalized adaptive modules.
             </p>
           </div>

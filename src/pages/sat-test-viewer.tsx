@@ -31,7 +31,7 @@ const SATTestViewer = () => {
   }
 
   return (
-    <div className="fixed inset-0 z-50 bg-[#000000] flex flex-col font-sans">
+    <div className="fixed inset-0 z-50 bg-canvas flex flex-col font-sans">
       {/* Premium Header Wrapper */}
       <div className="absolute top-6 left-6 z-[60] flex items-center gap-4">
         <Button 
@@ -40,18 +40,18 @@ const SATTestViewer = () => {
         >
           <ChevronLeft className="w-4 h-4" /> Exit Session
         </Button>
-        <div className="px-4 py-3 rounded-xl bg-black/80 border border-white/10 backdrop-blur-md hidden md:flex items-center gap-3 shadow-2xl">
+        <div className="px-4 py-3 rounded-xl bg-canvas/80 border border-line backdrop-blur-md hidden md:flex items-center gap-3 shadow-2xl">
           <Target className="w-4 h-4 text-blue-400" />
-          <span className="text-[9px] font-black uppercase tracking-widest text-white/75">High-Performance Mode</span>
+          <span className="text-[9px] font-black uppercase tracking-widest text-ink-muted">High-Performance Mode</span>
         </div>
       </div>
 
       {/* Loading Overlay */}
       {!isLoaded && (
-        <div className="absolute inset-0 z-50 bg-black flex flex-col items-center justify-center">
+        <div className="absolute inset-0 z-50 bg-canvas flex flex-col items-center justify-center">
            <div className="bg-vignette opacity-50" />
-           <Loader2 className="w-12 h-12 animate-spin text-white mb-6 relative z-10" />
-           <p className="text-[10px] font-black uppercase tracking-[0.5em] text-[#8b8b93] relative z-10 animate-pulse">Launching SAT Test Environment</p>
+           <Loader2 className="w-12 h-12 animate-spin text-ink mb-6 relative z-10" />
+           <p className="text-[10px] font-black uppercase tracking-[0.5em] text-ink-subtle relative z-10 animate-pulse">Launching SAT Test Environment</p>
         </div>
       )}
 

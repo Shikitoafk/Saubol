@@ -20,10 +20,10 @@ export default function TopicVideoPage({ video, onStartPractice }: TopicVideoPag
   return (
     <div className="max-w-6xl mx-auto p-12 selection:bg-indigo-500/30">
       {/* Breadcrumbs Placeholder Style */}
-      <div className="flex items-center gap-3 text-[10px] font-black uppercase tracking-widest text-white/40 mb-12">
+      <div className="flex items-center gap-3 text-[10px] font-black uppercase tracking-widest text-ink-subtle mb-12">
          <span>SAT Learn</span>
          <span className="opacity-40">/</span>
-         <span className="text-white/75">{video.title}</span>
+         <span className="text-ink-muted">{video.title}</span>
       </div>
 
       <header className="mb-12">
@@ -31,9 +31,9 @@ export default function TopicVideoPage({ video, onStartPractice }: TopicVideoPag
           {video.title}.
         </h1>
         <div className="flex items-center gap-6">
-          <div className="flex items-center gap-2 px-3 py-1 bg-white/5 rounded-full border border-white/5">
-             <Clock className="w-3 h-3 text-white/60" />
-             <span className="text-[9px] font-black uppercase text-white/60">{video.duration} Exploration</span>
+          <div className="flex items-center gap-2 px-3 py-1 bg-surface rounded-full border border-line">
+             <Clock className="w-3 h-3 text-ink-muted" />
+             <span className="text-[9px] font-black uppercase text-ink-muted">{video.duration} Exploration</span>
           </div>
           <div className="flex items-center gap-2 px-3 py-1 bg-indigo-500/10 rounded-full border border-indigo-500/20">
              <Zap className="w-3 h-3 text-indigo-400" />
@@ -43,7 +43,7 @@ export default function TopicVideoPage({ video, onStartPractice }: TopicVideoPag
       </header>
 
       {/* Video Container */}
-      <div className="aspect-video w-full glass-3d border-white/5 overflow-hidden mb-16 relative group">
+      <div className="aspect-video w-full glass-3d border-line overflow-hidden mb-16 relative group">
         {video.videoId ? (
           <iframe
             width="100%"
@@ -56,12 +56,12 @@ export default function TopicVideoPage({ video, onStartPractice }: TopicVideoPag
             className="w-full h-full"
           ></iframe>
         ) : (
-          <div className="w-full h-full bg-white/[0.02] flex flex-col items-center justify-center gap-6">
-            <div className="w-20 h-20 rounded-full bg-white/5 flex items-center justify-center border border-white/10 group-hover:scale-110 transition-transform">
-               <Play className="w-8 h-8 text-white/40" />
+          <div className="w-full h-full bg-surface flex flex-col items-center justify-center gap-6">
+            <div className="w-20 h-20 rounded-full bg-surface flex items-center justify-center border border-line group-hover:scale-110 transition-transform">
+               <Play className="w-8 h-8 text-ink-subtle" />
             </div>
-            <p className="text-xs font-black uppercase tracking-[0.4em] text-white/40">Video Coming Soon</p>
-            <Button variant="outline" onClick={onStartPractice} className="border-white/10 text-white/60 uppercase font-black text-[10px] tracking-widest h-12 px-8 rounded-xl hover:bg-white/5">
+            <p className="text-xs font-black uppercase tracking-[0.4em] text-ink-subtle">Video Coming Soon</p>
+            <Button variant="outline" onClick={onStartPractice} className="border-line text-ink-muted uppercase font-black text-[10px] tracking-widest h-12 px-8 rounded-xl hover:bg-surface">
                Skip to Practice <ArrowRight className="ml-2 w-3 h-3" />
             </Button>
           </div>
@@ -78,7 +78,7 @@ export default function TopicVideoPage({ video, onStartPractice }: TopicVideoPag
                   <div className="w-6 h-6 rounded-full bg-indigo-500/10 flex items-center justify-center border border-indigo-500/20 group-hover:bg-indigo-500/20 transition-colors">
                     <CheckCircle2 className="w-3.5 h-3.5 text-indigo-400" />
                   </div>
-                  <span className="text-lg font-medium text-white/75 group-hover:text-white transition-colors">{topic}</span>
+                  <span className="text-lg font-medium text-ink-muted group-hover:text-ink transition-colors">{topic}</span>
                 </div>
               ))}
             </div>
@@ -94,7 +94,7 @@ export default function TopicVideoPage({ video, onStartPractice }: TopicVideoPag
                  <AlertCircle className="w-5 h-5 text-indigo-400" />
                  <h4 className="text-[10px] font-black uppercase tracking-widest text-indigo-400">Strategy Note</h4>
               </div>
-              <p className="text-white/75 text-sm leading-relaxed font-medium mb-8">
+              <p className="text-ink-muted text-sm leading-relaxed font-medium mb-8">
                  Watch the video to understand the "why" behind the concepts. SAT questions are designed to trap students who only memorize formulas. The following practice session will test your ability to apply these strategies in real exam scenarios.
               </p>
               <Button 

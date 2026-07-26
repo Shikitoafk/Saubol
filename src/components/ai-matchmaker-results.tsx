@@ -78,55 +78,55 @@ export default function AIMatchmakerResults({ data, onReset }: { data: Matchmake
       <div className="grid md:grid-cols-3 gap-8 mb-16">
         <div className="glass-3d p-10 flex flex-col items-center justify-center border-indigo-500/20 bg-indigo-500/5">
            <div className="text-[10px] font-black text-indigo-400 uppercase tracking-widest mb-4">Profile Strength</div>
-           <div className="text-7xl font-black text-white leading-none mb-4 tracking-tighter">{overallMatch}%</div>
-           <div className="text-[9px] font-bold text-white/60 uppercase tracking-[0.2em] text-center">Aggregate Admission Index</div>
+           <div className="text-7xl font-black text-ink leading-none mb-4 tracking-tighter">{overallMatch}%</div>
+           <div className="text-[9px] font-bold text-ink-muted uppercase tracking-[0.2em] text-center">Aggregate Admission Index</div>
         </div>
         
         <div className="md:col-span-2 glass-3d p-10 flex flex-col justify-between">
            <div>
-             <h4 className="text-[10px] font-black text-white/60 uppercase tracking-widest mb-6">Expert Verdict</h4>
+             <h4 className="text-[10px] font-black text-ink-muted uppercase tracking-widest mb-6">Expert Verdict</h4>
              <p className="text-2xl font-black leading-tight mb-8 uppercase italic tracking-tight">
                Estimated chance for {data.region} top-tier institutions: <span className={overallMatch > 60 ? 'text-emerald-400' : 'text-amber-400'}>{overallMatch}%</span>.
              </p>
-             <p className="text-[#a6a6ae] font-medium text-sm leading-relaxed max-w-xl">
+             <p className="text-ink-muted font-medium text-sm leading-relaxed max-w-xl">
                This calculation is based on historical admission rates for international applicants and your academic profile. Note: For a more accurate result (+/- 2%), use the full **Admissions Calculator** to input your research and olympiads.
              </p>
            </div>
            <div className="flex gap-4 mt-8">
-              <div className="flex items-center gap-2 px-4 py-2 rounded-xl bg-white/5 border border-white/5 text-[9px] font-black uppercase tracking-widest text-emerald-400"><TrendingUp className="w-3.5 h-3.5" /> Region Base Rates Applied</div>
-              <div className="flex items-center gap-2 px-4 py-2 rounded-xl bg-white/5 border border-white/5 text-[9px] font-black uppercase tracking-widest text-blue-400"><Target className="w-3.5 h-3.5" /> SAT/GPA Weighting</div>
+              <div className="flex items-center gap-2 px-4 py-2 rounded-xl bg-surface border border-line text-[9px] font-black uppercase tracking-widest text-emerald-400"><TrendingUp className="w-3.5 h-3.5" /> Region Base Rates Applied</div>
+              <div className="flex items-center gap-2 px-4 py-2 rounded-xl bg-surface border border-line text-[9px] font-black uppercase tracking-widest text-blue-400"><Target className="w-3.5 h-3.5" /> SAT/GPA Weighting</div>
            </div>
         </div>
       </div>
 
       <div className="space-y-8 mb-16">
-         <h4 className="text-[10px] font-black text-white/60 uppercase tracking-widest mb-4">Strategic Breakdown per Institution</h4>
+         <h4 className="text-[10px] font-black text-ink-muted uppercase tracking-widest mb-4">Strategic Breakdown per Institution</h4>
          {schools.map((school, i) => (
            <motion.div 
              key={i}
              initial={{ opacity: 0, y: 20 }}
              animate={{ opacity: 1, y: 0 }}
              transition={{ delay: i * 0.1 }}
-             className="glass-3d overflow-hidden border-white/5 hover:border-white/10 transition-all"
+             className="glass-3d overflow-hidden border-line hover:border-line transition-all"
            >
               <div className="p-10 flex flex-col lg:flex-row gap-12">
                  {/* School Info */}
                  <div className="lg:w-80 shrink-0">
-                    <div className="w-16 h-16 rounded-3xl bg-white/5 flex items-center justify-center border border-white/10 mb-8">
-                       <Building2 className="w-8 h-8 text-white/60" />
+                    <div className="w-16 h-16 rounded-3xl bg-surface flex items-center justify-center border border-line mb-8">
+                       <Building2 className="w-8 h-8 text-ink-muted" />
                     </div>
                     <h5 className="text-3xl font-black uppercase tracking-tighter mb-2 leading-none">{school.schoolName}</h5>
                     <div className="flex items-center gap-3">
                        <Badge className="bg-indigo-500/10 text-indigo-400 border-none font-black text-[8px] uppercase tracking-widest px-3">{school.region}</Badge>
                     </div>
                     <div className="mt-8">
-                       <p className={`text-5xl font-black tracking-tighter ${school.estimatedChance > 50 ? 'text-emerald-400' : 'text-white'}`}>{school.estimatedChance}%</p>
-                       <p className="text-[9px] font-black uppercase tracking-widest text-[#8b8b93]">Admission Probability</p>
+                       <p className={`text-5xl font-black tracking-tighter ${school.estimatedChance > 50 ? 'text-emerald-400' : 'text-ink'}`}>{school.estimatedChance}%</p>
+                       <p className="text-[9px] font-black uppercase tracking-widest text-ink-subtle">Admission Probability</p>
                     </div>
                  </div>
 
                  {/* Logic Explanation */}
-                 <div className="flex-1 bg-white/[0.02] rounded-3xl p-8 border border-white/5">
+                 <div className="flex-1 bg-surface rounded-3xl p-8 border border-line">
                     <h6 className="text-[9px] font-black uppercase tracking-widest text-indigo-400 mb-6 flex items-center gap-2">
                        <Info className="w-3.5 h-3.5" /> Key Decision Factors
                     </h6>
@@ -158,21 +158,21 @@ export default function AIMatchmakerResults({ data, onReset }: { data: Matchmake
          <div className="grid md:grid-cols-3 gap-8">
             <div>
                <p className="text-[10px] font-black uppercase text-indigo-400 mb-4">Academic</p>
-               <p className="text-sm font-medium text-white/75 leading-relaxed">Raising your SAT from {sat} to 1550+ is the most effective way to jump-start your application strength.</p>
+               <p className="text-sm font-medium text-ink-muted leading-relaxed">Raising your SAT from {sat} to 1550+ is the most effective way to jump-start your application strength.</p>
             </div>
             <div>
                <p className="text-[10px] font-black uppercase text-indigo-400 mb-4">Portfolio</p>
-               <p className="text-sm font-medium text-white/75 leading-relaxed">Top universities require "Hooks". Start a research project or publish a paper in your major area.</p>
+               <p className="text-sm font-medium text-ink-muted leading-relaxed">Top universities require "Hooks". Start a research project or publish a paper in your major area.</p>
             </div>
             <div>
                <p className="text-[10px] font-black uppercase text-indigo-400 mb-4">Full Analysis</p>
-               <p className="text-sm font-medium text-white/75 leading-relaxed">Use our detailed Admissions Calculator to analyze your CV/Portfolio and get a precise roadmap.</p>
+               <p className="text-sm font-medium text-ink-muted leading-relaxed">Use our detailed Admissions Calculator to analyze your CV/Portfolio and get a precise roadmap.</p>
             </div>
          </div>
       </div>
 
       <div className="flex flex-col md:flex-row justify-center gap-6">
-         <Button onClick={onReset} variant="outline" className="h-16 px-12 rounded-2xl border-white/10 text-white/75 font-black uppercase text-xs hover:bg-white/5 transition-all">Recalibrate Profile</Button>
+         <Button onClick={onReset} variant="outline" className="h-16 px-12 rounded-2xl border-line text-ink-muted font-black uppercase text-xs hover:bg-surface transition-all">Recalibrate Profile</Button>
          <Button 
            onClick={() => window.location.href = '/admissions/calculator'}
            className="h-16 px-16 rounded-2xl bg-indigo-600 text-white font-black uppercase text-xs hover:bg-indigo-500 shadow-[0_20px_40px_rgba(79,70,229,0.2)] transition-transform hover:scale-105 active:scale-95 flex items-center gap-3"

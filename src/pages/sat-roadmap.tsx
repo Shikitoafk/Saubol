@@ -72,7 +72,7 @@ export default function SATRoadmap() {
 
   return (
     <Layout>
-      <div className="min-h-screen bg-black pt-32 pb-48 px-10 relative overflow-hidden">
+      <div className="min-h-screen bg-canvas pt-32 pb-48 px-10 relative overflow-hidden">
         <div className="bg-vignette" />
         <div className="bg-sphere top-[-20%] left-[-10%] opacity-20" />
         
@@ -91,22 +91,22 @@ export default function SATRoadmap() {
                   <h1 className="text-8xl md:text-[140px] font-black italic tracking-tighter uppercase mb-12 text-shimmer leading-[0.85]">
                     DAILY <br /> PLAN.
                   </h1>
-                  <p className="text-2xl md:text-3xl text-white/60 font-medium leading-tight italic">
-                    Stop guessing. <span className="text-white">Start executing.</span> <br />
+                  <p className="text-2xl md:text-3xl text-ink-muted font-medium leading-tight italic">
+                    Stop guessing. <span className="text-ink">Start executing.</span> <br />
                     Your specific daily tasks for Stage {completedStages.length + 1}.
                   </p>
                </div>
 
                <div className="w-full md:w-96 space-y-8">
-                  <div className="p-8 glass-3d border-white/5 bg-white/[0.02]">
+                  <div className="p-8 glass-3d border-line bg-surface">
                      <div className="flex justify-between items-end mb-6">
                         <div>
-                           <p className="text-[9px] font-black uppercase text-white/40 tracking-widest mb-2">Preparation Mastery</p>
+                           <p className="text-[9px] font-black uppercase text-ink-subtle tracking-widest mb-2">Preparation Mastery</p>
                            <p className="text-4xl font-black italic tracking-tighter">{Math.round(totalProgress)}%</p>
                         </div>
                         <TrendingUp className="w-8 h-8 text-indigo-400" />
                      </div>
-                     <div className="h-2 w-full bg-white/5 rounded-full overflow-hidden">
+                     <div className="h-2 w-full bg-surface rounded-full overflow-hidden">
                         <motion.div animate={{ width: `${totalProgress}%` }} className="h-full bg-indigo-500 shadow-[0_0_20px_rgba(79,70,229,0.4)]" />
                      </div>
                   </div>
@@ -127,23 +127,23 @@ export default function SATRoadmap() {
                      initial={{ opacity: 0, y: 20 }}
                      animate={{ opacity: 1, y: 0 }}
                      transition={{ delay: i * 0.1 }}
-                     className="glass-3d p-8 border-white/5 hover:border-white/20 transition-all group"
+                     className="glass-3d p-8 border-line hover:border-line-strong transition-all group"
                    >
                       <div className="flex justify-between items-start mb-8">
                          <span className="text-[10px] font-black uppercase tracking-widest text-indigo-400">{day.day}</span>
-                         <Badge className="bg-white/5 text-white/60 border-none font-black text-[8px] uppercase px-3 py-1">Stage {day.stage}</Badge>
+                         <Badge className="bg-surface text-ink-muted border-none font-black text-[8px] uppercase px-3 py-1">Stage {day.stage}</Badge>
                       </div>
                       <h4 className="text-2xl font-black uppercase italic tracking-tighter mb-4 group-hover:text-indigo-400 transition-colors">{day.topic}</h4>
-                      <p className="text-sm text-white/60 font-medium mb-8 leading-relaxed italic">"{day.task}"</p>
+                      <p className="text-sm text-ink-muted font-medium mb-8 leading-relaxed italic">"{day.task}"</p>
                       
                       <div className="space-y-4">
-                         <div className="flex items-center gap-4 p-4 bg-white/5 rounded-xl border border-white/5 group/link cursor-pointer hover:bg-white/10 transition-all">
-                            <Play className="w-4 h-4 text-white/60 group-hover/link:text-indigo-400" />
-                            <span className="text-[10px] font-black uppercase tracking-widest text-white/75">Watch Video</span>
+                         <div className="flex items-center gap-4 p-4 bg-surface rounded-xl border border-line group/link cursor-pointer hover:bg-surface-2 transition-all">
+                            <Play className="w-4 h-4 text-ink-muted group-hover/link:text-indigo-400" />
+                            <span className="text-[10px] font-black uppercase tracking-widest text-ink-muted">Watch Video</span>
                          </div>
                          <div className="flex items-center gap-4 p-4 bg-indigo-500/5 rounded-xl border border-indigo-500/20 group/task cursor-pointer hover:bg-indigo-500/10 transition-all">
                             <Zap className="w-4 h-4 text-indigo-400" />
-                            <span className="text-[10px] font-black uppercase tracking-widest text-white/75">{day.practice}</span>
+                            <span className="text-[10px] font-black uppercase tracking-widest text-ink-muted">{day.practice}</span>
                          </div>
                       </div>
                    </motion.div>
