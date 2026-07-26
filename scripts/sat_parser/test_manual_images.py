@@ -108,8 +108,9 @@ check(not mismatch, f"имя файла в CSV совпадает со спис�
 
 sample = todo[0]
 folder = sp.SUBFOLDERS["MATH_MCQ"]
-check(sample["file"].startswith(f"{folder}/") and sample["file"].endswith(".jpg"),
-      f"файл лежит в папке по типу вопроса: {sample['file']}")
+# По умолчанию png: скрины с экрана сохраняются именно так.
+check(sample["file"].startswith(f"{folder}/") and sample["file"].endswith(".png"),
+      f"файл лежит в папке по типу вопроса, расширение png: {sample['file']}")
 check(f"q{sample['question_number']}" in sample["file"]
       and f"p{int(sample['page']):02d}" in sample["file"],
       f"в имени есть страница и номер вопроса: {sample['file']}")

@@ -2104,7 +2104,8 @@ def process_pdf(pdf_path: Path, pool: ModelPool, sink: CsvSink, state: RunState,
                     page_number = (q.page_index if q.page_index is not None else 0) + 1
                     tag = f"q{q.number}" if q.number is not None else \
                         f"n{sink.counters[q.qtype] + 1}"
-                    name = f"{slugify(f'{source}_p{page_number:02d}_{tag}')}.jpg"
+                    name = (f"{slugify(f'{source}_p{page_number:02d}_{tag}')}"
+                            f".{args.image_ext}")
                     image_url = f"{SUBFOLDERS[q.qtype]}/{name}"
                     todo_images.append({
                         "page": page_number,
@@ -2383,6 +2384,9 @@ def build_arg_parser() -> argparse.ArgumentParser:
     ap.add_argument("--api-max-side", type=int, default=API_MAX_SIDE,
                     help="длинная сторона картинки для модели, px")
     ap.add_argument("--bbox-pad", type=float, default=0.012, help="поля вокруг кропа, доли")
+    ap.add_argument("--image-ext", default="png",
+                    help="расширение файлов скринов в --manual-images "
+                         "(в каком формате ты их сохраняешь)")
     ap.add_argument("--manual-images", action="store_true",
                     help="не резать картинки самому: составить список вопросов "
                          "с рисунками (images_todo.csv) и заранее проставить в CSV "
@@ -2450,6 +2454,7 @@ def main() -> int:
     args.debug_log = out_dir / "failed_batches_debug.log"
     args.gaps_report = out_dir / "gaps_report.txt"
     args.images_todo = out_dir / "images_todo.csv"
+    args.image_ext = args.image_ext.strip().lstrip(".").lower() or "png"
 
     if args.manual_images and args.images_dir:
         # Создаём папки заранее, чтобы было куда складывать скрины.
