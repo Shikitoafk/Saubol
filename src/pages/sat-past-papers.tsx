@@ -38,6 +38,7 @@ import {
 import katex from "katex";
 import "katex/dist/katex.min.css";
 import { motion, AnimatePresence } from "framer-motion";
+import { QuestionImage } from "@/components/question-image";
 
 // High-fidelity fallback past papers & questions for local testing (since count = 0 in database)
 // Заглушка включается только флагом VITE_USE_MOCK_PAPERS=true — она нужна
@@ -1159,7 +1160,7 @@ export default function SATPastPapers() {
                         <div className="glass-3d p-8 flex flex-col gap-6 mb-2">
                           {questions[currentIdx]?.imageUrl && (
                             <div className="my-2 p-6 bg-white rounded-2xl border border-slate-200 flex justify-center items-center max-w-md mx-auto shadow-sm">
-                              <img src={questions[currentIdx].imageUrl} alt="Question visual" className="max-h-[260px] object-contain" />
+                              <QuestionImage src={questions[currentIdx].imageUrl} className="max-h-[260px] object-contain" />
                             </div>
                           )}
                           <div className="text-lg font-bold leading-relaxed tracking-tight" dangerouslySetInnerHTML={{ __html: renderKatexText(questions[currentIdx]?.question || "") }} />
@@ -1177,7 +1178,7 @@ export default function SATPastPapers() {
                   <div className="glass-3d p-10 overflow-y-auto custom-scrollbar flex flex-col gap-6">
                     {questions[currentIdx]?.imageUrl && (
                       <div className="my-2 p-6 bg-white rounded-2xl border border-slate-200 flex justify-center items-center max-w-md mx-auto shadow-sm">
-                        <img src={questions[currentIdx].imageUrl} alt="Question visual" className="max-h-[260px] object-contain" />
+                        <QuestionImage src={questions[currentIdx].imageUrl} className="max-h-[260px] object-contain" />
                       </div>
                     )}
                     <div className="flex items-center gap-2 mb-2 opacity-30">

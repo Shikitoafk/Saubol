@@ -20,6 +20,7 @@ import { calculateWeightedScore } from "@/lib/sat-logic";
 import { fetchDiagnosticQuestions, SATQuestion } from "@/lib/sat-questions-service";
 import katex from 'katex';
 import 'katex/dist/katex.min.css';
+import { QuestionImage } from "@/components/question-image";
 
 export default function SATDiagnostic() {
   const navigate = useNavigate();
@@ -209,7 +210,7 @@ export default function SATDiagnostic() {
             <div className="glass-3d p-12 overflow-y-auto custom-scrollbar flex flex-col gap-10">
               {q?.imageUrl && (
                 <div className="mb-8">
-                  <img src={q.imageUrl} alt="Question visual" className="max-w-full rounded-3xl border border-line" />
+                  <QuestionImage src={q.imageUrl} className="max-w-full rounded-3xl border border-line" />
                 </div>
               )}
               {q?.passage && (

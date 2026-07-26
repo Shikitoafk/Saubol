@@ -14,6 +14,7 @@ import { SATQuestion } from "@/lib/sat-questions-service";
 import katex from 'katex';
 import 'katex/dist/katex.min.css';
 import { saveSATAnswer } from "@/lib/progress-service";
+import { QuestionImage } from "@/components/question-image";
 
 interface PracticeSessionProps {
   topic: string;
@@ -102,7 +103,7 @@ export default function PracticeSession({ topic, questions, onComplete }: Practi
       <div className="glass-3d p-12 border-line relative overflow-hidden">
          {currentQuestion.imageUrl && (
             <div className="mb-8">
-              <img src={currentQuestion.imageUrl} alt="Question visual" className="max-w-full rounded-2xl border border-line" />
+              <QuestionImage src={currentQuestion.imageUrl} className="max-w-full rounded-2xl border border-line" />
             </div>
          )}
 

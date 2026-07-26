@@ -34,6 +34,7 @@ import { fetchPracticeQuestions, SATQuestion } from "@/lib/sat-questions-service
 import katex from 'katex';
 import 'katex/dist/katex.min.css';
 import { motion, AnimatePresence } from "framer-motion";
+import { QuestionImage } from "@/components/question-image";
 
 interface SubtopicInfo {
   id: string;
@@ -771,9 +772,8 @@ export default function SATPractice() {
                         <div className="glass-3d p-8 flex flex-col gap-6 mb-2">
                           {questions[currentIdx]?.imageUrl && (
                             <div className="my-2 p-6 bg-white rounded-2xl border border-slate-200 flex justify-center items-center max-w-md mx-auto shadow-sm">
-                              <img
+                              <QuestionImage
                                 src={questions[currentIdx].imageUrl}
-                                alt="Question visual"
                                 className="max-h-[260px] object-contain"
                               />
                             </div>
@@ -921,9 +921,8 @@ export default function SATPractice() {
                   <div className="glass-3d p-10 overflow-y-auto custom-scrollbar flex flex-col gap-6">
                     {questions[currentIdx]?.imageUrl && (
                       <div className="my-2 p-6 bg-white rounded-2xl border border-slate-200 flex justify-center items-center max-w-md mx-auto shadow-sm">
-                        <img
+                        <QuestionImage
                           src={questions[currentIdx].imageUrl}
-                          alt="Question visual"
                           className="max-h-[260px] object-contain"
                         />
                       </div>

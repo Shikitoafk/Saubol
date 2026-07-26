@@ -819,6 +819,15 @@ IMAGE RULES:
   numbers, and watermarks (e.g. "@CookingSAT", "@EliteXSAT").
 - If the question has no figure, set has_image=false and image_bbox=null.
   Plain text, equations and answer options are NOT images.
+- DO NOT transcribe the contents of a figure or table into "passage" or
+  "question". When has_image is true, the picture already carries that
+  content, and a flattened copy of it is unreadable: a table turns into
+  "Apollo 11 | 1969 | Mare Tranquillitatis | 3.6 Apollo 15 | 1971 | ..."
+  glued in front of the real text.
+- "passage" holds only the words a student reads: the text above the
+  question, the claim to complete, the student's notes. A table caption
+  ("Dated Ages of Lunar Samples from Select Missions") is part of the
+  figure, not of the passage — leave it in the picture.
 
 COMPLETENESS — THIS IS CRITICAL:
 - These pages are numbered/sequential questions from a real SAT test. Assume

@@ -14,6 +14,7 @@ import { Button } from "@/components/ui/button";
 import { SATQuestion } from "@/lib/sat-questions-service";
 import katex from 'katex';
 import 'katex/dist/katex.min.css';
+import { QuestionImage } from "@/components/question-image";
 
 interface PracticeQuestionProps {
   question: SATQuestion;
@@ -81,7 +82,7 @@ export default function PracticeQuestion({
       <div className="glass-3d p-12 border-line">
         {question.imageUrl && (
           <div className="mb-8">
-            <img src={question.imageUrl} alt="Question visual" className="max-w-full rounded-2xl border border-line" />
+            <QuestionImage src={question.imageUrl} className="max-w-full rounded-2xl border border-line" />
           </div>
         )}
 

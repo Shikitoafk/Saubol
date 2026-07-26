@@ -52,10 +52,12 @@ export interface SATQuestion {
  * открыть не может, поэтому картинки не показывались. Полные ссылки
  * (например из Supabase Storage) пропускаем как есть.
  *
- * База задаётся через VITE_SAT_IMAGE_BASE; по умолчанию `/sat-images/`,
- * то есть достаточно положить папку со скринами в `public/sat-images/`.
+ * База задаётся через VITE_SAT_IMAGE_BASE; по умолчанию `/sat_images/`,
+ * то есть достаточно положить папки со скринами (ebrw, math_mcq,
+ * math_open) в `public/sat_images/` — имена подпапок парсер проставляет
+ * в CSV сам, менять их не нужно.
  */
-const IMAGE_BASE = (import.meta.env.VITE_SAT_IMAGE_BASE?.trim() || "/sat-images/").replace(/\/+$/, "") + "/";
+const IMAGE_BASE = (import.meta.env.VITE_SAT_IMAGE_BASE?.trim() || "/sat_images/").replace(/\/+$/, "") + "/";
 
 export function resolveImageUrl(raw: unknown): string | undefined {
   const value = typeof raw === "string" ? raw.trim() : "";
