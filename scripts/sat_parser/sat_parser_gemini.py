@@ -575,9 +575,67 @@ def render_page(doc: fitz.Document, index: int, dpi: int = RENDER_DPI,
     return PageImage(index=index, full=full, jpeg=buf.getvalue())
 
 
+# Раздвижение рамки до белого поля. Модель ставит bbox на глаз и регулярно
+# режет по краю: у таблицы отрезает левый столбец, у графика — подписи осей.
+# Фиксированным отступом это не лечится (нужно то 1%, то 8%), а вот «расти,
+# пока за краем есть чернила» — лечится.
+INK_LEVEL = 170        # пиксель темнее этого считаем содержимым
+# Доля тёмных пикселей в полоске, чтобы счесть её занятой. Порог низкий
+# намеренно: разделительная линия таблицы — это 2-3 пикселя на всю ширину
+# полоски, и при пороге в проценты рамка останавливалась прямо посреди
+# таблицы. От водяных знаков это не страдает: они светлее INK_LEVEL.
+INK_RATIO = 0.004
+
+
+def expand_to_whitespace(img: Image.Image, box: tuple[int, int, int, int],
+                         max_grow: int) -> tuple[int, int, int, int]:
+    """Двигает каждую сторону рамки наружу, пока за ней есть содержимое.
+
+    Порог INK_LEVEL подобран так, чтобы водяные знаки (светло-розовые
+    «EliteXSAT» поверх страницы) за содержимое не считались — иначе рамка
+    росла бы до краёв листа на любой странице.
+    """
+    if max_grow <= 0:
+        return box
+    width, height = img.size
+    gray = img.convert("L")
+    x0, y0, x1, y1 = box
+    step = max(2, round(min(width, height) * 0.004))
+
+    def occupied(region: tuple[int, int, int, int]) -> bool:
+        left, top, right, bottom = region
+        if right - left <= 0 or bottom - top <= 0:
+            return False
+        strip = gray.crop(region)
+        dark = sum(strip.histogram()[:INK_LEVEL])
+        return dark / float(strip.size[0] * strip.size[1]) > INK_RATIO
+
+    grown = 0
+    while x0 > 0 and grown < max_grow and occupied((max(0, x0 - step), y0, x0, y1)):
+        x0 = max(0, x0 - step)
+        grown += step
+
+    grown = 0
+    while x1 < width and grown < max_grow and occupied((x1, y0, min(width, x1 + step), y1)):
+        x1 = min(width, x1 + step)
+        grown += step
+
+    grown = 0
+    while y0 > 0 and grown < max_grow and occupied((x0, max(0, y0 - step), x1, y0)):
+        y0 = max(0, y0 - step)
+        grown += step
+
+    grown = 0
+    while y1 < height and grown < max_grow and occupied((x0, y1, x1, min(height, y1 + step))):
+        y1 = min(height, y1 + step)
+        grown += step
+
+    return (x0, y0, x1, y1)
+
+
 def crop_by_normalized_bbox(img: Image.Image, bbox: Sequence[float],
-                            pad: float = 0.012,
-                            max_area: float = 0.92) -> Image.Image | None:
+                            pad: float = 0.012, max_area: float = 0.92,
+                            grow: float = 0.15) -> Image.Image | None:
     """bbox = [x0, y0, x1, y1] в долях 0-1. Возвращает кроп или None."""
     if not bbox or len(bbox) != 4:
         return None
@@ -607,6 +665,7 @@ def crop_by_normalized_bbox(img: Image.Image, bbox: Sequence[float],
     box = (int(x0 * w), int(y0 * h), int(x1 * w), int(y1 * h))
     if box[2] - box[0] < 24 or box[3] - box[1] < 24:
         return None
+    box = expand_to_whitespace(img, box, round(grow * max(w, h)))
     return img.crop(box)
 
 
@@ -2036,7 +2095,8 @@ def process_pdf(pdf_path: Path, pool: ModelPool, sink: CsvSink, state: RunState,
                 image_url = ""
                 if q.has_image and q.image_page is not None:
                     page = next((p for p in pages if p.index == q.image_page), None)
-                    cropped = (crop_by_normalized_bbox(page.full, q.bbox, args.bbox_pad)
+                    cropped = (crop_by_normalized_bbox(page.full, q.bbox, args.bbox_pad,
+                                                       grow=args.bbox_grow)
                                if page else None)
                     if cropped is not None:
                         name = f"{source}_{q.qtype.lower()}_{sink.counters[q.qtype] + 1}"
@@ -2271,6 +2331,9 @@ def build_arg_parser() -> argparse.ArgumentParser:
     ap.add_argument("--api-max-side", type=int, default=API_MAX_SIDE,
                     help="длинная сторона картинки для модели, px")
     ap.add_argument("--bbox-pad", type=float, default=0.012, help="поля вокруг кропа, доли")
+    ap.add_argument("--bbox-grow", type=float, default=0.15,
+                    help="насколько рамка кропа может раздвинуться до белого поля, "
+                         "доли длинной стороны листа (0 — не раздвигать)")
     ap.add_argument("--images-dir", default=None, help="сохранять кропы ещё и локально")
     ap.add_argument("--bucket", default=None, help="бакет Supabase (перекрывает env)")
     ap.add_argument("--no-upload", action="store_true", help="не заливать в Supabase")
