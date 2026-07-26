@@ -77,6 +77,8 @@ const MOCK_QUESTIONS: Record<string, SATQuestion[]> = {
       topic: "Information and Ideas",
       section: "RW",
       isFreeResponse: false,
+      questionNumber: 1,
+      page: 2,
       rawCorrectAnswer: "B"
     },
     {
@@ -90,6 +92,8 @@ const MOCK_QUESTIONS: Record<string, SATQuestion[]> = {
       topic: "Standard English Conventions",
       section: "RW",
       isFreeResponse: false,
+      questionNumber: 2,
+      page: 2,
       rawCorrectAnswer: "A"
     },
     {
@@ -102,6 +106,8 @@ const MOCK_QUESTIONS: Record<string, SATQuestion[]> = {
       topic: "Algebra",
       section: "Math",
       isFreeResponse: false,
+      questionNumber: 1,
+      page: 21,
       rawCorrectAnswer: "B"
     },
     {
@@ -114,6 +120,8 @@ const MOCK_QUESTIONS: Record<string, SATQuestion[]> = {
       topic: "Algebra",
       section: "Math",
       isFreeResponse: false,
+      questionNumber: 2,
+      page: 21,
       rawCorrectAnswer: "A"
     },
     {
@@ -127,6 +135,8 @@ const MOCK_QUESTIONS: Record<string, SATQuestion[]> = {
       topic: "Advanced Math",
       section: "Math",
       isFreeResponse: true,
+      questionNumber: 3,
+      page: 21,
       rawCorrectAnswer: "4"
     },
     {
@@ -140,6 +150,8 @@ const MOCK_QUESTIONS: Record<string, SATQuestion[]> = {
       topic: "Geometry",
       section: "Math",
       isFreeResponse: true,
+      questionNumber: 4,
+      page: 22,
       rawCorrectAnswer: "" // Test case: empty correct answer
     }
   ],
@@ -155,6 +167,8 @@ const MOCK_QUESTIONS: Record<string, SATQuestion[]> = {
       topic: "Words in Context",
       section: "RW",
       isFreeResponse: false,
+      questionNumber: 3,
+      page: 2,
       rawCorrectAnswer: "C"
     },
     {
@@ -168,6 +182,8 @@ const MOCK_QUESTIONS: Record<string, SATQuestion[]> = {
       topic: "Standard English Conventions",
       section: "RW",
       isFreeResponse: false,
+      questionNumber: 4,
+      page: 3,
       rawCorrectAnswer: "A"
     },
     {
@@ -180,6 +196,8 @@ const MOCK_QUESTIONS: Record<string, SATQuestion[]> = {
       topic: "Advanced Math",
       section: "Math",
       isFreeResponse: false,
+      questionNumber: 5,
+      page: 22,
       rawCorrectAnswer: "C"
     },
     {
@@ -193,6 +211,8 @@ const MOCK_QUESTIONS: Record<string, SATQuestion[]> = {
       topic: "Algebra",
       section: "Math",
       isFreeResponse: true,
+      questionNumber: 6,
+      page: 22,
       rawCorrectAnswer: "4"
     }
   ]
@@ -304,9 +324,20 @@ export default function SATPastPapers() {
     setModulesLoading(true);
     setError(null);
     try {
-      const all = await withTimeout(
-        fetchPastPaperQuestions(paper.test_period, paper.test_version),
-        15000, "Вопросы теста");
+      let all: SATQuestion[] = [];
+      try {
+        all = await withTimeout(
+          fetchPastPaperQuestions(paper.test_period, paper.test_version),
+          15000, "Вопросы теста");
+      } catch (e: any) {
+        // Заглушка нужна и здесь: список модулей строится до старта сессии,
+        // и без неё локально (без базы) экран оставался пустым.
+        if (!USE_MOCK_PAPERS) throw e;
+        console.warn("DB load failed, using mocks:", e);
+      }
+      if (all.length === 0 && USE_MOCK_PAPERS) {
+        all = MOCK_QUESTIONS[`${paper.test_period}|||${paper.test_version}`] || [];
+      }
       setQuestions(all);
       setModules(splitIntoModules(all));
     } catch (e: any) {
@@ -743,13 +774,13 @@ export default function SATPastPapers() {
 
         {/* Phase 1: Test Selection List */}
         {phase === "list" && (
-          <div className="max-w-[1300px] mx-auto px-10 py-32 relative z-10">
-            <header className="mb-20">
+          <div className="max-w-[1300px] mx-auto px-6 md:px-10 py-16 md:py-20 relative z-10">
+            <header className="mb-12">
               <div className="flex items-center gap-3 mb-6 opacity-60">
                 <ClipboardList className="w-5 h-5 text-indigo-400" />
                 <span className="text-[10px] font-black tracking-[0.4em] uppercase text-indigo-400">SAT Section</span>
               </div>
-              <h1 className="text-6xl md:text-8xl font-black italic tracking-tighter uppercase mb-6 leading-none">
+              <h1 className="text-5xl md:text-6xl font-black tracking-tight mb-4 leading-[0.95]">
                 PAST PAPERS.
               </h1>
               <p className="text-sm text-ink-muted font-semibold max-w-xl">
@@ -845,7 +876,7 @@ export default function SATPastPapers() {
 
         {/* Phase 2: Mode Selection */}
         {phase === "modes" && selectedPaper && (
-          <div className="max-w-[1000px] mx-auto px-10 py-32 relative z-10">
+          <div className="max-w-[1000px] mx-auto px-6 md:px-10 py-16 md:py-20 relative z-10">
             <Button
               onClick={() => { setPhase("list"); setSelectedPaper(null); }}
               variant="ghost"
@@ -854,12 +885,12 @@ export default function SATPastPapers() {
               <ChevronLeft className="w-4 h-4" /> Back to papers list
             </Button>
 
-            <header className="mb-16">
-              <h2 className="text-5xl md:text-7xl font-black italic tracking-tighter uppercase leading-none mb-4">
+            <header className="mb-10">
+              <h2 className="text-4xl md:text-5xl font-black tracking-tight leading-[1] mb-3">
                 {selectedPaper.test_period}
               </h2>
-              <p className="text-sm text-ink-muted font-semibold uppercase tracking-widest">
-                Version: {selectedPaper.test_version || "Standard A"} • {selectedPaper.totalQuestions} Questions
+              <p className="text-sm text-ink-muted font-medium">
+                {selectedPaper.test_version || "Standard A"} · {selectedPaper.totalQuestions} вопросов
               </p>
             </header>
 
@@ -869,64 +900,97 @@ export default function SATPastPapers() {
               </div>
             )}
 
-            {/* Выбор модуля. Настоящий тест состоит из четырёх отдельных
-                модулей со своим таймингом, и готовятся обычно по одному:
-                решать 98 вопросов подряд одной кучей смысла мало. */}
-            <section className="mb-14">
-              <h3 className="text-xs font-black uppercase tracking-[0.25em] text-ink-subtle mb-6">
-                Что решаем
-              </h3>
-
+            {/* Выбор модуля. Настоящий тест — это четыре отдельных модуля со
+                своим таймингом, и готовятся обычно по одному. Секции
+                разделены: смешивать Reading & Writing с математикой в одной
+                сетке значит заставлять читать подписи, чтобы понять, что
+                перед тобой. */}
+            <section className="mb-12">
               {modulesLoading ? (
-                <div className="glass-3d p-10 flex items-center gap-4">
+                <div className="glass-3d p-8 flex items-center gap-4">
                   <div className="w-5 h-5 border-2 border-indigo-500 border-t-transparent rounded-full animate-spin" />
                   <span className="text-sm font-semibold text-ink-muted">Загружаю вопросы теста…</span>
                 </div>
               ) : (
-                <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                <>
                   <button
                     type="button"
                     onClick={() => setSelectedModule(null)}
-                    className={`glass-3d p-6 text-left transition-all ${
-                      selectedModule === null ? "border-indigo-500 ring-2 ring-indigo-500/25" : ""
+                    className={`w-full glass-3d px-7 py-6 mb-8 flex items-center justify-between gap-6 text-left transition-all ${
+                      selectedModule === null
+                        ? "border-indigo-500 ring-2 ring-indigo-500/20"
+                        : "hover:border-line-strong"
                     }`}
                   >
-                    <div className="text-sm font-black uppercase tracking-tight mb-1">Весь тест</div>
-                    <div className="text-xs text-ink-muted font-medium">
-                      {modules.reduce((n, m) => n + m.questions.length, 0) || selectedPaper.totalQuestions} вопросов
-                      {modules.length > 0 && ` · ${modules.reduce((n, m) => n + m.minutes, 0)} мин`}
+                    <div>
+                      <div className="text-base font-black tracking-tight mb-0.5">Весь тест целиком</div>
+                      <div className="text-sm text-ink-muted font-medium">
+                        {modules.reduce((n, m) => n + m.questions.length, 0) || selectedPaper.totalQuestions} вопросов
+                        {modules.length > 0 &&
+                          ` · ${Math.round(modules.reduce((n, m) => n + m.minutes, 0) / 60 * 10) / 10} ч`}
+                      </div>
                     </div>
+                    {selectedModule === null && (
+                      <Check className="w-5 h-5 text-indigo-500 shrink-0" />
+                    )}
                   </button>
 
-                  {modules.map((m) => (
-                    <button
-                      key={m.key}
-                      type="button"
-                      onClick={() => setSelectedModule(m)}
-                      className={`glass-3d p-6 text-left transition-all ${
-                        selectedModule?.key === m.key ? "border-indigo-500 ring-2 ring-indigo-500/25" : ""
-                      }`}
-                    >
-                      <div className="flex items-center gap-2 mb-1">
-                        <span
-                          className={`w-2 h-2 rounded-full ${
-                            m.section === "RW" ? "bg-indigo-500" : "bg-emerald-500"
-                          }`}
-                        />
-                        <span className="text-sm font-black uppercase tracking-tight">
-                          {m.section === "RW" ? "R&W" : "Math"} · Модуль {m.index}
-                        </span>
+                  {(["RW", "Math"] as const).map((section) => {
+                    const list = modules.filter((m) => m.section === section);
+                    if (list.length === 0) return null;
+                    const accent =
+                      section === "RW"
+                        ? { dot: "bg-indigo-500", ring: "ring-indigo-500/20", border: "border-indigo-500" }
+                        : { dot: "bg-emerald-500", ring: "ring-emerald-500/20", border: "border-emerald-500" };
+                    return (
+                      <div key={section} className="mb-8 last:mb-0">
+                        <div className="flex items-center gap-2.5 mb-3">
+                          <span className={`w-2 h-2 rounded-full ${accent.dot}`} />
+                          <h4 className="text-xs font-black uppercase tracking-[0.2em] text-ink-muted">
+                            {section === "RW" ? "Reading & Writing" : "Math"}
+                          </h4>
+                          <span className="text-xs text-ink-subtle font-medium">
+                            {list.length} {list.length === 1 ? "модуль" : "модуля"}
+                          </span>
+                        </div>
+
+                        <div className="grid sm:grid-cols-2 gap-3">
+                          {list.map((m) => {
+                            const active = selectedModule?.key === m.key;
+                            return (
+                              <button
+                                key={m.key}
+                                type="button"
+                                onClick={() => setSelectedModule(m)}
+                                className={`glass-3d px-6 py-5 text-left transition-all ${
+                                  active ? `${accent.border} ring-2 ${accent.ring}` : "hover:border-line-strong"
+                                }`}
+                              >
+                                <div className="flex items-start justify-between gap-3">
+                                  <div>
+                                    <div className="text-sm font-black tracking-tight mb-1">
+                                      Модуль {m.index}
+                                    </div>
+                                    <div className="text-sm text-ink-muted font-medium tabular-nums">
+                                      {m.questions.length} вопросов · {m.minutes} мин
+                                    </div>
+                                  </div>
+                                  {active && <Check className={`w-4 h-4 shrink-0 ${
+                                    section === "RW" ? "text-indigo-500" : "text-emerald-500"
+                                  }`} />}
+                                </div>
+                              </button>
+                            );
+                          })}
+                        </div>
                       </div>
-                      <div className="text-xs text-ink-muted font-medium">
-                        {m.questions.length} вопросов · {m.minutes} мин
-                      </div>
-                    </button>
-                  ))}
-                </div>
+                    );
+                  })}
+                </>
               )}
 
               {!modulesLoading && modules.length === 0 && (
-                <p className="text-xs text-ink-subtle font-medium mt-4">
+                <p className="text-sm text-ink-subtle font-medium">
                   Модули не определились — в вопросах нет номеров. Тест можно решить целиком.
                 </p>
               )}

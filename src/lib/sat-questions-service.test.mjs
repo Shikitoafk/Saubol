@@ -23,21 +23,37 @@ function splitIntoModules(questions) {
       .filter((q) => (q.section ?? "Math") === section)
       .sort((a, b) => (a.page ?? 0) - (b.page ?? 0) || (a.questionNumber ?? 0) - (b.questionNumber ?? 0));
 
+    const byPage = new Map();
+    for (const q of inSection) {
+      const page = q.page ?? 0;
+      if (!byPage.has(page)) byPage.set(page, []);
+      byPage.get(page).push(q);
+    }
+
     let current = null;
     let reached = 0;
-    for (const q of inSection) {
-      const number = q.questionNumber ?? 0;
-      const restarted =
-        current !== null && number > 0 && number <= RESTART_MAX && reached >= MIN_BEFORE_RESTART;
-      if (current === null || restarted) {
-        const index = modules.filter((m) => m.section === section).length + 1;
-        current = { key: `${section}-${index}`, label: `${rule.label} — Module ${index}`,
-                    section, index, minutes: rule.minutes, questions: [] };
-        modules.push(current);
-        reached = 0;
+    for (const page of [...byPage.keys()].sort((a, b) => a - b)) {
+      const items = byPage.get(page);
+      const before = reached;
+      const byNumber = (a, b) => (a.questionNumber ?? 0) - (b.questionNumber ?? 0);
+      const ordered = [
+        ...items.filter((q) => (q.questionNumber ?? 0) > before).sort(byNumber),
+        ...items.filter((q) => (q.questionNumber ?? 0) <= before).sort(byNumber),
+      ];
+      for (const q of ordered) {
+        const number = q.questionNumber ?? 0;
+        const restarted =
+          current !== null && number > 0 && number <= RESTART_MAX && reached >= MIN_BEFORE_RESTART;
+        if (current === null || restarted) {
+          const index = modules.filter((m) => m.section === section).length + 1;
+          current = { key: `${section}-${index}`, label: `${rule.label} — Module ${index}`,
+                      section, index, minutes: rule.minutes, questions: [] };
+          modules.push(current);
+          reached = 0;
+        }
+        current.questions.push(q);
+        reached = Math.max(reached, number);
       }
-      current.questions.push(q);
-      reached = Math.max(reached, number);
     }
   }
   for (const m of modules) m.questions.sort((a, b) => (a.questionNumber ?? 0) - (b.questionNumber ?? 0));
@@ -122,6 +138,35 @@ const noNumbers = splitIntoModules([
 ]);
 check(noNumbers.length === 1 && noNumbers[0].questions.length === 3,
   "вопросы без номеров не плодят модули");
+
+// --- граница модуля посреди страницы ------------------------------------
+// Ровно то, на чём разбивка сломалась на настоящем тесте: на одной странице
+// стоят последний вопрос первого модуля и первые два вопроса второго.
+// Получалось 26 / 3 / 25 вместо 27 / 27.
+const midPage = [];
+let pg = 1;
+for (let n = 1; n <= 26; n++) {
+  if (n % 3 === 1) pg++;
+  midPage.push({ section: "RW", questionNumber: n, page: pg });
+}
+pg++;
+midPage.push({ section: "RW", questionNumber: 27, page: pg });   // конец модуля 1
+midPage.push({ section: "RW", questionNumber: 1, page: pg });    // тут же начало модуля 2
+midPage.push({ section: "RW", questionNumber: 2, page: pg });
+for (let n = 3; n <= 27; n++) {
+  if (n % 3 === 0) pg++;
+  midPage.push({ section: "RW", questionNumber: n, page: pg });
+}
+
+const midModules = splitIntoModules(midPage);
+console.log("\nграница посреди страницы:",
+  midModules.map((m) => `${m.label} (${m.questions.length})`).join(", "));
+check(midModules.length === 2,
+  `модуль не разваливается на куски (получено ${midModules.length})`);
+check(midModules.map((m) => m.questions.length).join(",") === "27,27",
+  `размеры 27/27 (получено ${midModules.map((m) => m.questions.length).join(",")})`);
+check(midModules[0].questions.at(-1).questionNumber === 27,
+  "последний вопрос первого модуля остался в первом модуле");
 
 console.log(failed ? "\nFAILED" : "\nвсе проверки прошли");
 process.exit(failed ? 1 : 0);

@@ -427,30 +427,54 @@ export function splitIntoModules(questions: SATQuestion[]): PaperModule[] {
         (a.questionNumber ?? 0) - (b.questionNumber ?? 0)
       );
 
+    // Группируем по странице: модуль кончается ПОСРЕДИ страницы — там же,
+    // где последний вопрос первого модуля, уже напечатан заголовок второго
+    // и его вопрос №1. Если внутри страницы просто отсортировать по номеру,
+    // «1, 2, 27» разберётся как «новый модуль, а потом 27» — и модуль
+    // разваливается на три куска вместо двух.
+    const byPage = new Map<number, SATQuestion[]>();
+    for (const q of inSection) {
+      const page = q.page ?? 0;
+      if (!byPage.has(page)) byPage.set(page, []);
+      byPage.get(page)!.push(q);
+    }
+
     let current: PaperModule | null = null;
     let reached = 0;
 
-    for (const q of inSection) {
-      const number = q.questionNumber ?? 0;
-      const restarted =
-        current !== null && number > 0 && number <= RESTART_MAX && reached >= MIN_BEFORE_RESTART;
+    for (const page of [...byPage.keys()].sort((a, b) => a - b)) {
+      const items = byPage.get(page)!;
+      const before = reached;
+      const byNumber = (a: SATQuestion, b: SATQuestion) =>
+        (a.questionNumber ?? 0) - (b.questionNumber ?? 0);
+      // Сначала дочитываем текущий модуль, и только потом смотрим на рестарт.
+      const ordered = [
+        ...items.filter((q) => (q.questionNumber ?? 0) > before).sort(byNumber),
+        ...items.filter((q) => (q.questionNumber ?? 0) <= before).sort(byNumber),
+      ];
 
-      if (current === null || restarted) {
-        const index = modules.filter((m) => m.section === section).length + 1;
-        current = {
-          key: `${section}-${index}`,
-          label: `${rule.label} — Module ${index}`,
-          section,
-          index,
-          minutes: rule.minutes,
-          questions: [],
-        };
-        modules.push(current);
-        reached = 0;
+      for (const q of ordered) {
+        const number = q.questionNumber ?? 0;
+        const restarted =
+          current !== null && number > 0 && number <= RESTART_MAX && reached >= MIN_BEFORE_RESTART;
+
+        if (current === null || restarted) {
+          const index = modules.filter((m) => m.section === section).length + 1;
+          current = {
+            key: `${section}-${index}`,
+            label: `${rule.label} — Module ${index}`,
+            section,
+            index,
+            minutes: rule.minutes,
+            questions: [],
+          };
+          modules.push(current);
+          reached = 0;
+        }
+
+        current.questions.push(q);
+        reached = Math.max(reached, number);
       }
-
-      current.questions.push(q);
-      reached = Math.max(reached, number);
     }
   }
 
