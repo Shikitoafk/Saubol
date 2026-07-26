@@ -1297,7 +1297,10 @@ def normalize_question(raw: dict, pages: Sequence[PageImage]) -> Question | None
 
     bbox = raw.get("image_bbox")
     bbox = list(bbox) if isinstance(bbox, (list, tuple)) and len(bbox) == 4 else None
-    has_image = bool(raw.get("has_image")) and bbox is not None
+    # has_image — есть ли у вопроса рисунок, bbox — знаем ли мы, где он.
+    # Связывать одно с другим нельзя: вопрос с графиком, но без координат,
+    # иначе просто исчезает из списка того, что нужно проверить руками.
+    has_image = bool(raw.get("has_image"))
 
     known = {p.index for p in pages}
     page_index = raw.get(ABS_PAGE_KEY)
@@ -2053,6 +2056,7 @@ def process_pdf(pdf_path: Path, pool: ModelPool, sink: CsvSink, state: RunState,
     try:
         render_lock = threading.Lock()
         sightings: list[Sighting] = []             # все увиденные номера, до дедупа
+        todo_images: list[dict] = []               # какие скрины сделать руками
 
         def render(indexes: Sequence[int]) -> list[PageImage]:
             with render_lock:  # PyMuPDF не любит параллельный доступ к одному doc
@@ -2093,7 +2097,25 @@ def process_pdf(pdf_path: Path, pool: ModelPool, sink: CsvSink, state: RunState,
                     stats["answers_filled"] += 1
 
                 image_url = ""
-                if q.has_image and q.image_page is not None:
+                if q.has_image and args.manual_images:
+                    # Ручной режим: не режем ничего, а говорим, какой скрин
+                    # нужен и как его назвать. Имя известно заранее, поэтому
+                    # CSV ссылается на файл ещё до того, как он появится.
+                    page_number = (q.page_index if q.page_index is not None else 0) + 1
+                    tag = f"q{q.number}" if q.number is not None else \
+                        f"n{sink.counters[q.qtype] + 1}"
+                    name = f"{slugify(f'{source}_p{page_number:02d}_{tag}')}.jpg"
+                    image_url = f"{SUBFOLDERS[q.qtype]}/{name}"
+                    todo_images.append({
+                        "page": page_number,
+                        "module": q.module,
+                        "question_number": q.number if q.number is not None else "",
+                        "type": q.qtype,
+                        "file": image_url,
+                        "question": q.question[:120],
+                    })
+                    stats["images"] += 1
+                elif q.has_image and q.image_page is not None:
                     page = next((p for p in pages if p.index == q.image_page), None)
                     cropped = (crop_by_normalized_bbox(page.full, q.bbox, args.bbox_pad,
                                                        grow=args.bbox_grow)
@@ -2274,9 +2296,39 @@ def process_pdf(pdf_path: Path, pool: ModelPool, sink: CsvSink, state: RunState,
                 report_gaps(args.gaps_report, source, remaining)
                 log.warning("  осталось ненайденных номеров: %d (список в %s)",
                             stats["gaps"], args.gaps_report.name)
+
+        if todo_images:
+            report_images_todo(args.images_todo, source, todo_images)
+            log.info("  вопросов с картинками: %d (список в %s)",
+                     len(todo_images), args.images_todo.name)
     finally:
         doc.close()
     return stats
+
+
+IMAGES_TODO_FIELDS = ("source", "page", "module", "question_number", "type",
+                      "file", "question")
+
+
+def report_images_todo(path: Path | None, source: str, rows: list[dict]) -> None:
+    """Список вопросов с рисунками: какой скрин сделать и как назвать файл.
+
+    Порядок — по страницам, чтобы идти по файлу сверху вниз и не листать
+    туда-сюда.
+    """
+    if not path:
+        return
+    try:
+        exists = path.exists()
+        with open(path, "a", newline="", encoding="utf-8") as fh:
+            writer = csv.DictWriter(fh, fieldnames=IMAGES_TODO_FIELDS,
+                                    extrasaction="ignore")
+            if not exists:
+                writer.writeheader()
+            for row in sorted(rows, key=lambda r: (r["page"], r["question_number"])):
+                writer.writerow({**row, "source": source})
+    except OSError as exc:
+        log.warning("список картинок не записан: %s", exc)
 
 
 def report_gaps(path: Path | None, source: str,
@@ -2331,6 +2383,10 @@ def build_arg_parser() -> argparse.ArgumentParser:
     ap.add_argument("--api-max-side", type=int, default=API_MAX_SIDE,
                     help="длинная сторона картинки для модели, px")
     ap.add_argument("--bbox-pad", type=float, default=0.012, help="поля вокруг кропа, доли")
+    ap.add_argument("--manual-images", action="store_true",
+                    help="не резать картинки самому: составить список вопросов "
+                         "с рисунками (images_todo.csv) и заранее проставить в CSV "
+                         "имена файлов, под которыми ты положишь скрины")
     ap.add_argument("--bbox-grow", type=float, default=0.15,
                     help="насколько рамка кропа может раздвинуться до белого поля, "
                          "доли длинной стороны листа (0 — не раздвигать)")
@@ -2393,6 +2449,12 @@ def main() -> int:
     out_dir.mkdir(parents=True, exist_ok=True)
     args.debug_log = out_dir / "failed_batches_debug.log"
     args.gaps_report = out_dir / "gaps_report.txt"
+    args.images_todo = out_dir / "images_todo.csv"
+
+    if args.manual_images and args.images_dir:
+        # Создаём папки заранее, чтобы было куда складывать скрины.
+        for subfolder in set(SUBFOLDERS.values()):
+            (Path(args.images_dir) / subfolder).mkdir(parents=True, exist_ok=True)
 
     # --batch auto: размер подбирается под каждый файл отдельно, уже внутри
     # process_pdf. args.batch остаётся запасным значением — на ключи с
