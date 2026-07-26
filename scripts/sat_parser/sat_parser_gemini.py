@@ -1293,18 +1293,39 @@ def dedup_key(q: Question, source: str) -> tuple:
     return (source, q.qtype, fingerprint(q.passage, q.question, q.options))
 
 
-def number_key(q: Question, source: str) -> tuple | None:
-    """Второй, независимый ключ дедупа: номер вопроса на конкретной странице.
+# Один и тот же вопрос соседние батчи могут отнести к разным страницам:
+# вопрос начинается внизу листа, а варианты ответа уходят на следующий, и
+# каждый батч называет «своей» ту страницу, которую видел целиком.
+NEAR_PAGE_SLACK = 1
+
+
+def number_key(q: Question, source: str, page: int | None = None) -> tuple | None:
+    """Второй, независимый ключ дедупа: номер вопроса рядом с этой страницей.
 
     Страница в ключе обязательна. Без неё вопрос №5 второго модуля считается
     повтором вопроса №5 первого: в цифровом SAT нумерация в каждом модуле
-    начинается с единицы, а лейбл модуля модель отдаёт не всегда.
-    Повтор из перекрытия батчей — это один и тот же номер на одной и той же
-    странице, так что от перекрытий ключ по-прежнему защищает.
+    начинается с единицы. А вот лейбл модуля в ключе только мешает — он
+    напечатан лишь в заголовке, и один и тот же вопрос приезжает то с
+    «Module 1», то с пустым лейблом.
+    """
+    if q.number is None:
+        return None
+    page = q.page_index if page is None else page
+    if page is None:
+        return None
+    return (source, q.qtype, q.number, page)
+
+
+def near_number_keys(q: Question, source: str) -> list[tuple]:
+    """Ключи «такой номер уже встречался здесь или на соседней странице».
+
+    Разные модули так не склеятся: их одинаковые номера разделены целыми
+    страницами, а не одной.
     """
     if q.number is None or q.page_index is None:
-        return None
-    return (source, q.qtype, q.module.lower(), q.number, q.page_index)
+        return []
+    return [key for offset in range(-NEAR_PAGE_SLACK, NEAR_PAGE_SLACK + 1)
+            if (key := number_key(q, source, q.page_index + offset)) is not None]
 
 
 # ============================== ОТВЕТЫ (KEYS) ===============================
@@ -1452,15 +1473,13 @@ class CsvSink:
                 page = (row.get("page") or "").strip()
                 if number.isdigit() and page.isdigit():
                     self.seen_numbers.add((row.get("source", ""), qtype,
-                                           (row.get("module") or "").lower(),
                                            int(number), int(page) - 1))
         return rows
 
     def is_duplicate(self, q: Question, source: str) -> bool:
         if dedup_key(q, source) in self.seen:
             return True
-        nkey = number_key(q, source)
-        return bool(nkey and nkey in self.seen_numbers)
+        return any(key in self.seen_numbers for key in near_number_keys(q, source))
 
     def write(self, q: Question, source: str, period: str, version: str,
               image_url: str) -> int:
@@ -1733,6 +1752,8 @@ MODULE_RESTART_MAX = 3       # новый модуль начинается с �
 MODULE_MIN_BEFORE_RESET = 8  # ...и только если до него нумерация ушла так далеко
 MIN_KNOWN_FOR_EXPECTED = 3   # сколько номеров нужно, чтобы поверить в размер модуля
 STANDARD_SIZE_TOLERANCE = 4  # насколько модуль может не дотянуть до штатных 27/22
+TAIL_CAPACITY_SLACK = 2      # запас к оценке «сколько вопросов влезет на лист»
+MAX_NUMBERS_PER_GAP_REQUEST = 12   # длинный список номеров модель просто игнорирует
 GAP_PAGE_SPAN = 3            # максимум страниц в одном доборе
 
 
@@ -1863,6 +1884,21 @@ def _looks_like_standard_test(modules: Sequence[Module]) -> bool:
     return False
 
 
+def _tail_capacity(module: Module, end_page: int) -> int:
+    """До какого номера имеет смысл добирать: сколько ещё влезет на страницы.
+
+    Модуль кончается там же, где кончаются его страницы. Если после
+    последнего найденного вопроса остался один лист, то и ненайденных
+    вопросов там максимум на один лист — просить полсотни номеров
+    бессмысленно, это только жжёт квоту.
+    """
+    used_pages = max(1, module.last_page - module.first_page + 1)
+    density = len(module.numbers) / used_pages
+    page_of_max = module.numbers.get(module.max_number, module.last_page)
+    tail_pages = max(1, end_page - page_of_max + 1)
+    return module.max_number + round(density * tail_pages) + TAIL_CAPACITY_SLACK
+
+
 def _module_bounds(modules: Sequence[Module], n_pages: int) -> list[tuple[Module, int, int]]:
     """Диапазон страниц каждого модуля — где искать его пропавшие вопросы."""
     bounds: list[tuple[Module, int, int]] = []
@@ -1892,13 +1928,21 @@ def find_number_gaps(sightings: Sequence[Sighting], n_pages: int,
         if len(known) < 2:
             continue                       # слишком мало данных, чтобы судить
 
+        expected = EXPECTED_MODULE_SIZE.get(module.family, 0)
         limit = module.max_number
-        if module.declared_total:
+        if standard and expected and module.max_number >= expected:
+            pass          # модуль обычного теста добран целиком, дальше нечего
+        elif module.declared_total:
             # Сам файл сказал, сколько в модуле вопросов, — это точнее любых
             # догадок и работает на любом формате, не только на полном тесте.
             limit = max(limit, module.declared_total)
         elif standard and len(known) >= MIN_KNOWN_FOR_EXPECTED:
-            limit = max(limit, EXPECTED_MODULE_SIZE.get(module.family, 0))
+            limit = max(limit, expected)
+
+        # Заголовок читается с картинки, и иногда читается неверно: в модуль
+        # на 27 вопросов прилетает «80». Ограничиваем тем, сколько вопросов
+        # физически влезет на оставшиеся страницы.
+        limit = min(limit, _tail_capacity(module, end_page))
 
         missing = [n for n in range(1, limit + 1) if n not in module.numbers]
         if not missing:
@@ -1932,7 +1976,11 @@ def find_number_gaps(sightings: Sequence[Sighting], n_pages: int,
         key = tuple(pages)
         merged.setdefault(key, [])
         merged[key] += [n for n in numbers if n not in merged[key]]
-    return [(sorted(numbers), list(pages))
+
+    # Список из полусотни номеров модель разбирать не станет — на такую
+    # просьбу она отвечает пустотой. Берём первые: остальные попадут в
+    # следующий раунд, когда эти уже найдутся.
+    return [(sorted(numbers)[:MAX_NUMBERS_PER_GAP_REQUEST], list(pages))
             for pages, numbers in sorted(merged.items())]
 
 
@@ -2132,6 +2180,7 @@ def process_pdf(pdf_path: Path, pool: ModelPool, sink: CsvSink, state: RunState,
                 log.info("  добор по дыркам, раунд %d: %d номеров за %d запросов",
                          round_index + 1, total, len(plans))
 
+                found_this_round = 0
                 for numbers, page_indexes in plans:
                     asked.add((tuple(numbers), tuple(page_indexes)))
                     budget -= 1
@@ -2144,6 +2193,7 @@ def process_pdf(pdf_path: Path, pool: ModelPool, sink: CsvSink, state: RunState,
                         pool, parts, QUESTION_SCHEMA,
                         f"{source} добор №{label}", args.debug_log)
                     written, touched = store(attach_absolute_pages(rows, pages), pages)
+                    found_this_round += written
                     log.info("    №%s (стр. %s): %s", label,
                              "-".join(str(i + 1) for i in (page_indexes[0], page_indexes[-1])),
                              f"+{written} вопросов" if written else "не найдены")
@@ -2151,6 +2201,12 @@ def process_pdf(pdf_path: Path, pool: ModelPool, sink: CsvSink, state: RunState,
                     state.mark_covered(source, touched)
                     if args.delay:
                         time.sleep(args.delay)
+
+                if not found_this_round:
+                    # Раунд не принёс ничего: следующий будет просить те же
+                    # номера с тех же страниц и с тем же результатом.
+                    log.info("  добор ничего не нашёл — дальше не пробую")
+                    break
 
             remaining = find_number_gaps(sightings, len(doc))
             stats["gaps"] = len({n for numbers, _ in remaining for n in numbers})

@@ -50,6 +50,20 @@ check(sorted({n for ns, _ in sp.find_number_gaps(standard, 20) for n in ns})
       == [21, 22, 23, 24, 25, 26, 27],
       "в стандартном тесте хвост второго модуля добирается")
 
+# Заголовок прочитан неверно: в модуле на 27 вопросов «80». Верить нельзя —
+# иначе добор уходит выпрашивать номера, которых в файле нет.
+bogus = (seen(range(1, 28), total=80)
+         + [sp.Sighting(n, 9 + (n - 1) // 3, "EBRW_MCQ", "", 80) for n in range(1, 28)])
+asked = sorted({n for ns, _ in sp.find_number_gaps(bogus, 18) for n in ns})
+check(asked == [], f"кривой размер модуля из заголовка не разносит добор: {asked[:12]}")
+
+# И длинные списки номеров не уезжают в один запрос: модель их игнорирует.
+sparse_module = seen([1, 2, 3], total=60)
+for numbers, _ in sp.find_number_gaps(sparse_module, 30):
+    check(len(numbers) <= sp.MAX_NUMBERS_PER_GAP_REQUEST,
+          f"в одном запросе не больше {sp.MAX_NUMBERS_PER_GAP_REQUEST} номеров "
+          f"(было {len(numbers)})")
+
 
 # --- e2e: два файла с разной плотностью --------------------------------------
 root = Path(__file__).parent / "layouts_e2e"

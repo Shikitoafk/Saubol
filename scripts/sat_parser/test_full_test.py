@@ -39,6 +39,32 @@ def check(cond, label):
         FAILED = True
 
 
+def question_at(number, page, passage, text="Which choice completes the text?"):
+    return sp.Question(qtype="EBRW_MCQ", question=text, passage=passage,
+                       options={"A": "one", "B": "two", "C": "three", "D": "four"},
+                       number=number, page_index=page)
+
+
+# --- единицы: вопрос через разворот не должен стать двумя строками ----------
+# Вопрос начинается внизу листа, варианты ответа уходят на следующий. Соседние
+# батчи называют «своей» разную страницу, а текст переписывают чуть по-разному
+# — без допуска в одну страницу такой вопрос попадал в CSV дважды.
+_tmp = Path(__file__).parent / "dedup_tmp"
+shutil.rmtree(_tmp, ignore_errors=True)
+_tmp.mkdir(parents=True)
+_sink = sp.CsvSink(_tmp, resume=False)
+_sink.write(question_at(12, 5, "Passage about bees"), "src", "", "", "")
+
+check(_sink.is_duplicate(question_at(12, 6, "Passage about bees, continued"), "src"),
+      "тот же номер на соседней странице — это один вопрос, а не два")
+check(_sink.is_duplicate(question_at(12, 5, "Passage about bees"), "src"),
+      "повтор из перекрытия батчей отсеивается")
+check(not _sink.is_duplicate(question_at(12, 20, "Passage about tides"), "src"),
+      "№12 другого модуля (через 15 страниц) сохраняется")
+_sink.close()
+shutil.rmtree(_tmp, ignore_errors=True)
+
+
 MODULES = [
     ("Reading and Writing Module 1", "EBRW_MCQ", 27),
     ("Reading and Writing Module 2", "EBRW_MCQ", 27),
