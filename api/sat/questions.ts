@@ -1,5 +1,6 @@
 import type { VercelRequest, VercelResponse } from "@vercel/node";
 import { supabase } from "../_lib/supabase";
+import { SAT_TABLES } from "../_lib/sat-tables";
 
 function mapMCQRow(r: any, tablePrefix: string) {
   return {
@@ -56,7 +57,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     if (fetchMCQ) {
       // 1. Fetch from EBRW_MCQ if not filtered to Math
       if (!canonicalSection || canonicalSection === "RW") {
-        let q = supabase.from("EBRW_MCQ").select("*");
+        let q = supabase.from(SAT_TABLES.ebrwMcq).select("*");
         if (difficulty && difficulty !== "All") q = q.eq("difficulty", difficulty);
         if (category) q = q.eq("section", category);
         const { data, error } = await q;
@@ -66,7 +67,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 
       // 2. Fetch from Math_MCQ if not filtered to RW
       if (!canonicalSection || canonicalSection === "Math") {
-        let q = supabase.from("Math_MCQ").select("*");
+        let q = supabase.from(SAT_TABLES.mathMcq).select("*");
         if (difficulty && difficulty !== "All") q = q.eq("difficulty", difficulty);
         if (category) q = q.eq("topic", category);
         const { data, error } = await q;
@@ -78,7 +79,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     if (fetchOpen) {
       // 3. Fetch from Math_Open if not filtered to RW
       if (!canonicalSection || canonicalSection === "Math") {
-        let q = supabase.from("Math_Open").select("*");
+        let q = supabase.from(SAT_TABLES.mathOpen).select("*");
         if (difficulty && difficulty !== "All") q = q.eq("difficulty", difficulty);
         if (category) q = q.eq("topic", category);
         const { data, error } = await q;

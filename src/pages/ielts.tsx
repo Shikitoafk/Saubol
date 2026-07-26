@@ -142,7 +142,7 @@ const IELTSPrep = () => {
             <h1 className="text-8xl md:text-[140px] font-black tracking-tighter text-shimmer leading-[0.8] mb-12 uppercase italic">
               IELTS <br /> MASTERY.
             </h1>
-            <p className="text-2xl text-[#666] font-medium max-w-2xl leading-tight">
+            <p className="text-2xl text-[#a6a6ae] font-medium max-w-2xl leading-tight">
               Открой доступ к передовым методикам подготовки. Мы объединили официальные материалы Cambridge и AI-технологии для твоего успеха.
             </p>
           </motion.div>
@@ -174,7 +174,7 @@ const IELTSPrep = () => {
             </Breadcrumb>
             
             {level > 1 && (
-              <Button variant="ghost" onClick={goBack} className="h-14 px-8 rounded-xl border border-white/10 text-[10px] font-black uppercase tracking-widest text-[#444] hover:text-white hover:bg-white/5 group">
+              <Button variant="ghost" onClick={goBack} className="h-14 px-8 rounded-xl border border-white/10 text-[10px] font-black uppercase tracking-widest text-[#8b8b93] hover:text-white hover:bg-white/5 group">
                 <ChevronLeft className="w-4 h-4 mr-2 group-hover:-translate-x-1 transition-transform" /> Back to Selection
               </Button>
             )}
@@ -202,7 +202,7 @@ const IELTSPrep = () => {
                         <s.icon className={`w-8 h-8 ${s.color}`} />
                       </div>
                       <h3 className="text-3xl font-black mb-6 tracking-tight uppercase">{s.title}</h3>
-                      <p className="text-xs font-bold text-[#444] uppercase tracking-widest leading-relaxed mb-12 group-hover:text-[#888] transition-colors">{s.description}</p>
+                      <p className="text-xs font-bold text-[#8b8b93] uppercase tracking-widest leading-relaxed mb-12 group-hover:text-[#c2c2c9] transition-colors">{s.description}</p>
                       <div className={`text-[10px] font-black uppercase tracking-[0.4em] flex items-center gap-3 ${s.color}`}>
                         Select Module <ArrowRight className="w-4 h-4 group-hover:translate-x-2 transition-transform" />
                       </div>
@@ -229,7 +229,7 @@ const IELTSPrep = () => {
                         <t.icon className="w-10 h-10 text-indigo-400" />
                       </div>
                       <h3 className="text-5xl font-black mb-6 tracking-tighter uppercase italic">{t.title}</h3>
-                      <p className="text-sm font-bold text-[#444] uppercase tracking-widest mb-12 group-hover:text-[#888] transition-colors">{t.description}</p>
+                      <p className="text-sm font-bold text-[#8b8b93] uppercase tracking-widest mb-12 group-hover:text-[#c2c2c9] transition-colors">{t.description}</p>
                       <div className="text-[10px] font-black uppercase tracking-[0.4em] flex items-center gap-3 text-white">
                         Access Material <ChevronRight className="w-5 h-5 group-hover:translate-x-2 transition-transform" />
                       </div>
@@ -268,7 +268,7 @@ const IELTSPrep = () => {
                                <h3 className="text-2xl font-black mb-10 tracking-tight italic uppercase">CAMBRIDGE {book}</h3>
                                <div className="flex flex-col gap-4">
                                   {bookTests.map((test) => (
-                                    <Button key={test.slug} variant="ghost" className="h-14 justify-between text-[11px] font-black uppercase tracking-[0.2em] text-[#444] hover:text-white border border-white/5 hover:border-white/10 rounded-xl transition-all hover:bg-white/5" onClick={() => nav(`/ielts/test/${test.slug}`)}>
+                                    <Button key={test.slug} variant="ghost" className="h-14 justify-between text-[11px] font-black uppercase tracking-[0.2em] text-[#8b8b93] hover:text-white border border-white/5 hover:border-white/10 rounded-xl transition-all hover:bg-white/5" onClick={() => nav(`/ielts/test/${test.slug}`)}>
                                       Test Module {test.testNum} <ArrowRight className="w-4 h-4 opacity-30 group-hover:opacity-100" />
                                     </Button>
                                   ))}
@@ -287,7 +287,7 @@ const IELTSPrep = () => {
                                   <Badge className={`border-none font-black text-[9px] uppercase tracking-widest ${t.difficulty === 'Hard' ? 'bg-rose-500/10 text-rose-500' : 'bg-emerald-500/10 text-emerald-500'}`}>{t.difficulty}</Badge>
                                </div>
                                <h3 className="text-2xl font-black mb-3 tracking-tighter group-hover:text-shimmer transition-all uppercase italic">{t.name}</h3>
-                               <p className="text-[10px] font-black text-[#444] uppercase tracking-[0.2em] mb-12">{t.topic}</p>
+                               <p className="text-[10px] font-black text-[#8b8b93] uppercase tracking-[0.2em] mb-12">{t.topic}</p>
                                <div className="flex items-center gap-8 mb-12 text-[10px] font-black text-[#222] uppercase tracking-widest">
                                   <span className="flex items-center gap-2 group-hover:text-blue-400 transition-colors"><Clock className="w-4 h-4" /> {t.time}</span>
                                   <span className="flex items-center gap-2 group-hover:text-indigo-400 transition-colors"><HelpCircle className="w-4 h-4" /> {t.questions} Q</span>
@@ -312,7 +312,7 @@ const IELTSPrep = () => {
                 </div>
                 <div>
                    <h3 className="text-5xl font-black tracking-tighter mb-4 uppercase italic">Neural Writing Check.</h3>
-                   <p className="text-sm font-black text-[#666] uppercase tracking-[0.3em]">Advanced IELTS Band 9.0 Evaluation Engine</p>
+                   <p className="text-sm font-black text-[#a6a6ae] uppercase tracking-[0.3em]">Advanced IELTS Band 9.0 Evaluation Engine</p>
                 </div>
              </div>
              <Button onClick={() => nav("/ielts/writing-checker")} className="bg-white text-black hover:bg-gray-100 rounded-[2rem] px-16 h-24 font-black uppercase text-xl shadow-[0_30px_60px_rgba(255,255,255,0.15)] transition-all hover:scale-110 active:scale-95 relative z-10 group/btn">

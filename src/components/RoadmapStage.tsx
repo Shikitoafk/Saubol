@@ -36,13 +36,13 @@ export default function RoadmapStageCard({ stage, isCompleted, isLocked, onCompl
            <header>
               <div className="flex items-center gap-3 mb-6">
                  <div className={`w-10 h-10 rounded-xl flex items-center justify-center font-black italic border ${
-                    isCompleted ? 'bg-emerald-500 border-emerald-400 text-black' : 'bg-white/5 border-white/10 text-white/40'
+                    isCompleted ? 'bg-emerald-500 border-emerald-400 text-black' : 'bg-white/5 border-white/10 text-white/60'
                  }`}>
                     {stage.stage}
                  </div>
                  <div className="flex items-center gap-3 px-3 py-1 bg-white/5 rounded-full border border-white/5">
-                    <Clock className="w-3 h-3 text-white/40" />
-                    <span className="text-[9px] font-black uppercase tracking-widest text-white/40">{stage.duration}</span>
+                    <Clock className="w-3 h-3 text-white/60" />
+                    <span className="text-[9px] font-black uppercase tracking-widest text-white/60">{stage.duration}</span>
                  </div>
                  {isCompleted && (
                     <div className="flex items-center gap-2 text-emerald-400 font-black text-[10px] uppercase tracking-widest">
@@ -51,7 +51,7 @@ export default function RoadmapStageCard({ stage, isCompleted, isLocked, onCompl
                  )}
               </div>
               <h2 className="text-5xl font-black uppercase italic tracking-tighter mb-4 text-shimmer">{stage.title}</h2>
-              <p className="text-white/40 text-lg font-medium italic">{stage.subtitle}</p>
+              <p className="text-white/60 text-lg font-medium italic">{stage.subtitle}</p>
            </header>
 
            <div className="grid md:grid-cols-2 gap-12">
@@ -60,7 +60,7 @@ export default function RoadmapStageCard({ stage, isCompleted, isLocked, onCompl
                     <h4 className="text-[9px] font-black uppercase tracking-[0.4em] text-indigo-400 mb-6 flex items-center gap-2">
                        <Lightbulb className="w-4 h-4" /> Strategic Rationale
                     </h4>
-                    <p className="text-white/60 text-sm leading-relaxed font-medium">{stage.why}</p>
+                    <p className="text-white/75 text-sm leading-relaxed font-medium">{stage.why}</p>
                  </div>
 
                  {stage.videos && (
@@ -78,7 +78,7 @@ export default function RoadmapStageCard({ stage, isCompleted, isLocked, onCompl
                                className="flex items-center justify-between p-4 bg-white/5 rounded-xl border border-white/5 hover:bg-white/10 transition-all group"
                              >
                                 <span className="text-sm font-bold group-hover:text-indigo-400">{vid.title}</span>
-                                <ExternalLink className="w-4 h-4 text-white/20 group-hover:text-indigo-400" />
+                                <ExternalLink className="w-4 h-4 text-white/40 group-hover:text-indigo-400" />
                              </a>
                           ))}
                        </div>
@@ -90,7 +90,7 @@ export default function RoadmapStageCard({ stage, isCompleted, isLocked, onCompl
                        <h4 className="text-[9px] font-black uppercase tracking-[0.4em] text-indigo-400 mb-6">Topics Covered</h4>
                        <div className="grid grid-cols-1 gap-3">
                           {stage.topics.map((t, i) => (
-                             <div key={i} className="flex items-center gap-3 text-sm font-medium text-white/40">
+                             <div key={i} className="flex items-center gap-3 text-sm font-medium text-white/60">
                                 <div className="w-1.5 h-1.5 rounded-full bg-white/20" /> {t}
                              </div>
                           ))}
@@ -105,7 +105,7 @@ export default function RoadmapStageCard({ stage, isCompleted, isLocked, onCompl
                        <ShieldCheck className="w-4 h-4" /> Practice Target
                     </h4>
                     <p className="text-white/80 font-black italic tracking-tight mb-6">{stage.practiceTarget}</p>
-                    <div className="flex items-center gap-3 px-4 py-3 bg-black/40 rounded-xl border border-white/5 text-[10px] font-bold text-white/40">
+                    <div className="flex items-center gap-3 px-4 py-3 bg-black/40 rounded-xl border border-white/5 text-[10px] font-bold text-white/60">
                        <Target className="w-4 h-4 text-emerald-400" /> Goal: {stage.masteryGoal || "100% Completion"}
                     </div>
                  </div>
@@ -115,7 +115,7 @@ export default function RoadmapStageCard({ stage, isCompleted, isLocked, onCompl
                        <h4 className="text-[9px] font-black uppercase tracking-[0.4em] text-shimmer mb-4 flex items-center gap-2">
                           <Zap className="w-4 h-4 text-yellow-400" /> High-ROI Tip
                        </h4>
-                       <p className="text-sm font-medium text-white/60 leading-relaxed italic">"{stage.tip}"</p>
+                       <p className="text-sm font-medium text-white/75 leading-relaxed italic">"{stage.tip}"</p>
                     </div>
                  )}
 
@@ -124,7 +124,7 @@ export default function RoadmapStageCard({ stage, isCompleted, isLocked, onCompl
                        {stage.subtopics.map((sub, i) => (
                           <div key={i} className="space-y-3">
                              <p className="text-sm font-black uppercase italic tracking-tighter text-indigo-400">{sub.name}</p>
-                             <p className="text-xs text-white/40 leading-relaxed">{sub.strategy}</p>
+                             <p className="text-xs text-white/60 leading-relaxed">{sub.strategy}</p>
                              {sub.mustMemorize && (
                                 <div className="p-4 bg-white/5 rounded-xl border border-white/5 space-y-1">
                                    {sub.mustMemorize.map((m, idx) => (
@@ -142,7 +142,7 @@ export default function RoadmapStageCard({ stage, isCompleted, isLocked, onCompl
 
         <div className="w-full md:w-64 space-y-6">
            <div className="glass-3d p-8 border-white/5 bg-white/[0.01] text-center">
-              <p className="text-[9px] font-black uppercase tracking-widest text-white/20 mb-4">Stage Status</p>
+              <p className="text-[9px] font-black uppercase tracking-widest text-white/40 mb-4">Stage Status</p>
               <p className={`text-xl font-black italic ${isCompleted ? 'text-emerald-400' : 'text-shimmer'}`}>
                  {isCompleted ? 'MASTERED' : 'IN PROGRESS'}
               </p>

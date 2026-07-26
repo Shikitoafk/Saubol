@@ -1,4 +1,5 @@
 import { supabase } from "@/lib/supabase";
+import { SAT_TABLES } from "@/lib/sat-tables";
 
 /**
  * SAT Questions Service — Supabase
@@ -108,7 +109,7 @@ export async function fetchRWQuestions(options?: {
   difficulty?: string;
   limit?: number;
 }): Promise<SATQuestion[]> {
-  let query = supabase.from("EBRW_MCQ").select("*");
+  let query = supabase.from(SAT_TABLES.ebrwMcq).select("*");
 
   if (options?.subtopic && options.subtopic !== "All") {
     query = query.eq("section", options.subtopic);
@@ -133,7 +134,7 @@ export async function fetchMathMCQQuestions(options?: {
   difficulty?: string;
   limit?: number;
 }): Promise<SATQuestion[]> {
-  let query = supabase.from("Math_MCQ").select("*");
+  let query = supabase.from(SAT_TABLES.mathMcq).select("*");
 
   if (options?.subtopic && options.subtopic !== "All") {
     query = query.eq("topic", options.subtopic);
@@ -158,7 +159,7 @@ export async function fetchMathOpenQuestions(options?: {
   difficulty?: string;
   limit?: number;
 }): Promise<SATQuestion[]> {
-  let query = supabase.from("Math_Open").select("*");
+  let query = supabase.from(SAT_TABLES.mathOpen).select("*");
 
   if (options?.subtopic && options.subtopic !== "All") {
     query = query.eq("topic", options.subtopic);
@@ -239,13 +240,44 @@ export interface PastPaper {
   mathQuestions: number;
 }
 
+/**
+ * Прошедшие тесты = строки с заполненным `test_period`.
+ *
+ * Раньше отбор шёл по `.eq("source_type", "past_paper")`, но такой колонки
+ * в таблицах нет: CSV из парсера её не создаёт. Postgres на фильтр по
+ * несуществующей колонке отвечает ошибкой, ошибка глушилась — и загруженные
+ * вопросы «не отображались». Период же проставляется у каждой строки.
+ */
+const PERIOD_COLUMNS = "test_period, test_version";
+
+/**
+ * Ограничение по времени на запрос к базе.
+ *
+ * Supabase-клиент своего таймаута не имеет: если до базы не достучаться,
+ * промис висит бесконечно, и страница навсегда остаётся на «Scanning
+ * database...». Лучше показать причину, чем крутить спиннер.
+ */
+export function withTimeout<T>(promise: Promise<T>, ms = 15000, label = "Запрос к базе"): Promise<T> {
+  return Promise.race([
+    promise,
+    new Promise<T>((_, reject) =>
+      setTimeout(() => reject(new Error(`${label}: нет ответа за ${ms / 1000} с`)), ms)
+    ),
+  ]);
+}
+
 export async function fetchAvailablePastPapers(): Promise<PastPaper[]> {
   try {
     const [rwRes, mathRes, openRes] = await Promise.all([
-      supabase.from("EBRW_MCQ").select("test_period, test_version").eq("source_type", "past_paper"),
-      supabase.from("Math_MCQ").select("test_period, test_version").eq("source_type", "past_paper"),
-      supabase.from("Math_Open").select("test_period, test_version").eq("source_type", "past_paper"),
+      supabase.from(SAT_TABLES.ebrwMcq).select(PERIOD_COLUMNS).not("test_period", "is", null),
+      supabase.from(SAT_TABLES.mathMcq).select(PERIOD_COLUMNS).not("test_period", "is", null),
+      supabase.from(SAT_TABLES.mathOpen).select(PERIOD_COLUMNS).not("test_period", "is", null),
     ]);
+
+    const failed = [rwRes, mathRes, openRes].find((r) => r.error);
+    if (failed?.error) {
+      throw new Error(failed.error.message);
+    }
 
     const papersMap: Record<string, { test_period: string; test_version: string; rwCount: number; mathCount: number }> = {};
 
@@ -277,9 +309,12 @@ export async function fetchAvailablePastPapers(): Promise<PastPaper[]> {
       rwQuestions: p.rwCount,
       mathQuestions: p.mathCount,
     }));
-  } catch (e) {
+  } catch (e: any) {
+    // Раньше ошибка глушилась и возвращался пустой список — снаружи это
+    // выглядело как «тестов нет», хотя на деле запрос не проходил. Пусть
+    // страница покажет причину.
     console.error("fetchAvailablePastPapers error:", e);
-    return [];
+    throw new Error(e?.message || "Не удалось загрузить список тестов");
   }
 }
 
@@ -287,9 +322,9 @@ export async function fetchPastPaperQuestions(
   test_period: string,
   test_version?: string
 ): Promise<SATQuestion[]> {
-  let rwQuery = supabase.from("EBRW_MCQ").select("*").eq("test_period", test_period).eq("source_type", "past_paper");
-  let mathMcqQuery = supabase.from("Math_MCQ").select("*").eq("test_period", test_period).eq("source_type", "past_paper");
-  let mathOpenQuery = supabase.from("Math_Open").select("*").eq("test_period", test_period).eq("source_type", "past_paper");
+  let rwQuery = supabase.from(SAT_TABLES.ebrwMcq).select("*").eq("test_period", test_period);
+  let mathMcqQuery = supabase.from(SAT_TABLES.mathMcq).select("*").eq("test_period", test_period);
+  let mathOpenQuery = supabase.from(SAT_TABLES.mathOpen).select("*").eq("test_period", test_period);
 
   if (test_version) {
     rwQuery = rwQuery.eq("test_version", test_version);

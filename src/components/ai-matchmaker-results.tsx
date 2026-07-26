@@ -79,16 +79,16 @@ export default function AIMatchmakerResults({ data, onReset }: { data: Matchmake
         <div className="glass-3d p-10 flex flex-col items-center justify-center border-indigo-500/20 bg-indigo-500/5">
            <div className="text-[10px] font-black text-indigo-400 uppercase tracking-widest mb-4">Profile Strength</div>
            <div className="text-7xl font-black text-white leading-none mb-4 tracking-tighter">{overallMatch}%</div>
-           <div className="text-[9px] font-bold text-white/40 uppercase tracking-[0.2em] text-center">Aggregate Admission Index</div>
+           <div className="text-[9px] font-bold text-white/60 uppercase tracking-[0.2em] text-center">Aggregate Admission Index</div>
         </div>
         
         <div className="md:col-span-2 glass-3d p-10 flex flex-col justify-between">
            <div>
-             <h4 className="text-[10px] font-black text-white/40 uppercase tracking-widest mb-6">Expert Verdict</h4>
+             <h4 className="text-[10px] font-black text-white/60 uppercase tracking-widest mb-6">Expert Verdict</h4>
              <p className="text-2xl font-black leading-tight mb-8 uppercase italic tracking-tight">
                Estimated chance for {data.region} top-tier institutions: <span className={overallMatch > 60 ? 'text-emerald-400' : 'text-amber-400'}>{overallMatch}%</span>.
              </p>
-             <p className="text-[#666] font-medium text-sm leading-relaxed max-w-xl">
+             <p className="text-[#a6a6ae] font-medium text-sm leading-relaxed max-w-xl">
                This calculation is based on historical admission rates for international applicants and your academic profile. Note: For a more accurate result (+/- 2%), use the full **Admissions Calculator** to input your research and olympiads.
              </p>
            </div>
@@ -100,7 +100,7 @@ export default function AIMatchmakerResults({ data, onReset }: { data: Matchmake
       </div>
 
       <div className="space-y-8 mb-16">
-         <h4 className="text-[10px] font-black text-white/40 uppercase tracking-widest mb-4">Strategic Breakdown per Institution</h4>
+         <h4 className="text-[10px] font-black text-white/60 uppercase tracking-widest mb-4">Strategic Breakdown per Institution</h4>
          {schools.map((school, i) => (
            <motion.div 
              key={i}
@@ -113,7 +113,7 @@ export default function AIMatchmakerResults({ data, onReset }: { data: Matchmake
                  {/* School Info */}
                  <div className="lg:w-80 shrink-0">
                     <div className="w-16 h-16 rounded-3xl bg-white/5 flex items-center justify-center border border-white/10 mb-8">
-                       <Building2 className="w-8 h-8 text-white/40" />
+                       <Building2 className="w-8 h-8 text-white/60" />
                     </div>
                     <h5 className="text-3xl font-black uppercase tracking-tighter mb-2 leading-none">{school.schoolName}</h5>
                     <div className="flex items-center gap-3">
@@ -121,7 +121,7 @@ export default function AIMatchmakerResults({ data, onReset }: { data: Matchmake
                     </div>
                     <div className="mt-8">
                        <p className={`text-5xl font-black tracking-tighter ${school.estimatedChance > 50 ? 'text-emerald-400' : 'text-white'}`}>{school.estimatedChance}%</p>
-                       <p className="text-[9px] font-black uppercase tracking-widest text-[#444]">Admission Probability</p>
+                       <p className="text-[9px] font-black uppercase tracking-widest text-[#8b8b93]">Admission Probability</p>
                     </div>
                  </div>
 
@@ -158,21 +158,21 @@ export default function AIMatchmakerResults({ data, onReset }: { data: Matchmake
          <div className="grid md:grid-cols-3 gap-8">
             <div>
                <p className="text-[10px] font-black uppercase text-indigo-400 mb-4">Academic</p>
-               <p className="text-sm font-medium text-white/60 leading-relaxed">Raising your SAT from {sat} to 1550+ is the most effective way to jump-start your application strength.</p>
+               <p className="text-sm font-medium text-white/75 leading-relaxed">Raising your SAT from {sat} to 1550+ is the most effective way to jump-start your application strength.</p>
             </div>
             <div>
                <p className="text-[10px] font-black uppercase text-indigo-400 mb-4">Portfolio</p>
-               <p className="text-sm font-medium text-white/60 leading-relaxed">Top universities require "Hooks". Start a research project or publish a paper in your major area.</p>
+               <p className="text-sm font-medium text-white/75 leading-relaxed">Top universities require "Hooks". Start a research project or publish a paper in your major area.</p>
             </div>
             <div>
                <p className="text-[10px] font-black uppercase text-indigo-400 mb-4">Full Analysis</p>
-               <p className="text-sm font-medium text-white/60 leading-relaxed">Use our detailed Admissions Calculator to analyze your CV/Portfolio and get a precise roadmap.</p>
+               <p className="text-sm font-medium text-white/75 leading-relaxed">Use our detailed Admissions Calculator to analyze your CV/Portfolio and get a precise roadmap.</p>
             </div>
          </div>
       </div>
 
       <div className="flex flex-col md:flex-row justify-center gap-6">
-         <Button onClick={onReset} variant="outline" className="h-16 px-12 rounded-2xl border-white/10 text-white/60 font-black uppercase text-xs hover:bg-white/5 transition-all">Recalibrate Profile</Button>
+         <Button onClick={onReset} variant="outline" className="h-16 px-12 rounded-2xl border-white/10 text-white/75 font-black uppercase text-xs hover:bg-white/5 transition-all">Recalibrate Profile</Button>
          <Button 
            onClick={() => window.location.href = '/admissions/calculator'}
            className="h-16 px-16 rounded-2xl bg-indigo-600 text-white font-black uppercase text-xs hover:bg-indigo-500 shadow-[0_20px_40px_rgba(79,70,229,0.2)] transition-transform hover:scale-105 active:scale-95 flex items-center gap-3"

@@ -37,11 +37,11 @@ export default function PracticeComplete({ topic, score, total, onRetry, onNext 
         </div>
 
         <h1 className="text-6xl font-black uppercase italic tracking-tighter mb-4">{topic} COMPLETE.</h1>
-        <p className="text-white/40 font-black uppercase tracking-[0.4em] text-[10px] mb-16">Session performance summarized</p>
+        <p className="text-white/60 font-black uppercase tracking-[0.4em] text-[10px] mb-16">Session performance summarized</p>
 
         <div className="grid md:grid-cols-3 gap-8 mb-16">
            <div className="glass-3d p-10 border-white/5">
-              <p className="text-[9px] font-black uppercase text-white/20 mb-4 tracking-widest">Accuracy</p>
+              <p className="text-[9px] font-black uppercase text-white/40 mb-4 tracking-widest">Accuracy</p>
               <p className="text-4xl font-black italic tracking-tighter">{score}/{total}</p>
            </div>
            <div className="glass-3d p-10 border-white/5 bg-indigo-500/5 border-indigo-500/20">
@@ -49,7 +49,7 @@ export default function PracticeComplete({ topic, score, total, onRetry, onNext 
               <p className={`text-4xl font-black italic tracking-tighter ${isMastered ? 'text-emerald-400' : 'text-indigo-400'}`}>{percentage}%</p>
            </div>
            <div className="glass-3d p-10 border-white/5">
-              <p className="text-[9px] font-black uppercase text-white/20 mb-4 tracking-widest">Global Rank</p>
+              <p className="text-[9px] font-black uppercase text-white/40 mb-4 tracking-widest">Global Rank</p>
               <p className="text-4xl font-black italic tracking-tighter text-shimmer">TOP 5%</p>
            </div>
         </div>
@@ -62,9 +62,9 @@ export default function PracticeComplete({ topic, score, total, onRetry, onNext 
                  <h4 className="text-[10px] font-black uppercase tracking-widest text-emerald-500">Core Strengths</h4>
               </div>
               <ul className="space-y-3">
-                 <li className="text-sm font-medium text-white/60">✓ Fundamental Principles</li>
-                 <li className="text-sm font-medium text-white/60">✓ Standard Procedures</li>
-                 <li className="text-sm font-medium text-white/60">✓ Basic Interpretation</li>
+                 <li className="text-sm font-medium text-white/75">✓ Fundamental Principles</li>
+                 <li className="text-sm font-medium text-white/75">✓ Standard Procedures</li>
+                 <li className="text-sm font-medium text-white/75">✓ Basic Interpretation</li>
               </ul>
            </div>
            <div className="glass-3d p-10 border-indigo-500/10 bg-indigo-500/[0.02]">
@@ -73,9 +73,9 @@ export default function PracticeComplete({ topic, score, total, onRetry, onNext 
                  <h4 className="text-[10px] font-black uppercase tracking-widest text-indigo-400">Target for Review</h4>
               </div>
               <ul className="space-y-3">
-                 <li className="text-sm font-medium text-white/60">• Complex Word Problems</li>
-                 <li className="text-sm font-medium text-white/60">• Time Management (Last 5 Qs)</li>
-                 <li className="text-sm font-medium text-white/60">• Multistep Equations</li>
+                 <li className="text-sm font-medium text-white/75">• Complex Word Problems</li>
+                 <li className="text-sm font-medium text-white/75">• Time Management (Last 5 Qs)</li>
+                 <li className="text-sm font-medium text-white/75">• Multistep Equations</li>
               </ul>
            </div>
         </div>
@@ -88,7 +88,7 @@ export default function PracticeComplete({ topic, score, total, onRetry, onNext 
                  </div>
                  <div>
                     <h5 className="text-xl font-black uppercase italic tracking-tight">AI Recommendation</h5>
-                    <p className="text-sm text-white/40 max-w-md mt-1">
+                    <p className="text-sm text-white/60 max-w-md mt-1">
                        {isMastered 
                          ? `Excellent performance. You are ready to move on to the next topic.` 
                          : `You're close to mastery. We recommend reviewing the word problem sections before continuing.`
@@ -109,7 +109,7 @@ export default function PracticeComplete({ topic, score, total, onRetry, onNext 
            <Button 
              variant="outline" 
              onClick={onRetry}
-             className="flex-1 h-20 border-white/10 hover:bg-white/5 text-white/40 font-black uppercase text-xs rounded-2xl transition-all"
+             className="flex-1 h-20 border-white/10 hover:bg-white/5 text-white/60 font-black uppercase text-xs rounded-2xl transition-all"
            >
               <RotateCcw className="mr-3 w-4 h-4" /> Retry Session
            </Button>

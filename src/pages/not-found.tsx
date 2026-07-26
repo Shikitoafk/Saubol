@@ -28,7 +28,7 @@ export default function NotFound() {
             LOST IN <br /> SPACE.
           </h1>
           
-          <p className="text-[#666] font-medium mb-12 leading-relaxed uppercase tracking-widest text-[10px]">
+          <p className="text-[#a6a6ae] font-medium mb-12 leading-relaxed uppercase tracking-widest text-[10px]">
             The academic resources you are looking for have drifted beyond the reach of our current network.
           </p>
           

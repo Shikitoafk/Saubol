@@ -173,21 +173,21 @@ export default function SATLearn() {
         <main className="flex-1 overflow-y-auto custom-scrollbar relative bg-vignette">
           <div className="sticky top-0 z-50 bg-black/80 backdrop-blur-3xl border-b border-white/5 px-12 py-6 flex items-center justify-between">
             <div className="flex items-center gap-8">
-               <div className="flex items-center gap-2 text-[10px] font-black uppercase tracking-widest text-white/20">
+               <div className="flex items-center gap-2 text-[10px] font-black uppercase tracking-widest text-white/40">
                   <span>SAT Learn</span>
                   <span className="opacity-40">/</span>
-                  <span className="text-white/60">{categories.find(c => c.topics.some(t => t.id === activeTopicId))?.name}</span>
+                  <span className="text-white/75">{categories.find(c => c.topics.some(t => t.id === activeTopicId))?.name}</span>
                </div>
                <div className="w-px h-6 bg-white/10" />
                <div className="flex items-center gap-3">
                   <p className="text-sm font-black uppercase italic tracking-tighter">{currentVideo?.title}</p>
-                  <Badge className="bg-white/5 text-white/40 border-none font-black text-[9px] uppercase px-3 py-1">{phase}</Badge>
+                  <Badge className="bg-white/5 text-white/60 border-none font-black text-[9px] uppercase px-3 py-1">{phase}</Badge>
                </div>
             </div>
 
             <div className="flex items-center gap-4">
                <div className="text-right">
-                  <p className="text-[9px] font-black text-white/20 uppercase tracking-widest mb-1">Topic Mastery</p>
+                  <p className="text-[9px] font-black text-white/40 uppercase tracking-widest mb-1">Topic Mastery</p>
                   <p className="text-sm font-black text-white">{masteryData[activeTopicId]}%</p>
                </div>
                <div className="w-32 h-1.5 bg-white/5 rounded-full overflow-hidden">

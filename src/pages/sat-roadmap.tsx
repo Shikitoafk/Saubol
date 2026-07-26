@@ -91,7 +91,7 @@ export default function SATRoadmap() {
                   <h1 className="text-8xl md:text-[140px] font-black italic tracking-tighter uppercase mb-12 text-shimmer leading-[0.85]">
                     DAILY <br /> PLAN.
                   </h1>
-                  <p className="text-2xl md:text-3xl text-white/40 font-medium leading-tight italic">
+                  <p className="text-2xl md:text-3xl text-white/60 font-medium leading-tight italic">
                     Stop guessing. <span className="text-white">Start executing.</span> <br />
                     Your specific daily tasks for Stage {completedStages.length + 1}.
                   </p>
@@ -101,7 +101,7 @@ export default function SATRoadmap() {
                   <div className="p-8 glass-3d border-white/5 bg-white/[0.02]">
                      <div className="flex justify-between items-end mb-6">
                         <div>
-                           <p className="text-[9px] font-black uppercase text-white/20 tracking-widest mb-2">Preparation Mastery</p>
+                           <p className="text-[9px] font-black uppercase text-white/40 tracking-widest mb-2">Preparation Mastery</p>
                            <p className="text-4xl font-black italic tracking-tighter">{Math.round(totalProgress)}%</p>
                         </div>
                         <TrendingUp className="w-8 h-8 text-indigo-400" />
@@ -131,19 +131,19 @@ export default function SATRoadmap() {
                    >
                       <div className="flex justify-between items-start mb-8">
                          <span className="text-[10px] font-black uppercase tracking-widest text-indigo-400">{day.day}</span>
-                         <Badge className="bg-white/5 text-white/40 border-none font-black text-[8px] uppercase px-3 py-1">Stage {day.stage}</Badge>
+                         <Badge className="bg-white/5 text-white/60 border-none font-black text-[8px] uppercase px-3 py-1">Stage {day.stage}</Badge>
                       </div>
                       <h4 className="text-2xl font-black uppercase italic tracking-tighter mb-4 group-hover:text-indigo-400 transition-colors">{day.topic}</h4>
-                      <p className="text-sm text-white/40 font-medium mb-8 leading-relaxed italic">"{day.task}"</p>
+                      <p className="text-sm text-white/60 font-medium mb-8 leading-relaxed italic">"{day.task}"</p>
                       
                       <div className="space-y-4">
                          <div className="flex items-center gap-4 p-4 bg-white/5 rounded-xl border border-white/5 group/link cursor-pointer hover:bg-white/10 transition-all">
-                            <Play className="w-4 h-4 text-white/40 group-hover/link:text-indigo-400" />
-                            <span className="text-[10px] font-black uppercase tracking-widest text-white/60">Watch Video</span>
+                            <Play className="w-4 h-4 text-white/60 group-hover/link:text-indigo-400" />
+                            <span className="text-[10px] font-black uppercase tracking-widest text-white/75">Watch Video</span>
                          </div>
                          <div className="flex items-center gap-4 p-4 bg-indigo-500/5 rounded-xl border border-indigo-500/20 group/task cursor-pointer hover:bg-indigo-500/10 transition-all">
                             <Zap className="w-4 h-4 text-indigo-400" />
-                            <span className="text-[10px] font-black uppercase tracking-widest text-white/60">{day.practice}</span>
+                            <span className="text-[10px] font-black uppercase tracking-widest text-white/75">{day.practice}</span>
                          </div>
                       </div>
                    </motion.div>

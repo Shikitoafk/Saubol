@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@100;200;300;400;500;600;700;800;900&display=swap');
+/* Шрифты подключены в index.html: @import здесь блокировал рендер. */
 @import "tailwindcss";
 @plugin "@tailwindcss/typography";
 
@@ -56,8 +56,14 @@
   --color-sidebar-accent-border: var(--sidebar-accent-border);
   --color-sidebar-ring: hsl(var(--sidebar-ring));
 
-  --font-sans: 'Outfit', sans-serif;
-  --font-serif: var(--app-font-serif);
+  /* Inter для текста и интерфейса: у него крупный x-height и различимые
+     I/l/1 — на мелких подписях и в вариантах ответа это заметно. Outfit
+     остаётся для крупных заголовков, где важен характер, а не читаемость.
+     Literata — для условий заданий: длинные пассажи с засечками читаются
+     легче, и это ближе к виду настоящего экзамена. */
+  --font-sans: 'Inter', system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --font-display: 'Outfit', 'Inter', sans-serif;
+  --font-serif: 'Literata', Georgia, serif;
   --font-mono: var(--app-font-mono);
 
   --radius-sm: calc(var(--radius) - 4px);
@@ -102,12 +108,79 @@ body {
   color: var(--text-white);
   overflow-x: hidden;
   -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  /* Это варианты знаков Inter (открытая «4», одноэтажная «a» и т.п.).
+     Они стояли здесь и раньше, но --font-sans был переключён на Outfit,
+     который их не поддерживает, — настройки просто ничего не делали. */
+  font-family: var(--font-sans);
   font-feature-settings: "cv02", "cv03", "cv04", "cv11";
+  text-rendering: optimizeLegibility;
+}
+
+/* Заголовки — Outfit. В этой вёрстке жирнейшее начертание используется
+   только для заголовков и акцентных подписей, а обычный текст набран
+   medium/semibold. Поэтому привязка к весу, а не класс на каждой из
+   двадцати страниц: характерный шрифт остаётся в заголовках, а мелкий
+   текст читается Inter'ом. */
+.font-display,
+.font-black {
+  font-family: var(--font-display);
+}
+
+.font-display {
+  letter-spacing: -0.03em;
+}
+
+/* Условия заданий и пассажи SAT. Крупнее базового кегля и с увеличенной
+   интерлиньяжем: это самый читаемый текст на сайте, его читают минутами,
+   а не проглядывают. */
+.reading-text {
+  font-family: var(--font-serif);
+  font-size: 1.0625rem;
+  line-height: 1.75;
+  letter-spacing: 0.005em;
+}
+
+@media (max-width: 640px) {
+  .reading-text {
+    font-size: 1rem;
+    line-height: 1.7;
+  }
 }
 
 ::selection {
   background: rgba(255, 255, 255, 0.99);
   color: #000;
+}
+
+/* Видимый фокус для навигации с клавиатуры. Своих стилей фокуса в проекте
+   не было, а браузерное кольцо на чёрном фоне почти не видно — пройти
+   тест табом было невозможно. :focus-visible срабатывает только при
+   клавиатуре, мышь кольцо не показывает. */
+:focus-visible {
+  outline: 2px solid rgb(129 140 248);
+  outline-offset: 3px;
+  border-radius: 6px;
+}
+
+/* Карточки и варианты ответа кликабельны через div — им нужен тот же фокус. */
+[role="button"]:focus-visible,
+[tabindex]:focus-visible {
+  outline: 2px solid rgb(129 140 248);
+  outline-offset: 4px;
+}
+
+/* Уважение к системной настройке «меньше движения»: на страницах много
+   анимаций framer-motion и бесконечный shimmer у заголовков. */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
 }
 
 /* Premium Noise Overlay */

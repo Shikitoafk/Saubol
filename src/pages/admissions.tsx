@@ -43,7 +43,7 @@ export default function Admissions() {
               <h1 className="text-5xl md:text-7xl font-black tracking-tighter text-shimmer leading-[0.85] mb-10 uppercase">
                 YOUR GLOBAL <br /> FUTURE.
               </h1>
-              <p className="text-xl text-[#666] font-medium max-w-2xl leading-relaxed">
+              <p className="text-xl text-[#a6a6ae] font-medium max-w-2xl leading-relaxed">
                 Помогаем поступить в лучшие вузы мира. Стратегия, подготовка и результат.
               </p>
             </div>
@@ -62,7 +62,7 @@ export default function Admissions() {
                     <h2 className="text-7xl md:text-8xl font-black tracking-tighter mb-8 uppercase leading-none">
                       AI <br /> Matchmaker
                     </h2>
-                    <p className="text-[#666] text-xl leading-relaxed mb-12 max-w-lg">
+                    <p className="text-[#a6a6ae] text-xl leading-relaxed mb-12 max-w-lg">
                       Наш алгоритм анализирует твой профиль и подбирает лучшие варианты для поступления.
                     </p>
                     <Button 
@@ -81,7 +81,7 @@ export default function Admissions() {
                     ].map((s, i) => (
                       <div key={i} className="w-48 h-48 p-8 bg-white/[0.02] rounded-3xl border border-white/5 flex flex-col items-center justify-center text-center group/card hover:bg-white/[0.05] transition-colors">
                          <s.icon className="w-10 h-10 mb-6 text-[#222] group-hover/card:text-white transition-colors" />
-                         <span className="text-[10px] font-black uppercase tracking-[0.2em] text-[#333] group-hover/card:text-white/40 transition-colors">{s.label}</span>
+                         <span className="text-[10px] font-black uppercase tracking-[0.2em] text-[#333] group-hover/card:text-white/60 transition-colors">{s.label}</span>
                       </div>
                     ))}
                  </div>
@@ -114,7 +114,7 @@ export default function Admissions() {
                      <ArrowRight className="w-5 h-5 text-[#111] group-hover:text-white transition-colors" />
                   </div>
                   <h3 className="text-3xl font-black mb-6 tracking-tight uppercase">{dest.region}</h3>
-                  <p className="text-xs font-bold text-[#444] uppercase tracking-widest leading-relaxed mb-10">{dest.desc}</p>
+                  <p className="text-xs font-bold text-[#8b8b93] uppercase tracking-widest leading-relaxed mb-10">{dest.desc}</p>
                   <div className={`text-[10px] font-black uppercase tracking-[0.2em] ${dest.color}`}>
                     View Strategy
                   </div>

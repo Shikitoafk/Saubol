@@ -59,12 +59,12 @@ export default function PracticeQuestion({
       <div className="flex items-center justify-between mb-12">
         <div className="flex items-center gap-6">
            <div className="text-center">
-              <p className="text-[9px] font-black text-white/20 uppercase tracking-[0.3em] mb-1">Topic</p>
-              <p className="text-sm font-black uppercase tracking-tight text-white/60">{question.topic}</p>
+              <p className="text-[9px] font-black text-white/40 uppercase tracking-[0.3em] mb-1">Topic</p>
+              <p className="text-sm font-black uppercase tracking-tight text-white/75">{question.topic}</p>
            </div>
            <div className="w-px h-8 bg-white/10" />
            <div className="text-center">
-              <p className="text-[9px] font-black text-white/20 uppercase tracking-[0.3em] mb-1">Difficulty</p>
+              <p className="text-[9px] font-black text-white/40 uppercase tracking-[0.3em] mb-1">Difficulty</p>
               <p className={`text-sm font-black uppercase tracking-tight ${
                 question.difficulty === 'Easy' ? 'text-emerald-400' : 
                 question.difficulty === 'Medium' ? 'text-indigo-400' : 'text-rose-400'
@@ -73,7 +73,7 @@ export default function PracticeQuestion({
         </div>
         <div className="flex items-center gap-4 bg-white/5 px-6 py-3 rounded-2xl border border-white/10">
            <BarChart3 className="w-4 h-4 text-indigo-400" />
-           <span className="text-[10px] font-black uppercase tracking-widest text-white/40">Question {currentIndex + 1} / {total}</span>
+           <span className="text-[10px] font-black uppercase tracking-widest text-white/60">Question {currentIndex + 1} / {total}</span>
         </div>
       </div>
 
@@ -119,7 +119,7 @@ export default function PracticeQuestion({
                   <div className={`w-10 h-10 rounded-xl flex items-center justify-center border font-black text-sm transition-colors ${
                     status === 'correct' ? 'bg-emerald-500 border-emerald-400 text-black' :
                     status === 'wrong' ? 'bg-rose-500 border-rose-400 text-black' :
-                    'bg-white/5 border-white/10 text-white/20'
+                    'bg-white/5 border-white/10 text-white/40'
                   }`}>
                     {String.fromCharCode(65 + i)}
                   </div>
@@ -149,12 +149,12 @@ export default function PracticeQuestion({
               <div className="text-white/80 font-medium text-lg leading-relaxed mb-8" dangerouslySetInnerHTML={{ __html: renderText(question.explanation) }} />
               
               <div className="space-y-4 pt-8 border-t border-white/5">
-                 <h5 className="text-[9px] font-black uppercase text-white/20 tracking-widest mb-4">Strategic Error Analysis</h5>
+                 <h5 className="text-[9px] font-black uppercase text-white/40 tracking-widest mb-4">Strategic Error Analysis</h5>
                  <div className="grid md:grid-cols-2 gap-4">
                     {question.wrongExplanations?.map((msg, i) => (
                        <div key={i} className="flex gap-3 p-4 bg-black/20 rounded-xl border border-white/5 opacity-60">
-                          <Info className="w-3.5 h-3.5 text-[#444] shrink-0 mt-0.5" />
-                          <p className="text-[11px] font-medium text-white/40 leading-relaxed italic">{msg}</p>
+                          <Info className="w-3.5 h-3.5 text-[#8b8b93] shrink-0 mt-0.5" />
+                          <p className="text-[11px] font-medium text-white/60 leading-relaxed italic">{msg}</p>
                        </div>
                     ))}
                  </div>

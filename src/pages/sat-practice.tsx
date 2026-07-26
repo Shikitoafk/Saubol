@@ -28,6 +28,7 @@ import { Layout } from "@/components/layout";
 import { Button } from "@/components/ui/button";
 import { ResizablePanelGroup, ResizablePanel, ResizableHandle } from "@/components/ui/resizable";
 import { supabase } from "@/lib/supabase";
+import { SAT_TABLES } from "@/lib/sat-tables";
 import { saveSATAnswer } from "@/lib/progress-service";
 import { fetchPracticeQuestions, SATQuestion } from "@/lib/sat-questions-service";
 import katex from 'katex';
@@ -99,7 +100,7 @@ export default function SATPractice() {
       try {
         // 1. Fetch exact Reading & Writing question count
         const { count: rwCount, error: rwErr } = await supabase
-          .from('EBRW_MCQ')
+          .from(SAT_TABLES.ebrwMcq)
           .select('*', { count: 'exact', head: true });
         
         if (!rwErr && rwCount !== null) {
@@ -114,8 +115,8 @@ export default function SATPractice() {
 
         // 2. Fetch Math MCQ and Open counts by topic
         const [mcqRes, openRes] = await Promise.all([
-          supabase.from('Math_MCQ').select('topic'),
-          supabase.from('Math_Open').select('topic')
+          supabase.from(SAT_TABLES.mathMcq).select('topic'),
+          supabase.from(SAT_TABLES.mathOpen).select('topic')
         ]);
 
         if (!mcqRes.error && !openRes.error && mcqRes.data && openRes.data) {
@@ -578,14 +579,14 @@ export default function SATPractice() {
               <Button 
                 onClick={() => { setPhase('bank'); setSelectedSection(null); }}
                 variant="ghost" 
-                className="text-[10px] font-black uppercase tracking-[0.2em] text-[#444] hover:text-white p-0 mb-6 flex items-center gap-2"
+                className="text-[10px] font-black uppercase tracking-[0.2em] text-[#8b8b93] hover:text-white p-0 mb-6 flex items-center gap-2"
               >
                 <ChevronLeft className="w-4 h-4" /> Back to Question Bank
               </Button>
               <h1 className="text-5xl md:text-7xl font-black italic tracking-tighter uppercase leading-none mb-4">
                 {selectedSection === 'Math' ? 'MATH BANK' : 'READING & WRITING'}
               </h1>
-              <p className="text-sm text-[#666] font-semibold max-w-xl">
+              <p className="text-sm text-[#a6a6ae] font-semibold max-w-xl">
                 Choose a specific domain and select a topic to solve adaptive blueprints.
               </p>
             </header>
@@ -594,7 +595,7 @@ export default function SATPractice() {
             <div className="glass-3d p-8 mb-12 flex flex-col md:flex-row items-center justify-between gap-6 border-indigo-500/10 bg-indigo-500/5">
               <div>
                 <h3 className="text-lg font-black uppercase tracking-tight text-white mb-2">Practice all topics</h3>
-                <p className="text-xs text-white/50 font-bold uppercase tracking-widest">
+                <p className="text-xs text-white/65 font-bold uppercase tracking-widest">
                   Start practicing all {selectedSection === 'Math' ? '4 domains in Math' : 'domains in Reading & Writing'}.
                 </p>
               </div>
@@ -610,7 +611,7 @@ export default function SATPractice() {
             {questionsLoading && (
               <div className="glass-3d p-8 mb-12 flex items-center justify-center gap-4 border-indigo-500/10 bg-indigo-500/5">
                 <div className="w-6 h-6 border-2 border-indigo-400 border-t-transparent rounded-full animate-spin" />
-                <span className="text-sm font-bold text-white/60">Loading questions from database...</span>
+                <span className="text-sm font-bold text-white/75">Loading questions from database...</span>
               </div>
             )}
             {questionsError && (
@@ -623,7 +624,7 @@ export default function SATPractice() {
             <div className="space-y-12">
               {(selectedSection === 'Math' ? mathProgress : rwProgress).map((domain, i) => (
                 <div key={i} className="space-y-4">
-                  <h3 className="text-xs font-black uppercase tracking-widest text-[#444]">{domain.name}</h3>
+                  <h3 className="text-xs font-black uppercase tracking-widest text-[#8b8b93]">{domain.name}</h3>
                   <div className="glass-3d overflow-hidden border-white/5">
                     <div className="divide-y divide-white/5">
                       {domain.subtopics.map((sub, idx) => {
@@ -650,7 +651,7 @@ export default function SATPractice() {
                               <div className="h-1.5 bg-white/5 rounded-full overflow-hidden flex-1">
                                 <div className="h-full bg-indigo-500" style={{ width: `${solvedPercent}%` }} />
                               </div>
-                              <span className="text-[10px] font-black text-white/40 uppercase tracking-widest whitespace-nowrap">
+                              <span className="text-[10px] font-black text-white/60 uppercase tracking-widest whitespace-nowrap">
                                 {sub.solvedQuestions}/{sub.totalQuestions}
                               </span>
                             </div>
@@ -666,7 +667,7 @@ export default function SATPractice() {
                                   ● {sub.accuracy}%
                                 </span>
                               ) : (
-                                <span className="text-[10px] font-black text-white/20 uppercase tracking-widest">—</span>
+                                <span className="text-[10px] font-black text-white/40 uppercase tracking-widest">—</span>
                               )}
                             </div>
                           </div>
@@ -699,7 +700,7 @@ export default function SATPractice() {
                 <Button 
                   variant="ghost" 
                   onClick={() => setPhase("subtopics")} 
-                  className="text-[10px] font-black uppercase tracking-widest text-[#444] hover:text-white"
+                  className="text-[10px] font-black uppercase tracking-widest text-[#8b8b93] hover:text-white"
                 >
                   <ChevronLeft className="w-4 h-4 mr-2" /> Exit Session
                 </Button>
@@ -711,12 +712,12 @@ export default function SATPractice() {
                   </div>
                   <div className="w-px h-8 bg-white/10" />
                   <div className="text-center">
-                    <p className="text-[8px] font-black text-white/40 uppercase tracking-widest mb-1">Question</p>
+                    <p className="text-[8px] font-black text-white/60 uppercase tracking-widest mb-1">Question</p>
                     <p className="text-sm font-black">{currentIdx + 1} of {questions.length}</p>
                   </div>
                   <div className="w-px h-8 bg-white/10" />
                   <div className="text-center">
-                    <p className="text-[8px] font-black text-white/40 uppercase tracking-widest mb-1">Timer</p>
+                    <p className="text-[8px] font-black text-white/60 uppercase tracking-widest mb-1">Timer</p>
                     <p className="text-sm font-black font-mono">{formatTime(elapsed)}</p>
                   </div>
                 </div>
@@ -791,7 +792,7 @@ export default function SATPractice() {
                                 <FileText className="w-5 h-5 text-indigo-400" />
                                 <h3 className="text-sm font-black uppercase tracking-widest text-indigo-400">Student-Produced Response</h3>
                               </div>
-                              <p className="text-xs text-white/50 leading-relaxed">
+                              <p className="text-xs text-white/65 leading-relaxed">
                                 Enter your answer in the box below. You can enter integers, decimals, or fractions.
                               </p>
                               <div className="flex flex-col sm:flex-row gap-4">
@@ -862,7 +863,7 @@ export default function SATPractice() {
                                   circleClass = "w-10 h-10 rounded-full flex items-center justify-center bg-rose-500 text-white text-sm font-bold border-rose-500";
                                 } else {
                                   btnClass = "glass-3d p-6 text-left transition-all flex items-center gap-6 opacity-30 border-white/5 cursor-default";
-                                  circleClass = "w-10 h-10 rounded-full flex items-center justify-center border border-white/10 text-sm font-bold text-white/30";
+                                  circleClass = "w-10 h-10 rounded-full flex items-center justify-center border border-white/10 text-sm font-bold text-white/45";
                                 }
                               } else {
                                 btnClass = "glass-3d p-6 text-left transition-all flex items-center gap-6 border-white/10 hover:border-indigo-500/40 hover:bg-white/5 active:scale-[0.99]";
@@ -898,7 +899,7 @@ export default function SATPractice() {
                                 <h4 className="text-[10px] font-black uppercase tracking-widest text-indigo-400">EXPLANATION</h4>
                               </div>
                               <div 
-                                className="text-white/70 font-medium text-sm block leading-relaxed mb-10" 
+                                className="text-white/80 font-medium text-sm block leading-relaxed mb-10" 
                                 dangerouslySetInnerHTML={{ __html: renderKatexText(questions[currentIdx]?.explanation || "") }} 
                               />
                               <Button 
@@ -947,7 +948,7 @@ export default function SATPractice() {
                             <FileText className="w-5 h-5 text-indigo-400" />
                             <h3 className="text-sm font-black uppercase tracking-widest text-indigo-400">Student-Produced Response</h3>
                           </div>
-                          <p className="text-xs text-white/50 leading-relaxed">
+                          <p className="text-xs text-white/65 leading-relaxed">
                             Enter your answer in the box below. You can enter integers, decimals, or fractions.
                           </p>
                           <div className="flex flex-col sm:flex-row gap-4">
@@ -1018,7 +1019,7 @@ export default function SATPractice() {
                               circleClass = "w-10 h-10 rounded-full flex items-center justify-center bg-rose-500 text-white text-sm font-bold border-rose-500";
                             } else {
                               btnClass = "glass-3d p-6 text-left transition-all flex items-center gap-6 opacity-30 border-white/5 cursor-default";
-                              circleClass = "w-10 h-10 rounded-full flex items-center justify-center border border-white/10 text-sm font-bold text-white/30";
+                              circleClass = "w-10 h-10 rounded-full flex items-center justify-center border border-white/10 text-sm font-bold text-white/45";
                             }
                           } else {
                             btnClass = "glass-3d p-6 text-left transition-all flex items-center gap-6 border-white/10 hover:border-indigo-500/40 hover:bg-white/5 active:scale-[0.99]";
@@ -1054,7 +1055,7 @@ export default function SATPractice() {
                             <h4 className="text-[10px] font-black uppercase tracking-widest text-indigo-400">EXPLANATION</h4>
                           </div>
                           <div 
-                            className="text-white/70 font-medium text-sm block leading-relaxed mb-10" 
+                            className="text-white/80 font-medium text-sm block leading-relaxed mb-10" 
                             dangerouslySetInnerHTML={{ __html: renderKatexText(questions[currentIdx]?.explanation || "") }} 
                           />
                           <Button 
@@ -1125,7 +1126,7 @@ export default function SATPractice() {
                   <div className="text-8xl font-black tracking-tighter mb-4">
                     {Math.round((Object.values(sessionAnswers).filter((a: any) => a.correct).length / (questions.length || 1)) * 100)}%
                   </div>
-                  <div className="text-xs font-bold text-white/20 uppercase tracking-widest">
+                  <div className="text-xs font-bold text-white/40 uppercase tracking-widest">
                     {Object.values(sessionAnswers).filter((a: any) => a.correct).length} / {questions.length} correct
                   </div>
                 </div>
@@ -1135,7 +1136,7 @@ export default function SATPractice() {
                     <Brain className="w-6 h-6 text-indigo-400" />
                     <h3 className="text-2xl font-black uppercase tracking-tight">Intelligence Feedback</h3>
                   </div>
-                  <p className="text-xl font-medium text-white/60 leading-relaxed mb-8">
+                  <p className="text-xl font-medium text-white/75 leading-relaxed mb-8">
                     Great effort! Your performance updates your daily mastery charts. Keep expanding your accuracy index to secure a 1550+ estimation.
                   </p>
                   <div className="flex gap-4">

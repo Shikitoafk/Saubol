@@ -154,7 +154,7 @@ export default function SATDashboard() {
                </div>
                <div className="w-px h-24 bg-white/10" />
                <div>
-                  <p className="text-[10px] font-black text-white/20 uppercase tracking-[0.3em] mb-3 flex items-center gap-2">
+                  <p className="text-[10px] font-black text-white/40 uppercase tracking-[0.3em] mb-3 flex items-center gap-2">
                      <Zap className="w-3.5 h-3.5 text-yellow-500" /> Streak Consistency
                   </p>
                   <p className="text-6xl font-black tracking-tighter italic">{stats.streak} DAYS</p>
@@ -179,13 +179,13 @@ export default function SATDashboard() {
                 <div className="flex justify-between items-start mb-12">
                    <stat.icon className={`w-10 h-10 ${stat.color} opacity-20 group-hover:opacity-100 transition-opacity`} />
                    <div className="flex flex-col items-end">
-                      <span className="text-[9px] font-black uppercase tracking-widest text-[#444]">Level</span>
+                      <span className="text-[9px] font-black uppercase tracking-widest text-[#8b8b93]">Level</span>
                       <span className="text-xs font-black uppercase tracking-tighter">Certified</span>
                    </div>
                 </div>
                 <div className={`text-8xl font-black mb-4 ${stat.color} tracking-tighter italic`}>{stat.val}</div>
-                <div className="text-[10px] font-black text-white/20 uppercase tracking-[0.4em] mb-2">{stat.label}</div>
-                <p className="text-[11px] font-bold text-[#444] uppercase tracking-widest leading-none">{stat.sub}</p>
+                <div className="text-[10px] font-black text-white/40 uppercase tracking-[0.4em] mb-2">{stat.label}</div>
+                <p className="text-[11px] font-bold text-[#8b8b93] uppercase tracking-widest leading-none">{stat.sub}</p>
               </motion.div>
             ))}
           </div>
@@ -196,7 +196,7 @@ export default function SATDashboard() {
                 <div className="flex items-center justify-between mb-16">
                    <div>
                       <h3 className="text-4xl font-black tracking-tighter uppercase italic">Score Velocity</h3>
-                      <p className="text-[10px] font-black text-white/20 uppercase tracking-widest mt-2">Aggregated performance trajectory</p>
+                      <p className="text-[10px] font-black text-white/40 uppercase tracking-widest mt-2">Aggregated performance trajectory</p>
                    </div>
                 </div>
                 <div className="h-[400px] w-full">
@@ -225,7 +225,7 @@ export default function SATDashboard() {
                 <div className="flex items-center justify-between mb-16">
                    <div>
                       <h3 className="text-4xl font-black tracking-tighter uppercase italic">Topic Precision</h3>
-                      <p className="text-[10px] font-black text-white/20 uppercase tracking-widest mt-2">Semantic accuracy across SAT sectors</p>
+                      <p className="text-[10px] font-black text-white/40 uppercase tracking-widest mt-2">Semantic accuracy across SAT sectors</p>
                    </div>
                 </div>
                 <div className="h-[400px] w-full">
@@ -255,11 +255,11 @@ export default function SATDashboard() {
                    <Sparkles className="w-8 h-8 text-yellow-500" />
                    <h3 className="text-6xl font-black uppercase tracking-tighter italic">Ready for 1550?</h3>
                 </div>
-                <p className="text-xl text-[#666] font-medium leading-relaxed">Твоя готовность к экзамену составляет <span className="text-white">{stats.readiness}%</span>. Мы рекомендуем сфокусироваться на Advanced Math, чтобы достичь целевого показателя в этом месяце.</p>
+                <p className="text-xl text-[#a6a6ae] font-medium leading-relaxed">Твоя готовность к экзамену составляет <span className="text-white">{stats.readiness}%</span>. Мы рекомендуем сфокусироваться на Advanced Math, чтобы достичь целевого показателя в этом месяце.</p>
              </div>
              <div className="flex gap-6">
                 <Button onClick={() => navigate('/sat/practice')} className="h-20 px-16 rounded-2xl bg-white text-black font-black uppercase text-xs shadow-2xl hover:scale-105 active:scale-95 transition-all">Engage Practice</Button>
-                <Button onClick={() => navigate('/sat/study-plan')} variant="outline" className="h-20 px-12 rounded-2xl border-white/10 text-white/40 font-black uppercase text-xs hover:bg-white/5">Update Strategy</Button>
+                <Button onClick={() => navigate('/sat/study-plan')} variant="outline" className="h-20 px-12 rounded-2xl border-white/10 text-white/60 font-black uppercase text-xs hover:bg-white/5">Update Strategy</Button>
              </div>
           </div>
         </div>

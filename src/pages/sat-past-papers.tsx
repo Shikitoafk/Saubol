@@ -30,13 +30,21 @@ import {
   fetchAvailablePastPapers,
   fetchPastPaperQuestions,
   SATQuestion,
-  PastPaper
+  PastPaper,
+  withTimeout
 } from "@/lib/sat-questions-service";
 import katex from "katex";
 import "katex/dist/katex.min.css";
 import { motion, AnimatePresence } from "framer-motion";
 
 // High-fidelity fallback past papers & questions for local testing (since count = 0 in database)
+// Заглушка включается только флагом VITE_USE_MOCK_PAPERS=true — она нужна
+// для локальной вёрстки без базы. По умолчанию выключена: раньше она
+// подменяла собой любую ошибку запроса, и настоящие вопросы из Supabase
+// на странице просто не появлялись.
+const USE_MOCK_PAPERS =
+  String(import.meta.env.VITE_USE_MOCK_PAPERS).toLowerCase() === "true";
+
 const MOCK_PAST_PAPERS: PastPaper[] = [
   {
     test_period: "June 2025",
@@ -200,6 +208,7 @@ export default function SATPastPapers() {
   const [questions, setQuestions] = useState<SATQuestion[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [loadError, setLoadError] = useState<string | null>(null);
 
   // Session states
   const [currentIdx, setCurrentIdx] = useState(0);
@@ -249,17 +258,25 @@ export default function SATPastPapers() {
   useEffect(() => {
     const getPapers = async () => {
       setLoading(true);
+      setLoadError(null);
       try {
-        const data = await fetchAvailablePastPapers();
+        const data = await withTimeout(fetchAvailablePastPapers(), 15000, "Список тестов");
+        // Заглушку показываем, только если её явно попросили через .env.
+        // Иначе пустой ответ и ошибка запроса выглядели одинаково — как
+        // «вот два теста на шесть вопросов», хотя в базе лежат настоящие.
         if (data && data.length > 0) {
           setPastPapers(data);
-        } else {
-          // Fallback to mock papers if none exist in the database
+        } else if (USE_MOCK_PAPERS) {
           setPastPapers(MOCK_PAST_PAPERS);
+        } else {
+          setPastPapers([]);
         }
       } catch (err: any) {
         console.error("Failed to load past papers:", err);
-        setPastPapers(MOCK_PAST_PAPERS);
+        setPastPapers(USE_MOCK_PAPERS ? MOCK_PAST_PAPERS : []);
+        if (!USE_MOCK_PAPERS) {
+          setLoadError(err?.message || "Не удалось связаться с базой");
+        }
       } finally {
         setLoading(false);
       }
@@ -296,7 +313,7 @@ export default function SATPastPapers() {
       }
 
       // Fallback if db returned empty or failed
-      if (!fetchedQuestions || fetchedQuestions.length === 0) {
+      if ((!fetchedQuestions || fetchedQuestions.length === 0) && USE_MOCK_PAPERS) {
         fetchedQuestions = MOCK_QUESTIONS[key] || [];
       }
 
@@ -700,7 +717,7 @@ export default function SATPastPapers() {
               <h1 className="text-6xl md:text-8xl font-black italic tracking-tighter uppercase mb-6 leading-none">
                 PAST PAPERS.
               </h1>
-              <p className="text-sm text-[#666] font-semibold max-w-xl">
+              <p className="text-sm text-[#a6a6ae] font-semibold max-w-xl">
                 Solve authentic past Digital SAT exam modules by period with proper pacing, structure, and analytics.
               </p>
             </header>
@@ -708,7 +725,33 @@ export default function SATPastPapers() {
             {loading ? (
               <div className="glass-3d p-16 flex flex-col items-center justify-center border-indigo-500/10 min-h-[300px]">
                 <div className="w-10 h-10 border-4 border-indigo-500 border-t-transparent rounded-full animate-spin mb-4" />
-                <p className="text-xs uppercase tracking-widest text-[#444] font-bold">Scanning database for papers...</p>
+                <p className="text-xs uppercase tracking-widest text-[#8b8b93] font-bold">Scanning database for papers...</p>
+              </div>
+            ) : loadError ? (
+              <div className="glass-3d p-12 border-rose-500/20 bg-rose-500/[0.03] min-h-[300px] flex flex-col justify-center">
+                <div className="flex items-center gap-3 mb-4 text-rose-400">
+                  <AlertCircle className="w-6 h-6" />
+                  <h3 className="text-xl font-black uppercase italic tracking-tight">Не удалось загрузить тесты</h3>
+                </div>
+                <p className="text-sm text-[#c2c2c9] font-medium mb-6 max-w-2xl leading-relaxed">
+                  База ответила ошибкой. Проверь, что таблицы <code className="text-indigo-400">sat_ebrw_mcq</code>,{" "}
+                  <code className="text-indigo-400">sat_math_mcq</code>, <code className="text-indigo-400">sat_math_open</code>{" "}
+                  существуют и открыты на чтение (RLS) для анонимного ключа.
+                </p>
+                <pre className="text-xs text-rose-300/80 bg-black/40 border border-rose-500/10 rounded-xl p-4 overflow-x-auto">
+                  {loadError}
+                </pre>
+              </div>
+            ) : pastPapers.length === 0 ? (
+              <div className="glass-3d p-12 border-white/5 min-h-[300px] flex flex-col justify-center">
+                <div className="flex items-center gap-3 mb-4 text-indigo-400">
+                  <FileText className="w-6 h-6" />
+                  <h3 className="text-xl font-black uppercase italic tracking-tight">Пока нет ни одного теста</h3>
+                </div>
+                <p className="text-sm text-[#c2c2c9] font-medium max-w-2xl leading-relaxed">
+                  Запрос прошёл, но строк с заполненным <code className="text-indigo-400">test_period</code> не нашлось.
+                  Загрузи вопросы в Supabase и убедись, что у них проставлен период — например «March 2026».
+                </p>
               </div>
             ) : (
               <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
@@ -729,7 +772,7 @@ export default function SATPastPapers() {
                             <span className="px-3.5 py-1.5 bg-indigo-500/10 rounded-full border border-indigo-500/20 text-[9px] font-black tracking-widest uppercase text-indigo-400">
                               Real Exam
                             </span>
-                            <span className="text-xs font-black text-white/40 uppercase">
+                            <span className="text-xs font-black text-white/60 uppercase">
                               {paper.test_version || "Standard"}
                             </span>
                           </div>
@@ -737,12 +780,12 @@ export default function SATPastPapers() {
                           <h3 className="text-3xl font-black mb-4 tracking-tighter uppercase italic leading-none text-shimmer">
                             {paper.test_period}
                           </h3>
-                          <p className="text-xs font-bold text-white/40 uppercase tracking-widest">
+                          <p className="text-xs font-bold text-white/60 uppercase tracking-widest">
                             {paper.totalQuestions} Questions Total
                           </p>
                         </div>
 
-                        <div className="mt-8 flex gap-3 text-[10px] font-black uppercase text-white/30">
+                        <div className="mt-8 flex gap-3 text-[10px] font-black uppercase text-white/45">
                           <div className="px-3 py-1.5 bg-white/5 rounded-lg border border-white/5">
                             RW: {paper.rwQuestions}
                           </div>
@@ -771,7 +814,7 @@ export default function SATPastPapers() {
             <Button
               onClick={() => { setPhase("list"); setSelectedPaper(null); }}
               variant="ghost"
-              className="text-[10px] font-black uppercase tracking-[0.2em] text-[#444] hover:text-white p-0 mb-12 flex items-center gap-2"
+              className="text-[10px] font-black uppercase tracking-[0.2em] text-[#8b8b93] hover:text-white p-0 mb-12 flex items-center gap-2"
             >
               <ChevronLeft className="w-4 h-4" /> Back to papers list
             </Button>
@@ -780,7 +823,7 @@ export default function SATPastPapers() {
               <h2 className="text-5xl md:text-7xl font-black italic tracking-tighter uppercase leading-none mb-4">
                 {selectedPaper.test_period}
               </h2>
-              <p className="text-sm text-[#666] font-semibold uppercase tracking-widest">
+              <p className="text-sm text-[#a6a6ae] font-semibold uppercase tracking-widest">
                 Version: {selectedPaper.test_version || "Standard A"} • {selectedPaper.totalQuestions} Questions
               </p>
             </header>
@@ -803,7 +846,7 @@ export default function SATPastPapers() {
                     <Clock className="w-8 h-8" />
                   </div>
                   <h3 className="text-3xl font-black tracking-tight mb-4 uppercase italic">Exam Mode</h3>
-                  <p className="text-sm text-[#666] leading-relaxed font-medium">
+                  <p className="text-sm text-[#a6a6ae] leading-relaxed font-medium">
                     Experience a simulated test environment. A single countdown of 134 minutes limits the entire session. Answers are graded at the very end.
                   </p>
                 </div>
@@ -823,7 +866,7 @@ export default function SATPastPapers() {
                     <Zap className="w-8 h-8" />
                   </div>
                   <h3 className="text-3xl font-black tracking-tight mb-4 uppercase italic">Practice Mode</h3>
-                  <p className="text-sm text-[#666] leading-relaxed font-medium">
+                  <p className="text-sm text-[#a6a6ae] leading-relaxed font-medium">
                     Solve questions untimed at your own pace. Receive instant explanations and correctness feedback after each response. Navigate back and forth freely.
                   </p>
                 </div>
@@ -863,7 +906,7 @@ export default function SATPastPapers() {
                       setPhase("modes");
                     }
                   }}
-                  className="text-[10px] font-black uppercase tracking-widest text-[#444] hover:text-white"
+                  className="text-[10px] font-black uppercase tracking-widest text-[#8b8b93] hover:text-white"
                 >
                   <ChevronLeft className="w-4 h-4 mr-2" /> {isReviewMode ? "Back to Results" : "Exit Session"}
                 </Button>
@@ -876,12 +919,12 @@ export default function SATPastPapers() {
                   </div>
                   <div className="w-px h-8 bg-white/10" />
                   <div className="text-center">
-                    <p className="text-[8px] font-black text-white/40 uppercase tracking-widest mb-1">Question</p>
+                    <p className="text-[8px] font-black text-white/60 uppercase tracking-widest mb-1">Question</p>
                     <p className="text-sm font-black">{currentIdx + 1} of {questions.length}</p>
                   </div>
                   <div className="w-px h-8 bg-white/10" />
                   <div className="text-center">
-                    <p className="text-[8px] font-black text-white/40 uppercase tracking-widest mb-1">
+                    <p className="text-[8px] font-black text-white/60 uppercase tracking-widest mb-1">
                       {isReviewMode ? "Session Mode" : (mode === "exam" ? "Time Remaining" : "Time Elapsed")}
                     </p>
                     <p className="text-sm font-black font-mono">
@@ -1006,7 +1049,7 @@ export default function SATPastPapers() {
                               ? "bg-indigo-500 border-indigo-400 text-white shadow-[0_0_12px_rgba(99,102,241,0.4)]"
                               : isAnswered
                               ? "bg-indigo-500/10 border-indigo-500/30 text-indigo-400"
-                              : "bg-white/5 border-white/5 text-white/40 hover:border-white/10"
+                              : "bg-white/5 border-white/5 text-white/60 hover:border-white/10"
                           }`}
                         >
                           {idx + 1}
@@ -1076,7 +1119,7 @@ export default function SATPastPapers() {
               <h1 className="text-7xl font-black text-shimmer leading-none mb-4 uppercase italic tracking-tighter">
                 Test Completed.
               </h1>
-              <p className="text-sm font-black text-white/40 uppercase tracking-widest mb-16">
+              <p className="text-sm font-black text-white/60 uppercase tracking-widest mb-16">
                 {selectedPaper.test_period} • {mode === "exam" ? "Exam Mode" : "Practice Mode"} Results
               </p>
               
@@ -1088,7 +1131,7 @@ export default function SATPastPapers() {
                   <div className="text-7xl font-black tracking-tighter mb-4">
                     {stats.scorePercent}%
                   </div>
-                  <div className="text-xs font-bold text-white/20 uppercase tracking-widest">
+                  <div className="text-xs font-bold text-white/40 uppercase tracking-widest">
                     Of scored questions
                   </div>
                 </div>
@@ -1097,19 +1140,19 @@ export default function SATPastPapers() {
                 <div className="glass-3d p-8 flex flex-col items-center justify-center">
                   <div className="text-[9px] font-black text-emerald-400 uppercase tracking-widest mb-4">Correct Responses</div>
                   <div className="text-5xl font-black text-emerald-400 mb-2">{stats.correct}</div>
-                  <div className="text-[10px] font-bold text-white/20 uppercase tracking-widest">Questions</div>
+                  <div className="text-[10px] font-bold text-white/40 uppercase tracking-widest">Questions</div>
                 </div>
 
                 <div className="glass-3d p-8 flex flex-col items-center justify-center">
                   <div className="text-[9px] font-black text-rose-400 uppercase tracking-widest mb-4">Incorrect / Skipped</div>
                   <div className="text-5xl font-black text-rose-400 mb-2">{stats.incorrect + stats.skipped}</div>
-                  <div className="text-[10px] font-bold text-white/20 uppercase tracking-widest">{stats.skipped} Skipped</div>
+                  <div className="text-[10px] font-bold text-white/40 uppercase tracking-widest">{stats.skipped} Skipped</div>
                 </div>
 
                 <div className="glass-3d p-8 flex flex-col items-center justify-center">
-                  <div className="text-[9px] font-black text-white/40 uppercase tracking-widest mb-4">Unscored (No Answer)</div>
-                  <div className="text-5xl font-black text-white/60 mb-2">{stats.unscored}</div>
-                  <div className="text-[10px] font-bold text-white/20 uppercase tracking-widest">Skipped from score</div>
+                  <div className="text-[9px] font-black text-white/60 uppercase tracking-widest mb-4">Unscored (No Answer)</div>
+                  <div className="text-5xl font-black text-white/75 mb-2">{stats.unscored}</div>
+                  <div className="text-[10px] font-bold text-white/40 uppercase tracking-widest">Skipped from score</div>
                 </div>
               </div>
 
@@ -1125,7 +1168,7 @@ export default function SATPastPapers() {
                     const ans = userAnswers[q.id];
                     const emptyAnswer = isQuestionAnswerEmpty(q);
                     
-                    let bgClass = "bg-white/5 border-white/5 text-white/60 hover:bg-white/10";
+                    let bgClass = "bg-white/5 border-white/5 text-white/75 hover:bg-white/10";
                     if (emptyAnswer) {
                       bgClass = "bg-white/10 border-white/15 text-white/80 hover:bg-white/20";
                     } else if (ans?.isCorrect) {
@@ -1143,7 +1186,7 @@ export default function SATPastPapers() {
                       >
                         <span>{idx + 1}</span>
                         {emptyAnswer && (
-                          <span className="absolute bottom-1 text-[7px] text-white/40 uppercase scale-75">N/A</span>
+                          <span className="absolute bottom-1 text-[7px] text-white/60 uppercase scale-75">N/A</span>
                         )}
                       </button>
                     );
@@ -1203,7 +1246,7 @@ export default function SATPastPapers() {
         <div className="glass-3d p-10 flex flex-col items-center justify-center text-center gap-4 border-amber-500/10 bg-amber-500/5">
           <AlertCircle className="w-8 h-8 text-amber-400" />
           <h4 className="text-sm font-black uppercase tracking-widest text-amber-400">Answer not available</h4>
-          <p className="text-xs text-white/50 leading-relaxed max-w-sm">
+          <p className="text-xs text-white/65 leading-relaxed max-w-sm">
             The correct answer for this question is not stored in the database. This question will not be scored.
           </p>
         </div>
@@ -1220,7 +1263,7 @@ export default function SATPastPapers() {
             {q.isFreeResponse ? (
               <div className="space-y-4">
                 <div className="p-5 rounded-xl border border-white/5 bg-white/5 text-sm">
-                  <span className="font-semibold text-white/40">Your Response: </span>
+                  <span className="font-semibold text-white/60">Your Response: </span>
                   <span className="font-bold text-white ml-2">"{ans?.text || "No Response"}"</span>
                 </div>
                 <div className="p-5 rounded-xl border border-emerald-500/20 bg-emerald-500/5 text-sm text-emerald-400">
@@ -1237,7 +1280,7 @@ export default function SATPastPapers() {
                   
                   let borderClass = "border-white/5";
                   let bgClass = "bg-white/5";
-                  let textClass = "text-white/60";
+                  let textClass = "text-white/75";
 
                   if (isCorrectOption) {
                     borderClass = "border-emerald-500";
@@ -1268,7 +1311,7 @@ export default function SATPastPapers() {
               <Sparkles className="w-4 h-4 text-indigo-400" />
               <h4 className="text-[10px] font-black uppercase tracking-widest text-indigo-400">Mastery Explanation</h4>
             </div>
-            <div className="text-white/70 font-medium text-sm block leading-relaxed" dangerouslySetInnerHTML={{ __html: renderKatexText(q.explanation || "No explanation provided.") }} />
+            <div className="text-white/80 font-medium text-sm block leading-relaxed" dangerouslySetInnerHTML={{ __html: renderKatexText(q.explanation || "No explanation provided.") }} />
           </div>
         </div>
       );
@@ -1322,7 +1365,7 @@ export default function SATPastPapers() {
                     circleClass = "w-10 h-10 rounded-full flex items-center justify-center bg-rose-500 text-white text-sm font-bold border-rose-500";
                   } else {
                     btnClass = "glass-3d p-6 text-left opacity-30 border-white/5 cursor-default flex items-center gap-6";
-                    circleClass = "w-10 h-10 rounded-full flex items-center justify-center border border-white/10 text-white/30 text-sm font-bold";
+                    circleClass = "w-10 h-10 rounded-full flex items-center justify-center border border-white/10 text-white/45 text-sm font-bold";
                   }
                 }
 
@@ -1357,7 +1400,7 @@ export default function SATPastPapers() {
                   </span>
                 </div>
                 
-                <div className="text-white/70 font-medium text-sm block leading-relaxed" dangerouslySetInnerHTML={{ __html: renderKatexText(q.explanation || "No explanation provided.") }} />
+                <div className="text-white/80 font-medium text-sm block leading-relaxed" dangerouslySetInnerHTML={{ __html: renderKatexText(q.explanation || "No explanation provided.") }} />
               </motion.div>
             )}
           </AnimatePresence>

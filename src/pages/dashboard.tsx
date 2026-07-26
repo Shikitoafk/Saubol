@@ -189,7 +189,7 @@ export default function Dashboard() {
       <div className="min-h-screen bg-black flex items-center justify-center p-10">
         <div className="glass-3d p-10 text-center max-w-md border-rose-500/20">
           <p className="text-rose-500 font-black uppercase tracking-widest mb-4">Tactical Error Detected</p>
-          <p className="text-[#666] mb-8 font-medium">{error}</p>
+          <p className="text-[#a6a6ae] mb-8 font-medium">{error}</p>
           <Button onClick={() => window.location.reload()} className="bg-white text-black hover:bg-gray-100 w-full h-12 font-black uppercase text-xs rounded-xl">Recalibrate System</Button>
         </div>
       </div>
@@ -245,7 +245,7 @@ export default function Dashboard() {
                 <p className="text-3xl font-black tracking-tighter uppercase">{user?.user_metadata?.full_name || 'Member'}</p>
                 <div className="flex items-center gap-3 mt-2">
                    <div className="px-3 py-1 bg-indigo-600 rounded-full text-[8px] font-black uppercase tracking-widest">Level 12</div>
-                   <p className="text-[10px] font-bold text-[#444] uppercase tracking-widest">Global Rank: #412</p>
+                   <p className="text-[10px] font-bold text-[#8b8b93] uppercase tracking-widest">Global Rank: #412</p>
                 </div>
               </div>
             </div>
@@ -278,7 +278,7 @@ export default function Dashboard() {
                     className={`h-full bg-current ${stat.color}`} 
                    />
                 </div>
-                <p className="text-[9px] font-black text-[#444] uppercase tracking-widest">{stat.desc}</p>
+                <p className="text-[9px] font-black text-[#8b8b93] uppercase tracking-widest">{stat.desc}</p>
               </motion.div>
             ))}
           </div>
@@ -293,7 +293,7 @@ export default function Dashboard() {
                 </div>
                 <div>
                   <h3 className="text-5xl font-black tracking-tighter uppercase">Visual Intel.</h3>
-                  <p className="text-xs font-bold text-[#444] uppercase tracking-widest mt-1">Growth trajectory over 7 cycles</p>
+                  <p className="text-xs font-bold text-[#8b8b93] uppercase tracking-widest mt-1">Growth trajectory over 7 cycles</p>
                 </div>
               </div>
               <div className="flex gap-4">
@@ -344,7 +344,7 @@ export default function Dashboard() {
                         <div className="text-4xl font-black text-[#111] group-hover:text-white transition-colors">{(item.score / 10).toFixed(1)}</div>
                         <div>
                           <p className="text-xl font-black tracking-tight mb-1 uppercase italic">{item.test_name}</p>
-                          <p className="text-[10px] font-bold text-[#444] uppercase tracking-widest">{item.skill} · {new Date(item.completed_at).toLocaleDateString()}</p>
+                          <p className="text-[10px] font-bold text-[#8b8b93] uppercase tracking-widest">{item.skill} · {new Date(item.completed_at).toLocaleDateString()}</p>
                         </div>
                       </div>
                       <div className="w-12 h-12 rounded-full border border-white/5 flex items-center justify-center group-hover:border-white/20 group-hover:bg-white/5 transition-all">
@@ -375,7 +375,7 @@ export default function Dashboard() {
                         <div className={`w-4 h-4 rounded-full ${item.correct ? 'bg-emerald-500 shadow-[0_0_20px_rgba(16,185,129,0.6)]' : 'bg-rose-500 shadow-[0_0_20px_rgba(244,63,94,0.6)]'}`} />
                         <div>
                           <p className="text-xl font-black tracking-tight mb-1 uppercase italic">{item.section}</p>
-                          <p className="text-[10px] font-bold text-[#444] uppercase tracking-widest">{item.topic} · {item.correct ? 'Valid Logic' : 'Failed Signal'}</p>
+                          <p className="text-[10px] font-bold text-[#8b8b93] uppercase tracking-widest">{item.topic} · {item.correct ? 'Valid Logic' : 'Failed Signal'}</p>
                         </div>
                       </div>
                       <span className="text-[10px] font-black text-[#111] group-hover:text-white transition-all">{new Date(item.date).toLocaleDateString()}</span>

@@ -17,7 +17,7 @@ export function Footer() {
                 SAUBOL
               </span>
             </div>
-            <p className="text-[#444] font-bold text-xs uppercase tracking-widest leading-relaxed max-w-sm mb-12">
+            <p className="text-[#8b8b93] font-bold text-xs uppercase tracking-widest leading-relaxed max-w-sm mb-12">
               Free IELTS practice tests and SAT question bank for standardized test preparation.
             </p>
           </div>
@@ -33,7 +33,7 @@ export function Footer() {
                 <li key={item.name}>
                   <Link
                     to={item.href}
-                    className="text-[10px] font-black text-[#444] hover:text-white uppercase tracking-[0.2em] transition-colors"
+                    className="text-[10px] font-black text-[#8b8b93] hover:text-white uppercase tracking-[0.2em] transition-colors"
                   >
                     {item.name}.
                   </Link>
@@ -50,7 +50,7 @@ export function Footer() {
                   href="https://t.me/shikitoafk"
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="flex items-center gap-3 text-[10px] font-black text-[#444] hover:text-white transition-all group"
+                  className="flex items-center gap-3 text-[10px] font-black text-[#8b8b93] hover:text-white transition-all group"
                 >
                   <div className="w-8 h-8 rounded-lg bg-white/5 flex items-center justify-center group-hover:bg-indigo-500/20 transition-colors">
                     <Send className="w-3 h-3" />
@@ -63,7 +63,7 @@ export function Footer() {
                   href="https://t.me/Saubolopps"
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="flex items-center gap-3 text-[10px] font-black text-[#444] hover:text-white transition-all group"
+                  className="flex items-center gap-3 text-[10px] font-black text-[#8b8b93] hover:text-white transition-all group"
                 >
                   <div className="w-8 h-8 rounded-lg bg-white/5 flex items-center justify-center group-hover:bg-indigo-500/20 transition-colors">
                     <Send className="w-3 h-3" />
@@ -76,7 +76,7 @@ export function Footer() {
         </div>
 
         <div className="mt-24 pt-12 border-t border-white/5 flex flex-col md:flex-row items-center justify-between gap-6 opacity-30">
-          <p className="text-[9px] font-black uppercase tracking-[0.4em] text-[#444]">
+          <p className="text-[9px] font-black uppercase tracking-[0.4em] text-[#8b8b93]">
             © {new Date().getFullYear()} Saubol Academic Systems.
           </p>
         </div>

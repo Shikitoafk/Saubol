@@ -42,7 +42,7 @@ const SATTestViewer = () => {
         </Button>
         <div className="px-4 py-3 rounded-xl bg-black/80 border border-white/10 backdrop-blur-md hidden md:flex items-center gap-3 shadow-2xl">
           <Target className="w-4 h-4 text-blue-400" />
-          <span className="text-[9px] font-black uppercase tracking-widest text-white/60">High-Performance Mode</span>
+          <span className="text-[9px] font-black uppercase tracking-widest text-white/75">High-Performance Mode</span>
         </div>
       </div>
 
@@ -51,7 +51,7 @@ const SATTestViewer = () => {
         <div className="absolute inset-0 z-50 bg-black flex flex-col items-center justify-center">
            <div className="bg-vignette opacity-50" />
            <Loader2 className="w-12 h-12 animate-spin text-white mb-6 relative z-10" />
-           <p className="text-[10px] font-black uppercase tracking-[0.5em] text-[#444] relative z-10 animate-pulse">Launching SAT Test Environment</p>
+           <p className="text-[10px] font-black uppercase tracking-[0.5em] text-[#8b8b93] relative z-10 animate-pulse">Launching SAT Test Environment</p>
         </div>
       )}
 

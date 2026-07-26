@@ -117,7 +117,7 @@ export default function SATDiagnostic() {
     }
   };
 
-  if (loading) return <Layout><div className="min-h-screen bg-black flex items-center justify-center flex-col gap-4"><Brain className="w-12 h-12 animate-spin text-indigo-500" /><p className="text-sm text-white/40 font-bold uppercase tracking-widest">Loading diagnostic...</p></div></Layout>;
+  if (loading) return <Layout><div className="min-h-screen bg-black flex items-center justify-center flex-col gap-4"><Brain className="w-12 h-12 animate-spin text-indigo-500" /><p className="text-sm text-white/60 font-bold uppercase tracking-widest">Loading diagnostic...</p></div></Layout>;
 
   if (fetchError) return (
     <Layout>
@@ -140,15 +140,15 @@ export default function SATDiagnostic() {
             <h2 className="text-5xl font-black uppercase mb-12 italic tracking-tighter">Diagnostic Results.</h2>
             <div className="grid grid-cols-3 gap-8 mb-16">
               <div className="p-8 bg-white/5 rounded-3xl border border-white/5">
-                <p className="text-[10px] font-black uppercase text-white/20 mb-2">Math Proficiency</p>
+                <p className="text-[10px] font-black uppercase text-white/40 mb-2">Math Proficiency</p>
                 <p className="text-4xl font-black italic">{results.math}</p>
               </div>
               <div className="p-10 bg-indigo-600 rounded-3xl shadow-[0_30px_60px_rgba(79,70,229,0.3)] border border-indigo-400/20">
-                <p className="text-[10px] font-black uppercase text-white/60 mb-2">Estimated SAT</p>
+                <p className="text-[10px] font-black uppercase text-white/75 mb-2">Estimated SAT</p>
                 <p className="text-7xl font-black italic tracking-tighter">{results.total}</p>
               </div>
               <div className="p-8 bg-white/5 rounded-3xl border border-white/5">
-                <p className="text-[10px] font-black uppercase text-white/20 mb-2">R&W Proficiency</p>
+                <p className="text-[10px] font-black uppercase text-white/40 mb-2">R&W Proficiency</p>
                 <p className="text-4xl font-black italic">{results.rw}</p>
               </div>
             </div>
@@ -158,8 +158,8 @@ export default function SATDiagnostic() {
                   <h4 className="text-[10px] font-black uppercase text-indigo-400 mb-4 tracking-widest">Initial Weaknesses</h4>
                   <div className="space-y-2">
                      {results.weakTopics?.slice(0,3).map((t: string) => (
-                        <div key={t} className="text-xs font-bold text-white/40 uppercase">→ {t.replace('_', ' ')}</div>
-                     )) || <div className="text-xs font-bold text-white/40">None identified</div>}
+                        <div key={t} className="text-xs font-bold text-white/60 uppercase">→ {t.replace('_', ' ')}</div>
+                     )) || <div className="text-xs font-bold text-white/60">None identified</div>}
                   </div>
                </div>
                <div className="p-6 bg-emerald-500/5 rounded-2xl border border-emerald-500/10 text-left">
@@ -191,7 +191,7 @@ export default function SATDiagnostic() {
               <div className="w-16 h-16 bg-white/5 rounded-2xl flex items-center justify-center border border-white/10"><Brain className="w-8 h-8 text-indigo-400" /></div>
               <div>
                  <h2 className="text-2xl font-black uppercase italic tracking-tighter">SAT Diagnostic</h2>
-                 <p className="text-[10px] font-black text-white/20 uppercase tracking-[0.2em]">Evaluating Student Intelligence: Question {currentIdx + 1} / {questions?.length}</p>
+                 <p className="text-[10px] font-black text-white/40 uppercase tracking-[0.2em]">Evaluating Student Intelligence: Question {currentIdx + 1} / {questions?.length}</p>
               </div>
             </div>
             <div className="flex items-center gap-6">
@@ -215,7 +215,7 @@ export default function SATDiagnostic() {
               {q?.passage && (
                 <div className="p-10 bg-white/[0.02] rounded-3xl border border-white/5 relative">
                   <div className="flex items-center gap-2 mb-6 opacity-20"><FileText className="w-4 h-4" /><span className="text-[9px] font-black uppercase tracking-widest">Instructional Context</span></div>
-                  <p className="text-xl leading-relaxed font-medium text-white/70 italic leading-loose">{q.passage}</p>
+                  <p className="text-xl leading-relaxed font-medium text-white/80 italic leading-loose">{q.passage}</p>
                 </div>
               )}
               <div className="text-3xl font-black leading-[1.1] tracking-tight uppercase italic" dangerouslySetInnerHTML={{ __html: renderText(q.question) }} />
@@ -242,7 +242,7 @@ export default function SATDiagnostic() {
                   variant="ghost" 
                   onClick={prev} 
                   disabled={currentIdx === 0} 
-                  className="h-16 px-8 text-[10px] font-black uppercase text-white/20 hover:text-white"
+                  className="h-16 px-8 text-[10px] font-black uppercase text-white/40 hover:text-white"
                 >
                    <ChevronLeft className="w-4 h-4 mr-2" /> Previous
                 </Button>

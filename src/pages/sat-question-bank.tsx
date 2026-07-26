@@ -59,7 +59,7 @@ export default function SATQuestionBank() {
             <h1 className="text-5xl md:text-6xl font-black italic tracking-tighter uppercase leading-none text-shimmer">
               COMING SOON.
             </h1>
-            <p className="text-sm font-bold uppercase tracking-widest text-[#666] max-w-sm mx-auto leading-relaxed">
+            <p className="text-sm font-bold uppercase tracking-widest text-[#a6a6ae] max-w-sm mx-auto leading-relaxed">
               Practice by topic and difficulty with personalized adaptive modules.
             </p>
           </div>

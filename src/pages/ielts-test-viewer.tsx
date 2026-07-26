@@ -435,7 +435,7 @@ const IELTSTestViewer = () => {
               <div className="flex-1 py-6">
                 {speakingPart === 1 && (
                   <div className="space-y-6">
-                    <p className="text-xs font-black uppercase tracking-[0.3em] text-[#444]">Examiner Question ({currentPartQuestionIdx + 1}/{speakingData.part1.length})</p>
+                    <p className="text-xs font-black uppercase tracking-[0.3em] text-[#8b8b93]">Examiner Question ({currentPartQuestionIdx + 1}/{speakingData.part1.length})</p>
                     <div className="flex items-start gap-4">
                       <Volume2 className="w-8 h-8 text-indigo-400 shrink-0 mt-1" />
                       <h3 className="text-2xl font-black leading-tight text-white/95">{speakingData.part1[currentPartQuestionIdx]}</h3>
@@ -448,10 +448,10 @@ const IELTSTestViewer = () => {
                     <div className="p-8 bg-indigo-500/5 border border-indigo-500/10 rounded-2xl">
                       <p className="text-xs font-black uppercase tracking-[0.3em] text-indigo-400 mb-4">CUE CARD TOPIC</p>
                       <h3 className="text-2xl font-black italic mb-6 leading-tight">“ {speakingData.part2.cueCard} ”</h3>
-                      <p className="text-[10px] font-black text-[#555] uppercase tracking-widest mb-3">You should cover:</p>
+                      <p className="text-[10px] font-black text-[#9a9aa2] uppercase tracking-widest mb-3">You should cover:</p>
                       <ul className="grid gap-2">
                         {speakingData.part2.bulletPoints.map((point, index) => (
-                          <li key={index} className="flex items-center gap-3 text-sm font-bold text-white/70">
+                          <li key={index} className="flex items-center gap-3 text-sm font-bold text-white/80">
                             <span className="w-1.5 h-1.5 bg-indigo-400 rounded-full" /> {point}
                           </li>
                         ))}
@@ -460,14 +460,14 @@ const IELTSTestViewer = () => {
 
                     {prepTimer !== null && (
                       <div className="p-6 bg-white/5 border border-white/10 rounded-2xl flex flex-col items-center">
-                        <span className="text-[10px] font-black text-[#444] uppercase tracking-widest mb-2">PREPARATION TIME REMAINING</span>
+                        <span className="text-[10px] font-black text-[#8b8b93] uppercase tracking-widest mb-2">PREPARATION TIME REMAINING</span>
                         <div className="text-5xl font-black font-mono text-indigo-400">{prepTimer}s</div>
                       </div>
                     )}
 
                     {speakTimer !== null && (
                       <div className="p-6 bg-white/5 border border-white/10 rounded-2xl flex flex-col items-center">
-                        <span className="text-[10px] font-black text-[#444] uppercase tracking-widest mb-2">SPEAKING TIME REMAINING</span>
+                        <span className="text-[10px] font-black text-[#8b8b93] uppercase tracking-widest mb-2">SPEAKING TIME REMAINING</span>
                         <div className="text-5xl font-black font-mono text-rose-400 animate-pulse">{speakTimer}s</div>
                       </div>
                     )}
@@ -476,7 +476,7 @@ const IELTSTestViewer = () => {
 
                 {speakingPart === 3 && (
                   <div className="space-y-6">
-                    <p className="text-xs font-black uppercase tracking-[0.3em] text-[#444]">Follow-up Discussion ({currentPartQuestionIdx + 1}/{speakingData.part3.length})</p>
+                    <p className="text-xs font-black uppercase tracking-[0.3em] text-[#8b8b93]">Follow-up Discussion ({currentPartQuestionIdx + 1}/{speakingData.part3.length})</p>
                     <div className="flex items-start gap-4">
                       <Volume2 className="w-8 h-8 text-indigo-400 shrink-0 mt-1" />
                       <h3 className="text-2xl font-black leading-tight text-white/95">{speakingData.part3[currentPartQuestionIdx]}</h3>
@@ -535,7 +535,7 @@ const IELTSTestViewer = () => {
                   {/* Playback Simulation */}
                   {audioUrl && (
                     <div className="flex items-center gap-3 bg-white/5 border border-white/10 px-6 rounded-xl h-14">
-                      <span className="text-[10px] font-black uppercase tracking-widest text-[#444]">Recording Saved</span>
+                      <span className="text-[10px] font-black uppercase tracking-widest text-[#8b8b93]">Recording Saved</span>
                       {audioUrl !== "#mock-audio" ? (
                         <audio src={audioUrl} controls className="h-8 max-w-[200px]" />
                       ) : (
@@ -563,7 +563,7 @@ const IELTSTestViewer = () => {
               <div className="text-center pb-6 border-b border-white/5">
                 <Award className="w-16 h-16 text-indigo-400 mx-auto mb-4 animate-bounce" />
                 <h2 className="text-5xl font-black italic uppercase leading-none">Simulation Completed.</h2>
-                <p className="text-xs font-black uppercase text-[#444] tracking-[0.3em] mt-2">Neural Band 9.0 Speaking Appraisal</p>
+                <p className="text-xs font-black uppercase text-[#8b8b93] tracking-[0.3em] mt-2">Neural Band 9.0 Speaking Appraisal</p>
               </div>
 
               {/* Band Score Banner */}
@@ -572,7 +572,7 @@ const IELTSTestViewer = () => {
                   <div className="text-8xl font-black text-shimmer leading-none">{speakingData.aiFeedback.overallBand}</div>
                   <div>
                     <h3 className="text-2xl font-black uppercase tracking-tight">OVERALL BAND</h3>
-                    <p className="text-[10px] font-black text-[#444] uppercase tracking-widest">Estimated from pronunciation, fluency and syntax</p>
+                    <p className="text-[10px] font-black text-[#8b8b93] uppercase tracking-widest">Estimated from pronunciation, fluency and syntax</p>
                   </div>
                 </div>
                 <div className="px-6 py-3 bg-white/5 rounded-xl border border-white/5 text-[9px] font-black uppercase tracking-widest text-emerald-400 flex items-center gap-2">
@@ -584,19 +584,19 @@ const IELTSTestViewer = () => {
               <div className="grid gap-6 md:grid-cols-2">
                 <div className="p-6 bg-white/5 border border-white/5 rounded-2xl">
                   <h4 className="text-[10px] font-black uppercase tracking-widest text-indigo-400 mb-2">Fluency & Coherence</h4>
-                  <p className="text-sm font-semibold text-white/70 leading-relaxed">{speakingData.aiFeedback.fluency}</p>
+                  <p className="text-sm font-semibold text-white/80 leading-relaxed">{speakingData.aiFeedback.fluency}</p>
                 </div>
                 <div className="p-6 bg-white/5 border border-white/5 rounded-2xl">
                   <h4 className="text-[10px] font-black uppercase tracking-widest text-purple-400 mb-2">Lexical Resource</h4>
-                  <p className="text-sm font-semibold text-white/70 leading-relaxed">{speakingData.aiFeedback.lexical}</p>
+                  <p className="text-sm font-semibold text-white/80 leading-relaxed">{speakingData.aiFeedback.lexical}</p>
                 </div>
                 <div className="p-6 bg-white/5 border border-white/5 rounded-2xl">
                   <h4 className="text-[10px] font-black uppercase tracking-widest text-amber-400 mb-2">Grammatical Range</h4>
-                  <p className="text-sm font-semibold text-white/70 leading-relaxed">{speakingData.aiFeedback.grammar}</p>
+                  <p className="text-sm font-semibold text-white/80 leading-relaxed">{speakingData.aiFeedback.grammar}</p>
                 </div>
                 <div className="p-6 bg-white/5 border border-white/5 rounded-2xl">
                   <h4 className="text-[10px] font-black uppercase tracking-widest text-emerald-400 mb-2">Pronunciation Accuracy</h4>
-                  <p className="text-sm font-semibold text-white/70 leading-relaxed">{speakingData.aiFeedback.pronunciation}</p>
+                  <p className="text-sm font-semibold text-white/80 leading-relaxed">{speakingData.aiFeedback.pronunciation}</p>
                 </div>
               </div>
 
@@ -605,7 +605,7 @@ const IELTSTestViewer = () => {
                 <h4 className="text-lg font-black uppercase tracking-tight text-white mb-4 flex items-center gap-2">
                   <Sparkles className="w-5 h-5 text-indigo-400" /> BAND 9.0 FORMULATION STRATEGY
                 </h4>
-                <p className="text-sm text-white/60 leading-relaxed italic">{speakingData.aiFeedback.band9Sample}</p>
+                <p className="text-sm text-white/75 leading-relaxed italic">{speakingData.aiFeedback.band9Sample}</p>
               </div>
 
               <div className="flex gap-4">
@@ -658,7 +658,7 @@ const IELTSTestViewer = () => {
         </Button>
         <div className="px-4 py-3 rounded-xl bg-black/80 border border-white/10 backdrop-blur-md hidden md:flex items-center gap-3 shadow-2xl">
           <ShieldCheck className="w-4 h-4 text-emerald-400" />
-          <span className="text-[9px] font-black uppercase tracking-widest text-white/60">Secure Environment</span>
+          <span className="text-[9px] font-black uppercase tracking-widest text-white/75">Secure Environment</span>
         </div>
       </div>
 
@@ -667,7 +667,7 @@ const IELTSTestViewer = () => {
         <div className="absolute inset-0 z-50 bg-black flex flex-col items-center justify-center">
            <div className="bg-vignette opacity-50" />
            <Loader2 className="w-12 h-12 animate-spin text-white mb-6 relative z-10" />
-           <p className="text-[10px] font-black uppercase tracking-[0.5em] text-[#444] relative z-10 animate-pulse">Initializing Test Engine</p>
+           <p className="text-[10px] font-black uppercase tracking-[0.5em] text-[#8b8b93] relative z-10 animate-pulse">Initializing Test Engine</p>
         </div>
       )}
 

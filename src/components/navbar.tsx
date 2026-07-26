@@ -40,7 +40,7 @@ export function Navbar() {
                   "text-[10px] font-black uppercase tracking-[0.3em] transition-all hover:text-white relative group/link py-2",
                   location.pathname === link.href || (link.href !== "/" && location.pathname.startsWith(link.href))
                     ? "text-white"
-                    : "text-white/30"
+                    : "text-white/45"
                 )}
               >
                 {link.name}
