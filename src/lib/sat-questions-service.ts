@@ -32,6 +32,12 @@ export interface SATQuestion {
   wrongExplanations?: string[];
   source?: string;
   rawCorrectAnswer?: string;
+  /** «Module 1» / «Module 2» — как напечатано в тесте. */
+  module?: string;
+  /** Номер вопроса внутри модуля: в каждом модуле нумерация с единицы. */
+  questionNumber?: number;
+  /** Страница исходного PDF — по ней восстанавливается порядок в тесте. */
+  page?: number;
 }
 
 /* ------------------------------------------------------------------ */
@@ -56,6 +62,17 @@ export function resolveImageUrl(raw: unknown): string | undefined {
   if (!value) return undefined;
   if (/^(https?:|data:|blob:)/i.test(value)) return value;
   return IMAGE_BASE + value.replace(/^\/+/, "");
+}
+
+/**
+ * Банк вопросов и прошедшие тесты лежат в одних таблицах и раньше ничем
+ * не различались — из-за этого в «Question Bank» приходили ровно те же
+ * вопросы, что и в «Past Papers». Признак простой: у вопроса из теста
+ * заполнен test_period.
+ */
+function excludePastPapers<T>(query: T, exclude: boolean): T {
+  if (!exclude) return query;
+  return (query as any).or("test_period.is.null,test_period.eq.");
 }
 
 /** Map "A"|"B"|"C"|"D" → 0|1|2|3 */
@@ -88,6 +105,11 @@ function mapMCQRow(row: any, tablePrefix: string): SATQuestion {
     hasKaTeX: false,
     source: row.source ?? "",
     rawCorrectAnswer: row.correct_answer ?? "",
+    module: (row.module ?? "").toString().trim() || undefined,
+    questionNumber: Number.isFinite(Number(row.question_number))
+      ? Number(row.question_number)
+      : undefined,
+    page: Number.isFinite(Number(row.page)) ? Number(row.page) : undefined,
   };
 }
 
@@ -110,6 +132,11 @@ function mapOpenRow(row: any): SATQuestion {
     hasKaTeX: false,
     source: row.source ?? "",
     rawCorrectAnswer: row.correct_answer ?? "",
+    module: (row.module ?? "").toString().trim() || undefined,
+    questionNumber: Number.isFinite(Number(row.question_number))
+      ? Number(row.question_number)
+      : undefined,
+    page: Number.isFinite(Number(row.page)) ? Number(row.page) : undefined,
   };
 }
 
@@ -128,8 +155,13 @@ export async function fetchRWQuestions(options?: {
   subtopic?: string;
   difficulty?: string;
   limit?: number;
+  /** Не брать вопросы из прошедших тестов. По умолчанию не берём. */
+  includePastPapers?: boolean;
 }): Promise<SATQuestion[]> {
-  let query = supabase.from(SAT_TABLES.ebrwMcq).select("*");
+  let query = excludePastPapers(
+    supabase.from(SAT_TABLES.ebrwMcq).select("*"),
+    !options?.includePastPapers
+  );
 
   if (options?.subtopic && options.subtopic !== "All") {
     query = query.eq("section", options.subtopic);
@@ -153,8 +185,13 @@ export async function fetchMathMCQQuestions(options?: {
   subtopic?: string;
   difficulty?: string;
   limit?: number;
+  /** Не брать вопросы из прошедших тестов. По умолчанию не берём. */
+  includePastPapers?: boolean;
 }): Promise<SATQuestion[]> {
-  let query = supabase.from(SAT_TABLES.mathMcq).select("*");
+  let query = excludePastPapers(
+    supabase.from(SAT_TABLES.mathMcq).select("*"),
+    !options?.includePastPapers
+  );
 
   if (options?.subtopic && options.subtopic !== "All") {
     query = query.eq("topic", options.subtopic);
@@ -178,8 +215,13 @@ export async function fetchMathOpenQuestions(options?: {
   subtopic?: string;
   difficulty?: string;
   limit?: number;
+  /** Не брать вопросы из прошедших тестов. По умолчанию не берём. */
+  includePastPapers?: boolean;
 }): Promise<SATQuestion[]> {
-  let query = supabase.from(SAT_TABLES.mathOpen).select("*");
+  let query = excludePastPapers(
+    supabase.from(SAT_TABLES.mathOpen).select("*"),
+    !options?.includePastPapers
+  );
 
   if (options?.subtopic && options.subtopic !== "All") {
     query = query.eq("topic", options.subtopic);
@@ -336,6 +378,91 @@ export async function fetchAvailablePastPapers(): Promise<PastPaper[]> {
     console.error("fetchAvailablePastPapers error:", e);
     throw new Error(e?.message || "Не удалось загрузить список тестов");
   }
+}
+
+/* ------------------------------------------------------------------ */
+/*  Модули теста                                                       */
+/* ------------------------------------------------------------------ */
+
+export interface PaperModule {
+  key: string;
+  label: string;
+  section: "RW" | "Math";
+  index: number;
+  minutes: number;
+  questions: SATQuestion[];
+}
+
+/** Реальный цифровой SAT: R&W — 27 вопросов и 32 минуты, Math — 22 и 35. */
+export const MODULE_RULES = {
+  RW: { size: 27, minutes: 32, label: "Reading & Writing" },
+  Math: { size: 22, minutes: 35, label: "Math" },
+} as const;
+
+/** С какого номера начинается новый модуль и после какого это считается рестартом. */
+const RESTART_MAX = 3;
+const MIN_BEFORE_RESTART = 8;
+
+/**
+ * Делит вопросы одного теста на модули.
+ *
+ * Опираться на колонку `module` нельзя: заголовок «Math Module 2» напечатан
+ * в файле один раз, и парсер сохраняет его только у тех вопросов, что
+ * стояли рядом с ним. У остальных там пусто. Зато нумерация в каждом
+ * модуле начинается с единицы — по её рестарту модуль и определяется,
+ * ровно как это делает парсер при поиске пропущенных вопросов.
+ */
+export function splitIntoModules(questions: SATQuestion[]): PaperModule[] {
+  const modules: PaperModule[] = [];
+
+  for (const section of ["RW", "Math"] as const) {
+    const rule = MODULE_RULES[section];
+    const inSection = questions
+      .filter((q) => (q.section ?? "Math") === section)
+      // Порядок как в файле: страница, потом номер. Для математики это
+      // важно особенно — MCQ и открытые вопросы лежат в разных таблицах и
+      // приходят двумя блоками, хотя в тесте идут вперемешку.
+      .sort((a, b) =>
+        (a.page ?? 0) - (b.page ?? 0) ||
+        (a.questionNumber ?? 0) - (b.questionNumber ?? 0)
+      );
+
+    let current: PaperModule | null = null;
+    let reached = 0;
+
+    for (const q of inSection) {
+      const number = q.questionNumber ?? 0;
+      const restarted =
+        current !== null && number > 0 && number <= RESTART_MAX && reached >= MIN_BEFORE_RESTART;
+
+      if (current === null || restarted) {
+        const index = modules.filter((m) => m.section === section).length + 1;
+        current = {
+          key: `${section}-${index}`,
+          label: `${rule.label} — Module ${index}`,
+          section,
+          index,
+          minutes: rule.minutes,
+          questions: [],
+        };
+        modules.push(current);
+        reached = 0;
+      }
+
+      current.questions.push(q);
+      reached = Math.max(reached, number);
+    }
+  }
+
+  // Внутри модуля показываем по номеру, а не по странице: так же, как на экзамене.
+  for (const m of modules) {
+    m.questions.sort((a, b) => (a.questionNumber ?? 0) - (b.questionNumber ?? 0));
+  }
+
+  // R&W идёт первым, потом математика — как в настоящем тесте.
+  return modules.sort(
+    (a, b) => (a.section === b.section ? a.index - b.index : a.section === "RW" ? -1 : 1)
+  );
 }
 
 export async function fetchPastPaperQuestions(

@@ -31,6 +31,8 @@ import {
   fetchPastPaperQuestions,
   SATQuestion,
   PastPaper,
+  PaperModule,
+  splitIntoModules,
   withTimeout
 } from "@/lib/sat-questions-service";
 import katex from "katex";
@@ -209,6 +211,10 @@ export default function SATPastPapers() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [loadError, setLoadError] = useState<string | null>(null);
+  // Модули выбранного теста и то, какой из них решаем. null = весь тест целиком.
+  const [modules, setModules] = useState<PaperModule[]>([]);
+  const [selectedModule, setSelectedModule] = useState<PaperModule | null>(null);
+  const [modulesLoading, setModulesLoading] = useState(false);
 
   // Session states
   const [currentIdx, setCurrentIdx] = useState(0);
@@ -290,9 +296,24 @@ export default function SATPastPapers() {
   }, [theme]);
 
   // Select test
-  const handleSelectPaper = (paper: PastPaper) => {
+  const handleSelectPaper = async (paper: PastPaper) => {
     setSelectedPaper(paper);
+    setSelectedModule(null);
+    setModules([]);
     setPhase("modes");
+    setModulesLoading(true);
+    setError(null);
+    try {
+      const all = await withTimeout(
+        fetchPastPaperQuestions(paper.test_period, paper.test_version),
+        15000, "Вопросы теста");
+      setQuestions(all);
+      setModules(splitIntoModules(all));
+    } catch (e: any) {
+      setError(e?.message || "Не удалось загрузить вопросы теста");
+    } finally {
+      setModulesLoading(false);
+    }
   };
 
   // Start exam/practice session
@@ -304,12 +325,21 @@ export default function SATPastPapers() {
     try {
       let fetchedQuestions: SATQuestion[] = [];
       const key = `${selectedPaper.test_period}|||${selectedPaper.test_version}`;
-      
-      // Attempt DB load
-      try {
-        fetchedQuestions = await fetchPastPaperQuestions(selectedPaper.test_period, selectedPaper.test_version);
-      } catch (e) {
-        console.warn("DB question load failed, using mocks:", e);
+
+      // Вопросы уже загружены при выборе теста — второй раз в базу не ходим.
+      if (selectedModule) {
+        fetchedQuestions = selectedModule.questions;
+      } else if (modules.length > 0) {
+        fetchedQuestions = modules.flatMap((m) => m.questions);
+      } else if (questions.length > 0) {
+        fetchedQuestions = questions;
+      } else {
+        try {
+          fetchedQuestions = await fetchPastPaperQuestions(
+            selectedPaper.test_period, selectedPaper.test_version);
+        } catch (e) {
+          console.warn("DB question load failed, using mocks:", e);
+        }
       }
 
       // Fallback if db returned empty or failed
@@ -327,7 +357,12 @@ export default function SATPastPapers() {
       setUserAnswers({});
       setFreeResponseInput("");
       setElapsed(0);
-      setTimeRemaining(134 * 60);
+      // Настоящий тайминг: R&W — 32 минуты на модуль, Math — 35.
+      // Раньше на любую сессию давалось 134 минуты, даже на один модуль.
+      setTimeRemaining(
+        (selectedModule
+          ? selectedModule.minutes
+          : modules.reduce((sum, m) => sum + m.minutes, 0) || 134) * 60);
       setAnswerConfirmed(false);
       setPracticeFeedback(null);
       setIsReviewMode(false);
@@ -834,6 +869,78 @@ export default function SATPastPapers() {
               </div>
             )}
 
+            {/* Выбор модуля. Настоящий тест состоит из четырёх отдельных
+                модулей со своим таймингом, и готовятся обычно по одному:
+                решать 98 вопросов подряд одной кучей смысла мало. */}
+            <section className="mb-14">
+              <h3 className="text-xs font-black uppercase tracking-[0.25em] text-ink-subtle mb-6">
+                Что решаем
+              </h3>
+
+              {modulesLoading ? (
+                <div className="glass-3d p-10 flex items-center gap-4">
+                  <div className="w-5 h-5 border-2 border-indigo-500 border-t-transparent rounded-full animate-spin" />
+                  <span className="text-sm font-semibold text-ink-muted">Загружаю вопросы теста…</span>
+                </div>
+              ) : (
+                <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                  <button
+                    type="button"
+                    onClick={() => setSelectedModule(null)}
+                    className={`glass-3d p-6 text-left transition-all ${
+                      selectedModule === null ? "border-indigo-500 ring-2 ring-indigo-500/25" : ""
+                    }`}
+                  >
+                    <div className="text-sm font-black uppercase tracking-tight mb-1">Весь тест</div>
+                    <div className="text-xs text-ink-muted font-medium">
+                      {modules.reduce((n, m) => n + m.questions.length, 0) || selectedPaper.totalQuestions} вопросов
+                      {modules.length > 0 && ` · ${modules.reduce((n, m) => n + m.minutes, 0)} мин`}
+                    </div>
+                  </button>
+
+                  {modules.map((m) => (
+                    <button
+                      key={m.key}
+                      type="button"
+                      onClick={() => setSelectedModule(m)}
+                      className={`glass-3d p-6 text-left transition-all ${
+                        selectedModule?.key === m.key ? "border-indigo-500 ring-2 ring-indigo-500/25" : ""
+                      }`}
+                    >
+                      <div className="flex items-center gap-2 mb-1">
+                        <span
+                          className={`w-2 h-2 rounded-full ${
+                            m.section === "RW" ? "bg-indigo-500" : "bg-emerald-500"
+                          }`}
+                        />
+                        <span className="text-sm font-black uppercase tracking-tight">
+                          {m.section === "RW" ? "R&W" : "Math"} · Модуль {m.index}
+                        </span>
+                      </div>
+                      <div className="text-xs text-ink-muted font-medium">
+                        {m.questions.length} вопросов · {m.minutes} мин
+                      </div>
+                    </button>
+                  ))}
+                </div>
+              )}
+
+              {!modulesLoading && modules.length === 0 && (
+                <p className="text-xs text-ink-subtle font-medium mt-4">
+                  Модули не определились — в вопросах нет номеров. Тест можно решить целиком.
+                </p>
+              )}
+            </section>
+
+            <h3 className="text-xs font-black uppercase tracking-[0.25em] text-ink-subtle mb-6">
+              Как решаем
+              {selectedModule && (
+                <span className="ml-2 text-indigo-500 normal-case tracking-normal font-bold">
+                  {selectedModule.label}
+                </span>
+              )}
+            </h3>
+
             <div className="grid md:grid-cols-2 gap-10">
               {/* Exam Mode */}
               <motion.div
@@ -847,7 +954,9 @@ export default function SATPastPapers() {
                   </div>
                   <h3 className="text-3xl font-black tracking-tight mb-4 uppercase italic">Exam Mode</h3>
                   <p className="text-sm text-ink-muted leading-relaxed font-medium">
-                    Experience a simulated test environment. A single countdown of 134 minutes limits the entire session. Answers are graded at the very end.
+                    Настоящий тайминг экзамена: {selectedModule
+                      ? `${selectedModule.minutes} минут на ${selectedModule.questions.length} вопросов`
+                      : `${modules.reduce((sum, m) => sum + m.minutes, 0) || 134} минут на весь тест`}. Ответы проверяются в конце, вернуться к вопросу можно до сдачи.
                   </p>
                 </div>
                 <div className="flex items-center gap-2 font-black uppercase text-[10px] text-indigo-400 mt-10">
@@ -867,7 +976,7 @@ export default function SATPastPapers() {
                   </div>
                   <h3 className="text-3xl font-black tracking-tight mb-4 uppercase italic">Practice Mode</h3>
                   <p className="text-sm text-ink-muted leading-relaxed font-medium">
-                    Solve questions untimed at your own pace. Receive instant explanations and correctness feedback after each response. Navigate back and forth freely.
+                    Без таймера, в своём темпе. После каждого ответа сразу видно, верно или нет, и объяснение. Между вопросами можно свободно ходить туда-обратно.
                   </p>
                 </div>
                 <div className="flex items-center gap-2 font-black uppercase text-[10px] text-emerald-400 mt-10">
