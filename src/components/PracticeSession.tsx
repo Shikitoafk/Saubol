@@ -74,12 +74,12 @@ export default function PracticeSession({ topic, questions, onComplete }: Practi
       <div className="flex items-center justify-between mb-16">
         <div className="flex items-center gap-6">
            <div>
-              <p className="text-[9px] font-black text-white/20 uppercase tracking-[0.3em] mb-1">Current Focus</p>
+              <p className="text-[9px] font-black text-white/40 uppercase tracking-[0.3em] mb-1">Current Focus</p>
               <p className="text-sm font-black uppercase text-indigo-400">{topic}</p>
            </div>
            <div className="w-px h-8 bg-white/10" />
            <div>
-              <p className="text-[9px] font-black text-white/20 uppercase tracking-[0.3em] mb-1">Complexity</p>
+              <p className="text-[9px] font-black text-white/40 uppercase tracking-[0.3em] mb-1">Complexity</p>
               <p className={`text-sm font-black uppercase tracking-tight ${
                 index < 8 ? 'text-emerald-400' : index < 18 ? 'text-indigo-400' : 'text-rose-400'
               }`}>
@@ -90,8 +90,8 @@ export default function PracticeSession({ topic, questions, onComplete }: Practi
 
         <div className="flex flex-col items-end gap-3">
            <div className="flex items-center gap-3">
-              <BarChart3 className="w-4 h-4 text-white/20" />
-              <span className="text-[10px] font-black uppercase tracking-widest text-white/40">Question {index + 1} of {questions.length}</span>
+              <BarChart3 className="w-4 h-4 text-white/40" />
+              <span className="text-[10px] font-black uppercase tracking-widest text-white/60">Question {index + 1} of {questions.length}</span>
            </div>
            <div className="w-48 h-1 bg-white/5 rounded-full overflow-hidden">
               <motion.div animate={{ width: `${progress}%` }} className="h-full bg-indigo-500" />
@@ -136,7 +136,7 @@ export default function PracticeSession({ topic, questions, onComplete }: Practi
                         <div className={`w-10 h-10 rounded-xl flex items-center justify-center border font-black text-sm transition-all ${
                            status === 'correct' ? 'bg-emerald-500 border-emerald-400 text-black' :
                            status === 'wrong' ? 'bg-rose-500 border-rose-400 text-black' :
-                           'bg-white/5 border-white/10 text-white/20'
+                           'bg-white/5 border-white/10 text-white/40'
                         }`}>
                            {String.fromCharCode(65 + i)}
                         </div>
@@ -169,7 +169,7 @@ export default function PracticeSession({ topic, questions, onComplete }: Practi
                          <ShieldAlert className="w-4 h-4 text-rose-400" />
                          <span className="text-[10px] font-black uppercase tracking-widest text-rose-400">The Trap</span>
                       </div>
-                      <p className="text-sm font-medium text-white/40 italic leading-relaxed">
+                      <p className="text-sm font-medium text-white/60 italic leading-relaxed">
                          {currentQuestion.wrongExplanations?.[selected || 0] || "CollegeBoard often includes this option for students who miss a critical step in the procedure."}
                       </p>
                    </div>

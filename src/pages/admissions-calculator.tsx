@@ -74,7 +74,7 @@ export default function AdmissionsCalculator() {
                         <span className="text-[10px] font-black uppercase tracking-[0.4em] text-indigo-400">Admissions Intelligence</span>
                      </div>
                      <h1 className="text-6xl font-black italic tracking-tighter uppercase mb-8 leading-none">CV <br /> ANALYZER.</h1>
-                     <p className="text-[#666] text-lg font-medium leading-relaxed italic">
+                     <p className="text-[#a6a6ae] text-lg font-medium leading-relaxed italic">
                         Input your profile dimensions. Get realistic admission probabilities based on international data.
                      </p>
                   </header>
@@ -82,7 +82,7 @@ export default function AdmissionsCalculator() {
                   <div className="space-y-6">
                      {[1, 2, 3].map(i => (
                         <div key={i} className={`flex items-center gap-4 p-4 rounded-2xl border transition-all ${step === i ? 'bg-white/5 border-white/10' : 'opacity-30 border-transparent'}`}>
-                           <div className={`w-8 h-8 rounded-lg flex items-center justify-center text-[10px] font-black ${step === i ? 'bg-indigo-500 text-white' : 'bg-white/5 text-white/40'}`}>
+                           <div className={`w-8 h-8 rounded-lg flex items-center justify-center text-[10px] font-black ${step === i ? 'bg-indigo-500 text-white' : 'bg-white/5 text-white/60'}`}>
                               0{i}
                            </div>
                            <span className="text-[10px] font-black uppercase tracking-widest">{i === 1 ? 'Academics' : i === 2 ? 'Research & Honors' : 'Activities'}</span>
@@ -133,7 +133,7 @@ export default function AdmissionsCalculator() {
                                  <label className="text-[10px] font-black uppercase tracking-widest opacity-40">Grade Trend</label>
                                  <div className="grid grid-cols-3 gap-4">
                                     {['improving', 'stable', 'declining'].map(t => (
-                                       <button key={t} onClick={() => setProfile({...profile, gradeTrend: t as any})} className={`h-14 rounded-xl border font-bold uppercase text-[10px] transition-all ${profile.gradeTrend === t ? 'bg-indigo-500 border-indigo-400 text-white shadow-xl' : 'bg-white/5 border-white/10 text-white/40'}`}>
+                                       <button key={t} onClick={() => setProfile({...profile, gradeTrend: t as any})} className={`h-14 rounded-xl border font-bold uppercase text-[10px] transition-all ${profile.gradeTrend === t ? 'bg-indigo-500 border-indigo-400 text-white shadow-xl' : 'bg-white/5 border-white/10 text-white/60'}`}>
                                           {t}
                                        </button>
                                     ))}
@@ -165,7 +165,7 @@ export default function AdmissionsCalculator() {
                                       { id: 'submitted', label: 'Submitted paper (Under review)' },
                                       { id: 'published', label: 'Published paper in real journal' }
                                     ].map(r => (
-                                       <button key={r.id} onClick={() => setProfile({...profile, research: r.id as any})} className={`w-full h-16 rounded-xl border px-6 font-bold text-left transition-all flex items-center justify-between ${profile.research === r.id ? 'bg-indigo-500 border-indigo-400 text-white shadow-xl' : 'bg-white/5 border-white/10 text-white/40 hover:bg-white/10'}`}>
+                                       <button key={r.id} onClick={() => setProfile({...profile, research: r.id as any})} className={`w-full h-16 rounded-xl border px-6 font-bold text-left transition-all flex items-center justify-between ${profile.research === r.id ? 'bg-indigo-500 border-indigo-400 text-white shadow-xl' : 'bg-white/5 border-white/10 text-white/60 hover:bg-white/10'}`}>
                                           <span className="text-xs uppercase">{r.label}</span>
                                           {profile.research === r.id && <CheckCircle2 className="w-5 h-5" />}
                                        </button>
@@ -183,7 +183,7 @@ export default function AdmissionsCalculator() {
                                       { id: 'national_gold', label: 'National Gold' },
                                       { id: 'international', label: 'International Medal (IBO/IMO/etc)' }
                                     ].map(o => (
-                                       <button key={o.id} onClick={() => setProfile({...profile, olympiad: o.id as any})} className={`w-full h-16 rounded-xl border px-6 font-bold text-left transition-all flex items-center justify-between ${profile.olympiad === o.id ? 'bg-indigo-500 border-indigo-400 text-white shadow-xl' : 'bg-white/5 border-white/10 text-white/40 hover:bg-white/10'}`}>
+                                       <button key={o.id} onClick={() => setProfile({...profile, olympiad: o.id as any})} className={`w-full h-16 rounded-xl border px-6 font-bold text-left transition-all flex items-center justify-between ${profile.olympiad === o.id ? 'bg-indigo-500 border-indigo-400 text-white shadow-xl' : 'bg-white/5 border-white/10 text-white/60 hover:bg-white/10'}`}>
                                           <span className="text-xs uppercase">{o.label}</span>
                                           {profile.olympiad === o.id && <CheckCircle2 className="w-5 h-5" />}
                                        </button>
@@ -193,7 +193,7 @@ export default function AdmissionsCalculator() {
                            </div>
 
                            <div className="flex gap-4">
-                              <Button onClick={prev} variant="outline" className="h-20 px-10 rounded-2xl border-white/10 text-white/40 font-black uppercase text-xs">Back</Button>
+                              <Button onClick={prev} variant="outline" className="h-20 px-10 rounded-2xl border-white/10 text-white/60 font-black uppercase text-xs">Back</Button>
                               <Button onClick={next} className="flex-1 h-20 bg-white text-black hover:bg-gray-100 rounded-2xl font-black uppercase text-xs shadow-2xl">Next Step <ArrowRight className="ml-2 w-4 h-4" /></Button>
                            </div>
                         </motion.div>
@@ -217,7 +217,7 @@ export default function AdmissionsCalculator() {
                                       { id: 'founded_small', label: 'Founded organization (<50 members)' },
                                       { id: 'founded_large', label: 'Founded organization (100+ members/users)' }
                                     ].map(e => (
-                                       <button key={e.id} onClick={() => setProfile({...profile, ec: e.id as any})} className={`w-full h-16 rounded-xl border px-6 font-bold text-left transition-all flex items-center justify-between ${profile.ec === e.id ? 'bg-indigo-500 border-indigo-400 text-white shadow-xl' : 'bg-white/5 border-white/10 text-white/40 hover:bg-white/10'}`}>
+                                       <button key={e.id} onClick={() => setProfile({...profile, ec: e.id as any})} className={`w-full h-16 rounded-xl border px-6 font-bold text-left transition-all flex items-center justify-between ${profile.ec === e.id ? 'bg-indigo-500 border-indigo-400 text-white shadow-xl' : 'bg-white/5 border-white/10 text-white/60 hover:bg-white/10'}`}>
                                           <span className="text-xs uppercase">{e.label}</span>
                                           {profile.ec === e.id && <CheckCircle2 className="w-5 h-5" />}
                                        </button>
@@ -234,7 +234,7 @@ export default function AdmissionsCalculator() {
                                       { id: 'languages3plus', label: 'Polyglot (3+ Lang)' },
                                       { id: 'uniqueStory', label: 'Unique Personal Story' }
                                     ].map(b => (
-                                       <button key={b.id} onClick={() => setProfile({...profile, [b.id]: !(profile as any)[b.id]})} className={`h-20 rounded-xl border px-6 font-bold transition-all flex items-center gap-4 ${(profile as any)[b.id] ? 'bg-indigo-500 border-indigo-400 text-white' : 'bg-white/5 border-white/10 text-white/40'}`}>
+                                       <button key={b.id} onClick={() => setProfile({...profile, [b.id]: !(profile as any)[b.id]})} className={`h-20 rounded-xl border px-6 font-bold transition-all flex items-center gap-4 ${(profile as any)[b.id] ? 'bg-indigo-500 border-indigo-400 text-white' : 'bg-white/5 border-white/10 text-white/60'}`}>
                                           <div className={`w-6 h-6 rounded-md border flex items-center justify-center ${(profile as any)[b.id] ? 'bg-white border-white' : 'border-white/20'}`}>
                                              {(profile as any)[b.id] && <CheckCircle2 className="w-4 h-4 text-indigo-500" />}
                                           </div>
@@ -252,7 +252,7 @@ export default function AdmissionsCalculator() {
                                       { id: 'uk_europe', label: 'UK & EUROPE' },
                                       { id: 'asia_global', label: 'ASIA & GLOBAL' }
                                     ].map(r => (
-                                       <button key={r.id} onClick={() => setRegion(r.id as any)} className={`h-20 rounded-xl border font-black uppercase text-[10px] transition-all ${region === r.id ? 'bg-white text-black border-white shadow-2xl scale-105' : 'bg-white/5 border-white/10 text-white/40 hover:bg-white/10'}`}>
+                                       <button key={r.id} onClick={() => setRegion(r.id as any)} className={`h-20 rounded-xl border font-black uppercase text-[10px] transition-all ${region === r.id ? 'bg-white text-black border-white shadow-2xl scale-105' : 'bg-white/5 border-white/10 text-white/60 hover:bg-white/10'}`}>
                                           {r.label}
                                        </button>
                                     ))}
@@ -261,7 +261,7 @@ export default function AdmissionsCalculator() {
                            </div>
 
                            <div className="flex gap-4">
-                              <Button onClick={prev} variant="outline" className="h-20 px-10 rounded-2xl border-white/10 text-white/40 font-black uppercase text-xs">Back</Button>
+                              <Button onClick={prev} variant="outline" className="h-20 px-10 rounded-2xl border-white/10 text-white/60 font-black uppercase text-xs">Back</Button>
                               <Button onClick={calculate} className="flex-1 h-20 bg-indigo-600 text-white hover:bg-indigo-500 rounded-2xl font-black uppercase text-xs shadow-[0_20px_40px_rgba(79,70,229,0.3)]">Generate Full Analysis <Zap className="ml-2 w-4 h-4 fill-current" /></Button>
                            </div>
                         </motion.div>
@@ -280,7 +280,7 @@ export default function AdmissionsCalculator() {
                   </div>
                   <div className="flex gap-4">
                      <div className="p-6 glass-3d border-white/5 text-center min-w-[200px]">
-                        <p className="text-[9px] font-black uppercase tracking-widest text-white/20 mb-2">Region Filtered</p>
+                        <p className="text-[9px] font-black uppercase tracking-widest text-white/40 mb-2">Region Filtered</p>
                         <p className="text-xl font-black italic text-indigo-400 uppercase tracking-tighter">{region.replace('_', ' & ')}</p>
                      </div>
                   </div>
@@ -298,14 +298,14 @@ export default function AdmissionsCalculator() {
                        <div className="p-12 flex flex-col lg:flex-row gap-16">
                           <div className="lg:w-96 shrink-0">
                              <div className="w-16 h-16 rounded-2xl bg-white/5 flex items-center justify-center border border-white/10 mb-8">
-                                <Building2 className="w-8 h-8 text-white/40" />
+                                <Building2 className="w-8 h-8 text-white/60" />
                              </div>
                              <h4 className="text-4xl font-black uppercase tracking-tighter mb-4 leading-none">{res.schoolName}</h4>
                              <Badge className="bg-indigo-500/10 text-indigo-400 border-none font-black text-[9px] uppercase tracking-widest px-4 mb-10">Target Region</Badge>
                              
                              <div className="space-y-2">
                                 <div className="flex justify-between items-end">
-                                   <p className="text-[10px] font-black uppercase tracking-widest text-white/20">Admission Probability</p>
+                                   <p className="text-[10px] font-black uppercase tracking-widest text-white/40">Admission Probability</p>
                                    <p className="text-3xl font-black italic tracking-tighter text-indigo-400">{res.low}-{res.high}%</p>
                                 </div>
                                 <div className="h-3 w-full bg-white/5 rounded-full overflow-hidden relative">

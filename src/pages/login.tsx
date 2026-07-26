@@ -51,7 +51,7 @@ export default function Login() {
               WELCOME BACK.
             </h1>
             
-            <p className="text-[#666] font-medium mb-16 leading-relaxed">
+            <p className="text-[#a6a6ae] font-medium mb-16 leading-relaxed">
               Входи в свой аккаунт, чтобы продолжить путь к топовому баллу и университету мечты.
             </p>
             
@@ -79,11 +79,11 @@ export default function Login() {
               <div className="grid grid-cols-2 gap-4">
                  <div className="p-6 bg-white/5 rounded-2xl border border-white/5 flex flex-col items-center">
                     <Zap className="w-5 h-5 text-indigo-400 mb-2" />
-                    <span className="text-[9px] font-black text-[#444] uppercase tracking-widest">Fast Access</span>
+                    <span className="text-[9px] font-black text-[#8b8b93] uppercase tracking-widest">Fast Access</span>
                  </div>
                  <div className="p-6 bg-white/5 rounded-2xl border border-white/5 flex flex-col items-center">
                     <Sparkles className="w-5 h-5 text-yellow-400 mb-2" />
-                    <span className="text-[9px] font-black text-[#444] uppercase tracking-widest">Premium UI</span>
+                    <span className="text-[9px] font-black text-[#8b8b93] uppercase tracking-widest">Premium UI</span>
                  </div>
               </div>
             </div>

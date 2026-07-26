@@ -88,7 +88,7 @@ export default function SATStudyPlan() {
               <h1 className="text-7xl md:text-[120px] font-black tracking-tighter text-shimmer leading-[0.8] uppercase italic">
                 WEEK 0{currentWeek} <br /> {plan?.title?.split(' ')[0]}.
               </h1>
-              <p className="text-[#666] text-xl font-medium mt-10 max-w-xl">{plan?.objective}</p>
+              <p className="text-[#a6a6ae] text-xl font-medium mt-10 max-w-xl">{plan?.objective}</p>
             </div>
             
             <div className="flex gap-4">
@@ -96,7 +96,7 @@ export default function SATStudyPlan() {
                 <button
                   key={w}
                   onClick={() => setCurrentWeek(w)}
-                  className={`w-12 h-12 rounded-xl border font-black text-[10px] transition-all ${currentWeek === w ? 'bg-white text-black border-white' : 'bg-white/5 border-white/10 text-white/40 hover:bg-white/10'}`}
+                  className={`w-12 h-12 rounded-xl border font-black text-[10px] transition-all ${currentWeek === w ? 'bg-white text-black border-white' : 'bg-white/5 border-white/10 text-white/60 hover:bg-white/10'}`}
                 >
                   0{w}
                 </button>
@@ -119,24 +119,24 @@ export default function SATStudyPlan() {
                 >
                   <div className="flex items-center gap-8">
                     <div className="w-14 h-14 rounded-2xl flex flex-col items-center justify-center border border-white/10 bg-white/5 font-black group-hover:bg-white/10 transition-all">
-                      <span className="text-[9px] uppercase leading-none mb-1 text-white/40">{day.day.substring(0, 3)}</span>
+                      <span className="text-[9px] uppercase leading-none mb-1 text-white/60">{day.day.substring(0, 3)}</span>
                       <span className="text-xl tracking-tighter leading-none">{i + 1}</span>
                     </div>
                     <div>
                       <div className="flex items-center gap-3 mb-1">
                         <h4 className="text-2xl font-black uppercase tracking-tight">{day.topic}</h4>
-                        <span className={`text-[8px] font-black uppercase tracking-[0.2em] px-2 py-0.5 rounded-full ${day.type === 'timed' ? 'bg-indigo-500/20 text-indigo-400' : 'bg-white/5 text-white/20'}`}>{day.type}</span>
+                        <span className={`text-[8px] font-black uppercase tracking-[0.2em] px-2 py-0.5 rounded-full ${day.type === 'timed' ? 'bg-indigo-500/20 text-indigo-400' : 'bg-white/5 text-white/40'}`}>{day.type}</span>
                       </div>
                       <div className="flex items-center gap-4">
-                        <span className="text-[10px] font-bold text-[#444] uppercase tracking-widest italic">{day.subtopic}</span>
-                        {day.questions > 0 && <span className="flex items-center gap-1.5 text-[10px] font-black text-white/20 uppercase tracking-widest"><Zap className="w-3 h-3" /> {day.questions} Qs</span>}
-                        <span className="flex items-center gap-1.5 text-[10px] font-black text-white/20 uppercase tracking-widest"><Clock className="w-3 h-3" /> {day.estimatedTime}</span>
+                        <span className="text-[10px] font-bold text-[#8b8b93] uppercase tracking-widest italic">{day.subtopic}</span>
+                        {day.questions > 0 && <span className="flex items-center gap-1.5 text-[10px] font-black text-white/40 uppercase tracking-widest"><Zap className="w-3 h-3" /> {day.questions} Qs</span>}
+                        <span className="flex items-center gap-1.5 text-[10px] font-black text-white/40 uppercase tracking-widest"><Clock className="w-3 h-3" /> {day.estimatedTime}</span>
                       </div>
                     </div>
                   </div>
                   
                   <div className="flex flex-col items-end gap-2">
-                    <p className="text-[9px] font-black uppercase text-[#444] tracking-widest">{day.target}</p>
+                    <p className="text-[9px] font-black uppercase text-[#8b8b93] tracking-widest">{day.target}</p>
                     <Button 
                       onClick={() => navigate('/sat/practice')}
                       className="h-12 px-8 rounded-xl bg-white text-black font-black uppercase text-[10px] tracking-widest hover:scale-105 active:scale-95 transition-all shadow-xl"
@@ -155,7 +155,7 @@ export default function SATStudyPlan() {
                     <Brain className="w-6 h-6 text-indigo-400" />
                     <h4 className="text-[10px] font-black uppercase tracking-widest text-indigo-400">Mastery Unlock System</h4>
                   </div>
-                  <p className="text-white/60 text-sm leading-relaxed mb-10">
+                  <p className="text-white/75 text-sm leading-relaxed mb-10">
                     User cannot advance to <span className="text-white font-bold">Hard</span> difficulty until they hit <span className="text-indigo-400 font-bold">70% accuracy</span> on Medium for that topic.
                   </p>
                   
@@ -163,7 +163,7 @@ export default function SATStudyPlan() {
                     {masteryData?.length > 0 ? masteryData.map(m => (
                       <div key={m.name}>
                         <div className="flex justify-between items-center mb-3">
-                          <span className="text-[9px] font-black uppercase text-[#444] tracking-widest">{m.name}</span>
+                          <span className="text-[9px] font-black uppercase text-[#8b8b93] tracking-widest">{m.name}</span>
                           <span className="text-[9px] font-black text-white">{m.accuracy}%</span>
                         </div>
                         <div className="h-1.5 w-full bg-white/5 rounded-full overflow-hidden">
@@ -171,22 +171,22 @@ export default function SATStudyPlan() {
                         </div>
                       </div>
                     )) : (
-                      <p className="text-[10px] font-black text-white/20 uppercase tracking-widest text-center py-10">No practice data yet</p>
+                      <p className="text-[10px] font-black text-white/40 uppercase tracking-widest text-center py-10">No practice data yet</p>
                     )}
                   </div>
                </div>
 
                <div className="glass-3d p-12 border-white/5">
-                  <h4 className="text-[10px] font-black uppercase tracking-widest text-white/20 mb-8 flex items-center gap-2"><Timer className="w-4 h-4" /> Timed Modules</h4>
+                  <h4 className="text-[10px] font-black uppercase tracking-widest text-white/40 mb-8 flex items-center gap-2"><Timer className="w-4 h-4" /> Timed Modules</h4>
                   <div className="p-6 bg-black/40 rounded-2xl border border-white/5">
                     <p className="text-[9px] font-black text-indigo-400 uppercase tracking-widest mb-2">RW Timing</p>
                     <p className="text-xl font-black">32 MINUTES</p>
-                    <p className="text-[9px] font-medium text-[#444] mt-1">27 Questions per module</p>
+                    <p className="text-[9px] font-medium text-[#8b8b93] mt-1">27 Questions per module</p>
                   </div>
                   <div className="p-6 bg-black/40 rounded-2xl border border-white/5 mt-4">
                     <p className="text-[9px] font-black text-blue-400 uppercase tracking-widest mb-2">Math Timing</p>
                     <p className="text-xl font-black">35 MINUTES</p>
-                    <p className="text-[9px] font-medium text-[#444] mt-1">22 Questions per module</p>
+                    <p className="text-[9px] font-medium text-[#8b8b93] mt-1">22 Questions per module</p>
                   </div>
                </div>
             </div>

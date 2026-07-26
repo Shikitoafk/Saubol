@@ -26,7 +26,7 @@ export default function SatPrep() {
             <h1 className="text-6xl md:text-8xl font-black italic tracking-tighter uppercase mb-6 leading-none text-shimmer">
               SAT ARENA.
             </h1>
-            <p className="text-sm text-[#666] font-semibold max-w-xl leading-relaxed">
+            <p className="text-sm text-[#a6a6ae] font-semibold max-w-xl leading-relaxed">
               Prepare for the Digital SAT using adaptive tools, real exam timing, and granular topic diagnostics.
             </p>
           </header>
@@ -49,7 +49,7 @@ export default function SatPrep() {
                   <h2 className="text-5xl font-black mb-4 tracking-tighter uppercase italic leading-none text-shimmer">
                     Past Papers
                   </h2>
-                  <p className="text-[#666] font-medium text-sm leading-relaxed max-w-sm">
+                  <p className="text-[#a6a6ae] font-medium text-sm leading-relaxed max-w-sm">
                     Solve real Digital SAT tests from concrete exam dates under true timed or untimed practice conditions.
                   </p>
                 </div>
@@ -74,7 +74,7 @@ export default function SatPrep() {
                 <div>
                   <div className="flex justify-between items-start mb-16">
                     <div className="w-20 h-20 bg-white/5 rounded-3xl flex items-center justify-center border border-white/10 group-hover:bg-white/10 transition-all duration-700">
-                      <Brain className="w-10 h-10 text-white/40 shadow-[0_0_30px_rgba(255,255,255,0.1)] group-hover:text-indigo-400 group-hover:shadow-[0_0_30px_rgba(99,102,241,0.3)] transition-all" />
+                      <Brain className="w-10 h-10 text-white/60 shadow-[0_0_30px_rgba(255,255,255,0.1)] group-hover:text-indigo-400 group-hover:shadow-[0_0_30px_rgba(99,102,241,0.3)] transition-all" />
                     </div>
                     <span className="px-4 py-1.5 bg-indigo-500/10 rounded-full border border-indigo-500/20 text-[9px] font-black tracking-widest uppercase text-indigo-400">
                       Coming Soon
@@ -84,13 +84,13 @@ export default function SatPrep() {
                   <h2 className="text-5xl font-black mb-4 tracking-tighter uppercase italic leading-none text-shimmer">
                     Question Bank
                   </h2>
-                  <p className="text-[#666] font-medium text-sm leading-relaxed max-w-sm">
+                  <p className="text-[#a6a6ae] font-medium text-sm leading-relaxed max-w-sm">
                     Granular practice sorted by specific subtopic domains and difficulty levels with performance analytics.
                   </p>
                 </div>
                 
                 <div className="flex items-center justify-between mt-auto">
-                  <span className="px-6 h-12 bg-white/5 border border-white/10 text-white/40 rounded-xl font-black uppercase text-[10px] tracking-widest flex items-center gap-2 group-hover:bg-white group-hover:text-black transition-all">
+                  <span className="px-6 h-12 bg-white/5 border border-white/10 text-white/60 rounded-xl font-black uppercase text-[10px] tracking-widest flex items-center gap-2 group-hover:bg-white group-hover:text-black transition-all">
                     Preview Details <ChevronRight className="w-4 h-4" />
                   </span>
                 </div>

@@ -1,5 +1,6 @@
 import type { VercelRequest, VercelResponse } from "@vercel/node";
 import { supabase } from "../_lib/supabase";
+import { SAT_TABLES } from "../_lib/sat-tables";
 
 interface MetaSection {
   tree: Record<string, Record<string, { total: number; byDifficulty: Record<string, number> }>>;
@@ -31,9 +32,9 @@ function buildMeta(rows: { section: string; category: string; difficulty: string
 export default async function handler(_req: VercelRequest, res: VercelResponse) {
   try {
     const [rwRes, mathRes, openRes] = await Promise.all([
-      supabase.from("EBRW_MCQ").select("section, difficulty"),
-      supabase.from("Math_MCQ").select("topic, difficulty"),
-      supabase.from("Math_Open").select("topic, difficulty"),
+      supabase.from(SAT_TABLES.ebrwMcq).select("section, difficulty"),
+      supabase.from(SAT_TABLES.mathMcq).select("topic, difficulty"),
+      supabase.from(SAT_TABLES.mathOpen).select("topic, difficulty"),
     ]);
 
     if (rwRes.error) throw rwRes.error;

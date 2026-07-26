@@ -57,7 +57,7 @@ const SATAITutor = ({ passage, question }: SATAITutorProps) => {
       </div>
 
       <div className="space-y-6 relative z-10">
-        <p className="text-[10px] font-bold text-[#444] uppercase tracking-widest leading-relaxed">
+        <p className="text-[10px] font-bold text-[#8b8b93] uppercase tracking-widest leading-relaxed">
           Highlight any complex text in the passage to receive an AI-powered semantic breakdown.
         </p>
 
@@ -102,7 +102,7 @@ const SATAITutor = ({ passage, question }: SATAITutorProps) => {
                   <Zap className="w-3 h-3 text-indigo-400" />
                   <span className="text-[8px] font-black text-indigo-400 uppercase tracking-[0.3em]">AI Insight</span>
                 </div>
-                <div className="text-sm font-medium text-[#888] leading-relaxed">
+                <div className="text-sm font-medium text-[#c2c2c9] leading-relaxed">
                   {explanation.text}
                 </div>
               </>

@@ -75,7 +75,7 @@ export default function TopicSidebar({ categories, activeTopicId, onSelectTopic 
                         <span className={`text-[11px] font-black uppercase tracking-tight transition-colors ${
                           isActive ? 'text-white' : 
                           topic.isCompleted ? 'text-emerald-400' :
-                          'text-white/40 group-hover:text-white'
+                          'text-white/60 group-hover:text-white'
                         }`}>
                           {topic.name}
                         </span>
@@ -83,7 +83,7 @@ export default function TopicSidebar({ categories, activeTopicId, onSelectTopic 
                       {topic.isCompleted ? (
                         <CheckCircle2 className="w-3.5 h-3.5 text-emerald-500" />
                       ) : topic.isLocked ? (
-                        <Lock className="w-3.5 h-3.5 text-white/20" />
+                        <Lock className="w-3.5 h-3.5 text-white/40" />
                       ) : (
                         <Circle className={`w-3.5 h-3.5 text-white/10 ${isActive ? 'fill-white/10' : ''}`} />
                       )}
@@ -123,7 +123,7 @@ export default function TopicSidebar({ categories, activeTopicId, onSelectTopic 
         <div className="space-y-4">
            <div className="flex justify-between items-end">
               <div>
-                 <p className="text-[9px] font-black text-white/20 uppercase tracking-widest mb-1">Total Progress</p>
+                 <p className="text-[9px] font-black text-white/40 uppercase tracking-widest mb-1">Total Progress</p>
                  <p className="text-xl font-black italic">12.5%</p>
               </div>
               <TrendingUp className="w-6 h-6 text-white/10" />

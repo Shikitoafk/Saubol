@@ -88,7 +88,7 @@ export default function AIMatchmakerForm({ onComplete }: { onComplete: (data: Ma
           <div className="space-y-8 mb-12">
             {currentStep.fields.map(f => (
               <div key={f.name}>
-                <label className="block text-[10px] font-black text-white/40 uppercase tracking-widest mb-3">{f.label}</label>
+                <label className="block text-[10px] font-black text-white/60 uppercase tracking-widest mb-3">{f.label}</label>
                 <input 
                   type="text" 
                   value={(data as any)[f.name]}
@@ -102,7 +102,7 @@ export default function AIMatchmakerForm({ onComplete }: { onComplete: (data: Ma
 
           <div className="flex items-center justify-between">
             {step > 1 ? (
-              <Button variant="ghost" onClick={prev} className="text-[10px] font-black uppercase tracking-widest text-[#444] hover:text-white">
+              <Button variant="ghost" onClick={prev} className="text-[10px] font-black uppercase tracking-widest text-[#8b8b93] hover:text-white">
                 <ChevronLeft className="w-4 h-4 mr-2" /> Back
               </Button>
             ) : <div />}

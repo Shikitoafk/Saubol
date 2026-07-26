@@ -45,8 +45,8 @@ export default function LessonViewer({ lesson, onStartPractice }: LessonViewerPr
         </h1>
         <div className="flex items-center gap-6">
           <div className="flex items-center gap-2 px-3 py-1 bg-white/5 rounded-full border border-white/5">
-             <Clock className="w-3 h-3 text-white/40" />
-             <span className="text-[9px] font-black uppercase text-white/40">{lesson.readTime} Read</span>
+             <Clock className="w-3 h-3 text-white/60" />
+             <span className="text-[9px] font-black uppercase text-white/60">{lesson.readTime} Read</span>
           </div>
           <div className="flex items-center gap-2 px-3 py-1 bg-indigo-500/10 rounded-full border border-indigo-500/20">
              <Zap className="w-3 h-3 text-indigo-400" />
@@ -70,7 +70,7 @@ export default function LessonViewer({ lesson, onStartPractice }: LessonViewerPr
               <span className="text-indigo-400 opacity-20">0{i + 1}</span>
               {concept.title}
             </h3>
-            <p className="text-white/60 text-lg leading-relaxed mb-6 font-medium" dangerouslySetInnerHTML={{ __html: renderText(concept.description) }} />
+            <p className="text-white/75 text-lg leading-relaxed mb-6 font-medium" dangerouslySetInnerHTML={{ __html: renderText(concept.description) }} />
             {concept.example && (
               <div className="p-6 bg-black/40 rounded-2xl border border-white/5 font-mono text-sm">
                  <div className="text-[9px] font-black uppercase text-indigo-400 mb-3 opacity-40">Interactive Example</div>
@@ -91,7 +91,7 @@ export default function LessonViewer({ lesson, onStartPractice }: LessonViewerPr
            <div className="text-xl font-bold leading-relaxed border-b border-white/10 pb-8" dangerouslySetInnerHTML={{ __html: renderText(lesson.workedExample.question) }} />
            <div>
               <div className="text-[9px] font-black uppercase text-indigo-400 mb-4 tracking-widest">Step-by-Step Solution</div>
-              <div className="text-white/70 whitespace-pre-line leading-loose font-medium" dangerouslySetInnerHTML={{ __html: renderText(lesson.workedExample.solution) }} />
+              <div className="text-white/80 whitespace-pre-line leading-loose font-medium" dangerouslySetInnerHTML={{ __html: renderText(lesson.workedExample.solution) }} />
            </div>
         </div>
       </section>
@@ -107,7 +107,7 @@ export default function LessonViewer({ lesson, onStartPractice }: LessonViewerPr
                <div className="w-6 h-6 rounded-full bg-rose-500/10 flex items-center justify-center shrink-0 border border-rose-500/20">
                   <span className="text-[10px] font-black text-rose-500">!</span>
                </div>
-               <p className="text-white/60 font-medium text-sm leading-relaxed" dangerouslySetInnerHTML={{ __html: renderText(mistake) }} />
+               <p className="text-white/75 font-medium text-sm leading-relaxed" dangerouslySetInnerHTML={{ __html: renderText(mistake) }} />
             </div>
           ))}
         </div>
