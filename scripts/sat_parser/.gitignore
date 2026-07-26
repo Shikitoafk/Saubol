@@ -1,0 +1,11 @@
+# артефакты тестов
+gaps_e2e/
+full_e2e/
+layouts_e2e/
+__pycache__/
+
+# рабочее
+.env
+state.json
+gaps_report.txt
+failed_batches_debug.log

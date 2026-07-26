@@ -1,0 +1,11 @@
+# pip install -r requirements.txt
+pymupdf>=1.24
+pillow>=10.0
+requests>=2.31
+
+# Новый SDK Gemini — нужен для gemini-3.x и response_schema.
+google-genai>=1.0
+
+# Старый SDK. Ставить не обязательно: скрипт использует его только как
+# запасной вариант (--sdk legacy), если новый недоступен.
+# google-generativeai>=0.8
