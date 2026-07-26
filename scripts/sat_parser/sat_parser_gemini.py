@@ -2299,9 +2299,14 @@ def process_pdf(pdf_path: Path, pool: ModelPool, sink: CsvSink, state: RunState,
                             stats["gaps"], args.gaps_report.name)
 
         if todo_images:
-            report_images_todo(args.images_todo, source, todo_images)
-            log.info("  вопросов с картинками: %d (список в %s)",
-                     len(todo_images), args.images_todo.name)
+            written_to = report_images_todo(args.images_todo, source, todo_images)
+            if written_to:
+                log.info("  вопросов с картинками: %d (список в %s)",
+                         len(todo_images), written_to.name)
+            else:
+                log.warning("  вопросов с картинками: %d, но список записать "
+                            "не удалось — собери его из CSV скриптом "
+                            "make_images_todo.py", len(todo_images))
     finally:
         doc.close()
     return stats
@@ -2311,25 +2316,47 @@ IMAGES_TODO_FIELDS = ("source", "page", "module", "question_number", "type",
                       "file", "question")
 
 
-def report_images_todo(path: Path | None, source: str, rows: list[dict]) -> None:
+def free_path(path: Path, attempts: int = 20) -> Iterator[Path]:
+    """Сам путь, а следом запасные имена с номером.
+
+    Нужно, потому что на Windows открытый в Excel файл заблокирован на
+    запись. Терять из-за этого весь список нельзя: чтобы собрать его
+    заново, придётся заново гонять файл через модель и жечь квоту.
+    """
+    yield path
+    for i in range(1, attempts):
+        yield path.with_name(f"{path.stem}_{i}{path.suffix}")
+
+
+def report_images_todo(path: Path | None, source: str,
+                       rows: list[dict]) -> Path | None:
     """Список вопросов с рисунками: какой скрин сделать и как назвать файл.
 
     Порядок — по страницам, чтобы идти по файлу сверху вниз и не листать
-    туда-сюда.
+    туда-сюда. -> куда реально записали, None если не вышло совсем.
     """
     if not path:
-        return
-    try:
-        exists = path.exists()
-        with open(path, "a", newline="", encoding="utf-8") as fh:
-            writer = csv.DictWriter(fh, fieldnames=IMAGES_TODO_FIELDS,
-                                    extrasaction="ignore")
-            if not exists:
-                writer.writeheader()
-            for row in sorted(rows, key=lambda r: (r["page"], r["question_number"])):
-                writer.writerow({**row, "source": source})
-    except OSError as exc:
-        log.warning("список картинок не записан: %s", exc)
+        return None
+    ordered = sorted(rows, key=lambda r: (r["page"], r["question_number"]))
+    last_error: OSError | None = None
+    for candidate in free_path(path):
+        try:
+            exists = candidate.exists()
+            with open(candidate, "a", newline="", encoding="utf-8") as fh:
+                writer = csv.DictWriter(fh, fieldnames=IMAGES_TODO_FIELDS,
+                                        extrasaction="ignore")
+                if not exists:
+                    writer.writeheader()
+                for row in ordered:
+                    writer.writerow({**row, "source": source})
+            if candidate != path:
+                log.warning("%s занят (открыт в Excel?) — записал в %s",
+                            path.name, candidate.name)
+            return candidate
+        except OSError as exc:
+            last_error = exc
+    log.warning("список картинок не записан: %s", last_error)
+    return None
 
 
 def report_gaps(path: Path | None, source: str,
