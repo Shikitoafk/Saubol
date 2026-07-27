@@ -2421,6 +2421,9 @@ def build_arg_parser() -> argparse.ArgumentParser:
     ap.add_argument("--delay", type=float, default=0.5, help="пауза между батчами, сек")
     ap.add_argument("--resume", action="store_true", help="продолжить с места остановки")
     ap.add_argument("--limit", type=int, default=0, help="обработать только N файлов (0 = все)")
+    ap.add_argument("--only", default="",
+                    help="обработать только файлы, чьё имя содержит эту подстроку, "
+                         "например: --only \"Int-B\"")
     ap.add_argument("--models", default="", help="список моделей через запятую")
     ap.add_argument("--sdk", choices=("auto", "new", "legacy"), default="auto")
     ap.add_argument("--dpi", type=int, default=RENDER_DPI, help="DPI рендера для кропов")
@@ -2524,6 +2527,14 @@ def main() -> int:
     pdfs = collect_pdfs(folder, recursive=True)
     question_files = [p for p in pdfs if not is_answer_key_file(p.name)]
     answer_files = [p for p in pdfs if is_answer_key_file(p.name)]
+    # --only: обработать лишь файлы, чьё имя содержит эту подстроку. Удобно
+    # выбрать один вариант из папки с несколькими: --only "Int-B".
+    if args.only:
+        needle = args.only.lower()
+        question_files = [p for p in question_files if needle in p.name.lower()]
+        if not question_files:
+            log.error("--only %r: ни один PDF не подошёл", args.only)
+            return 1
     if args.limit:
         question_files = question_files[:args.limit]
 
