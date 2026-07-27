@@ -199,7 +199,8 @@ def main() -> int:
 
     mod_index = {fam: module_index_by_question(all_rows, fam) for fam in ("EBRW", "MATH")}
 
-    filled = skipped = missing = 0
+    filled = skipped = missing = conflicts = agree = 0
+    conflict_examples: list[str] = []
     for qtype, (path, fields, rows) in tables.items():
         family = sp.FAMILY.get(qtype)
         for r in rows:
@@ -213,9 +214,22 @@ def main() -> int:
             if not answer:
                 missing += 1
                 continue
-            if (r.get("correct_answer") or "").strip() and not args.overwrite:
-                skipped += 1
-                continue
+            existing = (r.get("correct_answer") or "").strip()
+            if existing:
+                # Сверяем то, что модель проставила при разборе, с ключом.
+                # Нормализуем к букве/тексту, чтобы "b" и "B" не считались разными.
+                same = sp.normalize_answer(existing, qtype, {}) == \
+                       sp.normalize_answer(answer, qtype, {})
+                if same:
+                    agree += 1
+                else:
+                    conflicts += 1
+                    if len(conflict_examples) < 12:
+                        conflict_examples.append(
+                            f"{family} M{index} №{number}: было '{existing}', в ключе '{answer}'")
+                if not args.overwrite:
+                    skipped += 1
+                    continue
             r["correct_answer"] = answer
             filled += 1
 
@@ -227,6 +241,14 @@ def main() -> int:
 
     print(f"проставлено: {filled}, уже были: {skipped}, "
           f"без ответа в ключе: {missing}")
+    print(f"из уже стоявших: совпало с ключом {agree}, "
+          f"РАСХОДИТСЯ {conflicts}")
+    if conflict_examples:
+        print("примеры расхождений (ключу верить, разбору — нет):")
+        for line in conflict_examples:
+            print(f"   {line}")
+        if not args.overwrite:
+            print("-> запусти с --overwrite, чтобы везде поставить ответы из ключа")
     if args.dry_run:
         print("(--dry-run: файлы не изменены)")
     return 0
