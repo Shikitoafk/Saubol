@@ -845,6 +845,13 @@ FORMATTING RULES:
 - Every MATH_MCQ / MATH_OPEN question and its options must use proper LaTeX
   commands (\frac, \sqrt, \pi, ...), never plain text like x^2 or 1/9.
 - Transcribe text exactly as printed. Do not invent or "fix" questions.
+- BLANKS: many Reading & Writing questions ask to complete a text and print a
+  blank where the answer goes — a long underline, a gap, or a boxed space.
+  ALWAYS transcribe that blank as exactly six underscores: ______ . Keep it in
+  the same spot it appears — it may sit in the MIDDLE of a sentence, not only
+  at the end ("the researcher found that helium ______ solid under high
+  pressure"). Never drop the blank and never move it: without it the sentence
+  reads as cut off.
 - If a page has no complete question, skip it. Return [] if the batch has none.
 """
 
