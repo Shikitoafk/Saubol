@@ -619,12 +619,18 @@ export default function SATPastPapers() {
       processed = processed.replace(/\\+\(([\s\S]+?)\\+\)/g, (_, math) => {
         return katex.renderToString(math.trim(), { displayMode: false, throwOnError: false });
       });
-      processed = processed.replace(/\$\$([\s\S]+?)\$\$/g, (_, math) => 
+      processed = processed.replace(/\$\$([\s\S]+?)\$\$/g, (_, math) =>
         katex.renderToString(math.trim(), { displayMode: true, throwOnError: false })
       );
-      processed = processed.replace(/\$([\s\S]+?)\$/g, (_, math) => 
-        katex.renderToString(math.trim(), { displayMode: false, throwOnError: false })
-      );
+      // Пары $...$ обрабатываем, только если долларов чётное число. Иначе
+      // одиночный $ (например «$5» в тексте про деньги) регулярка спарила бы
+      // со следующим и покорёжила бы формулу — а «иногда не работает» это
+      // ровно оно.
+      if (((processed.match(/\$/g) || []).length % 2) === 0) {
+        processed = processed.replace(/\$([^$]+?)\$/g, (_, math) =>
+          katex.renderToString(math.trim(), { displayMode: false, throwOnError: false })
+        );
+      }
       return processed;
     } catch (e) {
       console.error("KaTeX rendering error:", e);
@@ -637,6 +643,36 @@ export default function SATPastPapers() {
     const s = secs % 60;
     return `${m}:${s < 10 ? '0' : ''}${s}`;
   };
+
+  // Модули, по которым идёт сессия: выбранный один — или все по порядку при
+  // «весь тест». Нужно, чтобы в шапке показать «Модуль 1 · 5 из 27», а не
+  // «5 из 98»: на экзамене вопросы идут модулями, а не сплошным списком.
+  const sessionModules = selectedModule ? [selectedModule] : modules;
+
+  // В каком модуле сейчас находимся и какой это по счёту вопрос внутри него.
+  const locateQuestion = (idx: number) => {
+    let offset = 0;
+    for (const m of sessionModules) {
+      if (idx < offset + m.questions.length) {
+        return { module: m, local: idx - offset, total: m.questions.length };
+      }
+      offset += m.questions.length;
+    }
+    return { module: null as PaperModule | null, local: idx, total: questions.length };
+  };
+  const here = locateQuestion(currentIdx);
+  const hereSubject = here.module
+    ? (here.module.section === "RW" ? "Reading & Writing" : "Mathematics")
+    : (questions[currentIdx]?.section === "RW" ? "Reading & Writing" : "Mathematics");
+
+  // Настоящий passage — только если он не дублирует сам вопрос. У
+  // математических вопросов парсер иногда кладёт условие и в passage, и в
+  // question; тогда split-панель показывала один и тот же текст дважды —
+  // слева сырой $...$, справа отрисованный. Сравниваем без $ и пробелов.
+  const stripForCompare = (s?: string) => (s || "").replace(/[\s$]/g, "").toLowerCase();
+  const currentQuestion = questions[currentIdx];
+  const hasRealPassage = !!currentQuestion?.passage &&
+    stripForCompare(currentQuestion.passage) !== stripForCompare(currentQuestion.question);
 
   return (
     <Layout>
@@ -1088,13 +1124,20 @@ export default function SATPastPapers() {
                 {/* Info HUD */}
                 <div className="flex items-center gap-8 bg-surface px-8 py-3 rounded-2xl border border-line">
                   <div className="text-center">
-                    <p className="text-[8px] font-black text-indigo-400 uppercase tracking-widest mb-1">Subject</p>
-                    <p className="text-xs font-black uppercase">{questions[currentIdx]?.section === "RW" ? "Reading & Writing" : "Mathematics"}</p>
+                    <p className="text-[8px] font-black text-indigo-400 uppercase tracking-widest mb-1">
+                      {here.module ? `Модуль ${here.module.index}` : "Раздел"}
+                    </p>
+                    <p className="text-xs font-black uppercase">{hereSubject}</p>
                   </div>
                   <div className="w-px h-8 bg-surface-2" />
                   <div className="text-center">
-                    <p className="text-[8px] font-black text-ink-muted uppercase tracking-widest mb-1">Question</p>
-                    <p className="text-sm font-black">{currentIdx + 1} of {questions.length}</p>
+                    <p className="text-[8px] font-black text-ink-muted uppercase tracking-widest mb-1">Вопрос</p>
+                    <p className="text-sm font-black">
+                      {here.local + 1} из {here.total}
+                      {!selectedModule && sessionModules.length > 1 && (
+                        <span className="text-ink-subtle font-bold"> · {currentIdx + 1}/{questions.length} всего</span>
+                      )}
+                    </p>
                   </div>
                   <div className="w-px h-8 bg-surface-2" />
                   <div className="text-center">
@@ -1139,7 +1182,7 @@ export default function SATPastPapers() {
               </div>
 
               {/* Main Content Arena */}
-              {questions[currentIdx]?.passage ? (
+              {hasRealPassage ? (
                 // Split-pane layout for questions with passage
                 <div className="flex-1 overflow-hidden mb-6 flex">
                   <ResizablePanelGroup direction="horizontal" className="flex-1 w-full min-h-0">
@@ -1149,7 +1192,7 @@ export default function SATPastPapers() {
                           <FileText className="w-4 h-4" />
                           <span className="text-[9px] font-black uppercase tracking-widest">Passage</span>
                         </div>
-                        <p className="text-base leading-relaxed font-medium text-ink">{questions[currentIdx].passage}</p>
+                        <div className="reading-text text-ink whitespace-pre-wrap" dangerouslySetInnerHTML={{ __html: renderKatexText(questions[currentIdx].passage || "") }} />
                       </div>
                     </ResizablePanel>
 
