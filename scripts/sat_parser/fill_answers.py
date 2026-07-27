@@ -41,31 +41,49 @@ COLUMN_TO_MODULE = {
 ANSWER_GRID_PROMPT = r"""
 This page is the ANSWER KEY of an SAT practice test, printed as a grid.
 
-Columns (headers may be in Chinese or English):
-  - a question-number column (序号 / No. / #)
-  - 文科M1  = Reading & Writing, Module 1   -> "rw_m1"
-  - 文科M2  = Reading & Writing, Module 2   -> "rw_m2"
-  - 数学M1  = Math, Module 1                -> "math_m1"
-  - 数学M2  = Math, Module 2                -> "math_m2"
-(文科 = verbal / Reading & Writing, 数学 = Math, M1/M2 = module 1 / 2.)
+It can be printed in either of two layouts — handle BOTH:
 
-Return ONLY a JSON array. One object per numbered row:
+A) A GRID / TABLE. A question-number column, then one answer column per
+   module. Headers may be Chinese or English:
+     文科M1 = Reading & Writing Module 1 -> "rw_m1"
+     文科M2 = Reading & Writing Module 2 -> "rw_m2"
+     数学M1 = Math Module 1              -> "math_m1"
+     数学M2 = Math Module 2              -> "math_m2"
+   (文科 = Reading & Writing, 数学 = Math, M1/M2 = module 1 / 2.)
+
+B) TEXT LISTS grouped by module, e.g.:
+     Section 1 M1 R & W
+       Q1-10  AACCA BADDA
+       Q11-20 DBBDA ADCCA
+       Q21-27 CADCA CC
+     Section 1 M2 Math
+       Q1-10  CDABC DA 248 DD
+       Q11-20 D 0.0029 76000 D 16 3 C A B
+   Here "M1/M2 R & W" -> rw_m1/rw_m2, "M1/M2 Math" -> math_m1/math_m2.
+   Each "Qa-b <answers>" line gives the answers for questions a..b in order.
+   Letters are often grouped in fives just for readability (AACCA BADDA =
+   A A C C A B A D D A). Math lines mix single letters with multi-digit
+   grid-in numbers — read them by meaning: "DA 248 DD" is D, A, 248, D, D,
+   and "D 0.0029 76000 D 16 3 C A B" is D, 0.0029, 76000, D, 16, 3, C, A, B.
+   Use the count (a..b) to line the answers up correctly.
+
+Whatever the layout, return ONLY a JSON array, ONE OBJECT PER QUESTION NUMBER:
 {
   "number": 1,
-  "rw_m1": "B",        // letter A-D for multiple choice
+  "rw_m1": "B",        // letter A-D for multiple choice, null if absent
   "rw_m2": "D",
-  "math_m1": "14",     // a number for grid-in (student-response) math answers
+  "math_m1": "248",    // the number itself for grid-in math answers
   "math_m2": "C"
 }
 
 RULES:
-- Read every row, top to bottom. Reading & Writing goes to 27, Math to 22,
-  so the math columns are empty on rows 23-27 — use null there.
-- An empty cell = null. A cell marked as a flawed question ("题目有误",
-  "error", crossed out) = null. Never guess.
-- Transcribe exactly what is printed: a letter for multiple choice, the
-  number itself for grid-in math answers (e.g. "14", "705.6", "-13").
-- If this page is NOT an answer-key grid, return [].
+- Cover every number: Reading & Writing 1-27, Math 1-22. Math columns are
+  empty for numbers 23-27 -> null.
+- Empty / missing = null. A flawed question ("题目有误", "error", crossed
+  out) = null. Never guess or pad.
+- Transcribe exactly: a letter for multiple choice, the number for grid-in
+  math answers (e.g. "14", "705.6", "-13", "0.0029").
+- If the page holds no answer key at all, return [].
 """
 
 ANSWER_GRID_SCHEMA = {
