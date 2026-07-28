@@ -1,7 +1,7 @@
 import { Link, useLocation } from "react-router-dom";
 import { Sheet, SheetContent, SheetTrigger, SheetTitle, SheetHeader } from "@/components/ui/sheet";
 import { Button } from "@/components/ui/button";
-import { Menu, Send } from "lucide-react";
+import { Menu } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 const links = [
@@ -12,99 +12,40 @@ const links = [
 
 export function Navbar() {
   const location = useLocation();
+  const isActive = (href: string) => location.pathname === href || (href !== "/" && location.pathname.startsWith(href));
 
   return (
-    <nav className="fixed top-0 z-[100] w-full bg-canvas/40 backdrop-blur-2xl border-b border-line h-20">
-      <div className="max-w-[1400px] mx-auto px-10 h-full flex items-center justify-between">
-        <div className="flex items-center gap-16">
-          <Link to="/" className="flex items-center gap-4 group">
-            <div className="relative">
-              <div className="absolute inset-0 bg-surface-2 blur-xl opacity-0 group-hover:opacity-100 transition-opacity duration-700" />
-              <img
-                src="/logo.png"
-                alt="Saubol Logo"
-                className="w-9 h-9 object-contain relative z-10 transition-transform duration-700 group-hover:rotate-[360deg]"
-              />
-            </div>
-            <span className="font-black text-2xl tracking-[-0.05em] text-ink uppercase italic">
-              SAUBOL
-            </span>
+    <nav className="fixed top-0 z-[100] w-full border-b border-line bg-canvas/90 backdrop-blur">
+      <div className="mx-auto flex h-16 w-full max-w-6xl items-center justify-between px-6 sm:px-10">
+        <div className="flex items-center gap-10">
+          <Link to="/" className="flex items-center gap-2.5">
+            <img src="/logo.png" alt="Saubol" className="h-7 w-7 object-contain" />
+            <span className="font-display text-xl font-semibold tracking-[-0.04em] text-ink">Saubol</span>
           </Link>
-
-          <div className="hidden lg:flex items-center gap-10">
+          <div className="hidden items-center gap-6 sm:flex">
             {links.map((link) => (
-              <Link
-                key={link.href}
-                to={link.href}
-                className={cn(
-                  "text-[10px] font-black uppercase tracking-[0.3em] transition-all hover:text-ink relative group/link py-2",
-                  location.pathname === link.href || (link.href !== "/" && location.pathname.startsWith(link.href))
-                    ? "text-ink"
-                    : "text-ink-subtle"
-                )}
-              >
+              <Link key={link.href} to={link.href} className={cn("text-sm transition-colors", isActive(link.href) ? "font-semibold text-ink" : "text-ink-muted hover:text-ink")}>
                 {link.name}
-                <span
-                  className={cn(
-                    "absolute bottom-0 left-1/2 -translate-x-1/2 h-[2px] bg-white transition-all duration-500 rounded-full",
-                    location.pathname === link.href || (link.href !== "/" && location.pathname.startsWith(link.href))
-                      ? "w-full opacity-100"
-                      : "w-0 opacity-0 group-hover/link:w-full group-hover/link:opacity-50"
-                  )}
-                />
               </Link>
             ))}
           </div>
         </div>
 
-        <div className="flex items-center gap-8">
-          <Button
-            asChild
-            className="hidden lg:flex px-8 h-12 text-[10px] font-black uppercase tracking-[0.2em] text-ink bg-transparent hover:bg-surface border border-line rounded-xl transition-all"
-          >
-            <a href="https://t.me/shikitoafk" target="_blank" rel="noopener noreferrer">
-              Support <Send className="w-3.5 h-3.5 ml-2.5" />
-            </a>
-          </Button>
+        <a href="https://t.me/shikitoafk" target="_blank" rel="noopener noreferrer" className="hidden text-sm font-medium text-ink-muted transition-colors hover:text-ink sm:block">
+          Contact
+        </a>
 
-          <div className="lg:hidden">
-            <Sheet>
-              <SheetTrigger asChild>
-                <Button variant="ghost" size="icon" className="text-ink hover:bg-surface rounded-xl">
-                  <Menu className="h-7 w-7" />
-                </Button>
-              </SheetTrigger>
-              <SheetContent side="right" className="bg-canvas/95 backdrop-blur-3xl border-line text-ink w-full">
-                <SheetHeader className="mt-12 mb-20 text-left px-4">
-                  <SheetTitle className="text-4xl font-black text-shimmer uppercase tracking-tighter italic">
-                    SAUBOL.
-                  </SheetTitle>
-                </SheetHeader>
-                <div className="flex flex-col gap-10 px-4">
-                  {links.map((link) => (
-                    <Link
-                      key={link.href}
-                      to={link.href}
-                      className={cn(
-                        "text-5xl font-black uppercase tracking-tighter transition-all",
-                        location.pathname === link.href || (link.href !== "/" && location.pathname.startsWith(link.href))
-                          ? "text-shimmer"
-                          : "text-[#333]"
-                      )}
-                    >
-                      {link.name}
-                    </Link>
-                  ))}
-                  <div className="h-px bg-surface my-6" />
-                  <Button asChild className="w-full h-20 bg-white text-black font-black uppercase text-sm tracking-widest rounded-2xl">
-                    <a href="https://t.me/shikitoafk" target="_blank" rel="noopener noreferrer">
-                      Support
-                    </a>
-                  </Button>
-                </div>
-              </SheetContent>
-            </Sheet>
-          </div>
+        <div className="sm:hidden">
+          <Sheet>
+            <SheetTrigger asChild><Button variant="ghost" size="icon" className="text-ink hover:bg-surface-2"><Menu className="h-5 w-5" /></Button></SheetTrigger>
+            <SheetContent side="right" className="w-full border-line bg-canvas text-ink">
+              <SheetHeader className="mt-8 text-left"><SheetTitle className="font-display text-2xl font-semibold text-ink">Saubol</SheetTitle></SheetHeader>
+              <div className="mt-12 flex flex-col gap-6">
+                {links.map((link) => <Link key={link.href} to={link.href} className={cn("text-2xl", isActive(link.href) ? "font-semibold text-ink" : "text-ink-muted")}>{link.name}</Link>)}
+                <a href="https://t.me/shikitoafk" target="_blank" rel="noopener noreferrer" className="mt-4 text-sm font-medium text-ink-muted">Contact us</a>
+              </div>
+            </SheetContent>
+          </Sheet>
         </div>
       </div>
     </nav>
