@@ -134,15 +134,17 @@ def module_index_by_question(rows: list[dict], family: str) -> dict[tuple[int, i
     return mapping
 
 
-def read_answer_grid(pool, pdf: Path, tail_pages: int, debug_log) -> dict[tuple[str, int, int], str]:
+def read_answer_grid(pool, pdf: Path, tail_pages: int, debug_log,
+                     gridin_hint: str = "") -> dict[tuple[str, int, int], str]:
     """Читает ключ с последних tail_pages страниц. -> {(family, mod, number): answer}."""
     answers: dict[tuple[str, int, int], str] = {}
+    prompt = ANSWER_GRID_PROMPT + gridin_hint
     doc = fitz.open(pdf)
     try:
         start = max(0, len(doc) - tail_pages)
         for index in range(start, len(doc)):
             page = sp.render_page(doc, index)
-            parts = [ANSWER_GRID_PROMPT, pool.backend.image_part(page.jpeg)]
+            parts = [prompt, pool.backend.image_part(page.jpeg)]
             rows, _ = sp.ask_model_json(pool, parts, ANSWER_GRID_SCHEMA,
                                         f"{pdf.name} ключ стр.{index + 1}", debug_log)
             for row in rows or []:
@@ -214,13 +216,33 @@ def main() -> int:
     pool = sp.ModelPool(sp.build_backend(api_key, args.sdk), models)
     debug_log = csv_dir / "answer_key_debug.log"
 
-    answers = read_answer_grid(pool, pdf, args.tail_pages, debug_log)
+    mod_index = {fam: module_index_by_question(all_rows, fam) for fam in ("EBRW", "MATH")}
+
+    # Подсказка модели: какие номера математики — grid-in (числовой ответ).
+    # Парсер уже разложил их в math_open.csv, так что мы это знаем точно.
+    # Без подсказки многозначные числа в ключе («28», «10.8», «65/54»)
+    # сбивают выравнивание — модель не знает, где кончается одно число.
+    gridin: dict[int, set[int]] = {1: set(), 2: set()}
+    for r in tables.get("MATH_OPEN", (None, None, []))[2]:
+        num, page = r["_number"], r["_page"]
+        if num is None or page is None:
+            continue
+        idx = mod_index["MATH"].get((num, page))
+        if idx in (1, 2):
+            gridin[idx].add(num)
+    hint = ""
+    if gridin[1] or gridin[2]:
+        hint = ("\n\nHINT — which math answers are grid-in (a NUMBER, not a "
+                "letter). Use this to split the math lines correctly:\n")
+        for idx in (1, 2):
+            nums = ", ".join(str(n) for n in sorted(gridin[idx])) or "none"
+            hint += f"  Math Module {idx}: grid-in questions = {nums}; all other math answers are letters A-D.\n"
+
+    answers = read_answer_grid(pool, pdf, args.tail_pages, debug_log, hint)
     if not answers:
         print("ключ не распознан — проверь, что в конце PDF действительно таблица ответов")
         return 1
     print(f"из ключа прочитано ответов: {len(answers)}")
-
-    mod_index = {fam: module_index_by_question(all_rows, fam) for fam in ("EBRW", "MATH")}
 
     filled = skipped = missing = conflicts = agree = invalid = 0
     conflict_examples: list[str] = []
