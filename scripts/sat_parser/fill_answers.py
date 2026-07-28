@@ -51,21 +51,26 @@ A) A GRID / TABLE. A question-number column, then one answer column per
      数学M2 = Math Module 2              -> "math_m2"
    (文科 = Reading & Writing, 数学 = Math, M1/M2 = module 1 / 2.)
 
-B) TEXT LISTS grouped by module, e.g.:
-     Section 1 M1 R & W
-       Q1-10  AACCA BADDA
-       Q11-20 DBBDA ADCCA
-       Q21-27 CADCA CC
-     Section 1 M2 Math
-       Q1-10  CDABC DA 248 DD
-       Q11-20 D 0.0029 76000 D 16 3 C A B
-   Here "M1/M2 R & W" -> rw_m1/rw_m2, "M1/M2 Math" -> math_m1/math_m2.
-   Each "Qa-b <answers>" line gives the answers for questions a..b in order.
-   Letters are often grouped in fives just for readability (AACCA BADDA =
-   A A C C A B A D D A). Math lines mix single letters with multi-digit
-   grid-in numbers — read them by meaning: "DA 248 DD" is D, A, 248, D, D,
-   and "D 0.0029 76000 D 16 3 C A B" is D, 0.0029, 76000, D, 16, 3, C, A, B.
-   Use the count (a..b) to line the answers up correctly.
+B) TEXT LISTS grouped by module. One module's answers may sit on one line
+   with several ranges, e.g.:
+     R & W Module1
+       1-10 CBBDA CDBAC 11-20 CBCAB CCADD 21-27 ADCDC BD
+     Math Module1
+       1-10 DDC 28 A 10.8 C C B B 11-20 ACCA 10.8 B 189 8 65/54 A 21-22 BC
+   "M1/M2 R & W" -> rw_m1/rw_m2, "M1/M2 Math" -> math_m1/math_m2.
+
+   THE RANGE TELLS YOU HOW MANY ANSWERS. "21-27" is EXACTLY 7 answers,
+   "1-10" is 10, "21-22" is 2. Spaces are ONLY readability grouping — ignore
+   them and split each segment into exactly (b - a + 1) answers:
+     "21-27 ADCDC BD"  -> 21=A 22=D 23=C 24=D 25=C 26=B 27=D  (7 answers,
+        NOT six with a "BD" — never merge two letters into one answer)
+     "1-10 CBBDA CDBAC" -> C B B D A C D B A C  (10)
+   Math mixes single letters with multi-digit grid-in numbers; still make
+   the count match the range:
+     "1-10 DDC 28 A 10.8 C C B B" -> D D C 28 A 10.8 C C B B  (10)
+     "21-22 1200 122" -> 21=1200 22=122  (2)
+   A single multiple-choice answer is ALWAYS one letter A-D. If a segment
+   gives more letters than the range needs, you mis-split — recount.
 
 Whatever the layout, return ONLY a JSON array, ONE OBJECT PER QUESTION NUMBER:
 {
@@ -217,8 +222,9 @@ def main() -> int:
 
     mod_index = {fam: module_index_by_question(all_rows, fam) for fam in ("EBRW", "MATH")}
 
-    filled = skipped = missing = conflicts = agree = 0
+    filled = skipped = missing = conflicts = agree = invalid = 0
     conflict_examples: list[str] = []
+    invalid_examples: list[str] = []
     for qtype, (path, fields, rows) in tables.items():
         family = sp.FAMILY.get(qtype)
         for r in rows:
@@ -231,6 +237,14 @@ def main() -> int:
             answer = answers.get((family, index, number))
             if not answer:
                 missing += 1
+                continue
+            # У MCQ ответ обязан быть одной буквой A-D. Если ключ дал что-то
+            # другое («BD» — слепленные два ответа, мусор) — не пишем: кривой
+            # ответ хуже пустого. У открытых вопросов число — это нормально.
+            if qtype != "MATH_OPEN" and answer.strip().upper() not in ("A", "B", "C", "D"):
+                invalid += 1
+                if len(invalid_examples) < 12:
+                    invalid_examples.append(f"{family} M{index} №{number}: '{answer}'")
                 continue
             existing = (r.get("correct_answer") or "").strip()
             if existing:
@@ -261,6 +275,11 @@ def main() -> int:
           f"без ответа в ключе: {missing}")
     print(f"из уже стоявших: совпало с ключом {agree}, "
           f"РАСХОДИТСЯ {conflicts}")
+    if invalid:
+        print(f"⚠ пропущено кривых ответов из ключа (не A-D): {invalid} — "
+              f"их модель прочитала неверно, эти вопросы останутся без ответа:")
+        for line in invalid_examples:
+            print(f"   {line}")
     if conflict_examples:
         print("примеры расхождений (ключу верить, разбору — нет):")
         for line in conflict_examples:
