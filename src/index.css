@@ -62,7 +62,7 @@
      Literata — для условий заданий: длинные пассажи с засечками читаются
      легче, и это ближе к виду настоящего экзамена. */
   --font-sans: 'Inter', system-ui, -apple-system, 'Segoe UI', sans-serif;
-  --font-display: 'Outfit', 'Inter', sans-serif;
+  --font-display: 'Manrope', 'Inter', sans-serif;
   --font-serif: 'Literata', Georgia, serif;
   --font-mono: var(--app-font-mono);
 
@@ -191,6 +191,13 @@ body {
 
 .font-display {
   letter-spacing: -0.03em;
+}
+
+/* The academic interface uses upright type. A few older screens still carry
+   the italic utility from the previous visual language; keep display headings
+   calm while those screens are progressively redesigned. */
+.font-display.italic {
+  font-style: normal;
 }
 
 /* Условия заданий и пассажи SAT. Крупнее базового кегля и с увеличенной
