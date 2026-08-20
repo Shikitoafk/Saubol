@@ -1,0 +1,21 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="640" viewBox="0 0 1200 640">
+  <rect width="1200" height="640" fill="#ffffff"/>
+  <style>
+    text { font-family: Arial, Helvetica, sans-serif; fill: #171717; }
+    .head { font-size: 20px; font-weight: 700; }
+    .cell { font-size: 21px; }
+    .grid { stroke: #303030; stroke-width: 2; fill: none; }
+  </style>
+  <rect class="grid" x="25" y="25" width="1150" height="590"/>
+  <path class="grid" d="M310 25v590M480 25v590M825 25v590M25 175h1150M25 285h1150M25 395h1150M25 505h1150"/>
+  <text class="head" x="167" y="108" text-anchor="middle">Authors</text>
+  <text class="head" x="395" y="108" text-anchor="middle">Crop</text>
+  <text class="head" x="652" y="82" text-anchor="middle">Crop yield with tilling</text><text class="head" x="652" y="112" text-anchor="middle">(kilograms per hectare)</text>
+  <text class="head" x="1000" y="82" text-anchor="middle">Crop yield with no tilling</text><text class="head" x="1000" y="112" text-anchor="middle">(kilograms per hectare)</text>
+  <g class="cell">
+    <text x="45" y="230">Eduardo Martinez</text><text x="45" y="258">and colleagues</text><text x="335" y="244">winter wheat</text><text x="652" y="244" text-anchor="middle">4,829</text><text x="1000" y="244" text-anchor="middle">2,894</text>
+    <text x="45" y="340">Fuseini Issaka</text><text x="45" y="368">and colleagues</text><text x="335" y="354">rice</text><text x="652" y="354" text-anchor="middle">6,400</text><text x="1000" y="354" text-anchor="middle">6,300</text>
+    <text x="45" y="450">Roberto Izaurralde</text><text x="45" y="478">and colleagues</text><text x="335" y="464">spring barley</text><text x="652" y="464" text-anchor="middle">1,676</text><text x="1000" y="464" text-anchor="middle">2,515</text>
+    <text x="45" y="560">Igor Bogunovic</text><text x="45" y="588">and colleagues</text><text x="335" y="574">maize</text><text x="652" y="574" text-anchor="middle">3,884</text><text x="1000" y="574" text-anchor="middle">5,716</text>
+  </g>
+</svg>

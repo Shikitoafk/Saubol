@@ -521,6 +521,12 @@ class ModelPool:
                     if kind == "rate":
                         self._demote(state, seconds=wait, reason="rate limit")
                         break
+                    if kind == "content":
+                        # RECITATION is normally page-specific. Retrying the same
+                        # model and prompt three times only wastes minutes; rotate
+                        # immediately, but keep the model for later pages.
+                        self._demote(state, seconds=5.0, reason="content block")
+                        break
                     log.warning("[%s] ошибка (%d/%d): %s",
                                 state.name, attempt, MAX_RETRIES_PER_MODEL, msg)
                     if attempt == MAX_RETRIES_PER_MODEL:
@@ -531,7 +537,7 @@ class ModelPool:
 
 
 def classify_error(exc: Exception, attempt: int) -> tuple[str, float]:
-    """-> (kind, seconds_to_wait). kind: fatal | daily | rate | transient."""
+    """-> (kind, seconds_to_wait). kind: fatal | daily | rate | content | transient."""
     msg = str(exc)
     low = msg.lower()
 
@@ -539,6 +545,8 @@ def classify_error(exc: Exception, attempt: int) -> tuple[str, float]:
         return "fatal", 0.0
     if "per day" in low or "perday" in low or "daily" in low:
         return "daily", 0.0
+    if "recitation" in low:
+        return "content", 0.0
     if "429" in msg or "resource_exhausted" in low or "quota" in low or "rate limit" in low:
         # Gemini часто отдаёт retry_delay { seconds: N } — уважаем его.
         m = re.search(r"retry_?delay[^0-9]{0,20}(\d+)", msg, re.I)

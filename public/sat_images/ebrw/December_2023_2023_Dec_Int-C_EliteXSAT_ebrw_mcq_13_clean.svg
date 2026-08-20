@@ -1,0 +1,29 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1100" height="560" viewBox="0 0 1100 560">
+  <rect width="1100" height="560" fill="#ffffff"/>
+  <style>
+    text { font-family: Arial, Helvetica, sans-serif; fill: #171717; }
+    .title { font-size: 28px; font-weight: 700; }
+    .head { font-size: 18px; font-weight: 700; }
+    .cell { font-size: 21px; }
+    .grid { stroke: #303030; stroke-width: 2; fill: none; }
+  </style>
+  <text class="title" x="550" y="42" text-anchor="middle">Peering at Adult Orangutans by Immature Orangutans</text>
+  <rect class="grid" x="30" y="70" width="1040" height="460"/>
+  <path class="grid" d="M170 70v460M340 70v460M490 70v460M760 70v460M30 250h1040M30 320h1040M30 390h1040M30 460h1040"/>
+  <text class="head" x="100" y="160" text-anchor="middle">Individual</text>
+  <text class="head" x="255" y="160" text-anchor="middle">Site</text>
+  <text class="head" x="415" y="160" text-anchor="middle">Sex</text>
+  <text class="head" x="625" y="130" text-anchor="middle">Total number of</text>
+  <text class="head" x="625" y="158" text-anchor="middle">peering events</text>
+  <text class="head" x="625" y="186" text-anchor="middle">observed</text>
+  <text class="head" x="915" y="112" text-anchor="middle">Proportion of peering events</text>
+  <text class="head" x="915" y="140" text-anchor="middle">directed at immigrants to</text>
+  <text class="head" x="915" y="168" text-anchor="middle">immature individual's home</text>
+  <text class="head" x="915" y="196" text-anchor="middle">region</text>
+  <g class="cell" text-anchor="middle">
+    <text x="100" y="296">1</text><text x="255" y="296">Suaq</text><text x="415" y="296">female</text><text x="625" y="296">17</text><text x="915" y="296">0.41</text>
+    <text x="100" y="366">2</text><text x="255" y="366">Suaq</text><text x="415" y="366">female</text><text x="625" y="366">23</text><text x="915" y="366">0.13</text>
+    <text x="100" y="436">8</text><text x="255" y="436">Tuanan</text><text x="415" y="436">male</text><text x="625" y="436">1</text><text x="915" y="436">1.00</text>
+    <text x="100" y="506">16</text><text x="255" y="506">Suaq</text><text x="415" y="506">male</text><text x="625" y="506">80</text><text x="915" y="506">0.84</text>
+  </g>
+</svg>

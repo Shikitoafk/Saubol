@@ -1,0 +1,23 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1100" height="590" viewBox="0 0 1100 590">
+  <rect width="1100" height="590" fill="#ffffff"/>
+  <style>
+    text { font-family: Arial, Helvetica, sans-serif; fill: #171717; }
+    .title { font-size: 30px; font-weight: 700; }
+    .head { font-size: 21px; font-weight: 700; }
+    .cell { font-size: 22px; }
+    .grid { stroke: #303030; stroke-width: 2; fill: none; }
+  </style>
+  <text class="title" x="550" y="48" text-anchor="middle">Pyramids in Egypt and the Americas</text>
+  <rect class="grid" x="30" y="78" width="1040" height="480"/>
+  <path class="grid" d="M365 78v480M550 78v480M745 78v480M30 198h1040M30 288h1040M30 378h1040M30 468h1040"/>
+  <text class="head" x="197" y="145" text-anchor="middle">Pyramid</text>
+  <text class="head" x="457" y="145" text-anchor="middle">Country</text>
+  <text class="head" x="647" y="130" text-anchor="middle">Height</text><text class="head" x="647" y="158" text-anchor="middle">(meters)</text>
+  <text class="head" x="907" y="130" text-anchor="middle">Age (years before</text><text class="head" x="907" y="158" text-anchor="middle">present)</text>
+  <g class="cell">
+    <text x="55" y="253">The Tikal Temple IV</text><text x="390" y="253">Guatemala</text><text x="647" y="253" text-anchor="middle">70</text><text x="907" y="253" text-anchor="middle">1,300</text>
+    <text x="55" y="343">The Pyramid of the Moon</text><text x="390" y="343">Mexico</text><text x="647" y="343" text-anchor="middle">42</text><text x="907" y="343" text-anchor="middle">2,100</text>
+    <text x="55" y="433">The Pyramid of Neferirkare</text><text x="390" y="433">Egypt</text><text x="647" y="433" text-anchor="middle">54</text><text x="907" y="433" text-anchor="middle">4,400 to 4,500</text>
+    <text x="55" y="523">The Buried Pyramid</text><text x="390" y="523">Egypt</text><text x="647" y="523" text-anchor="middle">7</text><text x="907" y="523" text-anchor="middle">4,600 to 4,700</text>
+  </g>
+</svg>

@@ -9,9 +9,6 @@ import json
 import sys
 from pathlib import Path
 
-import requests
-
-
 TABLES = {
     "ebrw_mcq.csv": "sat_ebrw_mcq",
     "math_mcq.csv": "sat_math_mcq",
@@ -81,6 +78,8 @@ def build_sql(payloads: dict[str, list[dict[str, object]]], period: str) -> str:
         "$guard$;",
     ]
     for table, rows in payloads.items():
+        if not rows:
+            continue
         columns = list(rows[0])
         statements.append(
             f"INSERT INTO public.{table} ({', '.join(columns)}) VALUES"
@@ -147,6 +146,12 @@ def main() -> int:
     if args.dry_run:
         print(json.dumps({table: len(rows) for table, rows in payloads.items()}, indent=2))
         return 0
+
+    try:
+        import requests
+    except ImportError:
+        print("The requests package is required for direct REST uploads", file=sys.stderr)
+        return 2
 
     session = requests.Session()
     headers = {

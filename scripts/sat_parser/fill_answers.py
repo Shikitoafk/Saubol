@@ -22,11 +22,15 @@ CSV:
 """
 import argparse
 import csv
+import re
 import sys
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).parent))
-import fitz  # noqa: E402
+try:
+    import pymupdf as fitz  # noqa: E402
+except ImportError:
+    import fitz  # type: ignore[no-redef]  # noqa: E402
 import sat_parser_gemini as sp  # noqa: E402
 
 
@@ -114,6 +118,7 @@ def module_index_by_question(rows: list[dict], family: str) -> dict[tuple[int, i
     результат совпадает с тем, как модули показаны на сайте.
     """
     sightings = []
+    mapping: dict[tuple[int, int], int] = {}
     for r in rows:
         qtype = r["_qtype"]
         if sp.FAMILY.get(qtype) != family:
@@ -122,15 +127,19 @@ def module_index_by_question(rows: list[dict], family: str) -> dict[tuple[int, i
         page = r["_page"]
         if number is None:
             continue
+        label = (r.get("module") or "").strip()
+        explicit = re.search(r"(?:module|\bM)\s*([12])\b", label, re.I)
+        if explicit:
+            mapping[(number, page)] = int(explicit.group(1))
+            continue
         sightings.append(sp.Sighting(number, page if page is not None else 0, qtype))
 
     modules = [m for m in sp.split_modules(sightings) if m.family == family]
     modules.sort(key=lambda m: m.first_page)
 
-    mapping: dict[tuple[int, int], int] = {}
     for index, module in enumerate(modules, start=1):
         for number, page in module.numbers.items():
-            mapping[(number, page)] = index
+            mapping.setdefault((number, page), index)
     return mapping
 
 

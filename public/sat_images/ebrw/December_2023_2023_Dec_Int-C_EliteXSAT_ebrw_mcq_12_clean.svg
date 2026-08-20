@@ -1,0 +1,21 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="980" height="500" viewBox="0 0 980 500">
+  <rect width="980" height="500" fill="#ffffff"/>
+  <style>
+    text { font-family: Arial, Helvetica, sans-serif; fill: #171717; }
+    .title { font-size: 29px; font-weight: 700; }
+    .head { font-size: 22px; font-weight: 700; }
+    .cell { font-size: 24px; }
+    .grid { stroke: #303030; stroke-width: 2; fill: none; }
+  </style>
+  <text class="title" x="490" y="42" text-anchor="middle">Contributions of Three Key Industries to Oklahoma</text>
+  <text class="title" x="490" y="78" text-anchor="middle">Economy in 2017</text>
+  <rect class="grid" x="35" y="105" width="910" height="360"/>
+  <path class="grid" d="M500 105v360M35 195h910M35 285h910M35 375h910"/>
+  <text class="head" x="267" y="158" text-anchor="middle">Industry</text>
+  <text class="head" x="722" y="158" text-anchor="middle">Approximate contribution</text>
+  <g class="cell">
+    <text x="65" y="250">Tribal economic activity</text><text x="722" y="250" text-anchor="middle">$7,312,400,000</text>
+    <text x="65" y="340">Construction</text><text x="722" y="340" text-anchor="middle">$6,797,200,000</text>
+    <text x="65" y="430">Health care</text><text x="722" y="430" text-anchor="middle">$13,727,300,000</text>
+  </g>
+</svg>

@@ -17,11 +17,30 @@ EXPECTED_MODULES = {
     "Math Module 1": 22,
     "Math Module 2": 22,
 }
+PROFILES = {
+    "full": EXPECTED_MODULES,
+    "rw-only": {
+        "Reading and Writing Module 1": 27,
+        "Reading and Writing Module 2": 27,
+    },
+    "math-only": {
+        "Math Module 1": 22,
+        "Math Module 2": 22,
+    },
+}
 
 
 def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("output_dir", type=Path)
+    parser.add_argument("--profile", choices=tuple(PROFILES), default="full")
+    parser.add_argument(
+        "--allow-missing",
+        action="append",
+        default=[],
+        metavar="MODULE=1,2",
+        help="question numbers intentionally absent from a module; repeatable",
+    )
     parser.add_argument(
         "--public-dir",
         type=Path,
@@ -34,6 +53,16 @@ def parse_args() -> argparse.Namespace:
 def main() -> int:
     args = parse_args()
     output_dir = args.output_dir.resolve()
+    expected_modules = PROFILES[args.profile]
+    allowed_missing: dict[str, set[int]] = defaultdict(set)
+    for spec in args.allow_missing:
+        try:
+            module, raw_numbers = spec.split("=", 1)
+            allowed_missing[module].update(
+                int(number.strip()) for number in raw_numbers.split(",") if number.strip()
+            )
+        except ValueError as exc:
+            raise SystemExit(f"Invalid --allow-missing value: {spec!r}") from exc
     errors: list[str] = []
     files: dict[str, list[dict[str, str]]] = {}
     grouped: dict[str, list[tuple[str, dict[str, str]]]] = defaultdict(list)
@@ -50,10 +79,14 @@ def main() -> int:
             grouped[row.get("module", "")].append((filename, row))
 
     all_rows = [(filename, row) for filename, rows in files.items() for row in rows]
-    if len(all_rows) != 98:
-        errors.append(f"Expected 98 questions, found {len(all_rows)}")
+    expected_total = sum(
+        count - len(allowed_missing.get(module, set()))
+        for module, count in expected_modules.items()
+    )
+    if len(all_rows) != expected_total:
+        errors.append(f"Expected {expected_total} questions, found {len(all_rows)}")
 
-    for module, expected_count in EXPECTED_MODULES.items():
+    for module, expected_count in expected_modules.items():
         numbers: list[int] = []
         for filename, row in grouped.get(module, []):
             try:
@@ -62,13 +95,17 @@ def main() -> int:
                 errors.append(
                     f"Invalid question number in {filename}: {row.get('question_number')!r}"
                 )
-        expected_numbers = list(range(1, expected_count + 1))
+        expected_numbers = [
+            number
+            for number in range(1, expected_count + 1)
+            if number not in allowed_missing.get(module, set())
+        ]
         if sorted(numbers) != expected_numbers:
             errors.append(
                 f"{module}: expected questions 1-{expected_count}, found {sorted(numbers)}"
             )
 
-    unexpected_modules = sorted(set(grouped) - set(EXPECTED_MODULES))
+    unexpected_modules = sorted(set(grouped) - set(expected_modules))
     if unexpected_modules:
         errors.append(f"Unexpected module labels: {unexpected_modules}")
 
@@ -92,6 +129,10 @@ def main() -> int:
 
     report = {
         "status": "ok" if not errors else "error",
+        "profile": args.profile,
+        "allowed_missing": {
+            module: sorted(numbers) for module, numbers in allowed_missing.items()
+        },
         "total_questions": len(all_rows),
         "files": {filename: len(rows) for filename, rows in files.items()},
         "modules": {module: len(rows) for module, rows in grouped.items()},
