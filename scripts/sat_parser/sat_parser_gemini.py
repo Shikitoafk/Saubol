@@ -62,7 +62,10 @@ from pathlib import Path
 from typing import Any, Iterable, Iterator, Sequence
 from urllib.parse import quote
 
-import fitz  # pymupdf
+try:
+    import pymupdf as fitz
+except ImportError:  # PyMuPDF < 1.24 compatibility
+    import fitz
 import requests
 from PIL import Image
 

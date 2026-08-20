@@ -63,6 +63,9 @@ export function resolveImageUrl(raw: unknown): string | undefined {
   const value = typeof raw === "string" ? raw.trim() : "";
   if (!value) return undefined;
   if (/^(https?:|data:|blob:)/i.test(value)) return value;
+  // Root-relative paths are files bundled with the site in public/sat_images.
+  // Keep them local even when VITE_SAT_IMAGE_BASE points at Supabase Storage.
+  if (value.startsWith("/")) return value;
   return IMAGE_BASE + value.replace(/^\/+/, "");
 }
 
