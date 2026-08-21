@@ -2371,7 +2371,21 @@ def report_images_todo(path: Path | None, source: str,
     """
     if not path:
         return None
-    ordered = sorted(rows, key=lambda r: (r["page"], r["question_number"]))
+
+    def sortable_number(value: object) -> tuple[int, int | str]:
+        """Sort Gemini's numeric fields even when it mixes ints and strings."""
+        try:
+            return 0, int(str(value).strip())
+        except (TypeError, ValueError):
+            return 1, str(value or "")
+
+    ordered = sorted(
+        rows,
+        key=lambda r: (
+            sortable_number(r.get("page")),
+            sortable_number(r.get("question_number")),
+        ),
+    )
     last_error: OSError | None = None
     for candidate in free_path(path):
         try:
