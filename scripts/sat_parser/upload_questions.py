@@ -66,16 +66,31 @@ def sql_literal(value: object) -> str:
     return "'" + str(value).replace("'", "''") + "'"
 
 
-def build_sql(payloads: dict[str, list[dict[str, object]]], period: str) -> str:
+def build_sql(
+    payloads: dict[str, list[dict[str, object]]],
+    period: str | None,
+    source: str,
+) -> str:
+    duplicate_filter = (
+        f"test_period = {sql_literal(period)}"
+        if period is not None
+        else f"test_period IS NULL AND source = {sql_literal(source)}"
+    )
     statements = [
         "BEGIN;",
         "DO $guard$",
         "BEGIN",
         "  IF EXISTS (",
         "    SELECT 1 FROM public.sat_ebrw_mcq",
-        f"    WHERE test_period = {sql_literal(period)}",
+        f"    WHERE {duplicate_filter}",
         "  ) THEN",
-        "    RAISE EXCEPTION " + sql_literal(f"Test already exists: {period}") + ";",
+        "    RAISE EXCEPTION "
+        + sql_literal(
+            f"Test already exists: {period}"
+            if period is not None
+            else f"Question-bank source already exists: {source}"
+        )
+        + ";",
         "  END IF;",
         "END",
         "$guard$;",
@@ -96,13 +111,13 @@ def build_sql(payloads: dict[str, list[dict[str, object]]], period: str) -> str:
         [
             "COMMIT;",
             "SELECT 'sat_ebrw_mcq' AS table_name, count(*) AS rows",
-            "FROM public.sat_ebrw_mcq WHERE test_period = " + sql_literal(period),
+            "FROM public.sat_ebrw_mcq WHERE " + duplicate_filter,
             "UNION ALL",
             "SELECT 'sat_math_mcq', count(*) FROM public.sat_math_mcq",
-            "WHERE test_period = " + sql_literal(period),
+            "WHERE " + duplicate_filter,
             "UNION ALL",
             "SELECT 'sat_math_open', count(*) FROM public.sat_math_open",
-            "WHERE test_period = " + sql_literal(period) + ";",
+            "WHERE " + duplicate_filter + ";",
         ]
     )
     return "\n".join(statements) + "\n"
@@ -125,7 +140,8 @@ def main() -> int:
         return 2
 
     payloads: dict[str, list[dict[str, object]]] = {}
-    periods: set[str] = set()
+    periods: set[str | None] = set()
+    sources: set[str] = set()
     for filename, table in TABLES.items():
         path = csv_dir / filename
         if not path.is_file():
@@ -140,14 +156,19 @@ def main() -> int:
                 for row in rows
             ]
         payloads[table] = rows
-        periods.update(str(row["test_period"]) for row in rows)
+        periods.update(row["test_period"] for row in rows)
+        sources.update(str(row["source"]) for row in rows)
 
     if len(periods) != 1:
-        print(f"Expected one test_period, found {sorted(periods)}", file=sys.stderr)
+        print(f"Expected one test_period, found {periods}", file=sys.stderr)
+        return 2
+    if len(sources) != 1:
+        print(f"Expected one source, found {sorted(sources)}", file=sys.stderr)
         return 2
     period = next(iter(periods))
+    source = next(iter(sources))
     if args.sql_output:
-        sql = build_sql(payloads, period)
+        sql = build_sql(payloads, period, source)
         args.sql_output.parent.mkdir(parents=True, exist_ok=True)
         args.sql_output.write_text(sql, encoding="utf-8")
         print(f"Wrote {args.sql_output} ({len(sql)} characters)")
@@ -171,15 +192,21 @@ def main() -> int:
     }
 
     for table in TABLES.values():
+        duplicate_params = (
+            {"test_period": f"eq.{period}"}
+            if period is not None
+            else {"test_period": "is.null", "source": f"eq.{source}"}
+        )
         response = session.get(
             f"{base}/rest/v1/{table}",
             headers=headers,
-            params={"select": "uid", "test_period": f"eq.{period}", "limit": "1"},
+            params={"select": "uid", **duplicate_params, "limit": "1"},
             timeout=30,
         )
         response.raise_for_status()
         if response.json():
-            print(f"Refusing duplicate upload: {period!r} already exists in {table}")
+            label = period if period is not None else source
+            print(f"Refusing duplicate upload: {label!r} already exists in {table}")
             return 3
 
     uploaded: list[str] = []
@@ -194,16 +221,22 @@ def main() -> int:
     except requests.RequestException as exc:
         print(f"Upload failed: {exc}", file=sys.stderr)
         for table in uploaded:
+            rollback_params = (
+                {"test_period": f"eq.{period}"}
+                if period is not None
+                else {"test_period": "is.null", "source": f"eq.{source}"}
+            )
             rollback = session.delete(
                 f"{base}/rest/v1/{table}",
                 headers=headers,
-                params={"test_period": f"eq.{period}"},
+                params=rollback_params,
                 timeout=30,
             )
             print(f"Rollback {table}: HTTP {rollback.status_code}", file=sys.stderr)
         return 1
 
-    print(f"Uploaded {sum(map(len, payloads.values()))} questions for {period}")
+    label = period if period is not None else f"question-bank source {source}"
+    print(f"Uploaded {sum(map(len, payloads.values()))} questions for {label}")
     return 0
 
 
