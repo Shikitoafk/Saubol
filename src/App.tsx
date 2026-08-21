@@ -12,7 +12,6 @@ import SatPrep from "@/pages/sat";
 import SATTestViewer from "@/pages/sat-test-viewer";
 import SATPractice from "@/pages/sat-practice";
 import SATPastPapers from "@/pages/sat-past-papers";
-import SATQuestionBank from "@/pages/sat-question-bank";
 
 const queryClient = new QueryClient();
 
@@ -28,7 +27,7 @@ function App() {
             <Route path="/sat" element={<SatPrep />} />
             <Route path="/sat/practice" element={<SATPractice />} />
             <Route path="/sat/past-papers" element={<SATPastPapers />} />
-            <Route path="/sat/question-bank" element={<SATQuestionBank />} />
+            <Route path="/sat/question-bank" element={<SATPractice />} />
             <Route path="/sat/test/:section/:slug" element={<SATTestViewer />} />
             <Route path="*" element={<NotFound />} />
           </Routes>

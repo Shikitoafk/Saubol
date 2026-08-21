@@ -76,8 +76,8 @@ export default function SatPrep() {
                     <div className="w-20 h-20 bg-surface rounded-3xl flex items-center justify-center border border-line group-hover:bg-surface-2 transition-all duration-700">
                       <Brain className="w-10 h-10 text-ink-muted shadow-[0_0_30px_rgba(255,255,255,0.1)] group-hover:text-indigo-400 group-hover:shadow-[0_0_30px_rgba(99,102,241,0.3)] transition-all" />
                     </div>
-                    <span className="px-4 py-1.5 bg-indigo-500/10 rounded-full border border-indigo-500/20 text-[9px] font-black tracking-widest uppercase text-indigo-400">
-                      Coming Soon
+                    <span className="px-4 py-1.5 bg-emerald-500/10 rounded-full border border-emerald-500/20 text-[9px] font-black tracking-widest uppercase text-emerald-500">
+                      Available
                     </span>
                   </div>
                   
@@ -91,7 +91,7 @@ export default function SatPrep() {
                 
                 <div className="flex items-center justify-between mt-auto">
                   <span className="px-6 h-12 bg-surface border border-line text-ink-muted rounded-xl font-black uppercase text-[10px] tracking-widest flex items-center gap-2 group-hover:bg-white group-hover:text-black transition-all">
-                    Preview Details <ChevronRight className="w-4 h-4" />
+                    Open Bank <ChevronRight className="w-4 h-4" />
                   </span>
                 </div>
               </div>

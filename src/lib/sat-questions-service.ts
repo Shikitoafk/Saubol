@@ -77,7 +77,7 @@ export function resolveImageUrl(raw: unknown): string | undefined {
  */
 function excludePastPapers<T>(query: T, exclude: boolean): T {
   if (!exclude) return query;
-  return (query as any).or("test_period.is.null,test_period.eq.");
+  return (query as any).is("test_period", null);
 }
 
 /** Map "A"|"B"|"C"|"D" → 0|1|2|3 */
@@ -101,10 +101,9 @@ function mapMCQRow(row: any, tablePrefix: string): SATQuestion {
     correctAnswer: letterToIndex(row.correct_answer),
     explanation: row.explanation ?? "",
     difficulty: row.difficulty ?? "Medium",
-    // EBRW_MCQ has `section`, Math_MCQ has `topic`
-    topic: row.topic ?? row.section ?? "",
+    topic: row.topic ?? "",
     section: tablePrefix === "ebrw" ? "RW" : "Math",
-    category: row.section ?? row.topic ?? "",
+    category: row.topic ?? "",
     imageUrl: resolveImageUrl(row.image_url),
     isFreeResponse: false,
     hasKaTeX: false,
@@ -152,9 +151,7 @@ function mapOpenRow(row: any): SATQuestion {
 /**
  * Fetch Reading & Writing MCQ questions from `EBRW_MCQ`.
  *
- * TODO: Once real `section` column values are known, add mapping from
- * UI subtopic IDs (e.g. "cross_text_connections", "transitions") to
- * the actual column values stored in Supabase.
+ * EBRW uses the same `topic` column as the Math tables.
  */
 export async function fetchRWQuestions(options?: {
   subtopic?: string;
@@ -169,7 +166,7 @@ export async function fetchRWQuestions(options?: {
   );
 
   if (options?.subtopic && options.subtopic !== "All") {
-    query = query.eq("section", options.subtopic);
+    query = query.eq("topic", options.subtopic);
   }
   if (options?.difficulty && options.difficulty !== "All") {
     query = query.eq("difficulty", options.difficulty);

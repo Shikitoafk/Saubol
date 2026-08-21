@@ -65,15 +65,17 @@ export default function SATPractice() {
   const [timerInterval, setTimerInterval] = useState<NodeJS.Timeout | null>(null);
   const [theme, setTheme] = useState<'dark' | 'light'>(() => (localStorage.getItem('sat-theme') as 'dark' | 'light') || 'dark');
   const [freeResponseInput, setFreeResponseInput] = useState("");
-  const [totalRwCount, setTotalRwCount] = useState(329);
-  const [totalMathCount, setTotalMathCount] = useState(346);
+  const [totalRwCount, setTotalRwCount] = useState(0);
+  const [totalMathCount, setTotalMathCount] = useState(0);
+  const [bankLoading, setBankLoading] = useState(true);
+  const [bankError, setBankError] = useState<string | null>(null);
 
   // Dynamic user progress states populated with exact broad topic values from the database
   const [rwProgress, setRwProgress] = useState<DomainInfo[]>([
     {
       name: "Reading & Writing Domains",
       subtopics: [
-        { id: "Reading & Writing", name: "Reading & Writing", totalQuestions: 329, solvedQuestions: 0, accuracy: 0 }
+        { id: "Reading & Writing", name: "Reading & Writing", totalQuestions: 0, solvedQuestions: 0, accuracy: 0 }
       ]
     }
   ]);
@@ -82,10 +84,10 @@ export default function SATPractice() {
     {
       name: "Math Domains",
       subtopics: [
-        { id: "Algebra", name: "Algebra", totalQuestions: 221, solvedQuestions: 0, accuracy: 0 },
-        { id: "Advanced Math", name: "Advanced Math", totalQuestions: 48, solvedQuestions: 0, accuracy: 0 },
-        { id: "Geometry", name: "Geometry", totalQuestions: 49, solvedQuestions: 0, accuracy: 0 },
-        { id: "Statistics", name: "Statistics", totalQuestions: 28, solvedQuestions: 0, accuracy: 0 }
+        { id: "Algebra", name: "Algebra", totalQuestions: 0, solvedQuestions: 0, accuracy: 0 },
+        { id: "Advanced Math", name: "Advanced Math", totalQuestions: 0, solvedQuestions: 0, accuracy: 0 },
+        { id: "Geometry", name: "Geometry", totalQuestions: 0, solvedQuestions: 0, accuracy: 0 },
+        { id: "Statistics", name: "Statistics", totalQuestions: 0, solvedQuestions: 0, accuracy: 0 }
       ]
     }
   ]);
@@ -98,11 +100,16 @@ export default function SATPractice() {
   // Load actual user progress from Supabase and dynamic question counts
   useEffect(() => {
     const fetchCountsAndProgress = async () => {
+      setBankLoading(true);
+      setBankError(null);
       try {
         // 1. Fetch exact Reading & Writing question count
         const { count: rwCount, error: rwErr } = await supabase
           .from(SAT_TABLES.ebrwMcq)
-          .select('*', { count: 'exact', head: true });
+          .select('*', { count: 'exact', head: true })
+          .is('test_period', null);
+
+        if (rwErr) throw rwErr;
         
         if (!rwErr && rwCount !== null) {
           setTotalRwCount(rwCount);
@@ -116,9 +123,12 @@ export default function SATPractice() {
 
         // 2. Fetch Math MCQ and Open counts by topic
         const [mcqRes, openRes] = await Promise.all([
-          supabase.from(SAT_TABLES.mathMcq).select('topic'),
-          supabase.from(SAT_TABLES.mathOpen).select('topic')
+          supabase.from(SAT_TABLES.mathMcq).select('topic').is('test_period', null),
+          supabase.from(SAT_TABLES.mathOpen).select('topic').is('test_period', null)
         ]);
+
+        if (mcqRes.error) throw mcqRes.error;
+        if (openRes.error) throw openRes.error;
 
         if (!mcqRes.error && !openRes.error && mcqRes.data && openRes.data) {
           const counts: Record<string, number> = {
@@ -185,6 +195,9 @@ export default function SATPractice() {
         }
       } catch (err) {
         console.error("Failed to load progress or counts:", err);
+        setBankError("Question Bank is temporarily unavailable. Please refresh and try again.");
+      } finally {
+        setBankLoading(false);
       }
     };
     fetchCountsAndProgress();
@@ -517,6 +530,12 @@ export default function SATPractice() {
               QUESTION <br /> BANK.
             </h1>
 
+            {bankError && (
+              <div className="mb-10 rounded-2xl border border-rose-500/20 bg-rose-500/5 px-6 py-4 text-sm font-semibold text-rose-500">
+                {bankError}
+              </div>
+            )}
+
             <div className="grid md:grid-cols-2 gap-10">
               {/* Reading & Writing Card */}
               <motion.div 
@@ -534,7 +553,9 @@ export default function SATPractice() {
                   <h2 className="text-5xl font-black mb-4 tracking-tighter uppercase italic leading-none text-shimmer">
                     Reading & <br /> Writing
                   </h2>
-                  <p className="text-sm font-black text-indigo-400 uppercase tracking-widest mb-10">{totalRwCount} questions</p>
+                  <p className="text-sm font-black text-indigo-400 uppercase tracking-widest mb-10">
+                    {bankLoading ? "Loading questions..." : `${totalRwCount} questions`}
+                  </p>
                 </div>
                 
                 <div className="flex items-center justify-between relative z-10 mt-auto">
@@ -560,7 +581,9 @@ export default function SATPractice() {
                   <h2 className="text-5xl font-black mb-4 tracking-tighter uppercase italic leading-none text-shimmer">
                     Math
                   </h2>
-                  <p className="text-sm font-black text-blue-400 uppercase tracking-widest mb-10">{totalMathCount} questions</p>
+                  <p className="text-sm font-black text-blue-400 uppercase tracking-widest mb-10">
+                    {bankLoading ? "Loading questions..." : `${totalMathCount} questions`}
+                  </p>
                 </div>
 
                 <div className="flex items-center justify-between relative z-10 mt-auto">
