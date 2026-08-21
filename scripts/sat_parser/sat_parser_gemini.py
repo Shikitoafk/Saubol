@@ -109,6 +109,7 @@ MONTHS = {
 VERSION_PATTERNS = [
     r"North\s+US\s+Version\s*[A-Z0-9]+",
     r"US\s+Version\s*[A-Z0-9]+",
+    r"\bUS[\s\-]?[A-Z0-9]+\b",
     r"INT[\s\-]?Version\s*[A-Z0-9]+",
     r"INT[\s\-]?Test\s*[A-Z0-9]+",
     r"INT[\s\-]?[A-Z](?![a-z])",
