@@ -273,7 +273,14 @@ class NewSDKBackend(GeminiBackend):
                  schema: dict | None) -> str:
         config: dict[str, Any] = {
             "response_mime_type": "application/json",
-            "http_options": self._types.HttpOptions(timeout=timeout * 1000),
+            # The SDK retries timed-out reads five times by default, which can
+            # turn a two-minute timeout into an eight-minute stall. ModelPool
+            # already owns retries and model rotation, so keep the SDK request
+            # itself single-attempt.
+            "http_options": self._types.HttpOptions(
+                timeout=timeout * 1000,
+                retry_options=self._types.HttpRetryOptions(attempts=1),
+            ),
         }
         if schema and self._schema_supported:
             config["response_schema"] = schema
