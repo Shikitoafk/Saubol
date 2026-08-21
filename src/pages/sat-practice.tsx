@@ -139,7 +139,11 @@ export default function SATPractice() {
           };
 
           const canonicalTopic = (topic: string) => {
-            if (topic === "Statistics" || topic === "Problem-Solving and Data Analysis") {
+            if (
+              topic === "Statistics" ||
+              topic === "Statistics and Probability" ||
+              topic === "Problem-Solving and Data Analysis"
+            ) {
               return "Problem Solving and Data Analysis";
             }
             if (topic === "Geometry") return "Geometry and Trigonometry";

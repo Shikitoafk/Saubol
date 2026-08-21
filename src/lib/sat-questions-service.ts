@@ -87,6 +87,7 @@ const MATH_TOPIC_ALIASES: Record<string, string[]> = {
     "Problem Solving and Data Analysis",
     "Problem-Solving and Data Analysis",
     "Statistics",
+    "Statistics and Probability",
   ],
   "Geometry and Trigonometry": ["Geometry and Trigonometry", "Geometry"],
 };
