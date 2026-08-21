@@ -81,12 +81,11 @@ log = logging.getLogger("sat_parser")
 # что список можно держать «с запасом на будущее».
 # Точные ID под свой ключ смотри через --list-models.
 DEFAULT_MODEL_ROTATION = [
+    "gemini-3.1-flash-lite",
+    "gemini-3.7-flash",
     "gemini-3.6-flash",
     "gemini-3.5-flash",
     "gemini-3.5-flash-lite",
-    "gemini-2.5-flash",
-    "gemini-2.5-flash-lite",
-    "gemini-2.0-flash",
 ]
 
 REQUEST_TIMEOUT_SEC = 120      # защита от зависания на одном запросе

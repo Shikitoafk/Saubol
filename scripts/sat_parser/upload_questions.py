@@ -16,6 +16,9 @@ TABLES = {
 }
 INTEGER_FIELDS = {"id", "question_number", "page"}
 BOOLEAN_FIELDS = {"has_image"}
+TABLE_EXCLUDED_FIELDS = {
+    "sat_math_open": {"option_a", "option_b", "option_c", "option_d"},
+}
 
 
 def load_env() -> dict[str, str]:
@@ -130,6 +133,12 @@ def main() -> int:
             return 2
         with path.open(encoding="utf-8-sig", newline="") as handle:
             rows = [typed_row(row) for row in csv.DictReader(handle)]
+        excluded = TABLE_EXCLUDED_FIELDS.get(table, set())
+        if excluded:
+            rows = [
+                {key: value for key, value in row.items() if key not in excluded}
+                for row in rows
+            ]
         payloads[table] = rows
         periods.update(str(row["test_period"]) for row in rows)
 
