@@ -82,10 +82,10 @@ log = logging.getLogger("sat_parser")
 # Точные ID под свой ключ смотри через --list-models.
 DEFAULT_MODEL_ROTATION = [
     "gemini-3.1-flash-lite",
+    "gemini-3.5-flash-lite",
     "gemini-3.7-flash",
     "gemini-3.6-flash",
     "gemini-3.5-flash",
-    "gemini-3.5-flash-lite",
 ]
 
 REQUEST_TIMEOUT_SEC = 120      # защита от зависания на одном запросе
