@@ -86,8 +86,8 @@ export default function SATPractice() {
       subtopics: [
         { id: "Algebra", name: "Algebra", totalQuestions: 0, solvedQuestions: 0, accuracy: 0 },
         { id: "Advanced Math", name: "Advanced Math", totalQuestions: 0, solvedQuestions: 0, accuracy: 0 },
-        { id: "Geometry", name: "Geometry", totalQuestions: 0, solvedQuestions: 0, accuracy: 0 },
-        { id: "Statistics", name: "Statistics", totalQuestions: 0, solvedQuestions: 0, accuracy: 0 }
+        { id: "Problem Solving and Data Analysis", name: "Problem Solving and Data Analysis", totalQuestions: 0, solvedQuestions: 0, accuracy: 0 },
+        { id: "Geometry and Trigonometry", name: "Geometry and Trigonometry", totalQuestions: 0, solvedQuestions: 0, accuracy: 0 }
       ]
     }
   ]);
@@ -134,19 +134,29 @@ export default function SATPractice() {
           const counts: Record<string, number> = {
             "Algebra": 0,
             "Advanced Math": 0,
-            "Geometry": 0,
-            "Statistics": 0
+            "Problem Solving and Data Analysis": 0,
+            "Geometry and Trigonometry": 0
+          };
+
+          const canonicalTopic = (topic: string) => {
+            if (topic === "Statistics" || topic === "Problem-Solving and Data Analysis") {
+              return "Problem Solving and Data Analysis";
+            }
+            if (topic === "Geometry") return "Geometry and Trigonometry";
+            return topic;
           };
 
           mcqRes.data.forEach((row: any) => {
-            if (row.topic && counts[row.topic] !== undefined) {
-              counts[row.topic]++;
+            const topic = canonicalTopic(row.topic);
+            if (topic && counts[topic] !== undefined) {
+              counts[topic]++;
             }
           });
 
           openRes.data.forEach((row: any) => {
-            if (row.topic && counts[row.topic] !== undefined) {
-              counts[row.topic]++;
+            const topic = canonicalTopic(row.topic);
+            if (topic && counts[topic] !== undefined) {
+              counts[topic]++;
             }
           });
 

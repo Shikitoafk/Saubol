@@ -80,6 +80,23 @@ function excludePastPapers<T>(query: T, exclude: boolean): T {
   return (query as any).is("test_period", null);
 }
 
+const MATH_TOPIC_ALIASES: Record<string, string[]> = {
+  "Algebra": ["Algebra"],
+  "Advanced Math": ["Advanced Math"],
+  "Problem Solving and Data Analysis": [
+    "Problem Solving and Data Analysis",
+    "Problem-Solving and Data Analysis",
+    "Statistics",
+  ],
+  "Geometry and Trigonometry": ["Geometry and Trigonometry", "Geometry"],
+};
+
+function filterMathTopic<T>(query: T, topic?: string): T {
+  if (!topic || topic === "All") return query;
+  const values = MATH_TOPIC_ALIASES[topic] ?? [topic];
+  return (query as any).in("topic", values);
+}
+
 /** Map "A"|"B"|"C"|"D" → 0|1|2|3 */
 function letterToIndex(letter: string): number {
   const map: Record<string, number> = { A: 0, B: 1, C: 2, D: 3 };
@@ -195,9 +212,7 @@ export async function fetchMathMCQQuestions(options?: {
     !options?.includePastPapers
   );
 
-  if (options?.subtopic && options.subtopic !== "All") {
-    query = query.eq("topic", options.subtopic);
-  }
+  query = filterMathTopic(query, options?.subtopic);
   if (options?.difficulty && options.difficulty !== "All") {
     query = query.eq("difficulty", options.difficulty);
   }
@@ -225,9 +240,7 @@ export async function fetchMathOpenQuestions(options?: {
     !options?.includePastPapers
   );
 
-  if (options?.subtopic && options.subtopic !== "All") {
-    query = query.eq("topic", options.subtopic);
-  }
+  query = filterMathTopic(query, options?.subtopic);
   if (options?.difficulty && options.difficulty !== "All") {
     query = query.eq("difficulty", options.difficulty);
   }
