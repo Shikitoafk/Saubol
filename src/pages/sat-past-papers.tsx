@@ -21,7 +21,13 @@ import {
   X,
   ClipboardList,
   Check,
-  RotateCcw
+  RotateCcw,
+  Bookmark,
+  Menu,
+  Eye,
+  EyeOff,
+  ListChecks,
+  Strikethrough
 } from "lucide-react";
 import { Layout } from "@/components/layout";
 import { Button } from "@/components/ui/button";
@@ -243,6 +249,11 @@ export default function SATPastPapers() {
   const [elapsed, setElapsed] = useState(0); // practice stopwatch
   const [timeRemaining, setTimeRemaining] = useState(134 * 60); // 134 mins for exam mode
   const [isDesmosOpen, setIsDesmosOpen] = useState(false);
+  const [isReferenceOpen, setIsReferenceOpen] = useState(false);
+  const [isQuestionMenuOpen, setIsQuestionMenuOpen] = useState(false);
+  const [isTimerHidden, setIsTimerHidden] = useState(false);
+  const [markedQuestions, setMarkedQuestions] = useState<Set<string>>(new Set());
+  const [eliminatedOptions, setEliminatedOptions] = useState<Record<string, number[]>>({});
   
   // Answers tracking
   // Store either MCQ option index or Free Response text input
@@ -264,7 +275,7 @@ export default function SATPastPapers() {
           setTimeRemaining(prev => {
             if (prev <= 1) {
               clearInterval(timer!);
-              handleFinishTest();
+              window.setTimeout(() => advanceModule(), 0);
               return 0;
             }
             return prev - 1;
@@ -387,6 +398,11 @@ export default function SATPastPapers() {
       setPhase("session");
       setCurrentIdx(0);
       setUserAnswers({});
+      setMarkedQuestions(new Set());
+      setEliminatedOptions({});
+      setIsQuestionMenuOpen(false);
+      setIsReferenceOpen(false);
+      setIsTimerHidden(false);
       setFreeResponseInput("");
       setElapsed(0);
       // Настоящий тайминг: R&W — 32 минуты на модуль, Math — 35.
@@ -394,7 +410,7 @@ export default function SATPastPapers() {
       setTimeRemaining(
         (selectedModule
           ? selectedModule.minutes
-          : modules.reduce((sum, m) => sum + m.minutes, 0) || 134) * 60);
+          : modules[0]?.minutes || 32) * 60);
       setAnswerConfirmed(false);
       setPracticeFeedback(null);
       setIsReviewMode(false);
@@ -673,6 +689,86 @@ export default function SATPastPapers() {
   const currentQuestion = questions[currentIdx];
   const hasRealPassage = !!currentQuestion?.passage &&
     stripForCompare(currentQuestion.passage) !== stripForCompare(currentQuestion.question);
+
+  let currentModuleStart = 0;
+  for (const module of sessionModules) {
+    if (module === here.module) break;
+    currentModuleStart += module.questions.length;
+  }
+  const currentModuleEnd = Math.min(
+    questions.length - 1,
+    currentModuleStart + (here.module?.questions.length || questions.length) - 1
+  );
+  const currentModuleIndexes = Array.from(
+    { length: currentModuleEnd - currentModuleStart + 1 },
+    (_, index) => currentModuleStart + index
+  );
+
+  function advanceModule() {
+    const moduleIndex = sessionModules.findIndex((module) => module === here.module);
+    const nextModule = sessionModules[moduleIndex + 1];
+    if (nextModule && currentModuleEnd < questions.length - 1) {
+      const nextIndex = currentModuleEnd + 1;
+      setCurrentIdx(nextIndex);
+      setFreeResponseInput(userAnswers[questions[nextIndex]?.id]?.text || "");
+      setTimeRemaining(nextModule.minutes * 60);
+      setIsTimerHidden(false);
+      setIsQuestionMenuOpen(false);
+      setAnswerConfirmed(false);
+      setPracticeFeedback(null);
+      return;
+    }
+    setIsQuestionMenuOpen(false);
+    handleFinishTest();
+  }
+
+  const goToQuestion = (index: number) => {
+    if (index < currentModuleStart || index > currentModuleEnd) return;
+    setCurrentIdx(index);
+    setAnswerConfirmed(false);
+    setPracticeFeedback(null);
+    setFreeResponseInput(userAnswers[questions[index]?.id]?.text || "");
+    setIsQuestionMenuOpen(false);
+  };
+
+  const toggleMarked = () => {
+    if (!currentQuestion) return;
+    setMarkedQuestions((previous) => {
+      const next = new Set(previous);
+      if (next.has(currentQuestion.id)) next.delete(currentQuestion.id);
+      else next.add(currentQuestion.id);
+      return next;
+    });
+  };
+
+  const toggleEliminated = (optionIndex: number) => {
+    if (!currentQuestion) return;
+    setEliminatedOptions((previous) => {
+      const existing = previous[currentQuestion.id] || [];
+      const next = existing.includes(optionIndex)
+        ? existing.filter((value) => value !== optionIndex)
+        : [...existing, optionIndex];
+      return { ...previous, [currentQuestion.id]: next };
+    });
+  };
+
+  useEffect(() => {
+    if (phase !== "session" || isReviewMode) return;
+    const onShortcut = (event: KeyboardEvent) => {
+      if (!(event.ctrlKey && event.altKey)) return;
+      const key = event.key.toLowerCase();
+      if (["g", "t", "c", "r", "v", "b", "x"].includes(key)) event.preventDefault();
+      if (key === "g") setIsQuestionMenuOpen((value) => !value);
+      if (key === "t") setIsTimerHidden((value) => !value);
+      if (key === "c" && currentQuestion?.section === "Math") setIsDesmosOpen((value) => !value);
+      if (key === "r" && currentQuestion?.section === "Math") setIsReferenceOpen((value) => !value);
+      if (key === "v") toggleMarked();
+      if (key === "b" && currentIdx > currentModuleStart) prevQuestion();
+      if (key === "x" && currentIdx < currentModuleEnd) nextQuestion();
+    };
+    window.addEventListener("keydown", onShortcut);
+    return () => window.removeEventListener("keydown", onShortcut);
+  }, [phase, isReviewMode, currentIdx, currentModuleStart, currentModuleEnd, currentQuestion?.id, currentQuestion?.section]);
 
   return (
     <Layout>
@@ -1057,7 +1153,7 @@ export default function SATPastPapers() {
                   <p className="text-sm text-ink-muted leading-relaxed font-medium">
                     Настоящий тайминг экзамена: {selectedModule
                       ? `${selectedModule.minutes} минут на ${selectedModule.questions.length} вопросов`
-                      : `${modules.reduce((sum, m) => sum + m.minutes, 0) || 134} минут на весь тест`}. Ответы проверяются в конце, вернуться к вопросу можно до сдачи.
+                      : "каждый модуль отсчитывается отдельно, как в Bluebook"}. После отправки модуля вернуться к нему нельзя; ответы проверяются в конце.
                   </p>
                 </div>
                 <div className="flex items-center gap-2 font-black uppercase text-[10px] text-indigo-400 mt-10">
@@ -1091,6 +1187,103 @@ export default function SATPastPapers() {
         {/* Phase 3: Active Test Session (Question Runner) */}
         {phase === "session" && questions.length > 0 && (
           <div className="min-h-screen bg-transparent relative overflow-hidden flex flex-col">
+
+            {/* Bluebook-style question menu */}
+            {isQuestionMenuOpen && (
+              <div className="fixed inset-0 z-[120] bg-black/45 backdrop-blur-sm flex items-center justify-center p-4" onClick={() => setIsQuestionMenuOpen(false)}>
+                <div className="w-full max-w-2xl rounded-3xl border border-line bg-canvas shadow-2xl overflow-hidden" onClick={(event) => event.stopPropagation()}>
+                  <div className="flex items-center justify-between px-7 py-5 border-b border-line bg-surface">
+                    <div>
+                      <p className="text-[10px] font-black uppercase tracking-[0.2em] text-indigo-400">Question Menu</p>
+                      <h3 className="text-lg font-black mt-1">{hereSubject} · Module {here.module?.index || 1}</h3>
+                    </div>
+                    <Button size="icon" variant="ghost" onClick={() => setIsQuestionMenuOpen(false)} aria-label="Close question menu"><X className="w-5 h-5" /></Button>
+                  </div>
+                  <div className="p-7">
+                    <div className="grid grid-cols-6 sm:grid-cols-9 gap-3">
+                      {currentModuleIndexes.map((index) => {
+                        const question = questions[index];
+                        const answer = userAnswers[question.id];
+                        const answered = question.isFreeResponse ? !!answer?.text?.trim() : answer?.selected !== undefined;
+                        const marked = markedQuestions.has(question.id);
+                        return (
+                          <button
+                            key={question.id}
+                            onClick={() => goToQuestion(index)}
+                            className={`relative h-12 rounded-xl border text-sm font-black transition-all ${
+                              index === currentIdx
+                                ? "bg-indigo-600 border-indigo-500 text-white ring-2 ring-indigo-400/30"
+                                : answered
+                                ? "bg-indigo-500/10 border-indigo-500/40 text-indigo-300"
+                                : "bg-surface border-line text-ink hover:border-indigo-400"
+                            }`}
+                          >
+                            {index - currentModuleStart + 1}
+                            {marked && <Bookmark className="absolute -right-1.5 -top-1.5 w-4 h-4 fill-amber-400 text-amber-400" />}
+                          </button>
+                        );
+                      })}
+                    </div>
+                    <div className="flex flex-wrap items-center gap-5 mt-7 pt-5 border-t border-line text-[10px] font-bold uppercase tracking-wider text-ink-muted">
+                      <span className="flex items-center gap-2"><span className="w-3 h-3 rounded bg-indigo-500/15 border border-indigo-500/40" /> Answered</span>
+                      <span className="flex items-center gap-2"><Bookmark className="w-3.5 h-3.5 fill-amber-400 text-amber-400" /> For review</span>
+                      <span>{currentModuleIndexes.filter((index) => {
+                        const q = questions[index];
+                        const a = userAnswers[q.id];
+                        return q.isFreeResponse ? !!a?.text?.trim() : a?.selected !== undefined;
+                      }).length} of {currentModuleIndexes.length} answered</span>
+                    </div>
+                    {!isReviewMode && mode === "exam" && (
+                      <div className="flex justify-end mt-6">
+                        <Button
+                          onClick={advanceModule}
+                          className="h-12 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white px-7 font-black uppercase text-[10px] tracking-widest"
+                        >
+                          {currentModuleEnd < questions.length - 1 ? "Submit module" : "Submit test"}
+                          <ChevronRight className="w-4 h-4 ml-2" />
+                        </Button>
+                      </div>
+                    )}
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {/* Math reference sheet */}
+            {isReferenceOpen && (
+              <div className="fixed inset-0 z-[115] bg-black/45 backdrop-blur-sm flex items-center justify-center p-4" onClick={() => setIsReferenceOpen(false)}>
+                <div className="w-full max-w-3xl max-h-[88vh] overflow-y-auto rounded-3xl border border-line bg-canvas shadow-2xl" onClick={(event) => event.stopPropagation()}>
+                  <div className="sticky top-0 flex items-center justify-between px-7 py-5 border-b border-line bg-canvas/95 backdrop-blur z-10">
+                    <div>
+                      <p className="text-[10px] font-black uppercase tracking-[0.2em] text-indigo-400">Math Reference</p>
+                      <h3 className="text-xl font-black mt-1">Common SAT formulas</h3>
+                    </div>
+                    <Button size="icon" variant="ghost" onClick={() => setIsReferenceOpen(false)} aria-label="Close reference sheet"><X className="w-5 h-5" /></Button>
+                  </div>
+                  <div className="p-7 grid md:grid-cols-2 gap-4 text-sm">
+                    {[
+                      ["Circle", "A = πr² · C = 2πr"],
+                      ["Rectangle", "A = lw"],
+                      ["Triangle", "A = ½bh"],
+                      ["Pythagorean theorem", "a² + b² = c²"],
+                      ["Rectangular prism", "V = lwh"],
+                      ["Cylinder", "V = πr²h"],
+                      ["Sphere", "V = ⁴⁄₃πr³"],
+                      ["Cone", "V = ⅓πr²h"],
+                      ["Special right triangles", "45°–45°–90°: x, x, x√2"],
+                      ["Special right triangles", "30°–60°–90°: x, x√3, 2x"],
+                      ["Degrees in a circle", "360° · 2π radians"],
+                      ["Arc length", "s = rθ (θ in radians)"],
+                    ].map(([label, formula], index) => (
+                      <div key={`${label}-${index}`} className="rounded-2xl border border-line bg-surface p-5">
+                        <p className="text-[9px] uppercase tracking-widest font-black text-ink-muted mb-2">{label}</p>
+                        <p className="text-lg font-semibold">{formula}</p>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              </div>
+            )}
             
             {/* Desmos Sidebar Modal */}
             {isDesmosOpen && (
@@ -1140,36 +1333,60 @@ export default function SATPastPapers() {
                     </p>
                   </div>
                   <div className="w-px h-8 bg-surface-2" />
-                  <div className="text-center">
+                  <button
+                    type="button"
+                    onClick={() => setIsTimerHidden((value) => !value)}
+                    className="text-center min-w-[92px] group"
+                    title="Hide or show timer (Ctrl+Alt+T)"
+                  >
                     <p className="text-[8px] font-black text-ink-muted uppercase tracking-widest mb-1">
                       {isReviewMode ? "Session Mode" : (mode === "exam" ? "Time Remaining" : "Time Elapsed")}
                     </p>
-                    <p className="text-sm font-black font-mono">
+                    <p className="text-sm font-black font-mono flex items-center justify-center gap-2">
                       {isReviewMode ? (
                         <span className="text-indigo-400">Review Mode</span>
+                      ) : isTimerHidden && timeRemaining > 5 * 60 ? (
+                        <><EyeOff className="w-4 h-4" /><span>Hidden</span></>
                       ) : (
                         mode === "exam" ? formatTime(timeRemaining) : formatTime(elapsed)
                       )}
                     </p>
-                  </div>
+                  </button>
                 </div>
 
                 {/* Toolbar */}
-                <div className="flex items-center gap-4">
+                <div className="flex items-center gap-2">
+                  <Button
+                    onClick={() => setIsQuestionMenuOpen(true)}
+                    className="bg-surface border border-line text-ink hover:bg-surface-2 px-4 h-12 rounded-xl font-black uppercase text-[10px] tracking-widest flex items-center gap-2"
+                    title="Question menu (Ctrl+Alt+G)"
+                  >
+                    <Menu className="w-4 h-4" /> Questions
+                  </Button>
                   <Button 
                     onClick={highlightSelectedText} 
-                    className="bg-surface border border-line text-ink hover:bg-surface-2 px-6 h-12 rounded-xl font-black uppercase text-[10px] tracking-widest flex items-center gap-2"
+                    className="bg-surface border border-line text-ink hover:bg-surface-2 px-4 h-12 rounded-xl font-black uppercase text-[10px] tracking-widest flex items-center gap-2"
                   >
                     <Highlighter className="w-4 h-4 text-yellow-400" /> Highlight
                   </Button>
 
                   {questions[currentIdx]?.section === "Math" && (
-                    <Button 
-                      onClick={() => setIsDesmosOpen(!isDesmosOpen)} 
-                      className="bg-surface border border-line text-ink hover:bg-surface-2 px-6 h-12 rounded-xl font-black uppercase text-[10px] tracking-widest flex items-center gap-2"
-                    >
-                      <Calculator className="w-4 h-4" /> Desmos
-                    </Button>
+                    <>
+                      <Button
+                        onClick={() => setIsReferenceOpen(true)}
+                        className="bg-surface border border-line text-ink hover:bg-surface-2 px-4 h-12 rounded-xl font-black uppercase text-[10px] tracking-widest flex items-center gap-2"
+                        title="Reference sheet (Ctrl+Alt+R)"
+                      >
+                        <BookOpen className="w-4 h-4" /> Reference
+                      </Button>
+                      <Button 
+                        onClick={() => setIsDesmosOpen(!isDesmosOpen)} 
+                        className="bg-surface border border-line text-ink hover:bg-surface-2 px-4 h-12 rounded-xl font-black uppercase text-[10px] tracking-widest flex items-center gap-2"
+                        title="Calculator (Ctrl+Alt+C)"
+                      >
+                        <Calculator className="w-4 h-4" /> Desmos
+                      </Button>
+                    </>
                   )}
 
                   <Button
@@ -1180,6 +1397,23 @@ export default function SATPastPapers() {
                   </Button>
                 </div>
               </div>
+
+              {!isReviewMode && (
+                <div className="flex items-center justify-between mb-4 shrink-0 rounded-2xl border border-line bg-surface/70 px-5 py-3">
+                  <button
+                    type="button"
+                    onClick={toggleMarked}
+                    className={`flex items-center gap-2 text-xs font-black transition-colors ${markedQuestions.has(currentQuestion?.id) ? "text-amber-400" : "text-ink-muted hover:text-ink"}`}
+                    title="Mark for review (Ctrl+Alt+V)"
+                  >
+                    <Bookmark className={`w-5 h-5 ${markedQuestions.has(currentQuestion?.id) ? "fill-amber-400" : ""}`} />
+                    Mark for Review
+                  </button>
+                  <p className="text-[10px] text-ink-subtle font-bold uppercase tracking-wider hidden sm:block">
+                    Select text to highlight · Use the strike button to eliminate choices
+                  </p>
+                </div>
+              )}
 
               {/* Main Content Arena */}
               {hasRealPassage ? (
@@ -1241,7 +1475,7 @@ export default function SATPastPapers() {
               <div className="mt-auto pt-6 border-t border-line flex items-center justify-between shrink-0">
                 <Button
                   onClick={prevQuestion}
-                  disabled={currentIdx === 0}
+                  disabled={currentIdx === (mode === "exam" ? currentModuleStart : 0)}
                   variant="ghost"
                   className="bg-surface border border-line text-ink hover:bg-surface-2 px-8 h-14 rounded-xl font-black uppercase text-[10px] tracking-widest flex items-center gap-2 disabled:opacity-35"
                 >
@@ -1251,9 +1485,11 @@ export default function SATPastPapers() {
                 {/* Exam mode answers grid */}
                 {!isReviewMode && mode === "exam" && (
                   <div className="hidden md:flex gap-1.5 max-w-[50%] overflow-x-auto py-1">
-                    {questions.map((q, idx) => {
+                    {currentModuleIndexes.map((idx) => {
+                      const q = questions[idx];
                       const isAnswered = userAnswers[q.id]?.selected !== undefined || userAnswers[q.id]?.text;
                       const isCurrent = idx === currentIdx;
+                      const isMarked = markedQuestions.has(q.id);
                       return (
                         <button
                           key={q.id}
@@ -1261,7 +1497,7 @@ export default function SATPastPapers() {
                             setCurrentIdx(idx);
                             setFreeResponseInput(userAnswers[q.id]?.text || "");
                           }}
-                          className={`w-9 h-9 rounded-lg font-bold text-xs border flex items-center justify-center transition-all ${
+                          className={`relative w-9 h-9 rounded-lg font-bold text-xs border flex items-center justify-center transition-all ${
                             isCurrent
                               ? "bg-indigo-500 border-indigo-400 text-ink shadow-[0_0_12px_rgba(99,102,241,0.4)]"
                               : isAnswered
@@ -1269,7 +1505,8 @@ export default function SATPastPapers() {
                               : "bg-surface border-line text-ink-muted hover:border-line"
                           }`}
                         >
-                          {idx + 1}
+                          {idx - currentModuleStart + 1}
+                          {isMarked && <span className="absolute -top-1 -right-1 w-2.5 h-2.5 rounded-full bg-amber-400 ring-2 ring-canvas" />}
                         </button>
                       );
                     })}
@@ -1292,12 +1529,12 @@ export default function SATPastPapers() {
                   </Button>
                 ) : (
                   mode === "exam" ? (
-                    currentIdx === questions.length - 1 ? (
+                    currentIdx === currentModuleEnd ? (
                       <Button
-                        onClick={handleFinishTest}
+                        onClick={() => setIsQuestionMenuOpen(true)}
                         className="bg-indigo-600 hover:bg-indigo-500 text-white px-10 h-14 rounded-xl font-black uppercase text-[10px] tracking-widest flex items-center gap-2 shadow-2xl"
                       >
-                        Submit Test <Check className="w-4 h-4" />
+                        Review module <ListChecks className="w-4 h-4" />
                       </Button>
                     ) : (
                       <Button
@@ -1652,6 +1889,7 @@ export default function SATPastPapers() {
             {q.options.map((opt, i) => {
               const letter = String.fromCharCode(65 + i);
               const isSelected = ans?.selected === i;
+              const isEliminated = (eliminatedOptions[q.id] || []).includes(i);
               
               let btnClass = "glass-3d p-6 text-left transition-all flex items-center gap-6 border-line hover:border-indigo-500/40 hover:bg-surface";
               let circleClass = "w-10 h-10 rounded-full flex items-center justify-center border border-line-strong text-sm font-bold text-ink group-hover:border-indigo-400 group-hover:text-indigo-400 group-hover:bg-indigo-500/5";
@@ -1662,14 +1900,31 @@ export default function SATPastPapers() {
               }
 
               return (
-                <button
+                <div
                   key={i}
-                  onClick={() => handleExamSelection(i)}
-                  className={`group ${btnClass}`}
+                  className={`group relative ${btnClass} ${isEliminated ? "opacity-50" : ""}`}
                 >
-                  <div className={circleClass}>{letter}</div>
-                  <div className="text-base font-medium flex-1" dangerouslySetInnerHTML={{ __html: renderKatexText(opt) }} />
-                </button>
+                  <button
+                    type="button"
+                    onClick={() => handleExamSelection(i)}
+                    className="absolute inset-0 rounded-[inherit]"
+                    aria-label={`Choose answer ${letter}`}
+                  />
+                  <div className={`${circleClass} relative pointer-events-none`}>{letter}</div>
+                  <div className={`text-base font-medium flex-1 relative pointer-events-none ${isEliminated ? "line-through" : ""}`} dangerouslySetInnerHTML={{ __html: renderKatexText(opt) }} />
+                  <button
+                    type="button"
+                    onClick={(event) => {
+                      event.stopPropagation();
+                      toggleEliminated(i);
+                    }}
+                    className={`relative z-10 w-9 h-9 rounded-lg border flex items-center justify-center transition-colors ${isEliminated ? "border-rose-400/60 text-rose-400 bg-rose-500/10" : "border-line text-ink-subtle hover:text-ink hover:border-line-strong"}`}
+                    title={`${isEliminated ? "Restore" : "Eliminate"} option ${letter}`}
+                    aria-label={`${isEliminated ? "Restore" : "Eliminate"} answer ${letter}`}
+                  >
+                    <Strikethrough className="w-4 h-4" />
+                  </button>
+                </div>
               );
             })}
           </div>
