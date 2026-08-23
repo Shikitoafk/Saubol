@@ -41,6 +41,11 @@ MATH_M2 = {
     18: "-6", 19: "D", 20: "D", 21: "2 or 179", 22: "638",
 }
 
+CLEAN_IMAGES = {
+    59: "/sat_images/math/march-2025-us-v2-p59-q1.svg",
+    70: "/sat_images/math/march-2025-us-v2-p70-q12.svg",
+}
+
 
 def rewrite(path: Path, rows: list[dict[str, str]]) -> None:
     with path.open(encoding="utf-8-sig", newline="") as handle:
@@ -94,6 +99,8 @@ def main() -> int:
             is_m1 = page <= 80
             row["module"] = "Math Module 1" if is_m1 else "Math Module 2"
             row["correct_answer"] = (MATH_M1 if is_m1 else MATH_M2)[int(row["question_number"])]
+            if page in CLEAN_IMAGES:
+                row["image_url"] = CLEAN_IMAGES[page]
             rows.append(row)
         rewrite(root / filename, rows)
     return 0
