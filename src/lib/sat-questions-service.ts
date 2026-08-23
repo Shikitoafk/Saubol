@@ -92,6 +92,32 @@ const MATH_TOPIC_ALIASES: Record<string, string[]> = {
   "Geometry and Trigonometry": ["Geometry and Trigonometry", "Geometry"],
 };
 
+export const RW_DOMAINS = [
+  "Information and Ideas",
+  "Craft and Structure",
+  "Expression of Ideas",
+  "Standard English Conventions",
+] as const;
+
+/**
+ * Early imported papers used one generic `Reading & Writing` topic.  Classify
+ * them from the official question wording so the bank remains useful before
+ * every legacy row receives a manual taxonomy pass.
+ */
+export function inferRWDomain(question: string): string {
+  const text = question.toLowerCase();
+  if (/(standard english|conventions|punctuation|sentence boundary|comma|semicolon|colon|verb tense|subject-verb|complete the text so that it conforms)/.test(text)) {
+    return "Standard English Conventions";
+  }
+  if (/(most nearly mean|function of the underlined|main purpose|overall structure|word or phrase.*most nearly)/.test(text)) {
+    return "Craft and Structure";
+  }
+  if (/(student wants|most effectively uses|transition|most logically completes|best completes the text)/.test(text)) {
+    return "Expression of Ideas";
+  }
+  return "Information and Ideas";
+}
+
 function filterMathTopic<T>(query: T, topic?: string): T {
   if (!topic || topic === "All") return query;
   const values = MATH_TOPIC_ALIASES[topic] ?? [topic];
@@ -174,7 +200,6 @@ function mapOpenRow(row: any): SATQuestion {
 export async function fetchRWQuestions(options?: {
   subtopic?: string;
   difficulty?: string;
-  source?: string;
   limit?: number;
   /** Не брать вопросы из прошедших тестов. По умолчанию не берём. */
   includePastPapers?: boolean;
@@ -184,14 +209,12 @@ export async function fetchRWQuestions(options?: {
     !options?.includePastPapers
   );
 
-  if (options?.subtopic && options.subtopic !== "All") {
+  const isDerivedDomain = RW_DOMAINS.includes(options?.subtopic as typeof RW_DOMAINS[number]);
+  if (options?.subtopic && options.subtopic !== "All" && !isDerivedDomain) {
     query = query.eq("topic", options.subtopic);
   }
   if (options?.difficulty && options.difficulty !== "All") {
     query = query.eq("difficulty", options.difficulty);
-  }
-  if (options?.source && options.source !== "All") {
-    query = query.eq("source", options.source);
   }
   if (options?.limit) {
     query = query.limit(options.limit);
@@ -199,7 +222,9 @@ export async function fetchRWQuestions(options?: {
 
   const { data, error } = await query;
   if (error) throw new Error(`EBRW_MCQ fetch failed: ${error.message}`);
-  return (data ?? []).map((r) => mapMCQRow(r, "ebrw"));
+  return (data ?? [])
+    .map((r) => mapMCQRow(r, "ebrw"))
+    .filter(question => !isDerivedDomain || inferRWDomain(question.question) === options?.subtopic);
 }
 
 /**
@@ -208,7 +233,6 @@ export async function fetchRWQuestions(options?: {
 export async function fetchMathMCQQuestions(options?: {
   subtopic?: string;
   difficulty?: string;
-  source?: string;
   limit?: number;
   /** Не брать вопросы из прошедших тестов. По умолчанию не берём. */
   includePastPapers?: boolean;
@@ -221,9 +245,6 @@ export async function fetchMathMCQQuestions(options?: {
   query = filterMathTopic(query, options?.subtopic);
   if (options?.difficulty && options.difficulty !== "All") {
     query = query.eq("difficulty", options.difficulty);
-  }
-  if (options?.source && options.source !== "All") {
-    query = query.eq("source", options.source);
   }
   if (options?.limit) {
     query = query.limit(options.limit);
@@ -240,7 +261,6 @@ export async function fetchMathMCQQuestions(options?: {
 export async function fetchMathOpenQuestions(options?: {
   subtopic?: string;
   difficulty?: string;
-  source?: string;
   limit?: number;
   /** Не брать вопросы из прошедших тестов. По умолчанию не берём. */
   includePastPapers?: boolean;
@@ -253,9 +273,6 @@ export async function fetchMathOpenQuestions(options?: {
   query = filterMathTopic(query, options?.subtopic);
   if (options?.difficulty && options.difficulty !== "All") {
     query = query.eq("difficulty", options.difficulty);
-  }
-  if (options?.source && options.source !== "All") {
-    query = query.eq("source", options.source);
   }
   if (options?.limit) {
     query = query.limit(options.limit);
@@ -272,7 +289,7 @@ export async function fetchMathOpenQuestions(options?: {
  */
 export async function fetchPracticeQuestions(
   section: "RW" | "Math",
-  options?: { subtopic?: string; difficulty?: string; source?: string; limit?: number }
+  options?: { subtopic?: string; difficulty?: string; limit?: number }
 ): Promise<SATQuestion[]> {
   const limit = options?.limit ?? 10;
 

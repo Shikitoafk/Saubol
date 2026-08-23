@@ -30,7 +30,7 @@ import { ResizablePanelGroup, ResizablePanel, ResizableHandle } from "@/componen
 import { supabase } from "@/lib/supabase";
 import { SAT_TABLES } from "@/lib/sat-tables";
 import { saveSATAnswer } from "@/lib/progress-service";
-import { fetchPracticeQuestions, SATQuestion } from "@/lib/sat-questions-service";
+import { fetchPracticeQuestions, inferRWDomain, RW_DOMAINS, SATQuestion } from "@/lib/sat-questions-service";
 import katex from 'katex';
 import 'katex/dist/katex.min.css';
 import { motion, AnimatePresence } from "framer-motion";
@@ -71,15 +71,13 @@ export default function SATPractice() {
   const [bankError, setBankError] = useState<string | null>(null);
   const [bankTopic, setBankTopic] = useState("All");
   const [bankDifficulty, setBankDifficulty] = useState("All");
-  const [bankSource, setBankSource] = useState("All");
-  const [bankSources, setBankSources] = useState<string[]>([]);
 
   // Dynamic user progress states populated with exact broad topic values from the database
   const [rwProgress, setRwProgress] = useState<DomainInfo[]>([
     {
       name: "Reading & Writing Domains",
       subtopics: [
-        { id: "Reading & Writing", name: "Reading & Writing", totalQuestions: 0, solvedQuestions: 0, accuracy: 0 }
+        ...RW_DOMAINS.map(name => ({ id: name, name, totalQuestions: 0, solvedQuestions: 0, accuracy: 0 }))
       ]
     }
   ]);
@@ -126,12 +124,10 @@ export default function SATPractice() {
         }
 
         // 2. Fetch Math MCQ and Open counts by topic
-        const [mcqRes, openRes, rwSourcesRes, mathSourcesRes, openSourcesRes] = await Promise.all([
+        const [mcqRes, openRes, rwQuestionsRes] = await Promise.all([
           supabase.from(SAT_TABLES.mathMcq).select('topic').is('test_period', null),
           supabase.from(SAT_TABLES.mathOpen).select('topic').is('test_period', null),
-          supabase.from(SAT_TABLES.ebrwMcq).select('source').is('test_period', null),
-          supabase.from(SAT_TABLES.mathMcq).select('source').is('test_period', null),
-          supabase.from(SAT_TABLES.mathOpen).select('source').is('test_period', null),
+          supabase.from(SAT_TABLES.ebrwMcq).select('question').is('test_period', null),
         ]);
 
         if (mcqRes.error) throw mcqRes.error;
@@ -185,11 +181,14 @@ export default function SATPractice() {
           })));
         }
 
-        const sources = [rwSourcesRes, mathSourcesRes, openSourcesRes]
-          .flatMap(result => result.data ?? [])
-          .map((row: any) => (row.source ?? '').trim())
-          .filter(Boolean);
-        setBankSources([...new Set(sources)].sort((a, b) => a.localeCompare(b)));
+        const rwCounts = Object.fromEntries(RW_DOMAINS.map(domain => [domain, 0])) as Record<string, number>;
+        (rwQuestionsRes.data ?? []).forEach((row: any) => {
+          rwCounts[inferRWDomain(row.question ?? '')]++;
+        });
+        setRwProgress(prev => prev.map(domain => ({
+          ...domain,
+          subtopics: domain.subtopics.map(sub => ({ ...sub, totalQuestions: rwCounts[sub.id] ?? 0 })),
+        })));
 
         // 3. Fetch user progress
         const { data: { session } } = await supabase.auth.getSession();
@@ -249,7 +248,6 @@ export default function SATPractice() {
     const questions = await fetchPracticeQuestions(section, {
       subtopic: bankTopic !== "All" ? bankTopic : subtopicId,
       difficulty: bankDifficulty,
-      source: bankSource,
       limit: 1000,
     });
     return questions;
@@ -654,7 +652,9 @@ export default function SATPractice() {
                     {selectedSection === 'Math' && mathProgress.flatMap(domain => domain.subtopics).map(topic => (
                       <option key={topic.id} value={topic.id}>{topic.name}</option>
                     ))}
-                    {selectedSection === 'RW' && <option value="Reading & Writing">Reading & Writing</option>}
+                    {selectedSection === 'RW' && RW_DOMAINS.map(topic => (
+                      <option key={topic} value={topic}>{topic}</option>
+                    ))}
                   </select>
                 </label>
                 <label className="grid gap-2 text-[10px] font-black uppercase tracking-widest text-ink-subtle">
@@ -666,14 +666,7 @@ export default function SATPractice() {
                     <option value="Hard">Hard</option>
                   </select>
                 </label>
-                <label className="grid min-w-56 flex-1 gap-2 text-[10px] font-black uppercase tracking-widest text-ink-subtle">
-                  Source
-                  <select value={bankSource} onChange={event => setBankSource(event.target.value)} className="h-11 rounded-lg border border-line bg-surface px-3 text-sm font-bold text-ink outline-none focus:border-indigo-400">
-                    <option value="All">All sources</option>
-                    {bankSources.map(source => <option key={source} value={source}>{source}</option>)}
-                  </select>
-                </label>
-                <Button onClick={() => { setBankTopic('All'); setBankDifficulty('All'); setBankSource('All'); }} variant="ghost" className="h-11 px-3 text-[10px] font-black uppercase tracking-widest text-indigo-400 hover:text-indigo-300">
+                <Button onClick={() => { setBankTopic('All'); setBankDifficulty('All'); }} variant="ghost" className="h-11 px-3 text-[10px] font-black uppercase tracking-widest text-indigo-400 hover:text-indigo-300">
                   Reset
                 </Button>
               </div>
