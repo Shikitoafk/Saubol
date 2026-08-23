@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="980" height="460" viewBox="0 0 980 460">
+  <rect width="980" height="460" fill="#fff"/><style>text{font:22px Arial;fill:#171717}.h{font-weight:bold}.g{stroke:#333;stroke-width:2;fill:none}</style>
+  <text class="h" x="490" y="38" text-anchor="middle">Cumulative Counts of Fish in Three Taiwanese Tide Pools, 1999–2018</text>
+  <rect class="g" x="30" y="70" width="920" height="350"/><path class="g" d="M430 70v350M605 70v350M777 70v350M30 140h920M30 210h920M30 280h920M30 350h920"/>
+  <g class="h" text-anchor="middle"><text x="230" y="115">Species</text><text x="518" y="115">Station 1</text><text x="690" y="115">Station 2</text><text x="863" y="115">Station 3</text></g>
+  <g><text x="50" y="185">spotted frillgoby</text><text x="50" y="255">blackspot sergeant</text><text x="50" y="325">cheekscaled frillgoby</text><text x="50" y="395">triplefin blenny</text></g>
+  <g text-anchor="middle"><text x="518" y="185">40</text><text x="690" y="185">42</text><text x="863" y="185">9</text><text x="518" y="255">338</text><text x="690" y="255">261</text><text x="863" y="255">136</text><text x="518" y="325">38</text><text x="690" y="325">45</text><text x="863" y="325">36</text><text x="518" y="395">149</text><text x="690" y="395">65</text><text x="863" y="395">78</text></g>
+</svg>

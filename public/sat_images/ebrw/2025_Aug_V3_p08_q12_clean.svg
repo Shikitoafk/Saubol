@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="760" height="500" viewBox="0 0 760 500">
+  <rect width="760" height="500" fill="#fff"/><style>text{font:20px Arial;fill:#171717}.h{font-weight:bold}.a{stroke:#222;stroke-width:2}</style>
+  <text class="h" x="380" y="35" text-anchor="middle">Maximum Charge Measured for Various Pollinators</text><line class="a" x1="100" y1="410" x2="700" y2="410"/><line class="a" x1="100" y1="80" x2="100" y2="410"/>
+  <g text-anchor="end"><text x="90" y="415">0</text><text x="90" y="335">200</text><text x="90" y="255">400</text><text x="90" y="175">600</text><text x="90" y="95">800</text></g><text x="42" y="255" transform="rotate(-90 42 255)">Picocoulombs (pC)</text>
+  <rect x="175" y="90" width="105" height="320" fill="#202020"/><rect x="355" y="170" width="105" height="240" fill="#fff" stroke="#202020" stroke-width="2"/><rect x="535" y="290" width="105" height="120" fill="#bfc5cf" stroke="#202020" stroke-width="2"/>
+  <g text-anchor="middle"><text x="228" y="438">Anna's</text><text x="228" y="462">hummingbirds</text><text x="408" y="438">Foraging</text><text x="408" y="462">honeybees</text><text x="588" y="450">Houseflies</text></g>
+</svg>

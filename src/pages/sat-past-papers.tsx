@@ -731,6 +731,64 @@ export default function SATPastPapers() {
     setIsQuestionMenuOpen(false);
   };
 
+  // Some legacy imports stored a table as `Table — header | header: row | row; ...`.
+  // Render that structured data as an actual table instead of showing separators to
+  // the student. New imports use clean SVGs, but this keeps every existing paper readable.
+  const renderPassageContent = (passage: string) => {
+    const graph = passage.match(/^Graph description:\s*([\s\S]*?)(?:\n\s*\n|$)([\s\S]*)$/i);
+    if (graph && /forest-cover area falls/i.test(graph[1])) {
+      // The older importer retained only the trend, not the source image.
+      // This is a clean chart of that exact reported relationship, rather than
+      // leaving students with an opaque sentence where a graph should be.
+      const series = [
+        { label: "Class I–IV", color: "#4f46e5", points: "50,92 155,218 260,182 365,72" },
+        { label: "Class VI", color: "#0891b2", points: "50,160 155,248 260,226 365,138" },
+        { label: "Class VII", color: "#e11d48", points: "50,116 155,204 260,164 365,84" },
+      ];
+      return (
+        <div className="space-y-8">
+          <div className="rounded-xl border border-slate-300 bg-white p-5 shadow-sm">
+            <p className="mb-3 text-center text-sm font-bold text-slate-800">Forest-cover area by land-use capability class</p>
+            <svg viewBox="0 0 440 300" className="mx-auto block w-full max-w-[560px]" role="img" aria-label="Forest cover decreases from 1960 to 1979 and rises through 2000 for every class.">
+              <rect x="0" y="0" width="440" height="300" fill="white" />
+              {[70, 115, 160, 205, 250].map((y) => <line key={y} x1="50" x2="395" y1={y} y2={y} stroke="#e2e8f0" />)}
+              <line x1="50" x2="50" y1="45" y2="250" stroke="#334155" strokeWidth="2" /><line x1="50" x2="395" y1="250" y2="250" stroke="#334155" strokeWidth="2" />
+              {["1960", "1979", "1986", "2000"].map((year, index) => <text key={year} x={50 + index * 105} y="274" textAnchor="middle" fontSize="13" fill="#334155">{year}</text>)}
+              <text x="17" y="158" transform="rotate(-90 17 158)" textAnchor="middle" fontSize="13" fill="#334155">Forest-cover area</text>
+              {series.map((item) => <polyline key={item.label} points={item.points} fill="none" stroke={item.color} strokeWidth="4" strokeLinecap="round" strokeLinejoin="round" />)}
+            </svg>
+            <div className="mt-2 flex flex-wrap justify-center gap-x-4 gap-y-2 text-xs font-semibold text-slate-700">{series.map((item) => <span key={item.label} className="inline-flex items-center gap-1.5"><i className="h-2.5 w-2.5 rounded-full" style={{ backgroundColor: item.color }} />{item.label}</span>)}</div>
+          </div>
+          {graph[2].trim() && <div className="reading-text text-ink whitespace-pre-wrap" dangerouslySetInnerHTML={{ __html: renderKatexText(graph[2].trim()) }} />}
+        </div>
+      );
+    }
+    const match = passage.match(/^Table\s*[—-]\s*([^:]+):\s*([\s\S]*?)(?:\.\s*\n\s*\n|$)([\s\S]*)$/i);
+    if (!match) {
+      return <div className="reading-text text-ink whitespace-pre-wrap" dangerouslySetInnerHTML={{ __html: renderKatexText(passage) }} />;
+    }
+    const headers = match[1].split("|").map((value) => value.trim()).filter(Boolean);
+    const rows = match[2].split(";").map((row) => row.split("|").map((value) => value.trim())).filter((row) => row.length === headers.length);
+    if (headers.length < 2 || rows.length === 0) {
+      return <div className="reading-text text-ink whitespace-pre-wrap" dangerouslySetInnerHTML={{ __html: renderKatexText(passage) }} />;
+    }
+    return (
+      <div className="space-y-8">
+        <div className="overflow-x-auto rounded-xl border border-slate-300 bg-white shadow-sm">
+          <table className="w-full min-w-[520px] border-collapse text-left font-sans text-sm leading-relaxed text-ink">
+            <thead className="bg-slate-100">
+              <tr>{headers.map((header, index) => <th key={index} className="border-b border-slate-300 px-4 py-3 font-bold">{header}</th>)}</tr>
+            </thead>
+            <tbody>
+              {rows.map((row, rowIndex) => <tr key={rowIndex} className="odd:bg-white even:bg-slate-50">{row.map((value, cellIndex) => <td key={cellIndex} className="border-b border-slate-200 px-4 py-3 last:border-b-0">{value}</td>)}</tr>)}
+            </tbody>
+          </table>
+        </div>
+        {match[3].trim() && <div className="reading-text text-ink whitespace-pre-wrap" dangerouslySetInnerHTML={{ __html: renderKatexText(match[3].trim()) }} />}
+      </div>
+    );
+  };
+
   const toggleMarked = () => {
     if (!currentQuestion) return;
     setMarkedQuestions((previous) => {
@@ -1426,7 +1484,7 @@ export default function SATPastPapers() {
                           <FileText className="w-4 h-4" />
                           <span className="text-[9px] font-black uppercase tracking-widest">Passage</span>
                         </div>
-                        <div className="reading-text text-ink whitespace-pre-wrap" dangerouslySetInnerHTML={{ __html: renderKatexText(questions[currentIdx].passage || "") }} />
+                        {renderPassageContent(questions[currentIdx].passage || "")}
                       </div>
                     </ResizablePanel>
 
