@@ -49,6 +49,9 @@ CLEAN_IMAGES = {
     79: "/sat_images/math/march-2025-us-v2-p79-q21.svg",
     80: "/sat_images/math/march-2025-us-v2-p80-q22.svg",
     83: "/sat_images/math/march-2025-us-v2-p83-q3.svg",
+    84: "/sat_images/math/march-2025-us-v2-p84-q4.svg",
+    86: "/sat_images/math/march-2025-us-v2-p86-q6.svg",
+    88: "/sat_images/math/march-2025-us-v2-p88-q8.svg",
 }
 
 
