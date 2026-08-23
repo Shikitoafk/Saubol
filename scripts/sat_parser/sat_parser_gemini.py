@@ -870,6 +870,14 @@ FORMATTING RULES:
   at the end ("the researcher found that helium ______ solid under high
   pressure"). Never drop the blank and never move it: without it the sentence
   reads as cut off.
+- UNDERLINED TEXT: for every Reading & Writing question that refers to an
+  underlined word, phrase, sentence, claim, or portions, preserve the exact
+  underlining in the passage by wrapping the underlined text in literal HTML
+  tags: <u>underlined text</u>. Keep the tags only around the part visibly
+  underlined in the source; do not merely describe it in the question. If two
+  separate portions are underlined, wrap each portion separately. This is
+  essential because students cannot answer a function/support question without
+  seeing what is underlined.
 - If a page has no complete question, skip it. Return [] if the batch has none.
 """
 
