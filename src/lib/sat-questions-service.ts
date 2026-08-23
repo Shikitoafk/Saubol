@@ -174,6 +174,7 @@ function mapOpenRow(row: any): SATQuestion {
 export async function fetchRWQuestions(options?: {
   subtopic?: string;
   difficulty?: string;
+  source?: string;
   limit?: number;
   /** Не брать вопросы из прошедших тестов. По умолчанию не берём. */
   includePastPapers?: boolean;
@@ -188,6 +189,9 @@ export async function fetchRWQuestions(options?: {
   }
   if (options?.difficulty && options.difficulty !== "All") {
     query = query.eq("difficulty", options.difficulty);
+  }
+  if (options?.source && options.source !== "All") {
+    query = query.eq("source", options.source);
   }
   if (options?.limit) {
     query = query.limit(options.limit);
@@ -204,6 +208,7 @@ export async function fetchRWQuestions(options?: {
 export async function fetchMathMCQQuestions(options?: {
   subtopic?: string;
   difficulty?: string;
+  source?: string;
   limit?: number;
   /** Не брать вопросы из прошедших тестов. По умолчанию не берём. */
   includePastPapers?: boolean;
@@ -216,6 +221,9 @@ export async function fetchMathMCQQuestions(options?: {
   query = filterMathTopic(query, options?.subtopic);
   if (options?.difficulty && options.difficulty !== "All") {
     query = query.eq("difficulty", options.difficulty);
+  }
+  if (options?.source && options.source !== "All") {
+    query = query.eq("source", options.source);
   }
   if (options?.limit) {
     query = query.limit(options.limit);
@@ -232,6 +240,7 @@ export async function fetchMathMCQQuestions(options?: {
 export async function fetchMathOpenQuestions(options?: {
   subtopic?: string;
   difficulty?: string;
+  source?: string;
   limit?: number;
   /** Не брать вопросы из прошедших тестов. По умолчанию не берём. */
   includePastPapers?: boolean;
@@ -244,6 +253,9 @@ export async function fetchMathOpenQuestions(options?: {
   query = filterMathTopic(query, options?.subtopic);
   if (options?.difficulty && options.difficulty !== "All") {
     query = query.eq("difficulty", options.difficulty);
+  }
+  if (options?.source && options.source !== "All") {
+    query = query.eq("source", options.source);
   }
   if (options?.limit) {
     query = query.limit(options.limit);
@@ -260,7 +272,7 @@ export async function fetchMathOpenQuestions(options?: {
  */
 export async function fetchPracticeQuestions(
   section: "RW" | "Math",
-  options?: { subtopic?: string; difficulty?: string; limit?: number }
+  options?: { subtopic?: string; difficulty?: string; source?: string; limit?: number }
 ): Promise<SATQuestion[]> {
   const limit = options?.limit ?? 10;
 

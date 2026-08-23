@@ -69,6 +69,10 @@ export default function SATPractice() {
   const [totalMathCount, setTotalMathCount] = useState(0);
   const [bankLoading, setBankLoading] = useState(true);
   const [bankError, setBankError] = useState<string | null>(null);
+  const [bankTopic, setBankTopic] = useState("All");
+  const [bankDifficulty, setBankDifficulty] = useState("All");
+  const [bankSource, setBankSource] = useState("All");
+  const [bankSources, setBankSources] = useState<string[]>([]);
 
   // Dynamic user progress states populated with exact broad topic values from the database
   const [rwProgress, setRwProgress] = useState<DomainInfo[]>([
@@ -122,9 +126,12 @@ export default function SATPractice() {
         }
 
         // 2. Fetch Math MCQ and Open counts by topic
-        const [mcqRes, openRes] = await Promise.all([
+        const [mcqRes, openRes, rwSourcesRes, mathSourcesRes, openSourcesRes] = await Promise.all([
           supabase.from(SAT_TABLES.mathMcq).select('topic').is('test_period', null),
-          supabase.from(SAT_TABLES.mathOpen).select('topic').is('test_period', null)
+          supabase.from(SAT_TABLES.mathOpen).select('topic').is('test_period', null),
+          supabase.from(SAT_TABLES.ebrwMcq).select('source').is('test_period', null),
+          supabase.from(SAT_TABLES.mathMcq).select('source').is('test_period', null),
+          supabase.from(SAT_TABLES.mathOpen).select('source').is('test_period', null),
         ]);
 
         if (mcqRes.error) throw mcqRes.error;
@@ -177,6 +184,12 @@ export default function SATPractice() {
             })
           })));
         }
+
+        const sources = [rwSourcesRes, mathSourcesRes, openSourcesRes]
+          .flatMap(result => result.data ?? [])
+          .map((row: any) => (row.source ?? '').trim())
+          .filter(Boolean);
+        setBankSources([...new Set(sources)].sort((a, b) => a.localeCompare(b)));
 
         // 3. Fetch user progress
         const { data: { session } } = await supabase.auth.getSession();
@@ -234,7 +247,9 @@ export default function SATPractice() {
   const loadQuestionsForSubtopic = async (subtopicId: string, isMath: boolean): Promise<any[]> => {
     const section = isMath ? "Math" : "RW";
     const questions = await fetchPracticeQuestions(section, {
-      subtopic: subtopicId,
+      subtopic: bankTopic !== "All" ? bankTopic : subtopicId,
+      difficulty: bankDifficulty,
+      source: bankSource,
       limit: 1000,
     });
     return questions;
@@ -269,7 +284,8 @@ export default function SATPractice() {
   const startPracticeAll = async () => {
     const list = selectedSection === 'Math' ? mathProgress : rwProgress;
     const allSubtopics = list.flatMap(d => d.subtopics);
-    const randomSub = allSubtopics[Math.floor(Math.random() * allSubtopics.length)];
+    const eligible = bankTopic === "All" ? allSubtopics : allSubtopics.filter(s => s.id === bankTopic);
+    const randomSub = eligible[Math.floor(Math.random() * eligible.length)] ?? allSubtopics[0];
     await startPracticeForSubtopic(randomSub);
   };
 
@@ -555,7 +571,7 @@ export default function SATPractice() {
               <motion.div 
                 whileHover={{ y: -8, scale: 1.01 }}
                 className="glass-3d p-16 flex flex-col justify-between min-h-[460px] cursor-pointer border-indigo-500/10 hover:border-indigo-500/40 transition-all relative overflow-hidden group"
-                onClick={() => { setSelectedSection('RW'); setPhase('subtopics'); }}
+                onClick={() => { setSelectedSection('RW'); setBankTopic('All'); setPhase('subtopics'); }}
               >
                 <div className="absolute top-0 right-0 w-64 h-64 bg-indigo-500/5 blur-[100px] opacity-0 group-hover:opacity-100 transition-opacity" />
                 <div className="relative z-10">
@@ -583,7 +599,7 @@ export default function SATPractice() {
               <motion.div 
                 whileHover={{ y: -8, scale: 1.01 }}
                 className="glass-3d p-16 flex flex-col justify-between min-h-[460px] cursor-pointer border-blue-500/10 hover:border-blue-500/40 transition-all relative overflow-hidden group"
-                onClick={() => { setSelectedSection('Math'); setPhase('subtopics'); }}
+                onClick={() => { setSelectedSection('Math'); setBankTopic('All'); setPhase('subtopics'); }}
               >
                 <div className="absolute top-0 right-0 w-64 h-64 bg-blue-500/5 blur-[100px] opacity-0 group-hover:opacity-100 transition-opacity" />
                 <div className="relative z-10">
@@ -628,6 +644,40 @@ export default function SATPractice() {
                 Choose a specific domain and select a topic to solve adaptive blueprints.
               </p>
             </header>
+
+            <section className="glass-3d mb-8 border-line p-5 md:p-6">
+              <div className="flex flex-wrap items-end gap-4">
+                <label className="grid gap-2 text-[10px] font-black uppercase tracking-widest text-ink-subtle">
+                  Topic
+                  <select value={bankTopic} onChange={event => setBankTopic(event.target.value)} className="h-11 min-w-48 rounded-lg border border-line bg-surface px-3 text-sm font-bold text-ink outline-none focus:border-indigo-400">
+                    <option value="All">All topics</option>
+                    {selectedSection === 'Math' && mathProgress.flatMap(domain => domain.subtopics).map(topic => (
+                      <option key={topic.id} value={topic.id}>{topic.name}</option>
+                    ))}
+                    {selectedSection === 'RW' && <option value="Reading & Writing">Reading & Writing</option>}
+                  </select>
+                </label>
+                <label className="grid gap-2 text-[10px] font-black uppercase tracking-widest text-ink-subtle">
+                  Difficulty
+                  <select value={bankDifficulty} onChange={event => setBankDifficulty(event.target.value)} className="h-11 min-w-36 rounded-lg border border-line bg-surface px-3 text-sm font-bold text-ink outline-none focus:border-indigo-400">
+                    <option value="All">All levels</option>
+                    <option value="Easy">Easy</option>
+                    <option value="Medium">Medium</option>
+                    <option value="Hard">Hard</option>
+                  </select>
+                </label>
+                <label className="grid min-w-56 flex-1 gap-2 text-[10px] font-black uppercase tracking-widest text-ink-subtle">
+                  Source
+                  <select value={bankSource} onChange={event => setBankSource(event.target.value)} className="h-11 rounded-lg border border-line bg-surface px-3 text-sm font-bold text-ink outline-none focus:border-indigo-400">
+                    <option value="All">All sources</option>
+                    {bankSources.map(source => <option key={source} value={source}>{source}</option>)}
+                  </select>
+                </label>
+                <Button onClick={() => { setBankTopic('All'); setBankDifficulty('All'); setBankSource('All'); }} variant="ghost" className="h-11 px-3 text-[10px] font-black uppercase tracking-widest text-indigo-400 hover:text-indigo-300">
+                  Reset
+                </Button>
+              </div>
+            </section>
 
             {/* General Practice all Banner */}
             <div className="glass-3d p-8 mb-12 flex flex-col md:flex-row items-center justify-between gap-6 border-indigo-500/10 bg-indigo-500/5">
