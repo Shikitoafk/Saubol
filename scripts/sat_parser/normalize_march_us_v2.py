@@ -52,6 +52,14 @@ CLEAN_IMAGES = {
     84: "/sat_images/math/march-2025-us-v2-p84-q4.svg",
     86: "/sat_images/math/march-2025-us-v2-p86-q6.svg",
     88: "/sat_images/math/march-2025-us-v2-p88-q8.svg",
+    96: "/sat_images/math/march-2025-us-v2-p96-q16.svg",
+    97: "/sat_images/math/march-2025-us-v2-p97-q17.svg",
+}
+
+RW_CLEAN_IMAGES = {
+    10: "/sat_images/ebrw/march-2025-us-v2-forest-cover.svg",
+    11: "/sat_images/ebrw/march-2025-us-v2-forest-cover.svg",
+    40: "/sat_images/ebrw/march-2025-us-v2-p40-q11.svg",
 }
 
 
@@ -96,6 +104,8 @@ def main() -> int:
         is_m1 = page <= 29
         row["module"] = "Reading and Writing Module 1" if is_m1 else "Reading and Writing Module 2"
         row["correct_answer"] = (RW_M1 if is_m1 else RW_M2)[int(row["question_number"])]
+        if page in RW_CLEAN_IMAGES:
+            row["image_url"] = RW_CLEAN_IMAGES[page]
         rw_rows.append(row)
     rewrite(root / "ebrw_mcq.csv", rw_rows)
 
