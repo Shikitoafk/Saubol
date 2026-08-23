@@ -213,9 +213,6 @@ export async function fetchRWQuestions(options?: {
   if (options?.subtopic && options.subtopic !== "All" && !isDerivedDomain) {
     query = query.eq("topic", options.subtopic);
   }
-  if (options?.difficulty && options.difficulty !== "All") {
-    query = query.eq("difficulty", options.difficulty);
-  }
   if (options?.limit) {
     query = query.limit(options.limit);
   }
@@ -243,9 +240,6 @@ export async function fetchMathMCQQuestions(options?: {
   );
 
   query = filterMathTopic(query, options?.subtopic);
-  if (options?.difficulty && options.difficulty !== "All") {
-    query = query.eq("difficulty", options.difficulty);
-  }
   if (options?.limit) {
     query = query.limit(options.limit);
   }
@@ -271,9 +265,6 @@ export async function fetchMathOpenQuestions(options?: {
   );
 
   query = filterMathTopic(query, options?.subtopic);
-  if (options?.difficulty && options.difficulty !== "All") {
-    query = query.eq("difficulty", options.difficulty);
-  }
   if (options?.limit) {
     query = query.limit(options.limit);
   }

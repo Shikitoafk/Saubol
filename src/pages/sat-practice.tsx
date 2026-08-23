@@ -70,7 +70,7 @@ export default function SATPractice() {
   const [bankLoading, setBankLoading] = useState(true);
   const [bankError, setBankError] = useState<string | null>(null);
   const [bankTopic, setBankTopic] = useState("All");
-  const [bankDifficulty, setBankDifficulty] = useState("All");
+  const [selectedAnswer, setSelectedAnswer] = useState<number | null>(null);
 
   // Dynamic user progress states populated with exact broad topic values from the database
   const [rwProgress, setRwProgress] = useState<DomainInfo[]>([
@@ -247,7 +247,6 @@ export default function SATPractice() {
     const section = isMath ? "Math" : "RW";
     const questions = await fetchPracticeQuestions(section, {
       subtopic: bankTopic !== "All" ? bankTopic : subtopicId,
-      difficulty: bankDifficulty,
       limit: 1000,
     });
     return questions;
@@ -270,6 +269,7 @@ export default function SATPractice() {
       setElapsed(0);
       setSessionAnswers({});
       setAnswerState(null);
+      setSelectedAnswer(null);
       setFreeResponseInput("");
     } catch (err: any) {
       console.error("Failed to load questions:", err);
@@ -287,11 +287,16 @@ export default function SATPractice() {
     await startPracticeForSubtopic(randomSub);
   };
 
-  const handleAnswerSelection = (idx: number) => {
+  const selectAnswer = (idx: number) => {
     if (answerState) return;
+    setSelectedAnswer(idx);
+  };
+
+  const checkSelectedAnswer = () => {
+    if (answerState || selectedAnswer === null) return;
     const q = questions[currentIdx];
-    const correct = idx === q.correctAnswer;
-    setAnswerState({ selected: idx, correct });
+    const correct = selectedAnswer === q.correctAnswer;
+    setAnswerState({ selected: selectedAnswer, correct });
     setSessionAnswers(prev => ({ ...prev, [q.id]: { correct } }));
 
     // Persist to Database via progress-service
@@ -349,11 +354,13 @@ export default function SATPractice() {
     if (currentIdx < questions.length - 1) {
       setCurrentIdx(prev => prev + 1);
       setAnswerState(null);
+      setSelectedAnswer(null);
       setFreeResponseInput("");
     } else {
       // Endless practice: loop back to the first question
       setCurrentIdx(0);
       setAnswerState(null);
+      setSelectedAnswer(null);
       setFreeResponseInput("");
     }
   };
@@ -657,16 +664,7 @@ export default function SATPractice() {
                     ))}
                   </select>
                 </label>
-                <label className="grid gap-2 text-[10px] font-black uppercase tracking-widest text-ink-subtle">
-                  Difficulty
-                  <select value={bankDifficulty} onChange={event => setBankDifficulty(event.target.value)} className="h-11 min-w-36 rounded-lg border border-line bg-surface px-3 text-sm font-bold text-ink outline-none focus:border-indigo-400">
-                    <option value="All">All levels</option>
-                    <option value="Easy">Easy</option>
-                    <option value="Medium">Medium</option>
-                    <option value="Hard">Hard</option>
-                  </select>
-                </label>
-                <Button onClick={() => { setBankTopic('All'); setBankDifficulty('All'); }} variant="ghost" className="h-11 px-3 text-[10px] font-black uppercase tracking-widest text-indigo-400 hover:text-indigo-300">
+                <Button onClick={() => setBankTopic('All')} variant="ghost" className="h-11 px-3 text-[10px] font-black uppercase tracking-widest text-indigo-400 hover:text-indigo-300">
                   Reset
                 </Button>
               </div>
@@ -927,7 +925,7 @@ export default function SATPractice() {
                           ) : (
                             questions[currentIdx]?.options?.map((opt: string, i: number) => {
                               const letter = String.fromCharCode(65 + i);
-                              const isSelected = answerState?.selected === i;
+                              const isSelected = answerState?.selected === i || selectedAnswer === i;
                               const isCorrectOption = i === questions[currentIdx].correctAnswer;
                               const isWrongSelected = isSelected && !answerState.correct;
                               
@@ -946,14 +944,14 @@ export default function SATPractice() {
                                   circleClass = "w-10 h-10 rounded-full flex items-center justify-center border border-line text-sm font-bold text-ink-subtle";
                                 }
                               } else {
-                                btnClass = "glass-3d p-6 text-left transition-all flex items-center gap-6 border-line hover:border-indigo-500/40 hover:bg-surface active:scale-[0.99]";
-                                circleClass = "w-10 h-10 rounded-full flex items-center justify-center border border-line-strong text-sm font-bold text-ink group-hover:border-indigo-400 group-hover:text-indigo-400 group-hover:bg-indigo-500/5";
+                                btnClass = `glass-3d p-6 text-left transition-all flex items-center gap-6 border-line hover:border-indigo-500/40 hover:bg-surface active:scale-[0.99] ${isSelected ? 'border-indigo-500 bg-indigo-500/10' : ''}`;
+                                circleClass = `w-10 h-10 rounded-full flex items-center justify-center border text-sm font-bold text-ink ${isSelected ? 'border-indigo-500 bg-indigo-500 text-white' : 'border-line-strong group-hover:border-indigo-400 group-hover:text-indigo-400 group-hover:bg-indigo-500/5'}`;
                               }
 
                               return (
                                 <button
                                   key={i}
-                                  onClick={() => handleAnswerSelection(i)}
+                                  onClick={() => selectAnswer(i)}
                                   className={`group ${btnClass}`}
                                 >
                                   <div className={circleClass}>{letter}</div>
@@ -966,6 +964,12 @@ export default function SATPractice() {
                             })
                           )}
                         </div>
+
+                        {!questions[currentIdx]?.isFreeResponse && !answerState && (
+                          <Button onClick={checkSelectedAnswer} disabled={selectedAnswer === null} className="mt-6 h-12 w-full bg-indigo-500 text-white hover:bg-indigo-400 disabled:cursor-not-allowed disabled:opacity-40">
+                            Check answer
+                          </Button>
+                        )}
 
                         <AnimatePresence>
                           {answerState && (
@@ -1082,7 +1086,7 @@ export default function SATPractice() {
                       ) : (
                         questions[currentIdx]?.options?.map((opt: string, i: number) => {
                           const letter = String.fromCharCode(65 + i);
-                          const isSelected = answerState?.selected === i;
+                          const isSelected = answerState?.selected === i || selectedAnswer === i;
                           const isCorrectOption = i === questions[currentIdx].correctAnswer;
                           const isWrongSelected = isSelected && !answerState.correct;
                           
@@ -1101,14 +1105,14 @@ export default function SATPractice() {
                               circleClass = "w-10 h-10 rounded-full flex items-center justify-center border border-line text-sm font-bold text-ink-subtle";
                             }
                           } else {
-                            btnClass = "glass-3d p-6 text-left transition-all flex items-center gap-6 border-line hover:border-indigo-500/40 hover:bg-surface active:scale-[0.99]";
-                            circleClass = "w-10 h-10 rounded-full flex items-center justify-center border border-line-strong text-sm font-bold text-ink group-hover:border-indigo-400 group-hover:text-indigo-400 group-hover:bg-indigo-500/5";
+                            btnClass = `glass-3d p-6 text-left transition-all flex items-center gap-6 border-line hover:border-indigo-500/40 hover:bg-surface active:scale-[0.99] ${isSelected ? 'border-indigo-500 bg-indigo-500/10' : ''}`;
+                            circleClass = `w-10 h-10 rounded-full flex items-center justify-center border text-sm font-bold text-ink ${isSelected ? 'border-indigo-500 bg-indigo-500 text-white' : 'border-line-strong group-hover:border-indigo-400 group-hover:text-indigo-400 group-hover:bg-indigo-500/5'}`;
                           }
 
                           return (
                             <button
                               key={i}
-                              onClick={() => handleAnswerSelection(i)}
+                              onClick={() => selectAnswer(i)}
                               className={`group ${btnClass}`}
                             >
                               <div className={circleClass}>{letter}</div>
@@ -1121,6 +1125,12 @@ export default function SATPractice() {
                         })
                       )}
                     </div>
+
+                    {!questions[currentIdx]?.isFreeResponse && !answerState && (
+                      <Button onClick={checkSelectedAnswer} disabled={selectedAnswer === null} className="mt-6 h-12 w-full bg-indigo-500 text-white hover:bg-indigo-400 disabled:cursor-not-allowed disabled:opacity-40">
+                        Check answer
+                      </Button>
+                    )}
 
                     <AnimatePresence>
                       {answerState && (
@@ -1157,6 +1167,7 @@ export default function SATPractice() {
                     if (currentIdx > 0) {
                       setCurrentIdx(prev => prev - 1);
                       setAnswerState(null);
+                      setSelectedAnswer(null);
                       setFreeResponseInput("");
                     }
                   }}
@@ -1176,11 +1187,13 @@ export default function SATPractice() {
                     if (currentIdx < questions.length - 1) {
                       setCurrentIdx(prev => prev + 1);
                       setAnswerState(null);
+                      setSelectedAnswer(null);
                       setFreeResponseInput("");
                     } else {
                       // loop back
                       setCurrentIdx(0);
                       setAnswerState(null);
+                      setSelectedAnswer(null);
                       setFreeResponseInput("");
                     }
                   }}

@@ -44,6 +44,9 @@ MATH_M2 = {
 CLEAN_IMAGES = {
     59: "/sat_images/math/march-2025-us-v2-p59-q1.svg",
     70: "/sat_images/math/march-2025-us-v2-p70-q12.svg",
+    71: "/sat_images/math/march-2025-us-v2-p71-q13.svg",
+    75: "/sat_images/math/march-2025-us-v2-p75-q17.svg",
+    79: "/sat_images/math/march-2025-us-v2-p79-q21.svg",
 }
 
 
