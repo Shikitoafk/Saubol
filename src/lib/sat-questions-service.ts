@@ -434,6 +434,12 @@ export interface PaperModule {
   index: number;
   minutes: number;
   questions: SATQuestion[];
+  /**
+   * Adaptive Module 2 papers contain two alternative branches.  The first
+   * module is shared; after it, exactly one of these branches is selected.
+   */
+  adaptiveRoute?: string;
+  adaptiveLevel?: "easy" | "hard";
 }
 
 /** Реальный цифровой SAT: R&W — 27 вопросов и 32 минуты, Math — 22 и 35. */
@@ -524,6 +530,34 @@ export function splitIntoModules(questions: SATQuestion[]): PaperModule[] {
   // Внутри модуля показываем по номеру, а не по странице: так же, как на экзамене.
   for (const m of modules) {
     m.questions.sort((a, b) => (a.questionNumber ?? 0) - (b.questionNumber ?? 0));
+  }
+
+  // A source with three same-section modules is an adaptive paper: Module 1
+  // followed by the Easy and Hard alternatives for Module 2. Preserve both
+  // branches instead of presenting them as a fictitious "Module 3".
+  for (const section of ["RW", "Math"] as const) {
+    const sectionModules = modules.filter((module) => module.section === section);
+    if (sectionModules.length !== 3) continue;
+    const [first, easy, hard] = sectionModules;
+    const expectedSize = MODULE_RULES[section].size;
+    if (
+      first.questions.length !== expectedSize ||
+      easy.questions.length !== expectedSize ||
+      hard.questions.length !== expectedSize
+    ) continue;
+
+    const route = `${section}-module-2`;
+    easy.index = 2;
+    easy.key = `${route}-easy`;
+    easy.label = `${MODULE_RULES[section].label} — Module 2 (Easy)`;
+    easy.adaptiveRoute = route;
+    easy.adaptiveLevel = "easy";
+
+    hard.index = 2;
+    hard.key = `${route}-hard`;
+    hard.label = `${MODULE_RULES[section].label} — Module 2 (Hard)`;
+    hard.adaptiveRoute = route;
+    hard.adaptiveLevel = "hard";
   }
 
   // R&W идёт первым, потом математика — как в настоящем тесте.

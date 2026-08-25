@@ -242,6 +242,31 @@ export default function SATPastPapers() {
   const [modules, setModules] = useState<PaperModule[]>([]);
   const [selectedModule, setSelectedModule] = useState<PaperModule | null>(null);
   const [modulesLoading, setModulesLoading] = useState(false);
+  const [adaptiveChoices, setAdaptiveChoices] = useState<Record<string, "easy" | "hard">>({});
+  const [adaptiveMessage, setAdaptiveMessage] = useState<string | null>(null);
+  // Only the selected adaptive branch belongs to the active attempt. Keeping
+  // this derived list separate from `questions` lets us retain the complete
+  // source paper while grading and reviewing only what the student saw.
+  const sessionModules = useMemo(() => {
+    if (selectedModule) return [selectedModule];
+    return modules.filter((module) =>
+      !module.adaptiveRoute || adaptiveChoices[module.adaptiveRoute] === module.adaptiveLevel
+    );
+  }, [adaptiveChoices, modules, selectedModule]);
+  const sessionQuestions = useMemo(
+    () => sessionModules.flatMap((module) => module.questions),
+    [sessionModules]
+  );
+  // Do not double-count Easy and Hard when advertising an adaptive test.
+  const advertisedQuestionCount = useMemo(() => {
+    const countedRoutes = new Set<string>();
+    return modules.reduce((total, module) => {
+      if (!module.adaptiveRoute) return total + module.questions.length;
+      if (countedRoutes.has(module.adaptiveRoute)) return total;
+      countedRoutes.add(module.adaptiveRoute);
+      return total + module.questions.length;
+    }, 0);
+  }, [modules]);
 
   // Session states
   const [currentIdx, setCurrentIdx] = useState(0);
@@ -395,6 +420,8 @@ export default function SATPastPapers() {
       }
 
       setQuestions(fetchedQuestions);
+      setAdaptiveChoices({});
+      setAdaptiveMessage(null);
       setPhase("session");
       setCurrentIdx(0);
       setUserAnswers({});
@@ -430,7 +457,7 @@ export default function SATPastPapers() {
   // Handle Practice Mode option confirm
   const handlePracticeConfirm = (optionIdx: number) => {
     if (answerConfirmed) return;
-    const q = questions[currentIdx];
+    const q = sessionQuestions[currentIdx];
     
     // Check if the correct answer is empty (unscoped question)
     const emptyAnswer = isQuestionAnswerEmpty(q);
@@ -449,7 +476,7 @@ export default function SATPastPapers() {
   // Handle Practice Mode open response confirm
   const handlePracticeOpenConfirm = () => {
     if (answerConfirmed || !freeResponseInput.trim()) return;
-    const q = questions[currentIdx];
+    const q = sessionQuestions[currentIdx];
     
     // Check if empty
     const emptyAnswer = isQuestionAnswerEmpty(q);
@@ -469,7 +496,7 @@ export default function SATPastPapers() {
 
   // Handle Exam Mode selections
   const handleExamSelection = (optionIdx: number) => {
-    const q = questions[currentIdx];
+    const q = sessionQuestions[currentIdx];
     setUserAnswers(prev => ({
       ...prev,
       [q.id]: { selected: optionIdx }
@@ -477,7 +504,7 @@ export default function SATPastPapers() {
   };
 
   const handleExamOpenSubmit = (text: string) => {
-    const q = questions[currentIdx];
+    const q = sessionQuestions[currentIdx];
     setUserAnswers(prev => ({
       ...prev,
       [q.id]: { text }
@@ -486,13 +513,15 @@ export default function SATPastPapers() {
 
   // Navigate questions
   const nextQuestion = () => {
-    if (currentIdx < questions.length - 1) {
+    if (currentIdx === currentModuleEnd && !isReviewMode) {
+      advanceModule();
+    } else if (currentIdx < sessionQuestions.length - 1) {
       const nextIdx = currentIdx + 1;
       setCurrentIdx(nextIdx);
       setAnswerConfirmed(false);
       setPracticeFeedback(null);
       // Load existing user answers
-      const nextQ = questions[nextIdx];
+      const nextQ = sessionQuestions[nextIdx];
       const ans = userAnswers[nextQ.id];
       if (ans) {
         setFreeResponseInput(ans.text || "");
@@ -515,7 +544,7 @@ export default function SATPastPapers() {
       setCurrentIdx(prevIdx);
       setAnswerConfirmed(false);
       setPracticeFeedback(null);
-      const prevQ = questions[prevIdx];
+      const prevQ = sessionQuestions[prevIdx];
       const ans = userAnswers[prevQ.id];
       if (ans) {
         setFreeResponseInput(ans.text || "");
@@ -533,7 +562,7 @@ export default function SATPastPapers() {
   const handleFinishTest = () => {
     // Process correctness for all answers in Exam mode
     const processed: typeof userAnswers = { ...userAnswers };
-    questions.forEach(q => {
+    sessionQuestions.forEach(q => {
       const ans = processed[q.id];
       const emptyAnswer = isQuestionAnswerEmpty(q);
 
@@ -559,14 +588,14 @@ export default function SATPastPapers() {
 
   // Statistics calculation for results page
   const stats = useMemo(() => {
-    if (questions.length === 0) return { correct: 0, incorrect: 0, skipped: 0, unscored: 0, totalScored: 0, scorePercent: 0 };
+    if (sessionQuestions.length === 0) return { correct: 0, incorrect: 0, skipped: 0, unscored: 0, totalScored: 0, scorePercent: 0 };
     
     let correct = 0;
     let incorrect = 0;
     let skipped = 0;
     let unscored = 0;
 
-    questions.forEach(q => {
+    sessionQuestions.forEach(q => {
       const ans = userAnswers[q.id];
       const emptyAnswer = isQuestionAnswerEmpty(q);
 
@@ -583,7 +612,7 @@ export default function SATPastPapers() {
       }
     });
 
-    const totalScored = questions.length - unscored;
+    const totalScored = sessionQuestions.length - unscored;
     const scorePercent = totalScored > 0 ? Math.round((correct / totalScored) * 100) : 0;
 
     return {
@@ -594,7 +623,7 @@ export default function SATPastPapers() {
       totalScored,
       scorePercent
     };
-  }, [questions, userAnswers]);
+  }, [sessionQuestions, userAnswers]);
 
   // Review helper: load question index in results review
   const handleReviewQuestion = (idx: number) => {
@@ -663,7 +692,6 @@ export default function SATPastPapers() {
   // Модули, по которым идёт сессия: выбранный один — или все по порядку при
   // «весь тест». Нужно, чтобы в шапке показать «Модуль 1 · 5 из 27», а не
   // «5 из 98»: на экзамене вопросы идут модулями, а не сплошным списком.
-  const sessionModules = selectedModule ? [selectedModule] : modules;
 
   // В каком модуле сейчас находимся и какой это по счёту вопрос внутри него.
   const locateQuestion = (idx: number) => {
@@ -674,19 +702,19 @@ export default function SATPastPapers() {
       }
       offset += m.questions.length;
     }
-    return { module: null as PaperModule | null, local: idx, total: questions.length };
+    return { module: null as PaperModule | null, local: idx, total: sessionQuestions.length };
   };
   const here = locateQuestion(currentIdx);
   const hereSubject = here.module
     ? (here.module.section === "RW" ? "Reading & Writing" : "Mathematics")
-    : (questions[currentIdx]?.section === "RW" ? "Reading & Writing" : "Mathematics");
+    : (sessionQuestions[currentIdx]?.section === "RW" ? "Reading & Writing" : "Mathematics");
 
   // Настоящий passage — только если он не дублирует сам вопрос. У
   // математических вопросов парсер иногда кладёт условие и в passage, и в
   // question; тогда split-панель показывала один и тот же текст дважды —
   // слева сырой $...$, справа отрисованный. Сравниваем без $ и пробелов.
   const stripForCompare = (s?: string) => (s || "").replace(/[\s$]/g, "").toLowerCase();
-  const currentQuestion = questions[currentIdx];
+  const currentQuestion = sessionQuestions[currentIdx];
   const hasRealPassage = !!currentQuestion?.passage &&
     stripForCompare(currentQuestion.passage) !== stripForCompare(currentQuestion.question);
 
@@ -696,8 +724,8 @@ export default function SATPastPapers() {
     currentModuleStart += module.questions.length;
   }
   const currentModuleEnd = Math.min(
-    questions.length - 1,
-    currentModuleStart + (here.module?.questions.length || questions.length) - 1
+    sessionQuestions.length - 1,
+    currentModuleStart + (here.module?.questions.length || sessionQuestions.length) - 1
   );
   const currentModuleIndexes = Array.from(
     { length: currentModuleEnd - currentModuleStart + 1 },
@@ -705,12 +733,47 @@ export default function SATPastPapers() {
   );
 
   function advanceModule() {
-    const moduleIndex = sessionModules.findIndex((module) => module === here.module);
-    const nextModule = sessionModules[moduleIndex + 1];
-    if (nextModule && currentModuleEnd < questions.length - 1) {
+    // Route adaptive papers after a completed Module 1.  Bluebook's real
+    // routing is proprietary; Saubol uses the requested transparent rule:
+    // more than 18 correct answers sends the student to Hard, otherwise Easy.
+    const adaptiveCandidates = here.module && !selectedModule
+      ? modules.filter((module) =>
+          module.adaptiveRoute &&
+          module.section === here.module!.section &&
+          !adaptiveChoices[module.adaptiveRoute]
+        )
+      : [];
+    if (here.module && adaptiveCandidates.length === 2) {
+      const correct = here.module.questions.reduce((total, question) => {
+        const answer = userAnswers[question.id];
+        if (!answer || isQuestionAnswerEmpty(question)) return total;
+        const isCorrect = question.isFreeResponse
+          ? (answer.text || "").trim().toLowerCase() === (question.correctAnswerText || "").trim().toLowerCase()
+          : answer.selected === question.correctAnswer;
+        return total + (isCorrect ? 1 : 0);
+      }, 0);
+      const level: "easy" | "hard" = correct > 18 ? "hard" : "easy";
+      const route = adaptiveCandidates[0].adaptiveRoute!;
+      const nextModule = adaptiveCandidates.find((module) => module.adaptiveLevel === level)!;
+      setAdaptiveChoices((previous) => ({ ...previous, [route]: level }));
+      setAdaptiveMessage(`Module 1: ${correct}/${here.module.questions.length}. You are routed to Module 2 (${level === "hard" ? "Hard" : "Easy"}).`);
+      window.setTimeout(() => setAdaptiveMessage(null), 5200);
       const nextIndex = currentModuleEnd + 1;
       setCurrentIdx(nextIndex);
-      setFreeResponseInput(userAnswers[questions[nextIndex]?.id]?.text || "");
+      setFreeResponseInput(userAnswers[nextModule.questions[0]?.id]?.text || "");
+      setTimeRemaining(nextModule.minutes * 60);
+      setIsTimerHidden(false);
+      setIsQuestionMenuOpen(false);
+      setAnswerConfirmed(false);
+      setPracticeFeedback(null);
+      return;
+    }
+    const moduleIndex = sessionModules.findIndex((module) => module === here.module);
+    const nextModule = sessionModules[moduleIndex + 1];
+    if (nextModule && currentModuleEnd < sessionQuestions.length - 1) {
+      const nextIndex = currentModuleEnd + 1;
+      setCurrentIdx(nextIndex);
+      setFreeResponseInput(userAnswers[sessionQuestions[nextIndex]?.id]?.text || "");
       setTimeRemaining(nextModule.minutes * 60);
       setIsTimerHidden(false);
       setIsQuestionMenuOpen(false);
@@ -727,7 +790,7 @@ export default function SATPastPapers() {
     setCurrentIdx(index);
     setAnswerConfirmed(false);
     setPracticeFeedback(null);
-    setFreeResponseInput(userAnswers[questions[index]?.id]?.text || "");
+    setFreeResponseInput(userAnswers[sessionQuestions[index]?.id]?.text || "");
     setIsQuestionMenuOpen(false);
   };
 
@@ -1116,7 +1179,7 @@ export default function SATPastPapers() {
                     <div>
                       <div className="text-base font-black tracking-tight mb-0.5">Весь тест целиком</div>
                       <div className="text-sm text-ink-muted font-medium">
-                        {modules.reduce((n, m) => n + m.questions.length, 0) || selectedPaper.totalQuestions} вопросов
+                        {advertisedQuestionCount || selectedPaper.totalQuestions} вопросов
                         {modules.length > 0 &&
                           ` · ${Math.round(modules.reduce((n, m) => n + m.minutes, 0) / 60 * 10) / 10} ч`}
                       </div>
@@ -1243,8 +1306,14 @@ export default function SATPastPapers() {
         )}
 
         {/* Phase 3: Active Test Session (Question Runner) */}
-        {phase === "session" && questions.length > 0 && (
+        {phase === "session" && sessionQuestions.length > 0 && (
           <div className="min-h-screen bg-transparent relative overflow-hidden flex flex-col">
+
+            {adaptiveMessage && (
+              <div className="fixed top-5 left-1/2 z-[140] w-[min(92vw,620px)] -translate-x-1/2 rounded-2xl border border-indigo-400/40 bg-slate-950 px-6 py-4 text-center text-sm font-bold text-white shadow-2xl">
+                {adaptiveMessage}
+              </div>
+            )}
 
             {/* Bluebook-style question menu */}
             {isQuestionMenuOpen && (
@@ -1260,7 +1329,7 @@ export default function SATPastPapers() {
                   <div className="p-7">
                     <div className="grid grid-cols-6 sm:grid-cols-9 gap-3">
                       {currentModuleIndexes.map((index) => {
-                        const question = questions[index];
+                        const question = sessionQuestions[index];
                         const answer = userAnswers[question.id];
                         const answered = question.isFreeResponse ? !!answer?.text?.trim() : answer?.selected !== undefined;
                         const marked = markedQuestions.has(question.id);
@@ -1286,7 +1355,7 @@ export default function SATPastPapers() {
                       <span className="flex items-center gap-2"><span className="w-3 h-3 rounded bg-indigo-500/15 border border-indigo-500/40" /> Answered</span>
                       <span className="flex items-center gap-2"><Bookmark className="w-3.5 h-3.5 fill-amber-400 text-amber-400" /> For review</span>
                       <span>{currentModuleIndexes.filter((index) => {
-                        const q = questions[index];
+                        const q = sessionQuestions[index];
                         const a = userAnswers[q.id];
                         return q.isFreeResponse ? !!a?.text?.trim() : a?.selected !== undefined;
                       }).length} of {currentModuleIndexes.length} answered</span>
@@ -1297,7 +1366,7 @@ export default function SATPastPapers() {
                           onClick={advanceModule}
                           className="h-12 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white px-7 font-black uppercase text-[10px] tracking-widest"
                         >
-                          {currentModuleEnd < questions.length - 1 ? "Submit module" : "Submit test"}
+                          {currentModuleEnd < sessionQuestions.length - 1 ? "Submit module" : "Submit test"}
                           <ChevronRight className="w-4 h-4 ml-2" />
                         </Button>
                       </div>
@@ -1386,7 +1455,7 @@ export default function SATPastPapers() {
                     <p className="text-sm font-black">
                       {here.local + 1} из {here.total}
                       {!selectedModule && sessionModules.length > 1 && (
-                        <span className="text-ink-subtle font-bold"> · {currentIdx + 1}/{questions.length} всего</span>
+                        <span className="text-ink-subtle font-bold"> · {currentIdx + 1}/{sessionQuestions.length} всего</span>
                       )}
                     </p>
                   </div>
@@ -1428,7 +1497,7 @@ export default function SATPastPapers() {
                     <Highlighter className="w-4 h-4 text-yellow-400" /> Highlight
                   </Button>
 
-                  {questions[currentIdx]?.section === "Math" && (
+                  {sessionQuestions[currentIdx]?.section === "Math" && (
                     <>
                       <Button
                         onClick={() => setIsReferenceOpen(true)}
@@ -1484,7 +1553,7 @@ export default function SATPastPapers() {
                           <FileText className="w-4 h-4" />
                           <span className="text-[9px] font-black uppercase tracking-widest">Passage</span>
                         </div>
-                        {renderPassageContent(questions[currentIdx].passage || "")}
+                        {renderPassageContent(sessionQuestions[currentIdx].passage || "")}
                       </div>
                     </ResizablePanel>
 
@@ -1493,12 +1562,12 @@ export default function SATPastPapers() {
                     <ResizablePanel defaultSize={50} minSize={25} maxSize={75} className="flex flex-col min-h-0">
                       <div className="flex flex-col gap-4 overflow-y-auto custom-scrollbar h-full pl-2">
                         <div className="glass-3d p-8 flex flex-col gap-6 mb-2">
-                          {questions[currentIdx]?.imageUrl && (
+                          {sessionQuestions[currentIdx]?.imageUrl && (
                             <div className="my-2 p-6 bg-white rounded-2xl border border-slate-200 flex justify-center items-center max-w-md mx-auto shadow-sm">
-                              <QuestionImage src={questions[currentIdx].imageUrl} className="max-h-[260px] object-contain" />
+                              <QuestionImage src={sessionQuestions[currentIdx].imageUrl} className="max-h-[260px] object-contain" />
                             </div>
                           )}
-                          <div className="text-lg font-bold leading-relaxed tracking-tight" dangerouslySetInnerHTML={{ __html: renderKatexText(questions[currentIdx]?.question || "") }} />
+                          <div className="text-lg font-bold leading-relaxed tracking-tight" dangerouslySetInnerHTML={{ __html: renderKatexText(sessionQuestions[currentIdx]?.question || "") }} />
                         </div>
 
                         {/* Answers block */}
@@ -1511,16 +1580,16 @@ export default function SATPastPapers() {
                 // Full screen layout for questions without passage
                 <div className="flex-1 overflow-hidden grid lg:grid-cols-2 gap-8 mb-6">
                   <div className="glass-3d p-10 overflow-y-auto custom-scrollbar flex flex-col gap-6">
-                    {questions[currentIdx]?.imageUrl && (
+                    {sessionQuestions[currentIdx]?.imageUrl && (
                       <div className="my-2 p-6 bg-white rounded-2xl border border-slate-200 flex justify-center items-center max-w-md mx-auto shadow-sm">
-                        <QuestionImage src={questions[currentIdx].imageUrl} className="max-h-[260px] object-contain" />
+                        <QuestionImage src={sessionQuestions[currentIdx].imageUrl} className="max-h-[260px] object-contain" />
                       </div>
                     )}
                     <div className="flex items-center gap-2 mb-2 opacity-30">
                       <Brain className="w-4 h-4" />
                       <span className="text-[9px] font-black uppercase tracking-widest">Question</span>
                     </div>
-                    <div className="text-lg font-bold leading-relaxed tracking-tight" dangerouslySetInnerHTML={{ __html: renderKatexText(questions[currentIdx]?.question || "") }} />
+                    <div className="text-lg font-bold leading-relaxed tracking-tight" dangerouslySetInnerHTML={{ __html: renderKatexText(sessionQuestions[currentIdx]?.question || "") }} />
                   </div>
 
                   <div className="flex flex-col gap-4 overflow-y-auto custom-scrollbar">
@@ -1544,7 +1613,7 @@ export default function SATPastPapers() {
                 {!isReviewMode && mode === "exam" && (
                   <div className="hidden md:flex gap-1.5 max-w-[50%] overflow-x-auto py-1">
                     {currentModuleIndexes.map((idx) => {
-                      const q = questions[idx];
+                      const q = sessionQuestions[idx];
                       const isAnswered = userAnswers[q.id]?.selected !== undefined || userAnswers[q.id]?.text;
                       const isCurrent = idx === currentIdx;
                       const isMarked = markedQuestions.has(q.id);
@@ -1575,7 +1644,7 @@ export default function SATPastPapers() {
                 {isReviewMode ? (
                   <Button
                     onClick={() => {
-                      if (currentIdx < questions.length - 1) {
+                      if (currentIdx < sessionQuestions.length - 1) {
                         nextQuestion();
                       } else {
                         setPhase("results");
@@ -1583,7 +1652,7 @@ export default function SATPastPapers() {
                     }}
                     className="bg-white text-black hover:bg-gray-100 px-8 h-14 rounded-xl font-black uppercase text-[10px] tracking-widest"
                   >
-                    {currentIdx < questions.length - 1 ? "Next Review" : "End Review"} <ChevronRight className="w-4 h-4" />
+                    {currentIdx < sessionQuestions.length - 1 ? "Next Review" : "End Review"} <ChevronRight className="w-4 h-4" />
                   </Button>
                 ) : (
                   mode === "exam" ? (
@@ -1608,7 +1677,7 @@ export default function SATPastPapers() {
                       onClick={nextQuestion}
                       className="bg-white text-black hover:bg-gray-100 px-8 h-14 rounded-xl font-black uppercase text-[10px] tracking-widest"
                     >
-                      {currentIdx === questions.length - 1 ? "Complete practice" : "Next"} <ChevronRight className="w-4 h-4" />
+                      {currentIdx === sessionQuestions.length - 1 ? "Complete practice" : "Next"} <ChevronRight className="w-4 h-4" />
                     </Button>
                   )
                 )}
@@ -1676,7 +1745,7 @@ export default function SATPastPapers() {
                 </div>
                 
                 <div className="grid grid-cols-5 sm:grid-cols-8 md:grid-cols-12 gap-3">
-                  {questions.map((q, idx) => {
+                  {sessionQuestions.map((q, idx) => {
                     const ans = userAnswers[q.id];
                     const emptyAnswer = isQuestionAnswerEmpty(q);
                     
@@ -1743,7 +1812,7 @@ export default function SATPastPapers() {
 
   // Render question answers (MCQ or Open) depending on state (Practice/Exam/Review)
   function renderAnswerSection() {
-    const q = questions[currentIdx];
+    const q = sessionQuestions[currentIdx];
     if (!q) return null;
 
     const emptyAnswer = isQuestionAnswerEmpty(q);
