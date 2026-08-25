@@ -57,6 +57,24 @@ function splitIntoModules(questions) {
     }
   }
   for (const m of modules) m.questions.sort((a, b) => (a.questionNumber ?? 0) - (b.questionNumber ?? 0));
+  for (const section of ["RW", "Math"]) {
+    const sectionModules = modules.filter((module) => module.section === section);
+    if (sectionModules.length !== 3) continue;
+    const [first, easy, hard] = sectionModules;
+    const expectedSize = MODULE_RULES[section].size;
+    if (first.questions.length !== expectedSize || easy.questions.length !== expectedSize || hard.questions.length !== expectedSize) continue;
+    const route = `${section}-module-2`;
+    easy.index = 2;
+    easy.key = `${route}-easy`;
+    easy.label = `${MODULE_RULES[section].label} — Module 2 (Easy)`;
+    easy.adaptiveRoute = route;
+    easy.adaptiveLevel = "easy";
+    hard.index = 2;
+    hard.key = `${route}-hard`;
+    hard.label = `${MODULE_RULES[section].label} — Module 2 (Hard)`;
+    hard.adaptiveRoute = route;
+    hard.adaptiveLevel = "hard";
+  }
   return modules.sort((a, b) =>
     a.section === b.section ? a.index - b.index : a.section === "RW" ? -1 : 1);
 }
@@ -167,6 +185,34 @@ check(midModules.map((m) => m.questions.length).join(",") === "27,27",
   `размеры 27/27 (получено ${midModules.map((m) => m.questions.length).join(",")})`);
 check(midModules[0].questions.at(-1).questionNumber === 27,
   "последний вопрос первого модуля остался в первом модуле");
+
+// --- Adaptive Module 2 ----------------------------------------------------
+// Такие PDF содержат две альтернативы второго модуля: Easy и Hard. Они не
+// должны стать вымышленным Module 3 и попасть в одну попытку одновременно.
+let adaptivePage = 1;
+const adaptiveQuestions = [];
+for (const section of ["RW", "Math"]) {
+  const size = MODULE_RULES[section].size;
+  for (let branch = 0; branch < 3; branch++) {
+    for (let number = 1; number <= size; number++) {
+      if (number % 3 === 1) adaptivePage++;
+      adaptiveQuestions.push({ section, questionNumber: number, page: adaptivePage });
+    }
+  }
+}
+const adaptiveModules = splitIntoModules(adaptiveQuestions);
+const adaptiveRW = adaptiveModules.filter((module) => module.section === "RW");
+const adaptiveMath = adaptiveModules.filter((module) => module.section === "Math");
+check(adaptiveModules.length === 6, `adaptive PDF keeps six source modules (получено ${adaptiveModules.length})`);
+check(
+  adaptiveRW[1]?.adaptiveLevel === "easy" && adaptiveRW[2]?.adaptiveLevel === "hard" &&
+  adaptiveMath[1]?.adaptiveLevel === "easy" && adaptiveMath[2]?.adaptiveLevel === "hard",
+  "две ветки Module 2 помечены Easy/Hard для R&W и Math"
+);
+check(
+  adaptiveModules.filter((module) => module.adaptiveRoute).every((module) => module.index === 2),
+  "ветки не отображаются как фиктивный Module 3"
+);
 
 console.log(failed ? "\nFAILED" : "\nвсе проверки прошли");
 process.exit(failed ? 1 : 0);
