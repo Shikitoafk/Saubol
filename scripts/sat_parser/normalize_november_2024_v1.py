@@ -12,6 +12,20 @@ RW1 = "B C B B C B D C A A A A C B D A D C D C A A B B D C B".split()
 RW2 = "A A A A A B A D A A A C A A B B A B B A A A A B C A D".split()
 M1 = "B B C A A 9.5 A 139 C B D 12 B D 17 1.5 D D C 233 D A".split()
 M2 = "D A D A C A D 14 B D 27 B 3 C B A 4.232 C 6.25 A A 288".split()
+IMAGE_URLS = {
+    12: "/sat_images/ebrw/november-2024-v1-p12-q12.svg",
+    13: "/sat_images/ebrw/november-2024-v1-p13-q13.svg",
+    38: "/sat_images/ebrw/november-2024-v1-p38-q11.svg",
+    40: "/sat_images/ebrw/november-2024-v1-p40-q13.svg",
+    63: "/sat_images/math/november-2024-v1-p63-q9.svg",
+    64: "/sat_images/math/november-2024-v1-p64-q10.svg",
+    65: "/sat_images/math/november-2024-v1-p65-q11.svg",
+    67: "/sat_images/math/november-2024-v1-p67-q13.svg",
+    77: "/sat_images/math/november-2024-v1-p77-q1.svg",
+    83: "/sat_images/math/november-2024-v1-p83-q6.svg",
+    84: "/sat_images/math/november-2024-v1-p84-q7.svg",
+    88: "/sat_images/math/november-2024-v1-p88-q11.svg",
+}
 
 
 def load(path: Path):
@@ -41,8 +55,8 @@ def stamp(row, module, question, answer):
     row = {k: v or "" for k, v in row.items()}
     row.update(id="", source=SOURCE, test_period=PERIOD, test_version=VERSION,
                module=module, question_number=str(question), correct_answer=answer,
-               # Only clean redraws can receive a URL later. Never expose PDF crops.
-               image_url="")
+               # Only clean redraws receive public URLs. Never expose PDF crops.
+               image_url=IMAGE_URLS.get(num(row.get("page")), ""))
     return row
 
 
