@@ -57,15 +57,22 @@ export interface SATQuestion {
  * math_open) в `public/sat_images/` — имена подпапок парсер проставляет
  * в CSV сам, менять их не нужно.
  */
-const IMAGE_BASE = (import.meta.env.VITE_SAT_IMAGE_BASE?.trim() || "/sat_images/").replace(/\/+$/, "") + "/";
+const RAW_IMAGE_BASE = import.meta.env.VITE_SAT_IMAGE_BASE?.trim() || "/sat_images/";
+const IMAGE_BASE = RAW_IMAGE_BASE.replace(/\/+$/, "") + "/";
+const IMAGE_BASE_IS_REMOTE = /^https?:\/\//i.test(IMAGE_BASE);
 
 export function resolveImageUrl(raw: unknown): string | undefined {
   const value = typeof raw === "string" ? raw.trim() : "";
   if (!value) return undefined;
   if (/^(https?:|data:|blob:)/i.test(value)) return value;
-  // Root-relative paths are files bundled with the site in public/sat_images.
-  // Keep them local even when VITE_SAT_IMAGE_BASE points at Supabase Storage.
-  if (value.startsWith("/")) return value;
+  // Older rows store `/sat_images/...`, while production visuals now live in
+  // Supabase Storage. Convert that legacy local-looking path when a remote
+  // image base is configured; this also works in deployments that do not
+  // serve Vite's public directory directly.
+  if (value.startsWith("/")) {
+    if (!IMAGE_BASE_IS_REMOTE) return value;
+    return IMAGE_BASE + value.replace(/^\/sat_images\/?/, "").replace(/^\/+/, "");
+  }
   return IMAGE_BASE + value.replace(/^\/+/, "");
 }
 
