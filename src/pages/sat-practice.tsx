@@ -927,7 +927,7 @@ export default function SATPractice() {
                               const letter = String.fromCharCode(65 + i);
                               const isSelected = answerState?.selected === i || selectedAnswer === i;
                               const isCorrectOption = i === questions[currentIdx].correctAnswer;
-                              const isWrongSelected = isSelected && !answerState.correct;
+                              const isWrongSelected = isSelected && !answerState?.correct;
                               
                               let btnClass = "glass-3d p-6 text-left transition-all flex items-center gap-6 border-line hover:border-line-strong hover:bg-surface";
                               let circleClass = "w-10 h-10 rounded-full flex items-center justify-center border border-line-strong text-sm font-bold transition-all";
@@ -1088,7 +1088,7 @@ export default function SATPractice() {
                           const letter = String.fromCharCode(65 + i);
                           const isSelected = answerState?.selected === i || selectedAnswer === i;
                           const isCorrectOption = i === questions[currentIdx].correctAnswer;
-                          const isWrongSelected = isSelected && !answerState.correct;
+                          const isWrongSelected = isSelected && !answerState?.correct;
                           
                           let btnClass = "glass-3d p-6 text-left transition-all flex items-center gap-6 border-line hover:border-line-strong hover:bg-surface";
                           let circleClass = "w-10 h-10 rounded-full flex items-center justify-center border border-line-strong text-sm font-bold transition-all";
