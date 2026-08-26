@@ -227,7 +227,7 @@ const MOCK_QUESTIONS: Record<string, SATQuestion[]> = {
 
 export default function SATPastPapers() {
   const navigate = useNavigate();
-  const [theme, setTheme] = useState<'dark' | 'light'>(() => (localStorage.getItem('sat-theme') as 'dark' | 'light') || 'dark');
+  const [theme, setTheme] = useState<'dark' | 'light'>(() => (localStorage.getItem('sat-theme') as 'dark' | 'light') || 'light');
   const [phase, setPhase] = useState<"list" | "modes" | "session" | "results">("list");
   
   // Database vs Mock states
@@ -1304,7 +1304,7 @@ export default function SATPastPapers() {
 
         {/* Phase 3: Active Test Session (Question Runner) */}
         {phase === "session" && sessionQuestions.length > 0 && (
-          <div className="min-h-screen bg-transparent relative overflow-hidden flex flex-col">
+          <div className="min-h-[calc(100dvh-4rem)] bg-transparent relative overflow-hidden flex flex-col test-focus">
 
             {adaptiveMessage && (
               <div className="fixed top-5 left-1/2 z-[140] w-[min(92vw,620px)] -translate-x-1/2 rounded-2xl border border-indigo-400/40 bg-slate-950 px-6 py-4 text-center text-sm font-bold text-white shadow-2xl">
@@ -1420,10 +1420,10 @@ export default function SATPastPapers() {
               </div>
             )}
 
-            <div className="max-w-[1600px] mx-auto w-full px-10 pt-24 pb-6 relative z-10 flex flex-col flex-1 overflow-hidden">
+            <div className="max-w-none mx-auto w-full px-3 sm:px-6 pt-[4.5rem] pb-2 relative z-10 flex flex-col flex-1 overflow-hidden">
               
               {/* Header Details */}
-              <div className="flex items-center justify-between mb-6 shrink-0">
+              <div className="flex items-center justify-between mb-2 shrink-0">
                 <Button
                   variant="ghost"
                   onClick={() => {
@@ -1439,7 +1439,7 @@ export default function SATPastPapers() {
                 </Button>
 
                 {/* Info HUD */}
-                <div className="flex items-center gap-8 bg-surface px-8 py-3 rounded-2xl border border-line">
+                <div className="flex items-center gap-4 bg-surface px-4 py-2 rounded-xl border border-line">
                   <div className="text-center">
                     <p className="text-[8px] font-black text-indigo-400 uppercase tracking-widest mb-1">
                       {here.module ? `Модуль ${here.module.index}` : "Раздел"}
@@ -1479,7 +1479,7 @@ export default function SATPastPapers() {
                 </div>
 
                 {/* Toolbar */}
-                <div className="flex items-center gap-2">
+                <div className="flex items-center gap-1">
                   <Button
                     onClick={() => setIsQuestionMenuOpen(true)}
                     className="bg-surface border border-line text-ink hover:bg-surface-2 px-4 h-12 rounded-xl font-black uppercase text-[10px] tracking-widest flex items-center gap-2"
@@ -1523,7 +1523,7 @@ export default function SATPastPapers() {
               </div>
 
               {!isReviewMode && (
-                <div className="flex items-center justify-between mb-4 shrink-0 rounded-2xl border border-line bg-surface/70 px-5 py-3">
+                <div className="flex items-center justify-between mb-2 shrink-0 rounded-xl border border-line bg-surface/70 px-4 py-2">
                   <button
                     type="button"
                     onClick={toggleMarked}
@@ -1545,7 +1545,7 @@ export default function SATPastPapers() {
                 <div className="flex-1 overflow-hidden mb-6 flex">
                   <ResizablePanelGroup direction="horizontal" className="flex-1 w-full min-h-0">
                     <ResizablePanel defaultSize={50} minSize={25} maxSize={75} className="flex flex-col min-h-0">
-                      <div className="glass-3d p-10 overflow-y-auto custom-scrollbar flex flex-col gap-6 h-full mr-2">
+                      <div className="glass-3d rounded-xl p-5 sm:p-7 overflow-y-auto custom-scrollbar flex flex-col gap-5 h-full mr-1">
                         <div className="flex items-center gap-2 mb-2 opacity-30">
                           <FileText className="w-4 h-4" />
                           <span className="text-[9px] font-black uppercase tracking-widest">Passage</span>
@@ -1557,8 +1557,8 @@ export default function SATPastPapers() {
                     <ResizableHandle className="w-[6px] hover:bg-indigo-500/50 bg-surface-2 transition-colors cursor-col-resize rounded-full" />
 
                     <ResizablePanel defaultSize={50} minSize={25} maxSize={75} className="flex flex-col min-h-0">
-                      <div className="flex flex-col gap-4 overflow-y-auto custom-scrollbar h-full pl-2">
-                        <div className="glass-3d p-8 flex flex-col gap-6 mb-2">
+                      <div className="flex flex-col gap-3 overflow-y-auto custom-scrollbar h-full pl-1">
+                        <div className="glass-3d rounded-xl p-5 sm:p-7 flex flex-col gap-4 mb-1">
                           {sessionQuestions[currentIdx]?.imageUrl && (
                             <div className="my-2 p-6 bg-white rounded-2xl border border-slate-200 flex justify-center items-center max-w-md mx-auto shadow-sm">
                               <QuestionImage src={sessionQuestions[currentIdx].imageUrl} className="max-h-[260px] object-contain" />
@@ -1575,8 +1575,8 @@ export default function SATPastPapers() {
                 </div>
               ) : (
                 // Full screen layout for questions without passage
-                <div className="flex-1 overflow-hidden grid lg:grid-cols-2 gap-8 mb-6">
-                  <div className="glass-3d p-10 overflow-y-auto custom-scrollbar flex flex-col gap-6">
+                <div className="flex-1 overflow-hidden grid lg:grid-cols-2 gap-3 mb-2">
+                  <div className="glass-3d rounded-xl p-5 sm:p-7 overflow-y-auto custom-scrollbar flex flex-col gap-5">
                     {sessionQuestions[currentIdx]?.imageUrl && (
                       <div className="my-2 p-6 bg-white rounded-2xl border border-slate-200 flex justify-center items-center max-w-md mx-auto shadow-sm">
                         <QuestionImage src={sessionQuestions[currentIdx].imageUrl} className="max-h-[260px] object-contain" />
@@ -1589,14 +1589,14 @@ export default function SATPastPapers() {
                     <div className="text-lg font-bold leading-relaxed tracking-tight" dangerouslySetInnerHTML={{ __html: renderMathText(sessionQuestions[currentIdx]?.question || "") }} />
                   </div>
 
-                  <div className="flex flex-col gap-4 overflow-y-auto custom-scrollbar">
+                  <div className="flex flex-col gap-3 overflow-y-auto custom-scrollbar">
                     {renderAnswerSection()}
                   </div>
                 </div>
               )}
 
               {/* Bottom Test Navigator Grid / controls */}
-              <div className="mt-auto pt-6 border-t border-line flex items-center justify-between shrink-0">
+              <div className="mt-auto pt-2 border-t border-line flex items-center justify-between shrink-0">
                 <Button
                   onClick={prevQuestion}
                   disabled={currentIdx === (mode === "exam" ? currentModuleStart : 0)}

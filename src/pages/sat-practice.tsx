@@ -62,7 +62,7 @@ export default function SATPractice() {
   const [questionsError, setQuestionsError] = useState<string | null>(null);
   const [elapsed, setElapsed] = useState(0);
   const [timerInterval, setTimerInterval] = useState<NodeJS.Timeout | null>(null);
-  const [theme, setTheme] = useState<'dark' | 'light'>(() => (localStorage.getItem('sat-theme') as 'dark' | 'light') || 'dark');
+  const [theme, setTheme] = useState<'dark' | 'light'>(() => (localStorage.getItem('sat-theme') as 'dark' | 'light') || 'light');
   const [freeResponseInput, setFreeResponseInput] = useState("");
   const [totalRwCount, setTotalRwCount] = useState(0);
   const [totalMathCount, setTotalMathCount] = useState(0);
@@ -731,7 +731,7 @@ export default function SATPractice() {
 
         {/* Phase 3: Split-Screen Interactive Quiz Sandbox */}
         {phase === "quiz" && questions.length > 0 && (
-          <div className="min-h-screen bg-transparent relative overflow-hidden flex flex-col">
+          <div className="min-h-[calc(100dvh-4rem)] bg-transparent relative overflow-hidden flex flex-col test-focus">
             {isDesmosOpen && (
               <div className="fixed inset-y-0 right-0 w-[600px] z-[100] bg-canvas border-l border-line shadow-2xl animate-in slide-in-from-right duration-300">
                 <div className="flex items-center justify-between p-4 border-b border-line bg-surface">
@@ -742,9 +742,9 @@ export default function SATPractice() {
               </div>
             )}
 
-            <div className="max-w-[1600px] mx-auto w-full px-10 pt-24 pb-6 relative z-10 flex flex-col flex-1 overflow-hidden">
+            <div className="max-w-none mx-auto w-full px-3 sm:px-6 pt-[4.5rem] pb-2 relative z-10 flex flex-col flex-1 overflow-hidden">
               {/* Diagnostic Top bar */}
-              <div className="flex items-center justify-between mb-6 shrink-0">
+              <div className="flex items-center justify-between mb-2 shrink-0">
                 <Button 
                   variant="ghost" 
                   onClick={() => setPhase("subtopics")} 
@@ -753,7 +753,7 @@ export default function SATPractice() {
                   <ChevronLeft className="w-4 h-4 mr-2" /> Exit Session
                 </Button>
 
-                <div className="flex items-center gap-8 bg-surface px-8 py-3 rounded-2xl border border-line">
+                <div className="flex items-center gap-4 bg-surface px-4 py-2 rounded-xl border border-line">
                   <div className="text-center">
                     <p className="text-[8px] font-black text-indigo-400 uppercase tracking-widest mb-1">Topic</p>
                     <p className="text-xs font-black uppercase max-w-[200px] truncate">{currentSubtopic?.name}</p>
@@ -770,7 +770,7 @@ export default function SATPractice() {
                   </div>
                 </div>
 
-                <div className="flex items-center gap-4">
+                <div className="flex items-center gap-1">
                   <Button 
                     onClick={highlightSelectedText} 
                     className="bg-surface border border-line text-ink hover:bg-surface-2 px-6 h-12 rounded-xl font-black uppercase text-[10px] tracking-widest flex items-center gap-2"
@@ -800,10 +800,10 @@ export default function SATPractice() {
 
               {/* Main Content Arena */}
               {questions[currentIdx]?.passage ? (
-                <div className="flex-1 overflow-hidden mb-6 flex">
+                <div className="flex-1 overflow-hidden mb-2 flex">
                   <ResizablePanelGroup direction="horizontal" className="flex-1 w-full min-h-0">
                     <ResizablePanel defaultSize={50} minSize={25} maxSize={75} className="flex flex-col min-h-0">
-                      <div className="glass-3d p-10 overflow-y-auto custom-scrollbar flex flex-col gap-6 h-full mr-2">
+                      <div className="glass-3d rounded-xl p-5 sm:p-7 overflow-y-auto custom-scrollbar flex flex-col gap-5 h-full mr-1">
                         <div className="flex items-center gap-2 mb-2 opacity-30">
                           <FileText className="w-4 h-4" />
                           <span className="text-[9px] font-black uppercase tracking-widest">Directions / Passage</span>
@@ -815,8 +815,8 @@ export default function SATPractice() {
                     <ResizableHandle className="w-[6px] hover:bg-indigo-500/50 bg-surface-2 transition-colors cursor-col-resize rounded-full" />
 
                     <ResizablePanel defaultSize={50} minSize={25} maxSize={75} className="flex flex-col min-h-0">
-                      <div className="flex flex-col gap-4 overflow-y-auto custom-scrollbar h-full pl-2">
-                        <div className="glass-3d p-8 flex flex-col gap-6 mb-2">
+                      <div className="flex flex-col gap-3 overflow-y-auto custom-scrollbar h-full pl-1">
+                        <div className="glass-3d rounded-xl p-5 sm:p-7 flex flex-col gap-4 mb-1">
                           {questions[currentIdx]?.imageUrl && (
                             <div className="my-2 p-6 bg-white rounded-2xl border border-slate-200 flex justify-center items-center max-w-md mx-auto shadow-sm">
                               <QuestionImage
@@ -832,7 +832,7 @@ export default function SATPractice() {
                         </div>
 
                         {/* Options List */}
-                        <div className="flex flex-col gap-4">
+                        <div className="flex flex-col gap-3">
                           {questions[currentIdx]?.isFreeResponse ? (
                             <div className="glass-3d p-10 flex flex-col gap-6">
                               <div className="flex items-center gap-3">
@@ -898,22 +898,22 @@ export default function SATPractice() {
                               const isCorrectOption = i === questions[currentIdx].correctAnswer;
                               const isWrongSelected = isSelected && !answerState?.correct;
                               
-                              let btnClass = "glass-3d p-6 text-left transition-all flex items-center gap-6 border-line hover:border-line-strong hover:bg-surface";
+                              let btnClass = "glass-3d rounded-xl p-4 text-left transition-all flex items-center gap-4 border-line hover:border-line-strong hover:bg-surface";
                               let circleClass = "w-10 h-10 rounded-full flex items-center justify-center border border-line-strong text-sm font-bold transition-all";
                               
                               if (answerState) {
                                 if (isCorrectOption) {
-                                  btnClass = "glass-3d p-6 text-left transition-all flex items-center gap-6 border-emerald-500 bg-emerald-500/10 text-emerald-400";
+                                  btnClass = "glass-3d rounded-xl p-4 text-left transition-all flex items-center gap-4 border-emerald-500 bg-emerald-500/10 text-emerald-400";
                                   circleClass = "w-10 h-10 rounded-full flex items-center justify-center bg-emerald-500 text-ink text-sm font-bold border-emerald-500";
                                 } else if (isWrongSelected) {
-                                  btnClass = "glass-3d p-6 text-left transition-all flex items-center gap-6 border-rose-500 bg-rose-500/10 text-rose-400";
+                                  btnClass = "glass-3d rounded-xl p-4 text-left transition-all flex items-center gap-4 border-rose-500 bg-rose-500/10 text-rose-400";
                                   circleClass = "w-10 h-10 rounded-full flex items-center justify-center bg-rose-500 text-ink text-sm font-bold border-rose-500";
                                 } else {
-                                  btnClass = "glass-3d p-6 text-left transition-all flex items-center gap-6 opacity-30 border-line cursor-default";
+                                  btnClass = "glass-3d rounded-xl p-4 text-left transition-all flex items-center gap-4 opacity-30 border-line cursor-default";
                                   circleClass = "w-10 h-10 rounded-full flex items-center justify-center border border-line text-sm font-bold text-ink-subtle";
                                 }
                               } else {
-                                btnClass = `glass-3d p-6 text-left transition-all flex items-center gap-6 border-line hover:border-indigo-500/40 hover:bg-surface active:scale-[0.99] ${isSelected ? 'border-indigo-500 bg-indigo-500/10' : ''}`;
+                                btnClass = `glass-3d rounded-xl p-4 text-left transition-all flex items-center gap-4 border-line hover:border-indigo-500/40 hover:bg-surface active:scale-[0.99] ${isSelected ? 'border-indigo-500 bg-indigo-500/10' : ''}`;
                                 circleClass = `w-10 h-10 rounded-full flex items-center justify-center border text-sm font-bold text-ink ${isSelected ? 'border-indigo-500 bg-indigo-500 text-white' : 'border-line-strong group-hover:border-indigo-400 group-hover:text-indigo-400 group-hover:bg-indigo-500/5'}`;
                               }
 
@@ -969,9 +969,9 @@ export default function SATPractice() {
                   </ResizablePanelGroup>
                 </div>
               ) : (
-                <div className="flex-1 overflow-hidden grid lg:grid-cols-2 gap-8 mb-6">
+                <div className="flex-1 overflow-hidden grid lg:grid-cols-2 gap-3 mb-2">
                   {/* Left Pane (Question text/graphics) */}
-                  <div className="glass-3d p-10 overflow-y-auto custom-scrollbar flex flex-col gap-6">
+                  <div className="glass-3d rounded-xl p-5 sm:p-7 overflow-y-auto custom-scrollbar flex flex-col gap-5">
                     {questions[currentIdx]?.imageUrl && (
                       <div className="my-2 p-6 bg-white rounded-2xl border border-slate-200 flex justify-center items-center max-w-md mx-auto shadow-sm">
                         <QuestionImage
@@ -991,9 +991,9 @@ export default function SATPractice() {
                   </div>
 
                   {/* Right Pane (Options only) */}
-                  <div className="flex flex-col gap-4 overflow-y-auto custom-scrollbar">
+                  <div className="flex flex-col gap-3 overflow-y-auto custom-scrollbar">
                     {/* Options List */}
-                    <div className="flex flex-col gap-4">
+                    <div className="flex flex-col gap-3">
                       {questions[currentIdx]?.isFreeResponse ? (
                         <div className="glass-3d p-10 flex flex-col gap-6">
                           <div className="flex items-center gap-3">
@@ -1059,22 +1059,22 @@ export default function SATPractice() {
                           const isCorrectOption = i === questions[currentIdx].correctAnswer;
                           const isWrongSelected = isSelected && !answerState?.correct;
                           
-                          let btnClass = "glass-3d p-6 text-left transition-all flex items-center gap-6 border-line hover:border-line-strong hover:bg-surface";
+                          let btnClass = "glass-3d rounded-xl p-4 text-left transition-all flex items-center gap-4 border-line hover:border-line-strong hover:bg-surface";
                           let circleClass = "w-10 h-10 rounded-full flex items-center justify-center border border-line-strong text-sm font-bold transition-all";
                           
                           if (answerState) {
                             if (isCorrectOption) {
-                              btnClass = "glass-3d p-6 text-left transition-all flex items-center gap-6 border-emerald-500 bg-emerald-500/10 text-emerald-400";
+                              btnClass = "glass-3d rounded-xl p-4 text-left transition-all flex items-center gap-4 border-emerald-500 bg-emerald-500/10 text-emerald-400";
                               circleClass = "w-10 h-10 rounded-full flex items-center justify-center bg-emerald-500 text-ink text-sm font-bold border-emerald-500";
                             } else if (isWrongSelected) {
-                              btnClass = "glass-3d p-6 text-left transition-all flex items-center gap-6 border-rose-500 bg-rose-500/10 text-rose-400";
+                              btnClass = "glass-3d rounded-xl p-4 text-left transition-all flex items-center gap-4 border-rose-500 bg-rose-500/10 text-rose-400";
                               circleClass = "w-10 h-10 rounded-full flex items-center justify-center bg-rose-500 text-ink text-sm font-bold border-rose-500";
                             } else {
-                              btnClass = "glass-3d p-6 text-left transition-all flex items-center gap-6 opacity-30 border-line cursor-default";
+                              btnClass = "glass-3d rounded-xl p-4 text-left transition-all flex items-center gap-4 opacity-30 border-line cursor-default";
                               circleClass = "w-10 h-10 rounded-full flex items-center justify-center border border-line text-sm font-bold text-ink-subtle";
                             }
                           } else {
-                            btnClass = `glass-3d p-6 text-left transition-all flex items-center gap-6 border-line hover:border-indigo-500/40 hover:bg-surface active:scale-[0.99] ${isSelected ? 'border-indigo-500 bg-indigo-500/10' : ''}`;
+                            btnClass = `glass-3d rounded-xl p-4 text-left transition-all flex items-center gap-4 border-line hover:border-indigo-500/40 hover:bg-surface active:scale-[0.99] ${isSelected ? 'border-indigo-500 bg-indigo-500/10' : ''}`;
                             circleClass = `w-10 h-10 rounded-full flex items-center justify-center border text-sm font-bold text-ink ${isSelected ? 'border-indigo-500 bg-indigo-500 text-white' : 'border-line-strong group-hover:border-indigo-400 group-hover:text-indigo-400 group-hover:bg-indigo-500/5'}`;
                           }
 
@@ -1130,7 +1130,7 @@ export default function SATPractice() {
               )}
 
               {/* Bottom Navigation Bar */}
-              <div className="mt-auto pt-6 border-t border-line flex items-center justify-between shrink-0">
+              <div className="mt-auto pt-2 border-t border-line flex items-center justify-between shrink-0">
                 <Button
                   onClick={() => {
                     if (currentIdx > 0) {
@@ -1147,8 +1147,14 @@ export default function SATPractice() {
                   <ChevronLeft className="w-4 h-4" /> Previous
                 </Button>
 
-                <div className="bg-surface border border-line rounded-xl px-6 h-14 flex items-center justify-center font-bold text-sm">
-                  Question {currentIdx + 1} of {questions.length}
+                <div className="hidden max-w-[56vw] items-center gap-1 overflow-x-auto py-1 md:flex" aria-label="Question navigator">
+                  {questions.map((question, index) => {
+                    const answered = Boolean(sessionAnswers[question.id]);
+                    return <button key={question.id} onClick={() => { setCurrentIdx(index); setAnswerState(null); setSelectedAnswer(null); setFreeResponseInput(""); }} className={`h-9 w-9 shrink-0 rounded-lg border text-xs font-bold transition-colors ${index === currentIdx ? "border-indigo-500 bg-indigo-500 text-white" : answered ? "border-emerald-400/50 bg-emerald-500/10 text-emerald-500" : "border-line bg-surface text-ink-muted hover:border-indigo-400"}`}>{index + 1}</button>;
+                  })}
+                </div>
+                <div className="bg-surface border border-line rounded-xl px-4 h-12 flex items-center justify-center font-bold text-xs md:hidden">
+                  {currentIdx + 1} / {questions.length}
                 </div>
 
                 <Button
