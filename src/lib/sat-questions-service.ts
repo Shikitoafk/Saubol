@@ -140,7 +140,10 @@ function letterToIndex(letter: string): number {
 /** Map a raw EBRW_MCQ / Math_MCQ row to the UI shape */
 function mapMCQRow(row: any, tablePrefix: string): SATQuestion {
   return {
-    id: `${tablePrefix}-${row.id}`,
+    // `id` is only a question number and repeats across imported test sources.
+    // Use the database UUID whenever available so answers, review state and
+    // progress never leak from one same-numbered question to another.
+    id: `${tablePrefix}-${row.uid ?? row.id}`,
     question: row.question ?? "",
     passage: row.passage || undefined,
     options: [
@@ -171,7 +174,7 @@ function mapMCQRow(row: any, tablePrefix: string): SATQuestion {
 /** Map a raw Math_Open row to the UI shape */
 function mapOpenRow(row: any): SATQuestion {
   return {
-    id: `open-${row.id}`,
+    id: `open-${row.uid ?? row.id}`,
     question: row.question ?? "",
     passage: row.passage || undefined,
     options: [],
@@ -193,6 +196,19 @@ function mapOpenRow(row: any): SATQuestion {
       : undefined,
     page: Number.isFinite(Number(row.page)) ? Number(row.page) : undefined,
   };
+}
+
+// Do not give a learner a question that explicitly depends on a table/graph
+// which was lost during import. Text-based tables are restored by
+// QuestionPassage; image-based questions remain valid only if their image URL
+// exists. This applies to the Question Bank and diagnostics, never silently to
+// the Past Papers catalogue.
+function isRenderablePracticeQuestion(question: SATQuestion): boolean {
+  const text = `${question.question}\n${question.passage || ""}`;
+  const refersToVisual = /\b(?:the|this|given)\s+(?:table|graph|chart|figure|diagram)\b|\b(?:table|graph|chart|figure|diagram)\s+(?:shows|summarizes|gives|lists|represents)\b|\b(?:following\s+tables?|each\s+table)\b/i.test(text);
+  if (!refersToVisual || question.imageUrl) return true;
+  const hasTextTable = /Table\s*[—-]|—trees\s+\d+|Observed traits .*?flowering date|Fish abundance .*?station|Video game units sold|;[^\n]{1,180}—/is.test(text);
+  return hasTextTable;
 }
 
 /* ------------------------------------------------------------------ */
@@ -228,6 +244,7 @@ export async function fetchRWQuestions(options?: {
   if (error) throw new Error(`EBRW_MCQ fetch failed: ${error.message}`);
   return (data ?? [])
     .map((r) => mapMCQRow(r, "ebrw"))
+    .filter(isRenderablePracticeQuestion)
     .filter(question => !isDerivedDomain || inferRWDomain(question.question) === options?.subtopic);
 }
 
@@ -253,7 +270,7 @@ export async function fetchMathMCQQuestions(options?: {
 
   const { data, error } = await query;
   if (error) throw new Error(`Math_MCQ fetch failed: ${error.message}`);
-  return (data ?? []).map((r) => mapMCQRow(r, "math"));
+  return (data ?? []).map((r) => mapMCQRow(r, "math")).filter(isRenderablePracticeQuestion);
 }
 
 /**
@@ -278,7 +295,7 @@ export async function fetchMathOpenQuestions(options?: {
 
   const { data, error } = await query;
   if (error) throw new Error(`Math_Open fetch failed: ${error.message}`);
-  return (data ?? []).map(mapOpenRow);
+  return (data ?? []).map(mapOpenRow).filter(isRenderablePracticeQuestion);
 }
 
 /**

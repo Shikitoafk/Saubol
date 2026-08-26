@@ -62,7 +62,44 @@ const parseFlowerTable = (value: string): TableData | null => {
   };
 };
 
-const parseTable = (value: string) => parsePipeTable(value) || parseCountryThreatTable(value) || parseFlowerTable(value);
+// Covers imports such as "Fish abundance …: species—station 1: 249,
+// station 2: 64; species—…" and "Video game units sold: system (maker,
+// type)—2,000,000; …". The importer preserves the data but not its grid.
+const parseSemicolonDashTable = (value: string): TableData | null => {
+  const firstBreak = value.search(/\r?\n\s*\r?\n/);
+  const source = firstBreak >= 0 ? value.slice(0, firstBreak).trim() : value.trim();
+  const colon = source.indexOf(":");
+  if (colon < 8 || !source.includes(";") || !source.includes("—")) return null;
+  const title = source.slice(0, colon).trim();
+  const entries = source.slice(colon + 1).replace(/\.$/, "").split(";").map((entry) => entry.trim()).filter(Boolean);
+  if (entries.length < 2 || entries.some((entry) => !entry.includes("—"))) return null;
+
+  const parsed = entries.map((entry) => {
+    const [label, data] = entry.split(/—(.+)/s);
+    return { label: label.trim(), cells: data.trim().split(/,\s+/).map((cell) => cell.trim()) };
+  });
+  const firstCells = parsed[0].cells;
+  const headers = ["Item"];
+  if (firstCells.every((cell) => /.+:\s*[-–\d.]+$/.test(cell))) {
+    headers.push(...firstCells.map((cell) => cell.replace(/:\s*[-–\d.]+$/, "").trim()));
+    return {
+      title,
+      headers,
+      rows: parsed.map(({ label, cells }) => [label, ...cells.map((cell) => cell.replace(/^.*?:\s*/, ""))]),
+      tail: firstBreak >= 0 ? value.slice(firstBreak).trim() : "",
+    };
+  }
+  headers.push(firstCells.length === 1 ? "Value" : "Values");
+  return {
+    title,
+    headers,
+    rows: parsed.map(({ label, cells }) => [label, cells.join(", ")]),
+    tail: firstBreak >= 0 ? value.slice(firstBreak).trim() : "",
+  };
+};
+
+const parseTable = (value: string) =>
+  parsePipeTable(value) || parseCountryThreatTable(value) || parseFlowerTable(value) || parseSemicolonDashTable(value);
 
 export function QuestionPassage({ passage, className = "" }: QuestionPassageProps) {
   const cleaned = removeRepeatedLead(passage);

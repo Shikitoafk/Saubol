@@ -67,7 +67,10 @@ export function renderMathText(value: string | null | undefined): string {
     text = text.replace(/\$\$([\s\S]*?)\$\$/g, (_, formula) => math(formula, true));
     // Do not consume price strings such as "$5". An inline formula needs two
     // delimiters and cannot contain a newline or another dollar sign.
-    text = text.replace(/\$([^$\n]+?)\$/g, (_, formula) => math(formula, false));
+    // `\$` is a literal dollar inside SAT currency formulas, e.g.
+    // `$\$1,320$`. Treating that inner dollar as a delimiter used to split
+    // the whole sentence and was the cause of the broken coupon-book screen.
+    text = text.replace(/\$((?:\\\$|[^$\n])+?)\$/g, (_, formula) => math(formula, false));
     return text.replace(/\r?\n/g, "<br />");
   } catch (error) {
     console.warn("Could not render math", error);

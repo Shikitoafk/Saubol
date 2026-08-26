@@ -29,9 +29,16 @@ import { Layout } from "@/components/layout";
 import { Button } from "@/components/ui/button";
 import { ResizablePanelGroup, ResizablePanel, ResizableHandle } from "@/components/ui/resizable";
 import { supabase } from "@/lib/supabase";
-import { SAT_TABLES } from "@/lib/sat-tables";
 import { saveSATAnswer } from "@/lib/progress-service";
-import { fetchPracticeQuestions, inferRWDomain, RW_DOMAINS, SATQuestion } from "@/lib/sat-questions-service";
+import {
+  fetchMathMCQQuestions,
+  fetchMathOpenQuestions,
+  fetchPracticeQuestions,
+  fetchRWQuestions,
+  inferRWDomain,
+  RW_DOMAINS,
+  SATQuestion,
+} from "@/lib/sat-questions-service";
 import { renderMathText } from "@/lib/render-math";
 import { motion, AnimatePresence } from "framer-motion";
 import { QuestionImage } from "@/components/question-image";
@@ -107,35 +114,19 @@ export default function SATPractice() {
       setBankLoading(true);
       setBankError(null);
       try {
-        // 1. Fetch exact Reading & Writing question count
-        const { count: rwCount, error: rwErr } = await supabase
-          .from(SAT_TABLES.ebrwMcq)
-          .select('*', { count: 'exact', head: true })
-          .is('test_period', null);
-
-        if (rwErr) throw rwErr;
-        
-        if (!rwErr && rwCount !== null) {
-          setTotalRwCount(rwCount);
-          setRwProgress(prev => prev.map(dom => ({
-            ...dom,
-            subtopics: dom.subtopics.map(sub => 
-              sub.id === "Reading & Writing" ? { ...sub, totalQuestions: rwCount } : sub
-            )
-          })));
-        }
-
-        // 2. Fetch Math MCQ and Open counts by topic
-        const [mcqRes, openRes, rwQuestionsRes] = await Promise.all([
-          supabase.from(SAT_TABLES.mathMcq).select('topic').is('test_period', null),
-          supabase.from(SAT_TABLES.mathOpen).select('topic').is('test_period', null),
-          supabase.from(SAT_TABLES.ebrwMcq).select('question').is('test_period', null),
+        // Use the same fetchers as the quiz. This keeps the visible total in
+        // sync with the actual playable pool after invalid legacy imports are
+        // filtered out (for example, a graph question whose graph is absent).
+        const [rwQuestions, mathMcqQuestions, mathOpenQuestions] = await Promise.all([
+          fetchRWQuestions({ limit: 1000 }),
+          fetchMathMCQQuestions({ limit: 1000 }),
+          fetchMathOpenQuestions({ limit: 1000 }),
         ]);
 
-        if (mcqRes.error) throw mcqRes.error;
-        if (openRes.error) throw openRes.error;
+        setTotalRwCount(rwQuestions.length);
 
-        if (!mcqRes.error && !openRes.error && mcqRes.data && openRes.data) {
+        // 2. Fetch Math MCQ and Open counts by topic
+        {
           const counts: Record<string, number> = {
             "Algebra": 0,
             "Advanced Math": 0,
@@ -155,15 +146,15 @@ export default function SATPractice() {
             return topic;
           };
 
-          mcqRes.data.forEach((row: any) => {
-            const topic = canonicalTopic(row.topic);
+          mathMcqQuestions.forEach((question) => {
+            const topic = canonicalTopic(question.topic ?? "");
             if (topic && counts[topic] !== undefined) {
               counts[topic]++;
             }
           });
 
-          openRes.data.forEach((row: any) => {
-            const topic = canonicalTopic(row.topic);
+          mathOpenQuestions.forEach((question) => {
+            const topic = canonicalTopic(question.topic ?? "");
             if (topic && counts[topic] !== undefined) {
               counts[topic]++;
             }
@@ -184,8 +175,8 @@ export default function SATPractice() {
         }
 
         const rwCounts = Object.fromEntries(RW_DOMAINS.map(domain => [domain, 0])) as Record<string, number>;
-        (rwQuestionsRes.data ?? []).forEach((row: any) => {
-          rwCounts[inferRWDomain(row.question ?? '')]++;
+        rwQuestions.forEach((question) => {
+          rwCounts[inferRWDomain(question.question)]++;
         });
         setRwProgress(prev => prev.map(domain => ({
           ...domain,
