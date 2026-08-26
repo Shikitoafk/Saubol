@@ -10,14 +10,41 @@ const escapeHtml = (value: string) => value
 // CSV/PDF imports sometimes already contain HTML entities (for example
 // `&lt;`). Decode those to text *before* escaping the whole question, so the
 // learner sees the intended inequality while no imported markup can execute.
-const decodeImportedEntities = (value: string) => value
-  .replace(/&amp;(?=(?:lt|gt|le|ge|nbsp|#60|#62|#8804|#8805);)/gi, "&")
-  .replace(/&lt;|&#60;/gi, "<")
-  .replace(/&gt;|&#62;/gi, ">")
-  .replace(/&le;|&#8804;/gi, "≤")
-  .replace(/&ge;|&#8805;/gi, "≥")
-  .replace(/&nbsp;/gi, " ")
-  .replace(/&amp;/gi, "&");
+const decodeImportedEntities = (value: string) => {
+  // Some CSV exports are escaped more than once: `&amp;gt;`, and sometimes
+  // even `&amp;amp;gt;`. Decode a few passes before rendering, but never treat
+  // the result as HTML (it is escaped again below).
+  let decoded = value;
+  for (let pass = 0; pass < 4; pass++) {
+    const next = decoded
+      .replace(/&amp;/gi, "&")
+      .replace(/&lt;|&#0*60;/gi, "<")
+      .replace(/&gt;|&#0*62;/gi, ">")
+      .replace(/&le;|&#0*8804;/gi, "≤")
+      .replace(/&ge;|&#0*8805;/gi, "≥")
+      .replace(/&nbsp;/gi, " ");
+    if (next === decoded) break;
+    decoded = next;
+  }
+  return decoded;
+};
+
+// Gemini/PDF imports occasionally lose the `$...$` delimiters around a line
+// of TeX. Only wrap a short, standalone formula line; prose is never guessed
+// as mathematics, so normal passages stay untouched.
+const wrapStandaloneMathLines = (value: string) => value
+  .split(/(\r?\n)/)
+  .map((part) => {
+    if (/\r?\n/.test(part)) return part;
+    const line = part.trim();
+    const hasLatex = /\\(?:frac|sqrt|left|right|times|cdot|leq|geq|neq|approx|pm|text)\b/.test(line);
+    const hasRelation = /(?:[≤≥<>]=?|=)/.test(line);
+    const looksLikeFormula = line.length > 0 && line.length <= 140 &&
+      /^[\d\s.,()+\-−*/=<>≤≥A-Za-z\\{}_^|]+$/.test(line) &&
+      (hasLatex || (hasRelation && /[a-zA-Z\d]/.test(line)));
+    return looksLikeFormula && !/\$/.test(line) ? `$${line}$` : part;
+  })
+  .join("");
 
 const math = (value: string, displayMode: boolean) =>
   katex.renderToString(value.trim(), {
@@ -34,7 +61,7 @@ const math = (value: string, displayMode: boolean) =>
 export function renderMathText(value: string | null | undefined): string {
   if (!value) return "";
   try {
-    let text = escapeHtml(decodeImportedEntities(value));
+    let text = escapeHtml(wrapStandaloneMathLines(decodeImportedEntities(value)));
     text = text.replace(/\\\\?\[([\s\S]*?)\\\\?\]/g, (_, formula) => math(formula, true));
     text = text.replace(/\\\\?\(([\s\S]*?)\\\\?\)/g, (_, formula) => math(formula, false));
     text = text.replace(/\$\$([\s\S]*?)\$\$/g, (_, formula) => math(formula, true));

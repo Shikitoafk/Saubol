@@ -35,6 +35,7 @@ import { fetchPracticeQuestions, inferRWDomain, RW_DOMAINS, SATQuestion } from "
 import { renderMathText } from "@/lib/render-math";
 import { motion, AnimatePresence } from "framer-motion";
 import { QuestionImage } from "@/components/question-image";
+import { QuestionPassage } from "@/components/question-passage";
 
 interface SubtopicInfo {
   id: string;
@@ -834,7 +835,7 @@ export default function SATPractice() {
                           <FileText className="w-4 h-4" />
                           <span className="text-[9px] font-black uppercase tracking-widest">Directions / Passage</span>
                         </div>
-                        <p className="text-base leading-relaxed font-medium text-ink">{questions[currentIdx].passage}</p>
+                        <QuestionPassage passage={questions[currentIdx].passage} />
                       </div>
                     </ResizablePanel>
 
