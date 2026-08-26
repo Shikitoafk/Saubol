@@ -10,8 +10,8 @@ export interface TestRegistryEntry {
   topic: string;
   assetPath: string;
   legacySlugs: string[];
-  book?: number;
-  testNum?: number;
+  book?: number | null;
+  testNum?: number | null;
   questions: number;
   timeMinutes: number;
   difficulty: "Easy" | "Medium" | "Hard";

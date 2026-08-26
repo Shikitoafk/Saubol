@@ -41,8 +41,7 @@ import {
   splitIntoModules,
   withTimeout
 } from "@/lib/sat-questions-service";
-import katex from "katex";
-import "katex/dist/katex.min.css";
+import { renderMathText } from "@/lib/render-math";
 import { motion, AnimatePresence } from "framer-motion";
 import { QuestionImage } from "@/components/question-image";
 
@@ -654,35 +653,6 @@ export default function SATPastPapers() {
     selection.removeAllRanges();
   };
 
-  const renderKatexText = (text: string) => {
-    if (!text) return "";
-    try {
-      let processed = text;
-      processed = processed.replace(/\\+\[([\s\S]+?)\\+\]/g, (_, math) => {
-        return katex.renderToString(math.trim(), { displayMode: true, throwOnError: false });
-      });
-      processed = processed.replace(/\\+\(([\s\S]+?)\\+\)/g, (_, math) => {
-        return katex.renderToString(math.trim(), { displayMode: false, throwOnError: false });
-      });
-      processed = processed.replace(/\$\$([\s\S]+?)\$\$/g, (_, math) =>
-        katex.renderToString(math.trim(), { displayMode: true, throwOnError: false })
-      );
-      // Пары $...$ обрабатываем, только если долларов чётное число. Иначе
-      // одиночный $ (например «$5» в тексте про деньги) регулярка спарила бы
-      // со следующим и покорёжила бы формулу — а «иногда не работает» это
-      // ровно оно.
-      if (((processed.match(/\$/g) || []).length % 2) === 0) {
-        processed = processed.replace(/\$([^$]+?)\$/g, (_, math) =>
-          katex.renderToString(math.trim(), { displayMode: false, throwOnError: false })
-        );
-      }
-      return processed;
-    } catch (e) {
-      console.error("KaTeX rendering error:", e);
-      return text;
-    }
-  };
-
   const formatTime = (secs: number) => {
     const m = Math.floor(secs / 60);
     const s = secs % 60;
@@ -822,18 +792,18 @@ export default function SATPastPapers() {
             </svg>
             <div className="mt-2 flex flex-wrap justify-center gap-x-4 gap-y-2 text-xs font-semibold text-slate-700">{series.map((item) => <span key={item.label} className="inline-flex items-center gap-1.5"><i className="h-2.5 w-2.5 rounded-full" style={{ backgroundColor: item.color }} />{item.label}</span>)}</div>
           </div>
-          {graph[2].trim() && <div className="reading-text text-ink whitespace-pre-wrap" dangerouslySetInnerHTML={{ __html: renderKatexText(graph[2].trim()) }} />}
+          {graph[2].trim() && <div className="reading-text text-ink whitespace-pre-wrap" dangerouslySetInnerHTML={{ __html: renderMathText(graph[2].trim()) }} />}
         </div>
       );
     }
     const match = passage.match(/^Table\s*[—-]\s*([^:]+):\s*([\s\S]*?)(?:\.\s*\n\s*\n|$)([\s\S]*)$/i);
     if (!match) {
-      return <div className="reading-text text-ink whitespace-pre-wrap" dangerouslySetInnerHTML={{ __html: renderKatexText(passage) }} />;
+      return <div className="reading-text text-ink whitespace-pre-wrap" dangerouslySetInnerHTML={{ __html: renderMathText(passage) }} />;
     }
     const headers = match[1].split("|").map((value) => value.trim()).filter(Boolean);
     const rows = match[2].split(";").map((row) => row.split("|").map((value) => value.trim())).filter((row) => row.length === headers.length);
     if (headers.length < 2 || rows.length === 0) {
-      return <div className="reading-text text-ink whitespace-pre-wrap" dangerouslySetInnerHTML={{ __html: renderKatexText(passage) }} />;
+      return <div className="reading-text text-ink whitespace-pre-wrap" dangerouslySetInnerHTML={{ __html: renderMathText(passage) }} />;
     }
     return (
       <div className="space-y-8">
@@ -847,7 +817,7 @@ export default function SATPastPapers() {
             </tbody>
           </table>
         </div>
-        {match[3].trim() && <div className="reading-text text-ink whitespace-pre-wrap" dangerouslySetInnerHTML={{ __html: renderKatexText(match[3].trim()) }} />}
+        {match[3].trim() && <div className="reading-text text-ink whitespace-pre-wrap" dangerouslySetInnerHTML={{ __html: renderMathText(match[3].trim()) }} />}
       </div>
     );
   };
@@ -1567,7 +1537,7 @@ export default function SATPastPapers() {
                               <QuestionImage src={sessionQuestions[currentIdx].imageUrl} className="max-h-[260px] object-contain" />
                             </div>
                           )}
-                          <div className="text-lg font-bold leading-relaxed tracking-tight" dangerouslySetInnerHTML={{ __html: renderKatexText(sessionQuestions[currentIdx]?.question || "") }} />
+                          <div className="text-lg font-bold leading-relaxed tracking-tight" dangerouslySetInnerHTML={{ __html: renderMathText(sessionQuestions[currentIdx]?.question || "") }} />
                         </div>
 
                         {/* Answers block */}
@@ -1589,7 +1559,7 @@ export default function SATPastPapers() {
                       <Brain className="w-4 h-4" />
                       <span className="text-[9px] font-black uppercase tracking-widest">Question</span>
                     </div>
-                    <div className="text-lg font-bold leading-relaxed tracking-tight" dangerouslySetInnerHTML={{ __html: renderKatexText(sessionQuestions[currentIdx]?.question || "") }} />
+                    <div className="text-lg font-bold leading-relaxed tracking-tight" dangerouslySetInnerHTML={{ __html: renderMathText(sessionQuestions[currentIdx]?.question || "") }} />
                   </div>
 
                   <div className="flex flex-col gap-4 overflow-y-auto custom-scrollbar">
@@ -1878,7 +1848,7 @@ export default function SATPastPapers() {
                       <div className="w-8 h-8 rounded-full border border-current flex items-center justify-center font-bold">
                         {letter}
                       </div>
-                      <div dangerouslySetInnerHTML={{ __html: renderKatexText(opt) }} />
+                      <div dangerouslySetInnerHTML={{ __html: renderMathText(opt) }} />
                     </div>
                   );
                 })}
@@ -1892,7 +1862,7 @@ export default function SATPastPapers() {
               <Sparkles className="w-4 h-4 text-indigo-400" />
               <h4 className="text-[10px] font-black uppercase tracking-widest text-indigo-400">Mastery Explanation</h4>
             </div>
-            <div className="text-ink font-medium text-sm block leading-relaxed" dangerouslySetInnerHTML={{ __html: renderKatexText(q.explanation || "No explanation provided.") }} />
+            <div className="text-ink font-medium text-sm block leading-relaxed" dangerouslySetInnerHTML={{ __html: renderMathText(q.explanation || "No explanation provided.") }} />
           </div>
         </div>
       );
@@ -1958,7 +1928,7 @@ export default function SATPastPapers() {
                     className={`group ${btnClass}`}
                   >
                     <div className={circleClass}>{letter}</div>
-                    <div className="text-base font-medium flex-1" dangerouslySetInnerHTML={{ __html: renderKatexText(opt) }} />
+                    <div className="text-base font-medium flex-1" dangerouslySetInnerHTML={{ __html: renderMathText(opt) }} />
                   </button>
                 );
               })}
@@ -1981,7 +1951,7 @@ export default function SATPastPapers() {
                   </span>
                 </div>
                 
-                <div className="text-ink font-medium text-sm block leading-relaxed" dangerouslySetInnerHTML={{ __html: renderKatexText(q.explanation || "No explanation provided.") }} />
+                <div className="text-ink font-medium text-sm block leading-relaxed" dangerouslySetInnerHTML={{ __html: renderMathText(q.explanation || "No explanation provided.") }} />
               </motion.div>
             )}
           </AnimatePresence>
@@ -2038,7 +2008,7 @@ export default function SATPastPapers() {
                     aria-label={`Choose answer ${letter}`}
                   />
                   <div className={`${circleClass} relative pointer-events-none`}>{letter}</div>
-                  <div className={`text-base font-medium flex-1 relative pointer-events-none ${isEliminated ? "line-through" : ""}`} dangerouslySetInnerHTML={{ __html: renderKatexText(opt) }} />
+                  <div className={`text-base font-medium flex-1 relative pointer-events-none ${isEliminated ? "line-through" : ""}`} dangerouslySetInnerHTML={{ __html: renderMathText(opt) }} />
                   <button
                     type="button"
                     onClick={(event) => {

@@ -31,8 +31,7 @@ import { supabase } from "@/lib/supabase";
 import { SAT_TABLES } from "@/lib/sat-tables";
 import { saveSATAnswer } from "@/lib/progress-service";
 import { fetchPracticeQuestions, inferRWDomain, RW_DOMAINS, SATQuestion } from "@/lib/sat-questions-service";
-import katex from 'katex';
-import 'katex/dist/katex.min.css';
+import { renderMathText } from "@/lib/render-math";
 import { motion, AnimatePresence } from "framer-motion";
 import { QuestionImage } from "@/components/question-image";
 
@@ -208,7 +207,7 @@ export default function SATPractice() {
                 if (match) {
                   return {
                     ...sub,
-                    solvedQuestions: match.questions_correct ?? 0,
+                    solvedQuestions: match.questions_attempted ?? 0,
                     accuracy: match.mastery_percent ?? 0
                   };
                 }
@@ -304,7 +303,8 @@ export default function SATPractice() {
       saveSATAnswer(
         selectedSection === 'Math' ? "Math" : "RW",
         currentSubtopic.name,
-        correct
+        correct,
+        { questionId: q.id, selectedAnswer: String.fromCharCode(65 + selectedAnswer), source: q.source }
       ).catch(console.error);
     }
   };
@@ -323,7 +323,8 @@ export default function SATPractice() {
       saveSATAnswer(
         "Math",
         currentSubtopic.name,
-        correct
+        correct,
+        { questionId: q.id, selectedAnswer: freeResponseInput.trim(), source: q.source }
       ).catch(console.error);
     }
   };
@@ -362,38 +363,6 @@ export default function SATPractice() {
       setAnswerState(null);
       setSelectedAnswer(null);
       setFreeResponseInput("");
-    }
-  };
-
-  const renderKatexText = (text: string) => {
-    if (!text) return "";
-    try {
-      let processed = text;
-      
-      // Handle block math: \\[ ... \\] or \[ ... \]
-      processed = processed.replace(/\\+\[([\s\S]+?)\\+\]/g, (_, math) => {
-        return katex.renderToString(math.trim(), { displayMode: true, throwOnError: false });
-      });
-
-      // Handle inline math: \\( ... \\) or \( ... \)
-      processed = processed.replace(/\\+\(([\s\S]+?)\\+\)/g, (_, math) => {
-        return katex.renderToString(math.trim(), { displayMode: false, throwOnError: false });
-      });
-
-      // Handle double dollar block math: $$ ... $$
-      processed = processed.replace(/\$\$([\s\S]+?)\$\$/g, (_, math) => 
-        katex.renderToString(math.trim(), { displayMode: true, throwOnError: false })
-      );
-
-      // Handle single dollar inline math: $ ... $
-      processed = processed.replace(/\$([\s\S]+?)\$/g, (_, math) => 
-        katex.renderToString(math.trim(), { displayMode: false, throwOnError: false })
-      );
-
-      return processed;
-    } catch (e) {
-      console.error("KaTeX rendering error:", e);
-      return text;
     }
   };
 
@@ -858,7 +827,7 @@ export default function SATPractice() {
                           )}
                           <div 
                             className="text-lg font-bold leading-relaxed tracking-tight" 
-                            dangerouslySetInnerHTML={{ __html: renderKatexText(questions[currentIdx]?.question || "") }} 
+                            dangerouslySetInnerHTML={{ __html: renderMathText(questions[currentIdx]?.question || "") }}
                           />
                         </div>
 
@@ -957,7 +926,7 @@ export default function SATPractice() {
                                   <div className={circleClass}>{letter}</div>
                                   <div 
                                     className="text-base font-medium flex-1" 
-                                    dangerouslySetInnerHTML={{ __html: renderKatexText(opt) }} 
+                                    dangerouslySetInnerHTML={{ __html: renderMathText(opt) }}
                                   />
                                 </button>
                               );
@@ -984,7 +953,7 @@ export default function SATPractice() {
                               </div>
                               <div 
                                 className="text-ink font-medium text-sm block leading-relaxed mb-10" 
-                                dangerouslySetInnerHTML={{ __html: renderKatexText(questions[currentIdx]?.explanation || "") }} 
+                                dangerouslySetInnerHTML={{ __html: renderMathText(questions[currentIdx]?.explanation || "") }}
                               />
                               <Button 
                                 onClick={nextQuestion} 
@@ -1017,7 +986,7 @@ export default function SATPractice() {
                     </div>
                     <div 
                       className="text-lg font-bold leading-relaxed tracking-tight" 
-                      dangerouslySetInnerHTML={{ __html: renderKatexText(questions[currentIdx]?.question || "") }} 
+                      dangerouslySetInnerHTML={{ __html: renderMathText(questions[currentIdx]?.question || "") }}
                     />
                   </div>
 
@@ -1118,7 +1087,7 @@ export default function SATPractice() {
                               <div className={circleClass}>{letter}</div>
                               <div 
                                 className="text-base font-medium flex-1" 
-                                dangerouslySetInnerHTML={{ __html: renderKatexText(opt) }} 
+                                dangerouslySetInnerHTML={{ __html: renderMathText(opt) }}
                               />
                             </button>
                           );
@@ -1145,7 +1114,7 @@ export default function SATPractice() {
                           </div>
                           <div 
                             className="text-ink font-medium text-sm block leading-relaxed mb-10" 
-                            dangerouslySetInnerHTML={{ __html: renderKatexText(questions[currentIdx]?.explanation || "") }} 
+                            dangerouslySetInnerHTML={{ __html: renderMathText(questions[currentIdx]?.explanation || "") }}
                           />
                           <Button 
                             onClick={nextQuestion} 

@@ -1,5 +1,5 @@
 import { useNavigate } from "react-router-dom";
-import { ChevronRight, BookOpen, Brain, Sparkles } from "lucide-react";
+import { ChevronRight, BookOpen, Brain, Sparkles, Layers3 } from "lucide-react";
 import { Layout } from "@/components/layout";
 import { motion } from "framer-motion";
 
@@ -31,7 +31,7 @@ export default function SatPrep() {
             </p>
           </header>
 
-          <div className="grid md:grid-cols-2 gap-10">
+          <div className="grid md:grid-cols-2 xl:grid-cols-3 gap-10">
             {/* Card 1: Past Papers */}
             <motion.div 
               whileHover={{ y: -8, scale: 1.01 }}
@@ -94,6 +94,23 @@ export default function SatPrep() {
                     Open Bank <ChevronRight className="w-4 h-4" />
                   </span>
                 </div>
+              </div>
+            </motion.div>
+
+            <motion.div
+              whileHover={{ y: -8, scale: 1.01 }}
+              className="glass-3d p-16 flex flex-col justify-between min-h-[460px] cursor-pointer border-amber-500/20 hover:border-amber-500/40 transition-all relative overflow-hidden group"
+              onClick={() => navigate("/sat/collections")}
+            >
+              <div className="relative z-10 flex-1 flex flex-col justify-between">
+                <div>
+                  <div className="w-20 h-20 bg-amber-500/10 rounded-3xl flex items-center justify-center border border-amber-500/20 group-hover:bg-amber-500/20 transition-all duration-700 mb-16">
+                    <Layers3 className="w-10 h-10 text-amber-500" />
+                  </div>
+                  <h2 className="text-5xl font-black mb-4 tracking-tighter uppercase italic leading-none text-shimmer">Collections</h2>
+                  <p className="text-ink-muted font-medium text-sm leading-relaxed max-w-sm">Focused, verified practice sets by topic and difficulty — separate from full exams and the question bank.</p>
+                </div>
+                <div className="flex items-center justify-between mt-auto"><span className="px-6 h-12 bg-surface border border-line text-ink-muted rounded-xl font-black uppercase text-[10px] tracking-widest flex items-center gap-2 group-hover:bg-white group-hover:text-black transition-all">Browse sets <ChevronRight className="w-4 h-4" /></span></div>
               </div>
             </motion.div>
           </div>

@@ -75,11 +75,41 @@ export async function saveIELTSAnswer(
 export async function saveSATAnswer(
   topic: string,
   subtopic: string,
-  isCorrect: boolean
+  isCorrect: boolean,
+  details?: { questionId?: string; selectedAnswer?: string; source?: string }
 ) {
   try {
     const { data: { user } } = await supabase.auth.getUser()
     if (!user) return
+
+    const { error: rpcError } = await supabase.rpc('record_sat_answer', {
+      p_topic: topic,
+      p_subtopic: subtopic,
+      p_is_correct: isCorrect,
+    })
+
+    // New deployments use an atomic database function. Keep the old path as a
+    // compatibility fallback until the SQL migration is applied.
+    if (!rpcError) {
+      if (details?.questionId) {
+        const { error: attemptError } = await supabase.from('sat_question_attempts').insert({
+          user_id: user.id,
+          question_id: details.questionId,
+          topic,
+          subtopic,
+          is_correct: isCorrect,
+          selected_answer: details.selectedAnswer ?? null,
+          source: details.source ?? null,
+        })
+        if (attemptError) console.warn('SAT answer history was not saved:', attemptError.message)
+      }
+      return
+    }
+
+    if (!/record_sat_answer|function/i.test(rpcError.message)) {
+      console.error('Error saving SAT progress:', rpcError.message)
+      return
+    }
 
     const { data: existing, error } = await supabase
       .from('sat_progress')

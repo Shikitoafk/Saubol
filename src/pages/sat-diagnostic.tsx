@@ -18,8 +18,7 @@ import {
 import { supabase } from "@/lib/supabase";
 import { calculateWeightedScore } from "@/lib/sat-logic";
 import { fetchDiagnosticQuestions, SATQuestion } from "@/lib/sat-questions-service";
-import katex from 'katex';
-import 'katex/dist/katex.min.css';
+import { renderMathText } from "@/lib/render-math";
 import { QuestionImage } from "@/components/question-image";
 
 export default function SATDiagnostic() {
@@ -102,19 +101,6 @@ export default function SATDiagnostic() {
       setResults(score);
     } finally {
       setIsSubmitting(false);
-    }
-  };
-
-  const renderText = (text: string) => {
-    if (!text) return "";
-    try {
-      return text.replace(/\$\$([\s\S]+?)\$\$/g, (_, math) => 
-        katex.renderToString(math, { displayMode: true, throwOnError: false })
-      ).replace(/\$([\s\S]+?)\$/g, (_, math) => 
-        katex.renderToString(math, { displayMode: false, throwOnError: false })
-      );
-    } catch (e) {
-      return text;
     }
   };
 
@@ -219,7 +205,7 @@ export default function SATDiagnostic() {
                   <p className="text-xl leading-relaxed font-medium text-ink italic leading-loose">{q.passage}</p>
                 </div>
               )}
-              <div className="text-3xl font-black leading-[1.1] tracking-tight uppercase italic" dangerouslySetInnerHTML={{ __html: renderText(q.question) }} />
+              <div className="text-3xl font-black leading-[1.1] tracking-tight uppercase italic" dangerouslySetInnerHTML={{ __html: renderMathText(q.question) }} />
             </div>
 
             <div className="space-y-4">
@@ -230,7 +216,7 @@ export default function SATDiagnostic() {
                     onClick={() => handleSelect(i)} 
                     className={`w-full p-10 text-left rounded-3xl border transition-all flex items-center justify-between group h-24 ${answers?.[currentIdx] === i ? 'bg-white text-black border-white shadow-[0_20px_40px_rgba(255,255,255,0.1)]' : 'bg-surface border-line hover:border-line hover:bg-surface-2'}`}
                   >
-                    <span className="text-lg font-black uppercase italic tracking-tight" dangerouslySetInnerHTML={{ __html: renderText(opt) }} />
+                    <span className="text-lg font-black uppercase italic tracking-tight" dangerouslySetInnerHTML={{ __html: renderMathText(opt) }} />
                     <div className={`w-10 h-10 rounded-xl border flex items-center justify-center text-[11px] font-black ${answers?.[currentIdx] === i ? 'border-black' : 'border-line'}`}>
                        {String.fromCharCode(65 + i)}
                     </div>

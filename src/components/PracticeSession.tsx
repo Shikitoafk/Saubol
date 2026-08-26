@@ -11,8 +11,7 @@ import {
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { SATQuestion } from "@/lib/sat-questions-service";
-import katex from 'katex';
-import 'katex/dist/katex.min.css';
+import { renderMathText } from "@/lib/render-math";
 import { saveSATAnswer } from "@/lib/progress-service";
 import { QuestionImage } from "@/components/question-image";
 
@@ -53,19 +52,6 @@ export default function PracticeSession({ topic, questions, onComplete }: Practi
       setShowFeedback(false);
     } else {
       onComplete(correctCount);
-    }
-  };
-
-  const renderText = (text: string) => {
-    if (!text) return "";
-    try {
-      return text.replace(/\$\$([\s\S]+?)\$\$/g, (_, math) => 
-        katex.renderToString(math, { displayMode: true, throwOnError: false })
-      ).replace(/\$([\s\S]+?)\$/g, (_, math) => 
-        katex.renderToString(math, { displayMode: false, throwOnError: false })
-      );
-    } catch (e) {
-      return text;
     }
   };
 
@@ -114,7 +100,7 @@ export default function PracticeSession({ topic, questions, onComplete }: Practi
             </div>
          )}
 
-         <div className="text-3xl font-black italic tracking-tighter leading-tight mb-12" dangerouslySetInnerHTML={{ __html: renderText(currentQuestion.question) }} />
+         <div className="text-3xl font-black italic tracking-tighter leading-tight mb-12" dangerouslySetInnerHTML={{ __html: renderMathText(currentQuestion.question) }} />
 
          <div className="grid gap-4">
             {currentQuestion.options.map((opt, i) => {
@@ -141,7 +127,7 @@ export default function PracticeSession({ topic, questions, onComplete }: Practi
                         }`}>
                            {String.fromCharCode(65 + i)}
                         </div>
-                        <span className="text-lg font-bold" dangerouslySetInnerHTML={{ __html: renderText(opt) }} />
+                        <span className="text-lg font-bold" dangerouslySetInnerHTML={{ __html: renderMathText(opt) }} />
                      </div>
                      {status === 'correct' && <CheckCircle2 className="w-6 h-6 text-emerald-400" />}
                      {status === 'wrong' && <XCircle className="w-6 h-6 text-rose-400" />}
@@ -162,7 +148,7 @@ export default function PracticeSession({ topic, questions, onComplete }: Practi
                    </h4>
                 </div>
                 
-                <div className="text-ink text-lg leading-relaxed mb-8" dangerouslySetInnerHTML={{ __html: renderText(currentQuestion.explanation) }} />
+                <div className="text-ink text-lg leading-relaxed mb-8" dangerouslySetInnerHTML={{ __html: renderMathText(currentQuestion.explanation) }} />
 
                 {selected !== currentQuestion.correctAnswer && (
                    <div className="pt-8 border-t border-line">

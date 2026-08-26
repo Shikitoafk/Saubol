@@ -80,3 +80,66 @@ CREATE POLICY "Users own data" ON ielts_sessions FOR ALL USING (auth.uid() = use
 CREATE POLICY "Users own data" ON sat_progress FOR ALL USING (auth.uid() = user_id);
 CREATE POLICY "Users own data" ON sat_diagnostic FOR ALL USING (auth.uid() = user_id);
 CREATE POLICY "Users own data" ON user_streaks FOR ALL USING (auth.uid() = user_id);
+
+-- Answer events make the dashboard trustworthy: aggregates above are fast to
+-- read, while this table retains the individual history needed for review.
+CREATE TABLE IF NOT EXISTS sat_question_attempts (
+  id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
+  user_id UUID NOT NULL REFERENCES auth.users(id) ON DELETE CASCADE,
+  question_id TEXT NOT NULL,
+  topic TEXT NOT NULL,
+  subtopic TEXT,
+  is_correct BOOLEAN NOT NULL,
+  selected_answer TEXT,
+  source TEXT,
+  answered_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+);
+
+CREATE INDEX IF NOT EXISTS sat_question_attempts_user_answered_at_idx
+  ON sat_question_attempts (user_id, answered_at DESC);
+
+ALTER TABLE sat_question_attempts ENABLE ROW LEVEL SECURITY;
+DROP POLICY IF EXISTS "Users own SAT attempts" ON sat_question_attempts;
+CREATE POLICY "Users own SAT attempts" ON sat_question_attempts
+  FOR ALL USING (auth.uid() = user_id) WITH CHECK (auth.uid() = user_id);
+
+-- This keeps progress updates atomic when a learner answers quickly in more
+-- than one tab. The browser falls back gracefully while this migration has not
+-- yet been applied.
+CREATE OR REPLACE FUNCTION public.record_sat_answer(
+  p_topic TEXT,
+  p_subtopic TEXT,
+  p_is_correct BOOLEAN
+)
+RETURNS void
+LANGUAGE plpgsql
+SECURITY INVOKER
+SET search_path = public
+AS $$
+BEGIN
+  INSERT INTO sat_progress (
+    user_id, topic, subtopic, questions_attempted, questions_correct,
+    mastery_percent, current_difficulty, updated_at
+  ) VALUES (
+    auth.uid(), p_topic, p_subtopic, 1, CASE WHEN p_is_correct THEN 1 ELSE 0 END,
+    CASE WHEN p_is_correct THEN 100 ELSE 0 END, 'easy', NOW()
+  )
+  ON CONFLICT (user_id, topic, subtopic) DO UPDATE SET
+    questions_attempted = sat_progress.questions_attempted + 1,
+    questions_correct = sat_progress.questions_correct + CASE WHEN p_is_correct THEN 1 ELSE 0 END,
+    mastery_percent = ROUND(
+      ((sat_progress.questions_correct + CASE WHEN p_is_correct THEN 1 ELSE 0 END)::numeric /
+        (sat_progress.questions_attempted + 1)) * 100
+    ),
+    current_difficulty = CASE
+      WHEN ROUND(((sat_progress.questions_correct + CASE WHEN p_is_correct THEN 1 ELSE 0 END)::numeric /
+        (sat_progress.questions_attempted + 1)) * 100) >= 80
+        AND sat_progress.current_difficulty = 'easy' THEN 'medium'
+      WHEN ROUND(((sat_progress.questions_correct + CASE WHEN p_is_correct THEN 1 ELSE 0 END)::numeric /
+        (sat_progress.questions_attempted + 1)) * 100) >= 80
+        AND sat_progress.current_difficulty = 'medium' THEN 'hard'
+      ELSE sat_progress.current_difficulty
+    END,
+    updated_at = NOW();
+END;
+$$;

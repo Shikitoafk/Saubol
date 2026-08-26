@@ -12,8 +12,7 @@ import {
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { SATQuestion } from "@/lib/sat-questions-service";
-import katex from 'katex';
-import 'katex/dist/katex.min.css';
+import { renderMathText } from "@/lib/render-math";
 import { QuestionImage } from "@/components/question-image";
 
 interface PracticeQuestionProps {
@@ -39,19 +38,6 @@ export default function PracticeQuestion({
     setSelected(idx);
     setShowFeedback(true);
     onAnswer(idx === question.correctAnswer);
-  };
-
-  const renderText = (text: string) => {
-    if (!text) return "";
-    try {
-      return text.replace(/\$\$([\s\S]+?)\$\$/g, (_, math) => 
-        katex.renderToString(math, { displayMode: true, throwOnError: false })
-      ).replace(/\$([\s\S]+?)\$/g, (_, math) => 
-        katex.renderToString(math, { displayMode: false, throwOnError: false })
-      );
-    } catch (e) {
-      return text;
-    }
   };
 
   return (
@@ -96,7 +82,7 @@ export default function PracticeQuestion({
           </div>
         )}
         
-        <div className="text-3xl font-black leading-tight tracking-tight mb-12" dangerouslySetInnerHTML={{ __html: renderText(question.question) }} />
+        <div className="text-3xl font-black leading-tight tracking-tight mb-12" dangerouslySetInnerHTML={{ __html: renderMathText(question.question) }} />
 
         {/* Options */}
         <div className="grid gap-4">
@@ -124,7 +110,7 @@ export default function PracticeQuestion({
                   }`}>
                     {String.fromCharCode(65 + i)}
                   </div>
-                  <span className="text-lg font-bold" dangerouslySetInnerHTML={{ __html: renderText(opt) }} />
+                  <span className="text-lg font-bold" dangerouslySetInnerHTML={{ __html: renderMathText(opt) }} />
                 </div>
                 {status === 'correct' && <CheckCircle2 className="w-6 h-6 text-emerald-400" />}
                 {status === 'wrong' && <XCircle className="w-6 h-6 text-rose-400" />}
@@ -147,7 +133,7 @@ export default function PracticeQuestion({
                  <Sparkles className="w-5 h-5 text-indigo-400" />
                  <h4 className="text-[10px] font-black uppercase tracking-widest text-indigo-400">Mastery Explanation</h4>
               </div>
-              <div className="text-ink font-medium text-lg leading-relaxed mb-8" dangerouslySetInnerHTML={{ __html: renderText(question.explanation) }} />
+              <div className="text-ink font-medium text-lg leading-relaxed mb-8" dangerouslySetInnerHTML={{ __html: renderMathText(question.explanation) }} />
               
               <div className="space-y-4 pt-8 border-t border-line">
                  <h5 className="text-[9px] font-black uppercase text-ink-subtle tracking-widest mb-4">Strategic Error Analysis</h5>

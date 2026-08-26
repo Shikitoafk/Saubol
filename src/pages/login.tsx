@@ -1,26 +1,48 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { supabase } from "@/lib/supabase";
+import { useAuth } from "@/hooks/useAuth";
 import { Layout } from "@/components/layout";
 import { Button } from "@/components/ui/button";
 import { Sparkles, ShieldCheck, ArrowRight, Zap } from "lucide-react";
 
 export default function Login() {
   const [loading, setLoading] = useState(false);
+  const [mode, setMode] = useState<"signin" | "signup">("signin");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [message, setMessage] = useState("");
+  const [errorMessage, setErrorMessage] = useState("");
   const navigate = useNavigate();
+  const { signInWithGoogle, signInWithPassword, signUp } = useAuth();
 
   const handleGoogleLogin = async () => {
     setLoading(true);
     try {
-      const { error } = await supabase.auth.signInWithOAuth({
-        provider: 'google',
-        options: {
-          redirectTo: window.location.origin
-        }
-      });
-      if (error) throw error;
+      await signInWithGoogle();
     } catch (error) {
       console.error('Error logging in with Google:', error);
+      setErrorMessage("Google sign-in is not configured. Use email or try again later.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleEmailAuth = async (event: React.FormEvent) => {
+    event.preventDefault();
+    setLoading(true);
+    setErrorMessage("");
+    setMessage("");
+    try {
+      if (mode === "signup") {
+        const signedIn = await signUp(email.trim(), password);
+        setMessage(signedIn ? "Account created. You are signed in." : "Check your email to confirm your account, then sign in.");
+        if (signedIn) navigate("/dashboard");
+      } else {
+        await signInWithPassword(email.trim(), password);
+        navigate("/dashboard");
+      }
+    } catch (error: any) {
+      setErrorMessage(error?.message || "Authentication failed. Please try again.");
     } finally {
       setLoading(false);
     }
@@ -47,15 +69,30 @@ export default function Login() {
               <span className="text-[10px] font-black tracking-[0.4em] uppercase text-emerald-400">Secure Authentication</span>
             </div>
             
-            <h1 className="text-5xl font-black tracking-tighter mb-6 text-shimmer">
-              WELCOME BACK.
-            </h1>
+            <h1 className="text-5xl font-black tracking-tighter mb-6 text-shimmer">{mode === "signin" ? "WELCOME BACK." : "CREATE ACCOUNT."}</h1>
             
             <p className="text-ink-muted font-medium mb-16 leading-relaxed">
               Входи в свой аккаунт, чтобы продолжить путь к топовому баллу и университету мечты.
             </p>
             
             <div className="space-y-6">
+              <form onSubmit={handleEmailAuth} className="space-y-3 text-left">
+                <label className="block text-[10px] font-black uppercase tracking-widest text-ink-muted">Email
+                  <input value={email} onChange={(e) => setEmail(e.target.value)} type="email" autoComplete="email" required className="mt-2 h-12 w-full rounded-xl border border-line bg-surface px-4 text-sm text-ink outline-none focus:border-indigo-500" />
+                </label>
+                <label className="block text-[10px] font-black uppercase tracking-widest text-ink-muted">Password
+                  <input value={password} onChange={(e) => setPassword(e.target.value)} type="password" minLength={6} autoComplete={mode === "signin" ? "current-password" : "new-password"} required className="mt-2 h-12 w-full rounded-xl border border-line bg-surface px-4 text-sm text-ink outline-none focus:border-indigo-500" />
+                </label>
+                {errorMessage && <p role="alert" className="text-xs font-semibold text-rose-400">{errorMessage}</p>}
+                {message && <p role="status" className="text-xs font-semibold text-emerald-400">{message}</p>}
+                <Button type="submit" disabled={loading} className="h-14 w-full rounded-xl bg-indigo-600 text-xs font-black uppercase tracking-widest text-white hover:bg-indigo-500">
+                  {loading ? "PLEASE WAIT..." : mode === "signin" ? "SIGN IN" : "CREATE ACCOUNT"}
+                </Button>
+              </form>
+
+              <button type="button" disabled={loading} onClick={() => { setMode(mode === "signin" ? "signup" : "signin"); setErrorMessage(""); setMessage(""); }} className="text-xs font-bold text-indigo-400 hover:text-indigo-300">
+                {mode === "signin" ? "New here? Create an account" : "Already have an account? Sign in"}
+              </button>
               <Button
                 onClick={handleGoogleLogin}
                 disabled={loading}

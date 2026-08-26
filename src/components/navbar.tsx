@@ -3,6 +3,7 @@ import { Sheet, SheetContent, SheetTrigger, SheetTitle, SheetHeader } from "@/co
 import { Button } from "@/components/ui/button";
 import { Menu } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { useAuth } from "@/hooks/useAuth";
 
 const links = [
   { name: "Home", href: "/" },
@@ -12,6 +13,7 @@ const links = [
 
 export function Navbar() {
   const location = useLocation();
+  const { user, loading, signOut } = useAuth();
   const isActive = (href: string) => location.pathname === href || (href !== "/" && location.pathname.startsWith(href));
 
   return (
@@ -31,9 +33,13 @@ export function Navbar() {
           </div>
         </div>
 
-        <a href="https://t.me/shikitoafk" target="_blank" rel="noopener noreferrer" className="hidden text-sm font-medium text-ink-muted transition-colors hover:text-ink sm:block">
-          Contact
-        </a>
+        <div className="hidden items-center gap-4 sm:flex">
+          {!loading && (user ? <>
+            <Link to="/dashboard" className="text-sm font-semibold text-ink-muted transition-colors hover:text-ink">Progress</Link>
+            <button onClick={() => signOut()} className="text-sm font-medium text-ink-muted transition-colors hover:text-ink">Sign out</button>
+          </> : <Link to="/login" className="text-sm font-semibold text-ink-muted transition-colors hover:text-ink">Sign in</Link>)}
+          <a href="https://t.me/shikitoafk" target="_blank" rel="noopener noreferrer" className="text-sm font-medium text-ink-muted transition-colors hover:text-ink">Contact</a>
+        </div>
 
         <div className="sm:hidden">
           <Sheet>

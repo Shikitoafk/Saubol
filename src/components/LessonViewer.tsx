@@ -10,8 +10,7 @@ import {
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { SATLesson } from "@/data/sat-lessons";
-import katex from 'katex';
-import 'katex/dist/katex.min.css';
+import { renderMathText } from "@/lib/render-math";
 
 interface LessonViewerProps {
   lesson: SATLesson;
@@ -19,19 +18,6 @@ interface LessonViewerProps {
 }
 
 export default function LessonViewer({ lesson, onStartPractice }: LessonViewerProps) {
-  const renderText = (text: string) => {
-    if (!text) return "";
-    try {
-      return text.replace(/\$\$([\s\S]+?)\$\$/g, (_, math) => 
-        katex.renderToString(math, { displayMode: true, throwOnError: false })
-      ).replace(/\$([\s\S]+?)\$/g, (_, math) => 
-        katex.renderToString(math, { displayMode: false, throwOnError: false })
-      );
-    } catch (e) {
-      return text;
-    }
-  };
-
   return (
     <div className="max-w-4xl mx-auto p-12 space-y-16 selection:bg-indigo-500/30">
       {/* Header */}
@@ -70,11 +56,11 @@ export default function LessonViewer({ lesson, onStartPractice }: LessonViewerPr
               <span className="text-indigo-400 opacity-20">0{i + 1}</span>
               {concept.title}
             </h3>
-            <p className="text-ink-muted text-lg leading-relaxed mb-6 font-medium" dangerouslySetInnerHTML={{ __html: renderText(concept.description) }} />
+            <p className="text-ink-muted text-lg leading-relaxed mb-6 font-medium" dangerouslySetInnerHTML={{ __html: renderMathText(concept.description) }} />
             {concept.example && (
               <div className="p-6 bg-canvas/40 rounded-2xl border border-line font-mono text-sm">
                  <div className="text-[9px] font-black uppercase text-indigo-400 mb-3 opacity-40">Interactive Example</div>
-                 <div className="text-ink" dangerouslySetInnerHTML={{ __html: renderText(concept.example) }} />
+                 <div className="text-ink" dangerouslySetInnerHTML={{ __html: renderMathText(concept.example) }} />
               </div>
             )}
           </motion.div>
@@ -88,10 +74,10 @@ export default function LessonViewer({ lesson, onStartPractice }: LessonViewerPr
           <h3 className="text-2xl font-black uppercase tracking-tight italic">Worked Example.</h3>
         </div>
         <div className="space-y-8">
-           <div className="text-xl font-bold leading-relaxed border-b border-line pb-8" dangerouslySetInnerHTML={{ __html: renderText(lesson.workedExample.question) }} />
+           <div className="text-xl font-bold leading-relaxed border-b border-line pb-8" dangerouslySetInnerHTML={{ __html: renderMathText(lesson.workedExample.question) }} />
            <div>
               <div className="text-[9px] font-black uppercase text-indigo-400 mb-4 tracking-widest">Step-by-Step Solution</div>
-              <div className="text-ink whitespace-pre-line leading-loose font-medium" dangerouslySetInnerHTML={{ __html: renderText(lesson.workedExample.solution) }} />
+              <div className="text-ink whitespace-pre-line leading-loose font-medium" dangerouslySetInnerHTML={{ __html: renderMathText(lesson.workedExample.solution) }} />
            </div>
         </div>
       </section>
@@ -107,7 +93,7 @@ export default function LessonViewer({ lesson, onStartPractice }: LessonViewerPr
                <div className="w-6 h-6 rounded-full bg-rose-500/10 flex items-center justify-center shrink-0 border border-rose-500/20">
                   <span className="text-[10px] font-black text-rose-500">!</span>
                </div>
-               <p className="text-ink-muted font-medium text-sm leading-relaxed" dangerouslySetInnerHTML={{ __html: renderText(mistake) }} />
+               <p className="text-ink-muted font-medium text-sm leading-relaxed" dangerouslySetInnerHTML={{ __html: renderMathText(mistake) }} />
             </div>
           ))}
         </div>
