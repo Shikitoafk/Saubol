@@ -143,3 +143,79 @@ BEGIN
     updated_at = NOW();
 END;
 $$;
+
+-- Public-facing names are stored separately from Auth. The leaderboard RPC
+-- exposes only these names and aggregate SAT data, never emails or IDs.
+CREATE TABLE IF NOT EXISTS public.user_profiles (
+  id UUID PRIMARY KEY REFERENCES auth.users(id) ON DELETE CASCADE,
+  display_name TEXT NOT NULL DEFAULT 'Student',
+  created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+);
+
+ALTER TABLE public.user_profiles ENABLE ROW LEVEL SECURITY;
+
+CREATE OR REPLACE FUNCTION public.handle_new_user_profile()
+RETURNS trigger
+LANGUAGE plpgsql
+SECURITY DEFINER
+SET search_path = public
+AS $$
+BEGIN
+  INSERT INTO public.user_profiles (id, display_name)
+  VALUES (
+    NEW.id,
+    COALESCE(NULLIF(TRIM(NEW.raw_user_meta_data->>'full_name'), ''), SPLIT_PART(NEW.email, '@', 1), 'Student')
+  ) ON CONFLICT (id) DO NOTHING;
+  RETURN NEW;
+END;
+$$;
+
+DROP TRIGGER IF EXISTS on_auth_user_created_profile ON auth.users;
+CREATE TRIGGER on_auth_user_created_profile
+  AFTER INSERT ON auth.users
+  FOR EACH ROW EXECUTE FUNCTION public.handle_new_user_profile();
+
+-- Make profiles for existing users when this script is run after launch.
+INSERT INTO public.user_profiles (id, display_name)
+SELECT id, COALESCE(NULLIF(TRIM(raw_user_meta_data->>'full_name'), ''), SPLIT_PART(email, '@', 1), 'Student')
+FROM auth.users
+ON CONFLICT (id) DO NOTHING;
+
+CREATE OR REPLACE FUNCTION public.get_sat_leaderboard(p_limit INTEGER DEFAULT 10)
+RETURNS TABLE (
+  rank BIGINT,
+  display_name TEXT,
+  questions_attempted BIGINT,
+  questions_correct BIGINT,
+  accuracy INTEGER,
+  is_current_user BOOLEAN
+)
+LANGUAGE sql
+STABLE
+SECURITY DEFINER
+SET search_path = public
+AS $$
+  WITH totals AS (
+    SELECT user_id, SUM(questions_attempted)::BIGINT AS attempted, SUM(questions_correct)::BIGINT AS correct
+    FROM public.sat_progress
+    GROUP BY user_id
+    HAVING SUM(questions_attempted) > 0
+  ), ranked AS (
+    SELECT
+      RANK() OVER (ORDER BY correct DESC, attempted DESC, user_id) AS position,
+      COALESCE(profile.display_name, 'Student') AS name,
+      attempted,
+      correct,
+      ROUND((correct::NUMERIC / attempted) * 100)::INTEGER AS accuracy_value,
+      totals.user_id = auth.uid() AS is_current
+    FROM totals
+    LEFT JOIN public.user_profiles profile ON profile.id = totals.user_id
+  )
+  SELECT position, name, attempted, correct, accuracy_value, is_current
+  FROM ranked
+  WHERE position <= GREATEST(1, LEAST(p_limit, 100)) OR is_current
+  ORDER BY position;
+$$;
+
+REVOKE ALL ON FUNCTION public.get_sat_leaderboard(INTEGER) FROM PUBLIC;
+GRANT EXECUTE ON FUNCTION public.get_sat_leaderboard(INTEGER) TO authenticated;

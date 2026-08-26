@@ -45,6 +45,16 @@ interface UserProgress {
     reading: number;
     overall: number;
   };
+  leaderboard: LeaderboardEntry[];
+}
+
+interface LeaderboardEntry {
+  rank: number;
+  display_name: string;
+  questions_attempted: number;
+  questions_correct: number;
+  accuracy: number;
+  is_current_user: boolean;
 }
 
 export default function Dashboard() {
@@ -97,6 +107,12 @@ export default function Dashboard() {
           .select('*')
           .eq('user_id', session.user.id)
           .maybeSingle();
+
+        const { data: leaderboardData, error: leaderboardError } = await supabase
+          .rpc('get_sat_leaderboard', { p_limit: 5 });
+        if (leaderboardError && !/get_sat_leaderboard/i.test(leaderboardError.message)) {
+          console.error('SAT leaderboard error:', leaderboardError);
+        }
 
         const rawProgress = progressData || [];
         const rawIelts = ieltsData || [];
@@ -164,7 +180,8 @@ export default function Dashboard() {
             listening: getAvgBySkill('listening'),
             reading: getAvgBySkill('reading'),
             overall: overallIelts
-          }
+          },
+          leaderboard: (leaderboardData || []) as LeaderboardEntry[],
         });
         setLoading(false);
       } catch (err: any) {
@@ -205,6 +222,8 @@ export default function Dashboard() {
       }
     }
   };
+  const currentLeaderboardEntry = progress?.leaderboard.find((entry) => entry.is_current_user);
+  const level = Math.max(1, Math.ceil((progress?.total_questions || 0) / 20));
 
   const item = {
     hidden: { opacity: 0, y: 20 },
@@ -244,8 +263,8 @@ export default function Dashboard() {
               <div>
                 <p className="text-3xl font-black tracking-tighter uppercase">{user?.user_metadata?.full_name || 'Member'}</p>
                 <div className="flex items-center gap-3 mt-2">
-                   <div className="px-3 py-1 bg-indigo-600 rounded-full text-[8px] font-black uppercase tracking-widest">Level 12</div>
-                   <p className="text-[10px] font-bold text-ink-subtle uppercase tracking-widest">Global Rank: #412</p>
+                   <div className="px-3 py-1 bg-indigo-600 rounded-full text-[8px] font-black uppercase tracking-widest">Level {level}</div>
+                   <p className="text-[10px] font-bold text-ink-subtle uppercase tracking-widest">{currentLeaderboardEntry ? `SAT Rank: #${currentLeaderboardEntry.rank}` : 'Solve SAT questions to enter ranking'}</p>
                 </div>
               </div>
             </div>
@@ -282,6 +301,17 @@ export default function Dashboard() {
               </motion.div>
             ))}
           </div>
+
+          <motion.section variants={item} className="glass-3d mb-24 overflow-hidden border-line">
+            <div className="flex items-center justify-between border-b border-line bg-surface px-8 py-6">
+              <div><h3 className="text-2xl font-black uppercase tracking-tight">SAT leaderboard</h3><p className="mt-1 text-[10px] font-bold uppercase tracking-widest text-ink-subtle">Ranked by correct answers, then total practice</p></div>
+              {currentLeaderboardEntry && <span className="rounded-full bg-indigo-500/10 px-4 py-2 text-xs font-black text-indigo-400">Your rank #{currentLeaderboardEntry.rank}</span>}
+            </div>
+            {progress?.leaderboard.length ? <div className="divide-y divide-white/5">{progress.leaderboard.map((entry) => <div key={`${entry.rank}-${entry.display_name}`} className={`flex items-center justify-between px-8 py-5 ${entry.is_current_user ? 'bg-indigo-500/5' : ''}`}>
+              <div className="flex items-center gap-5"><span className="w-9 text-center text-lg font-black text-indigo-400">#{entry.rank}</span><div><p className="font-black tracking-tight">{entry.display_name}{entry.is_current_user ? ' (you)' : ''}</p><p className="text-[10px] font-bold uppercase tracking-widest text-ink-subtle">{entry.questions_correct}/{entry.questions_attempted} correct · {entry.accuracy}%</p></div></div>
+              <span className="text-sm font-black text-ink-muted">{entry.questions_correct} pts</span>
+            </div>)}</div> : <div className="px-8 py-10 text-sm font-medium text-ink-muted">Solve an SAT question to become the first ranked student.</div>}
+          </motion.section>
 
           {/* Tactical Analytics Visualizer */}
           <motion.div variants={item} className="glass-3d p-20 mb-32 relative overflow-hidden group border-line bg-surface">
