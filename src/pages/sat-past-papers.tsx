@@ -42,6 +42,7 @@ import {
   withTimeout
 } from "@/lib/sat-questions-service";
 import { renderMathText } from "@/lib/render-math";
+import { saveSATAnswer } from "@/lib/progress-service";
 import { motion, AnimatePresence } from "framer-motion";
 import { QuestionImage } from "@/components/question-image";
 
@@ -470,6 +471,13 @@ export default function SATPastPapers() {
     
     setPracticeFeedback({ correct });
     setAnswerConfirmed(true);
+    if (!emptyAnswer) {
+      saveSATAnswer(q.section === "Math" ? "Math" : "RW", q.topic || "Past Paper", correct, {
+        questionId: q.id,
+        selectedAnswer: String.fromCharCode(65 + optionIdx),
+        source: selectedPaper ? `${selectedPaper.test_period} ${selectedPaper.test_version}` : undefined,
+      }).catch(console.error);
+    }
   };
 
   // Handle Practice Mode open response confirm
@@ -491,6 +499,13 @@ export default function SATPastPapers() {
 
     setPracticeFeedback({ correct });
     setAnswerConfirmed(true);
+    if (!emptyAnswer) {
+      saveSATAnswer("Math", q.topic || "Past Paper", correct, {
+        questionId: q.id,
+        selectedAnswer: freeResponseInput.trim(),
+        source: selectedPaper ? `${selectedPaper.test_period} ${selectedPaper.test_version}` : undefined,
+      }).catch(console.error);
+    }
   };
 
   // Handle Exam Mode selections
@@ -583,6 +598,18 @@ export default function SATPastPapers() {
 
     setUserAnswers(processed);
     setPhase("results");
+
+    // Exam mode is scored only at the end. Persist each answered, scoreable
+    // question then, while practice mode saves immediately on confirmation.
+    sessionQuestions.forEach((q) => {
+      const answer = processed[q.id];
+      if (!answer || answer.skipped || isQuestionAnswerEmpty(q)) return;
+      saveSATAnswer(q.section === "Math" ? "Math" : "RW", q.topic || "Past Paper", Boolean(answer.isCorrect), {
+        questionId: q.id,
+        selectedAnswer: q.isFreeResponse ? answer.text?.trim() : answer.selected === undefined ? undefined : String.fromCharCode(65 + answer.selected),
+        source: selectedPaper ? `${selectedPaper.test_period} ${selectedPaper.test_version}` : undefined,
+      }).catch(console.error);
+    });
   };
 
   // Statistics calculation for results page
