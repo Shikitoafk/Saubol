@@ -23,6 +23,7 @@ import {
   Sun,
   Moon,
   Highlighter
+  , Menu
 } from "lucide-react";
 import { Layout } from "@/components/layout";
 import { Button } from "@/components/ui/button";
@@ -58,6 +59,7 @@ export default function SATPractice() {
   const [answerState, setAnswerState] = useState<any>(null);
   const [sessionAnswers, setSessionAnswers] = useState<Record<string, any>>({});
   const [isDesmosOpen, setIsDesmosOpen] = useState(false);
+  const [isQuestionListOpen, setIsQuestionListOpen] = useState(false);
   const [questionsLoading, setQuestionsLoading] = useState(false);
   const [questionsError, setQuestionsError] = useState<string | null>(null);
   const [elapsed, setElapsed] = useState(0);
@@ -357,6 +359,7 @@ export default function SATPractice() {
       setAnswerState(null);
       setSelectedAnswer(null);
       setFreeResponseInput("");
+      setIsQuestionListOpen(false);
     } else {
       // Endless practice: loop back to the first question
       setCurrentIdx(0);
@@ -732,6 +735,26 @@ export default function SATPractice() {
         {/* Phase 3: Split-Screen Interactive Quiz Sandbox */}
         {phase === "quiz" && questions.length > 0 && (
           <div className="min-h-[calc(100dvh-4rem)] bg-transparent relative overflow-hidden flex flex-col test-focus">
+            {isQuestionListOpen && (
+              <div className="fixed inset-0 z-[120] flex items-center justify-center bg-black/45 p-4 backdrop-blur-sm" onClick={() => setIsQuestionListOpen(false)}>
+                <div className="w-full max-w-xl rounded-2xl border border-line bg-canvas shadow-2xl" onClick={(event) => event.stopPropagation()}>
+                  <div className="flex items-center justify-between border-b border-line px-6 py-4">
+                    <div><p className="text-[10px] font-black uppercase tracking-[0.2em] text-indigo-400">Question list</p><h3 className="mt-1 text-lg font-black">{currentSubtopic?.name || "Practice"}</h3></div>
+                    <Button size="icon" variant="ghost" onClick={() => setIsQuestionListOpen(false)} aria-label="Close question list"><X className="h-5 w-5" /></Button>
+                  </div>
+                  <div className="p-6">
+                    <div className="grid max-h-[55vh] grid-cols-6 gap-3 overflow-y-auto pr-1 sm:grid-cols-9">
+                      {questions.map((question, index) => {
+                        const result = sessionAnswers[question.id];
+                        const state = index === currentIdx ? "border-indigo-500 bg-indigo-500 text-white" : result?.correct === true ? "border-emerald-400/50 bg-emerald-500/10 text-emerald-500" : result?.correct === false ? "border-rose-400/50 bg-rose-500/10 text-rose-500" : "border-line bg-surface text-ink-muted hover:border-indigo-400";
+                        return <button key={question.id} onClick={() => { setCurrentIdx(index); setAnswerState(null); setSelectedAnswer(null); setFreeResponseInput(""); setIsQuestionListOpen(false); }} className={`h-11 rounded-xl border text-sm font-black transition-colors ${state}`}>{index + 1}</button>;
+                      })}
+                    </div>
+                    <div className="mt-5 flex flex-wrap gap-x-5 gap-y-2 border-t border-line pt-4 text-[10px] font-bold uppercase tracking-wider text-ink-muted"><span><i className="mr-2 inline-block h-2.5 w-2.5 rounded bg-emerald-500" />Correct</span><span><i className="mr-2 inline-block h-2.5 w-2.5 rounded bg-rose-500" />Incorrect</span><span><i className="mr-2 inline-block h-2.5 w-2.5 rounded border border-line bg-surface" />Unanswered</span></div>
+                  </div>
+                </div>
+              </div>
+            )}
             {isDesmosOpen && (
               <div className="fixed inset-y-0 right-0 w-[600px] z-[100] bg-canvas border-l border-line shadow-2xl animate-in slide-in-from-right duration-300">
                 <div className="flex items-center justify-between p-4 border-b border-line bg-surface">
@@ -771,6 +794,9 @@ export default function SATPractice() {
                 </div>
 
                 <div className="flex items-center gap-1">
+                  <Button onClick={() => setIsQuestionListOpen(true)} className="bg-surface border border-line text-ink hover:bg-surface-2 px-4 h-12 rounded-xl font-black uppercase text-[10px] tracking-widest flex items-center gap-2" title="Open question list">
+                    <Menu className="w-4 h-4" /> Questions
+                  </Button>
                   <Button 
                     onClick={highlightSelectedText} 
                     className="bg-surface border border-line text-ink hover:bg-surface-2 px-6 h-12 rounded-xl font-black uppercase text-[10px] tracking-widest flex items-center gap-2"
@@ -1149,8 +1175,9 @@ export default function SATPractice() {
 
                 <div className="hidden max-w-[56vw] items-center gap-1 overflow-x-auto py-1 md:flex" aria-label="Question navigator">
                   {questions.map((question, index) => {
-                    const answered = Boolean(sessionAnswers[question.id]);
-                    return <button key={question.id} onClick={() => { setCurrentIdx(index); setAnswerState(null); setSelectedAnswer(null); setFreeResponseInput(""); }} className={`h-9 w-9 shrink-0 rounded-lg border text-xs font-bold transition-colors ${index === currentIdx ? "border-indigo-500 bg-indigo-500 text-white" : answered ? "border-emerald-400/50 bg-emerald-500/10 text-emerald-500" : "border-line bg-surface text-ink-muted hover:border-indigo-400"}`}>{index + 1}</button>;
+                    const result = sessionAnswers[question.id];
+                    const state = index === currentIdx ? "border-indigo-500 bg-indigo-500 text-white" : result?.correct === true ? "border-emerald-400/50 bg-emerald-500/10 text-emerald-500" : result?.correct === false ? "border-rose-400/50 bg-rose-500/10 text-rose-500" : "border-line bg-surface text-ink-muted hover:border-indigo-400";
+                    return <button key={question.id} onClick={() => { setCurrentIdx(index); setAnswerState(null); setSelectedAnswer(null); setFreeResponseInput(""); }} className={`h-9 w-9 shrink-0 rounded-lg border text-xs font-bold transition-colors ${state}`}>{index + 1}</button>;
                   })}
                 </div>
                 <div className="bg-surface border border-line rounded-xl px-4 h-12 flex items-center justify-center font-bold text-xs md:hidden">
