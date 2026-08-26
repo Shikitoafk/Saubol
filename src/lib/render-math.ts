@@ -7,6 +7,18 @@ const escapeHtml = (value: string) => value
   .replace(/\"/g, "&quot;")
   .replace(/'/g, "&#039;");
 
+// CSV/PDF imports sometimes already contain HTML entities (for example
+// `&lt;`). Decode those to text *before* escaping the whole question, so the
+// learner sees the intended inequality while no imported markup can execute.
+const decodeImportedEntities = (value: string) => value
+  .replace(/&amp;(?=(?:lt|gt|le|ge|nbsp|#60|#62|#8804|#8805);)/gi, "&")
+  .replace(/&lt;|&#60;/gi, "<")
+  .replace(/&gt;|&#62;/gi, ">")
+  .replace(/&le;|&#8804;/gi, "≤")
+  .replace(/&ge;|&#8805;/gi, "≥")
+  .replace(/&nbsp;/gi, " ")
+  .replace(/&amp;/gi, "&");
+
 const math = (value: string, displayMode: boolean) =>
   katex.renderToString(value.trim(), {
     displayMode,
@@ -22,7 +34,7 @@ const math = (value: string, displayMode: boolean) =>
 export function renderMathText(value: string | null | undefined): string {
   if (!value) return "";
   try {
-    let text = escapeHtml(value);
+    let text = escapeHtml(decodeImportedEntities(value));
     text = text.replace(/\\\\?\[([\s\S]*?)\\\\?\]/g, (_, formula) => math(formula, true));
     text = text.replace(/\\\\?\(([\s\S]*?)\\\\?\)/g, (_, formula) => math(formula, false));
     text = text.replace(/\$\$([\s\S]*?)\$\$/g, (_, formula) => math(formula, true));
