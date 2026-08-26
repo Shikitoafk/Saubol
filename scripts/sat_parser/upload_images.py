@@ -29,12 +29,13 @@ from urllib.parse import quote
 
 import requests
 
-IMAGE_EXTS = {".png", ".jpg", ".jpeg", ".webp"}
+IMAGE_EXTS = {".png", ".jpg", ".jpeg", ".webp", ".svg"}
 CONTENT_TYPE = {
     ".png": "image/png",
     ".jpg": "image/jpeg",
     ".jpeg": "image/jpeg",
     ".webp": "image/webp",
+    ".svg": "image/svg+xml",
 }
 
 
@@ -104,7 +105,7 @@ def main() -> int:
 
     env = load_env()
     base = (env.get("SUPABASE_URL") or "").rstrip("/")
-    key = env.get("SUPABASE_SERVICE_KEY") or ""
+    key = env.get("SUPABASE_SERVICE_KEY") or env.get("SUPABASE_SERVICE_ROLE_KEY") or ""
     bucket = env.get("SUPABASE_BUCKET") or "sat-images"
 
     if not base or not key:
@@ -112,7 +113,11 @@ def main() -> int:
               "anon-ключ не подойдёт — заливка требует service_role.")
         return 2
 
-    files = sorted(p for p in root.rglob("*") if p.suffix.lower() in IMAGE_EXTS)
+    only_prefix = sys.argv[2] if len(sys.argv) >= 3 else ""
+    files = sorted(
+        p for p in root.rglob("*")
+        if p.suffix.lower() in IMAGE_EXTS and (not only_prefix or p.name.startswith(only_prefix))
+    )
     if not files:
         print(f"в {root} не нашлось картинок ({', '.join(sorted(IMAGE_EXTS))})")
         return 1
@@ -128,7 +133,7 @@ def main() -> int:
         ctype = CONTENT_TYPE.get(path.suffix.lower(), "application/octet-stream")
         if upload_one(session, base, headers, bucket, rel, data, ctype):
             ok += 1
-            print(f"  ↑ {rel}")
+            print(f"  uploaded {rel}")
 
     print(f"\nзалито {ok} из {len(files)} картинок в бакет {bucket}")
     if ok:
