@@ -1,5 +1,94 @@
 import { supabase } from './supabase'
 
+export interface SATTestSessionInput {
+  testPeriod: string
+  testVersion?: string | null
+  mode: 'exam' | 'practice'
+  moduleKey?: string | null
+  totalQuestions: number
+  questionsCorrect: number
+  questionsIncorrect: number
+  questionsSkipped: number
+  unscoredQuestions: number
+  scorePercent: number
+  timeSpentSeconds: number
+  answers: Record<string, unknown>
+}
+
+export interface SATTestSessionSummary {
+  id: string
+  test_period: string
+  test_version: string | null
+  mode: 'exam' | 'practice'
+  score_percent: number
+  questions_correct: number
+  total_questions: number
+  completed_at: string
+}
+
+/** Save one completed past-paper attempt. Unlike topic progress, this keeps a
+ * complete, reviewable test result for the learner's history. */
+export async function saveSATTestSession(input: SATTestSessionInput): Promise<SATTestSessionSummary | null> {
+  try {
+    const { data: { user } } = await supabase.auth.getUser()
+    if (!user) return null
+
+    const { data, error } = await supabase
+      .from('sat_test_sessions')
+      .insert({
+        user_id: user.id,
+        test_period: input.testPeriod,
+        test_version: input.testVersion || null,
+        mode: input.mode,
+        module_key: input.moduleKey || null,
+        total_questions: input.totalQuestions,
+        questions_correct: input.questionsCorrect,
+        questions_incorrect: input.questionsIncorrect,
+        questions_skipped: input.questionsSkipped,
+        unscored_questions: input.unscoredQuestions,
+        score_percent: input.scorePercent,
+        time_spent_seconds: input.timeSpentSeconds,
+        answers: input.answers,
+      })
+      .select('id, test_period, test_version, mode, score_percent, questions_correct, total_questions, completed_at')
+      .single()
+
+    if (error) {
+      console.error('Failed to save SAT test session:', error.message)
+      return null
+    }
+    return data as SATTestSessionSummary
+  } catch (err) {
+    console.error('Failed to save SAT test session:', err)
+    return null
+  }
+}
+
+export async function loadSATTestSessions(): Promise<SATTestSessionSummary[]> {
+  try {
+    const { data: { user } } = await supabase.auth.getUser()
+    if (!user) return []
+
+    const { data, error } = await supabase
+      .from('sat_test_sessions')
+      .select('id, test_period, test_version, mode, score_percent, questions_correct, total_questions, completed_at')
+      .eq('user_id', user.id)
+      .order('completed_at', { ascending: false })
+      .limit(100)
+
+    if (error) {
+      // The table is introduced by the current schema migration. Old projects
+      // still work; they simply won't show history until it is applied.
+      if (!/sat_test_sessions/i.test(error.message)) console.error('Failed to load SAT test sessions:', error.message)
+      return []
+    }
+    return (data || []) as SATTestSessionSummary[]
+  } catch (err) {
+    console.error('Failed to load SAT test sessions:', err)
+    return []
+  }
+}
+
 // Save after EVERY answered question - call this immediately on answer
 export async function saveIELTSAnswer(
   section: string,
@@ -12,7 +101,7 @@ export async function saveIELTSAnswer(
 ) {
   try {
     const { data: { user } } = await supabase.auth.getUser()
-    if (!user) return
+    if (!user) return false
 
     const { data: existing, error } = await supabase
       .from('ielts_progress')
@@ -49,6 +138,7 @@ export async function saveIELTSAnswer(
 
     if (upsertError) {
       console.error('Error upserting IELTS progress:', upsertError)
+      return false
     }
 
     // Also save this attempt to session history (ielts_sessions)
@@ -65,9 +155,12 @@ export async function saveIELTSAnswer(
 
     if (sessionError) {
       console.error('Error inserting IELTS session:', sessionError)
+      return false
     }
+    return true
   } catch (err) {
     console.error('Failed to save IELTS answer:', err)
+    return false
   }
 }
 
@@ -80,7 +173,7 @@ export async function saveSATAnswer(
 ) {
   try {
     const { data: { user } } = await supabase.auth.getUser()
-    if (!user) return
+    if (!user) return false
 
     const { error: rpcError } = await supabase.rpc('record_sat_answer', {
       p_topic: topic,

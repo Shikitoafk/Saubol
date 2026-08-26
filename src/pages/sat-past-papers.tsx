@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo } from "react";
+import { useState, useEffect, useMemo, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import {
   ChevronLeft,
@@ -42,7 +42,12 @@ import {
   withTimeout
 } from "@/lib/sat-questions-service";
 import { renderMathText } from "@/lib/render-math";
-import { saveSATAnswer } from "@/lib/progress-service";
+import {
+  loadSATTestSessions,
+  saveSATAnswer,
+  saveSATTestSession,
+  type SATTestSessionSummary,
+} from "@/lib/progress-service";
 import { motion, AnimatePresence } from "framer-motion";
 import { QuestionImage } from "@/components/question-image";
 
@@ -232,6 +237,11 @@ export default function SATPastPapers() {
   
   // Database vs Mock states
   const [pastPapers, setPastPapers] = useState<PastPaper[]>([]);
+  const [completedSessions, setCompletedSessions] = useState<Record<string, SATTestSessionSummary>>({});
+  const [isResultSaving, setIsResultSaving] = useState(false);
+  const [resultSaved, setResultSaved] = useState(false);
+  const isFinishingRef = useRef(false);
+  const sessionStartedAtRef = useRef<number | null>(null);
   const [selectedPaper, setSelectedPaper] = useState<PastPaper | null>(null);
   const [mode, setMode] = useState<"exam" | "practice" | null>(null);
   const [questions, setQuestions] = useState<SATQuestion[]>([]);
@@ -347,6 +357,19 @@ export default function SATPastPapers() {
     getPapers();
   }, []);
 
+  // A past paper is a real attempt, not a disposable screen. Load the latest
+  // completed result for each paper so the status survives refreshes and visits.
+  useEffect(() => {
+    loadSATTestSessions().then((sessions) => {
+      const latestByPaper: Record<string, SATTestSessionSummary> = {};
+      for (const session of sessions) {
+        const key = `${session.test_period}-${session.test_version || ""}`;
+        if (!latestByPaper[key]) latestByPaper[key] = session;
+      }
+      setCompletedSessions(latestByPaper);
+    });
+  }, []);
+
   // Save theme state
   useEffect(() => {
     localStorage.setItem('sat-theme', theme);
@@ -388,6 +411,9 @@ export default function SATPastPapers() {
   const handleStartSession = async (selectedMode: "exam" | "practice") => {
     if (!selectedPaper) return;
     setMode(selectedMode);
+    setResultSaved(false);
+    setIsResultSaving(false);
+    isFinishingRef.current = false;
     setLoading(true);
     setError(null);
     try {
@@ -420,6 +446,7 @@ export default function SATPastPapers() {
       }
 
       setQuestions(fetchedQuestions);
+      sessionStartedAtRef.current = Date.now();
       setAdaptiveChoices({});
       setAdaptiveMessage(null);
       setPhase("session");
@@ -547,8 +574,7 @@ export default function SATPastPapers() {
         setFreeResponseInput("");
       }
     } else if (mode === "practice") {
-      // Completed practice
-      setPhase("results");
+      void handleFinishTest();
     }
   };
 
@@ -572,8 +598,11 @@ export default function SATPastPapers() {
     }
   };
 
-  // Finish exam & compile results
-  const handleFinishTest = () => {
+  // Finish a test & compile a durable report. Practice already stores
+  // individual answers on confirmation; exam mode stores them only here.
+  const handleFinishTest = async () => {
+    if (isFinishingRef.current) return;
+    isFinishingRef.current = true;
     // Process correctness for all answers in Exam mode
     const processed: typeof userAnswers = { ...userAnswers };
     sessionQuestions.forEach(q => {
@@ -599,17 +628,65 @@ export default function SATPastPapers() {
     setUserAnswers(processed);
     setPhase("results");
 
-    // Exam mode is scored only at the end. Persist each answered, scoreable
-    // question then, while practice mode saves immediately on confirmation.
+    // Exam mode is scored only at the end. Practice mode already saves every
+    // confirmed answer, so it must not be counted twice.
+    if (mode === "exam") {
+      sessionQuestions.forEach((q) => {
+        const answer = processed[q.id];
+        if (!answer || answer.skipped || isQuestionAnswerEmpty(q)) return;
+        saveSATAnswer(q.section === "Math" ? "Math" : "RW", q.topic || "Past Paper", Boolean(answer.isCorrect), {
+          questionId: q.id,
+          selectedAnswer: q.isFreeResponse ? answer.text?.trim() : answer.selected === undefined ? undefined : String.fromCharCode(65 + answer.selected),
+          source: selectedPaper ? `${selectedPaper.test_period} ${selectedPaper.test_version}` : undefined,
+        }).catch(console.error);
+      });
+    }
+
+    if (!selectedPaper || !mode) return;
+
+    let correct = 0;
+    let incorrect = 0;
+    let skipped = 0;
+    let unscored = 0;
     sessionQuestions.forEach((q) => {
       const answer = processed[q.id];
-      if (!answer || answer.skipped || isQuestionAnswerEmpty(q)) return;
-      saveSATAnswer(q.section === "Math" ? "Math" : "RW", q.topic || "Past Paper", Boolean(answer.isCorrect), {
-        questionId: q.id,
-        selectedAnswer: q.isFreeResponse ? answer.text?.trim() : answer.selected === undefined ? undefined : String.fromCharCode(65 + answer.selected),
-        source: selectedPaper ? `${selectedPaper.test_period} ${selectedPaper.test_version}` : undefined,
-      }).catch(console.error);
+      if (isQuestionAnswerEmpty(q)) unscored++;
+      else if (!answer || answer.skipped || (q.isFreeResponse ? !answer.text?.trim() : answer.selected === undefined)) skipped++;
+      else if (answer.isCorrect) correct++;
+      else incorrect++;
     });
+    const totalScored = correct + incorrect + skipped;
+    const scorePercent = totalScored ? Math.round((correct / totalScored) * 100) : 0;
+    const answers = Object.fromEntries(Object.entries(processed).map(([questionId, answer]) => [questionId, {
+      selected: answer.selected,
+      response: answer.text || null,
+      correct: Boolean(answer.isCorrect),
+      skipped: Boolean(answer.skipped),
+    }]));
+
+    setIsResultSaving(true);
+    const saved = await saveSATTestSession({
+      testPeriod: selectedPaper.test_period,
+      testVersion: selectedPaper.test_version,
+      mode,
+      moduleKey: selectedModule?.key,
+      totalQuestions: sessionQuestions.length,
+      questionsCorrect: correct,
+      questionsIncorrect: incorrect,
+      questionsSkipped: skipped,
+      unscoredQuestions: unscored,
+      scorePercent,
+      timeSpentSeconds: sessionStartedAtRef.current
+        ? Math.max(0, Math.round((Date.now() - sessionStartedAtRef.current) / 1000))
+        : elapsed,
+      answers,
+    });
+    setIsResultSaving(false);
+    if (saved) {
+      const key = `${saved.test_period}-${saved.test_version || ""}`;
+      setCompletedSessions((previous) => ({ ...previous, [key]: saved }));
+      setResultSaved(true);
+    }
   };
 
   // Statistics calculation for results page
@@ -1073,7 +1150,8 @@ export default function SATPastPapers() {
             ) : (
               <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
                 {pastPapers.map((paper, idx) => {
-                  const key = `${paper.test_period}-${paper.test_version}`;
+                  const key = `${paper.test_period}-${paper.test_version || ""}`;
+                  const completed = completedSessions[key];
                   return (
                     <motion.div
                       key={key}
@@ -1086,8 +1164,12 @@ export default function SATPastPapers() {
                       <div className="relative z-10 flex-1 flex flex-col justify-between">
                         <div>
                           <div className="flex justify-between items-start mb-8">
-                            <span className="px-3.5 py-1.5 bg-indigo-500/10 rounded-full border border-indigo-500/20 text-[9px] font-black tracking-widest uppercase text-indigo-400">
-                              Real Exam
+                            <span className={`px-3.5 py-1.5 rounded-full border text-[9px] font-black tracking-widest uppercase ${
+                              completed
+                                ? "bg-emerald-500/10 border-emerald-500/30 text-emerald-400"
+                                : "bg-indigo-500/10 border-indigo-500/20 text-indigo-400"
+                            }`}>
+                              {completed ? "Completed" : "SAT Paper"}
                             </span>
                             <span className="text-xs font-black text-ink-muted uppercase">
                               {paper.test_version || "Standard"}
@@ -1110,6 +1192,11 @@ export default function SATPastPapers() {
                             Math: {paper.mathQuestions}
                           </div>
                         </div>
+                        {completed && (
+                          <p className="mt-4 text-xs font-bold text-emerald-400">
+                            Last result: {completed.questions_correct}/{completed.total_questions} · {completed.score_percent}%
+                          </p>
+                        )}
                       </div>
 
                       <div className="flex items-center justify-between mt-8 pt-6 border-t border-line relative z-10">
@@ -1700,6 +1787,14 @@ export default function SATPastPapers() {
               <p className="text-sm font-black text-ink-muted uppercase tracking-widest mb-16">
                 {selectedPaper.test_period} • {mode === "exam" ? "Exam Mode" : "Practice Mode"} Results
               </p>
+
+              <div className={`mx-auto mb-8 inline-flex items-center gap-2 rounded-full border px-4 py-2 text-[10px] font-black uppercase tracking-widest ${
+                resultSaved
+                  ? "border-emerald-500/30 bg-emerald-500/10 text-emerald-400"
+                  : "border-line bg-surface text-ink-muted"
+              }`}>
+                {isResultSaving ? "Saving your report…" : resultSaved ? "Report saved to your progress" : "Sign in to keep this report"}
+              </div>
               
               <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8 mb-16">
                 

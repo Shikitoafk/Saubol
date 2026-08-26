@@ -212,6 +212,8 @@ const IELTSTestViewer = () => {
   const { slug } = useParams<{ slug: string }>();
   const navigate = useNavigate();
   const [isLoaded, setIsLoaded] = useState(false);
+  const [completedResult, setCompletedResult] = useState<{ score: number; total: number; band: number; skill: string; saved: boolean } | null>(null);
+  const [speakingSaved, setSpeakingSaved] = useState<boolean | null>(null);
 
   // Speaking Simulator States
   const isSpeakingTest = slug?.startsWith("speaking-topic-");
@@ -238,7 +240,7 @@ const IELTSTestViewer = () => {
         try {
           const calculatedSection = skill || (slug?.includes("reading") ? "reading" : "listening");
           const bandScore = calculateIELTSBand(score, total || 40);
-          await saveIELTSAnswer(
+          const saved = await saveIELTSAnswer(
             calculatedSection,
             testSlug || slug || "Practice Test",
             score >= (total || 40) * 0.6,
@@ -246,6 +248,13 @@ const IELTSTestViewer = () => {
             total || 40,
             score
           );
+          setCompletedResult({
+            score: Number(score) || 0,
+            total: Number(total) || 40,
+            band: bandScore,
+            skill: calculatedSection,
+            saved: Boolean(saved),
+          });
         } catch (err) {
           console.error('Failed to process test result:', err);
         }
@@ -362,7 +371,7 @@ const IELTSTestViewer = () => {
     // Persist score to Supabase via progress service
     if (speakingData) {
       try {
-        await saveIELTSAnswer(
+        const saved = await saveIELTSAnswer(
           "speaking",
           slug || "Practice Speaking Topic",
           speakingData.aiFeedback.overallBand >= 6.0,
@@ -370,6 +379,7 @@ const IELTSTestViewer = () => {
           3, // 3 Parts
           3  // 3 completed successfully
         );
+        setSpeakingSaved(Boolean(saved));
       } catch (err) {
         console.error("Failed to save Speaking progress:", err);
       }
@@ -575,8 +585,8 @@ const IELTSTestViewer = () => {
                     <p className="text-[10px] font-black text-ink-subtle uppercase tracking-widest">Estimated from pronunciation, fluency and syntax</p>
                   </div>
                 </div>
-                <div className="px-6 py-3 bg-surface rounded-xl border border-line text-[9px] font-black uppercase tracking-widest text-emerald-400 flex items-center gap-2">
-                  <CheckCircle className="w-4 h-4" /> Mastery Saved
+                <div className={`px-6 py-3 bg-surface rounded-xl border border-line text-[9px] font-black uppercase tracking-widest flex items-center gap-2 ${speakingSaved ? "text-emerald-400" : "text-amber-400"}`}>
+                  <CheckCircle className="w-4 h-4" /> {speakingSaved ? "Mastery Saved" : "Sign in to save"}
                 </div>
               </div>
 
@@ -678,6 +688,30 @@ const IELTSTestViewer = () => {
         className={`h-full w-full border-0 transition-opacity duration-1000 ${isLoaded ? 'opacity-100' : 'opacity-0'}`}
         title="IELTS Test"
       />
+
+      {completedResult && (
+        <div className="absolute inset-0 z-[70] flex items-center justify-center bg-slate-950/65 p-6 backdrop-blur-sm">
+          <div className="w-full max-w-lg rounded-3xl border border-line bg-canvas p-10 text-center shadow-2xl">
+            <Award className="mx-auto mb-5 h-12 w-12 text-indigo-400" />
+            <p className="text-[10px] font-black uppercase tracking-[0.3em] text-indigo-400">IELTS report</p>
+            <h2 className="mt-3 text-4xl font-black tracking-tight">Band {completedResult.band.toFixed(1)}</h2>
+            <p className="mt-3 text-sm font-medium text-ink-muted">
+              {completedResult.score}/{completedResult.total} correct · {completedResult.skill}
+            </p>
+            <p className={`mt-6 rounded-xl border px-4 py-3 text-[10px] font-black uppercase tracking-widest ${
+              completedResult.saved
+                ? "border-emerald-500/30 bg-emerald-500/10 text-emerald-400"
+                : "border-amber-500/30 bg-amber-500/10 text-amber-400"
+            }`}>
+              {completedResult.saved ? "Saved to your dashboard" : "Sign in to save your result"}
+            </p>
+            <div className="mt-7 flex justify-center gap-3">
+              <Button variant="outline" onClick={() => setCompletedResult(null)}>Review test</Button>
+              <Button onClick={() => navigate("/dashboard")} className="bg-white text-black hover:bg-slate-100">Open dashboard</Button>
+            </div>
+          </div>
+        </div>
+      )}
       
       {/* Bottom Status Bar */}
       <div className="h-2 bg-indigo-600/20 w-full overflow-hidden shrink-0">

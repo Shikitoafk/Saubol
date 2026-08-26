@@ -39,6 +39,30 @@ CREATE TABLE IF NOT EXISTS sat_progress (
   UNIQUE(user_id, topic, subtopic)
 );
 
+-- One row per completed Past Paper attempt. Topic progress above is an
+-- aggregate; this table powers the post-test report and the "completed" badge
+-- that must remain after the learner returns to the papers list.
+CREATE TABLE IF NOT EXISTS sat_test_sessions (
+  id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
+  user_id UUID NOT NULL REFERENCES auth.users(id) ON DELETE CASCADE,
+  test_period TEXT NOT NULL,
+  test_version TEXT,
+  mode TEXT NOT NULL CHECK (mode IN ('exam', 'practice')),
+  module_key TEXT,
+  total_questions INTEGER NOT NULL DEFAULT 0,
+  questions_correct INTEGER NOT NULL DEFAULT 0,
+  questions_incorrect INTEGER NOT NULL DEFAULT 0,
+  questions_skipped INTEGER NOT NULL DEFAULT 0,
+  unscored_questions INTEGER NOT NULL DEFAULT 0,
+  score_percent INTEGER NOT NULL DEFAULT 0,
+  time_spent_seconds INTEGER NOT NULL DEFAULT 0,
+  answers JSONB NOT NULL DEFAULT '{}',
+  completed_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+);
+
+CREATE INDEX IF NOT EXISTS sat_test_sessions_user_completed_at_idx
+  ON sat_test_sessions (user_id, completed_at DESC);
+
 -- SAT Diagnostic Results
 CREATE TABLE IF NOT EXISTS sat_diagnostic (
   id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
@@ -65,6 +89,7 @@ CREATE TABLE IF NOT EXISTS user_streaks (
 ALTER TABLE ielts_progress ENABLE ROW LEVEL SECURITY;
 ALTER TABLE ielts_sessions ENABLE ROW LEVEL SECURITY;
 ALTER TABLE sat_progress ENABLE ROW LEVEL SECURITY;
+ALTER TABLE sat_test_sessions ENABLE ROW LEVEL SECURITY;
 ALTER TABLE sat_diagnostic ENABLE ROW LEVEL SECURITY;
 ALTER TABLE user_streaks ENABLE ROW LEVEL SECURITY;
 
@@ -72,12 +97,14 @@ ALTER TABLE user_streaks ENABLE ROW LEVEL SECURITY;
 DROP POLICY IF EXISTS "Users own data" ON ielts_progress;
 DROP POLICY IF EXISTS "Users own data" ON ielts_sessions;
 DROP POLICY IF EXISTS "Users own data" ON sat_progress;
+DROP POLICY IF EXISTS "Users own data" ON sat_test_sessions;
 DROP POLICY IF EXISTS "Users own data" ON sat_diagnostic;
 DROP POLICY IF EXISTS "Users own data" ON user_streaks;
 
 CREATE POLICY "Users own data" ON ielts_progress FOR ALL USING (auth.uid() = user_id);
 CREATE POLICY "Users own data" ON ielts_sessions FOR ALL USING (auth.uid() = user_id);
 CREATE POLICY "Users own data" ON sat_progress FOR ALL USING (auth.uid() = user_id);
+CREATE POLICY "Users own data" ON sat_test_sessions FOR ALL USING (auth.uid() = user_id) WITH CHECK (auth.uid() = user_id);
 CREATE POLICY "Users own data" ON sat_diagnostic FOR ALL USING (auth.uid() = user_id);
 CREATE POLICY "Users own data" ON user_streaks FOR ALL USING (auth.uid() = user_id);
 
