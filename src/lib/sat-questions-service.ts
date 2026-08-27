@@ -62,19 +62,17 @@ export interface SATQuestion {
  */
 const RAW_IMAGE_BASE = import.meta.env.VITE_SAT_IMAGE_BASE?.trim() || "/sat_images/";
 const IMAGE_BASE = RAW_IMAGE_BASE.replace(/\/+$/, "") + "/";
-const IMAGE_BASE_IS_REMOTE = /^https?:\/\//i.test(IMAGE_BASE);
 
 export function resolveImageUrl(raw: unknown): string | undefined {
   const value = typeof raw === "string" ? raw.trim() : "";
   if (!value) return undefined;
   if (/^(https?:|data:|blob:)/i.test(value)) return value;
-  // Older rows store `/sat_images/...`, while production visuals now live in
-  // Supabase Storage. Convert that legacy local-looking path when a remote
-  // image base is configured; this also works in deployments that do not
-  // serve Vite's public directory directly.
+  // `/sat_images/...` is an explicit application asset path. Keep it local
+  // even when a remote image base is configured: the reviewed SVGs for
+  // tables, graphs, and diagrams ship in `public/sat_images`, whereas only
+  // parser-relative paths are expected to live in external storage.
   if (value.startsWith("/")) {
-    if (!IMAGE_BASE_IS_REMOTE) return value;
-    return IMAGE_BASE + value.replace(/^\/sat_images\/?/, "").replace(/^\/+/, "");
+    return value;
   }
   return IMAGE_BASE + value.replace(/^\/+/, "");
 }
@@ -119,10 +117,13 @@ export function inferRWDomain(question: string): string {
   if (/(standard english|conventions|punctuation|sentence boundary|comma|semicolon|colon|verb tense|subject-verb|complete the text so that it conforms)/.test(text)) {
     return "Standard English Conventions";
   }
-  if (/(most nearly mean|function of the underlined|main purpose|overall structure|word or phrase.*most nearly)/.test(text)) {
+  // Craft and Structure includes Words in Context, text purpose/structure,
+  // and cross-text connections. Older imports often called these generic
+  // "Reading & Writing", so infer them from College Board-style wording.
+  if (/(as used in the text|as used in this context|most nearly means?|word or phrase.*most nearly|which choice.*most nearly means?|function of the underlined|function of the sentence|main purpose|primary purpose|overall structure|text structure|relationship between the texts|both texts|the author of text [12]|how would the author)/.test(text)) {
     return "Craft and Structure";
   }
-  if (/(student wants|most effectively uses|transition|most logically completes|best completes the text)/.test(text)) {
+  if (/(student wants|most effectively uses|transition|most logically completes|best completes the text|notes.*which choice)/.test(text)) {
     return "Expression of Ideas";
   }
   return "Information and Ideas";
