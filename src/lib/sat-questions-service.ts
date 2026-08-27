@@ -149,7 +149,10 @@ function isTruthyImportFlag(value: unknown): boolean {
   return /^(true|1|yes)$/i.test(String(value ?? "").trim());
 }
 
-const visualReference = /\b(?:the|this|given)\s+(?:table|graph|chart|figure|diagram)\b|\b(?:table|graph|chart|figure|diagram)\s+(?:shows|summarizes|gives|lists|represents)\b|\b(?:following\s+tables?|each\s+table)\b/i;
+// Do not treat every mention of a graph as an image dependency: “the graph of
+// y = …” can be a fully textual algebra question. These phrases specifically
+// ask the learner to read data from a separate visual.
+const visualReference = /\b(?:data|information|evidence)\s+from\s+(?:the\s+)?(?:table|graph|chart|figure|diagram)\b|\b(?:shown|represented|displayed)\s+(?:in|on)\s+(?:the\s+)?(?:table|graph|chart|figure|diagram)\b|\b(?:the|this|given)\s+(?:table|graph|chart|figure|diagram)\s+(?:shows|summarizes|gives|lists|represents|below)\b|\b(?:following\s+tables?|each\s+table)\b/i;
 const selfContainedVisualData = /(?:Graph data|Graph description|Table\s*[—:-]|Table of values|Observed traits .*?flowering date|Fish abundance .*?station|Video game units sold|;[^\n]{1,180}—|\|)/is;
 
 function requiresExternalVisual(row: any): boolean {
