@@ -149,6 +149,15 @@ function isTruthyImportFlag(value: unknown): boolean {
   return /^(true|1|yes)$/i.test(String(value ?? "").trim());
 }
 
+const visualReference = /\b(?:the|this|given)\s+(?:table|graph|chart|figure|diagram)\b|\b(?:table|graph|chart|figure|diagram)\s+(?:shows|summarizes|gives|lists|represents)\b|\b(?:following\s+tables?|each\s+table)\b/i;
+const selfContainedVisualData = /(?:Graph data|Graph description|Table\s*[—:-]|Table of values|Observed traits .*?flowering date|Fish abundance .*?station|Video game units sold|;[^\n]{1,180}—|\|)/is;
+
+function requiresExternalVisual(row: any): boolean {
+  if (isTruthyImportFlag(row.has_image)) return true;
+  const text = `${row.question ?? ""}\n${row.passage ?? ""}`;
+  return visualReference.test(text) && !selfContainedVisualData.test(text);
+}
+
 /** Map a raw EBRW_MCQ / Math_MCQ row to the UI shape */
 function mapMCQRow(row: any, tablePrefix: string): SATQuestion {
   const rawCorrectAnswer = String(row.correct_answer ?? "").trim();
@@ -178,7 +187,7 @@ function mapMCQRow(row: any, tablePrefix: string): SATQuestion {
     imageUrl: resolveImageUrl(row.image_url),
     isFreeResponse,
     hasKaTeX: false,
-    requiresImage: isTruthyImportFlag(row.has_image),
+    requiresImage: requiresExternalVisual(row),
     source: row.source ?? "",
     rawCorrectAnswer,
     module: (row.module ?? "").toString().trim() || undefined,
@@ -206,7 +215,7 @@ function mapOpenRow(row: any): SATQuestion {
     imageUrl: resolveImageUrl(row.image_url),
     isFreeResponse: true,
     hasKaTeX: false,
-    requiresImage: isTruthyImportFlag(row.has_image),
+    requiresImage: requiresExternalVisual(row),
     source: row.source ?? "",
     rawCorrectAnswer: row.correct_answer ?? "",
     module: (row.module ?? "").toString().trim() || undefined,
@@ -227,10 +236,7 @@ function isRenderablePracticeQuestion(question: SATQuestion): boolean {
   // give the learner KaTeX's red error output while that row awaits recovery
   // from the original PDF.
   if ([question.passage, question.question, ...question.options].some((value) => renderMathText(value).includes("katex-error"))) return false;
-  if (!question.requiresImage || question.imageUrl) return true;
-
-  const text = `${question.question}\n${question.passage || ""}`;
-  return /(?:Graph data|Graph description|Table\s*[—:-]|Table of values|Observed traits .*?flowering date|Fish abundance .*?station|Video game units sold|;[^\n]{1,180}—|\|)/is.test(text);
+  return !question.requiresImage || Boolean(question.imageUrl);
 }
 
 function dedupePracticeQuestions(questions: SATQuestion[]): SATQuestion[] {
@@ -404,7 +410,9 @@ export interface PastPaper {
  * несуществующей колонке отвечает ошибкой, ошибка глушилась — и загруженные
  * вопросы «не отображались». Период же проставляется у каждой строки.
  */
-const PERIOD_COLUMNS = "test_period, test_version";
+const PERIOD_COLUMNS = "*";
+const COMPLETE_SAT_RW_COUNT = 54;
+const COMPLETE_SAT_MATH_COUNT = 44;
 
 /**
  * Ограничение по времени на запрос к базе.
@@ -439,6 +447,8 @@ export async function fetchAvailablePastPapers(): Promise<PastPaper[]> {
 
     const processRows = (rows: any[] | null, type: "rw" | "math") => {
       rows?.forEach(r => {
+        const question = type === "rw" ? mapMCQRow(r, "ebrw") : (r.option_a !== undefined ? mapMCQRow(r, "math") : mapOpenRow(r));
+        if (!isRenderablePracticeQuestion(question)) return;
         const period = r.test_period?.trim();
         if (!period) return;
         const version = r.test_version?.trim() || "";
@@ -458,13 +468,17 @@ export async function fetchAvailablePastPapers(): Promise<PastPaper[]> {
     processRows(mathRes.data, "math");
     processRows(openRes.data, "math");
 
-    return Object.values(papersMap).map(p => ({
+    // A Digital SAT has 54 R&W and 44 Math questions. An incomplete import is
+    // still useful for a topic bank, but it is misleading as a Past Paper.
+    return Object.values(papersMap)
+      .filter((p) => p.rwCount >= COMPLETE_SAT_RW_COUNT && p.mathCount >= COMPLETE_SAT_MATH_COUNT)
+      .map(p => ({
       test_period: p.test_period,
       test_version: p.test_version,
       totalQuestions: p.rwCount + p.mathCount,
       rwQuestions: p.rwCount,
       mathQuestions: p.mathCount,
-    }));
+      }));
   } catch (e: any) {
     // Раньше ошибка глушилась и возвращался пустой список — снаружи это
     // выглядело как «тестов нет», хотя на деле запрос не проходил. Пусть
@@ -645,9 +659,9 @@ export async function fetchPastPaperQuestions(
   if (mathMcqRes.error) throw new Error(`Math_MCQ fetch failed: ${mathMcqRes.error.message}`);
   if (mathOpenRes.error) throw new Error(`Math_Open fetch failed: ${mathOpenRes.error.message}`);
 
-  const rwQuestions = (rwRes.data ?? []).map((r) => mapMCQRow(r, "ebrw"));
-  const mathMcqQuestions = (mathMcqRes.data ?? []).map((r) => mapMCQRow(r, "math"));
-  const mathOpenQuestions = (mathOpenRes.data ?? []).map(mapOpenRow);
+  const rwQuestions = (rwRes.data ?? []).map((r) => mapMCQRow(r, "ebrw")).filter(isRenderablePracticeQuestion);
+  const mathMcqQuestions = (mathMcqRes.data ?? []).map((r) => mapMCQRow(r, "math")).filter(isRenderablePracticeQuestion);
+  const mathOpenQuestions = (mathOpenRes.data ?? []).map(mapOpenRow).filter(isRenderablePracticeQuestion);
 
   return [...rwQuestions, ...mathMcqQuestions, ...mathOpenQuestions];
 }
