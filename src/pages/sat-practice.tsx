@@ -519,14 +519,14 @@ export default function SATPractice() {
 
         {/* Phase 1: High Fidelity Section Grid Selection Card */}
         {phase === "bank" && (
-          <div className="max-w-[1300px] mx-auto px-10 py-32 relative z-10">
-            <div className="flex items-center gap-3 mb-10 opacity-60">
+          <div className="max-w-[1180px] mx-auto px-5 sm:px-8 pt-28 pb-16 relative z-10">
+            <div className="flex items-center gap-3 mb-6 opacity-60">
               <Target className="w-5 h-5 text-indigo-400" />
               <span className="text-[10px] font-black tracking-[0.4em] uppercase text-indigo-400">SAT Practice</span>
             </div>
             
-            <h1 className="text-6xl md:text-8xl font-black italic tracking-tighter uppercase mb-20 leading-none">
-              QUESTION <br /> BANK.
+            <h1 className="text-5xl md:text-7xl font-black italic tracking-tighter uppercase mb-10 leading-none">
+              QUESTION BANK.
             </h1>
 
             {bankError && (
@@ -535,59 +535,61 @@ export default function SATPractice() {
               </div>
             )}
 
-            <div className="grid md:grid-cols-2 gap-10">
+            <p className="mb-8 max-w-xl text-base leading-relaxed text-ink-muted">Choose a section, then practise by the exact SAT skill that you want to improve.</p>
+
+            <div className="grid md:grid-cols-2 gap-5">
               {/* Reading & Writing Card */}
               <motion.div 
-                whileHover={{ y: -8, scale: 1.01 }}
-                className="glass-3d p-16 flex flex-col justify-between min-h-[460px] cursor-pointer border-indigo-500/10 hover:border-indigo-500/40 transition-all relative overflow-hidden group"
+                whileHover={{ y: -2 }}
+                className="glass-3d p-7 sm:p-8 flex flex-col justify-between min-h-[260px] cursor-pointer border-indigo-500/10 hover:border-indigo-500/40 transition-all relative overflow-hidden group"
                 onClick={() => { setSelectedSection('RW'); setBankTopic('All'); setPhase('subtopics'); }}
               >
                 <div className="absolute top-0 right-0 w-64 h-64 bg-indigo-500/5 blur-[100px] opacity-0 group-hover:opacity-100 transition-opacity" />
                 <div className="relative z-10">
-                  <div className="flex justify-between items-start mb-16">
-                    <div className="w-20 h-20 bg-indigo-500/10 rounded-3xl flex items-center justify-center border border-indigo-500/20 group-hover:bg-indigo-500/20 transition-all duration-700">
-                      <BookOpen className="w-10 h-10 text-indigo-400 shadow-[0_0_30px_rgba(99,102,241,0.3)]" />
+                  <div className="flex justify-between items-start mb-8">
+                    <div className="w-14 h-14 bg-indigo-500/10 rounded-2xl flex items-center justify-center border border-indigo-500/20 group-hover:bg-indigo-500/20 transition-all duration-700">
+                      <BookOpen className="w-7 h-7 text-indigo-400" />
                     </div>
                   </div>
-                  <h2 className="text-5xl font-black mb-4 tracking-tighter uppercase italic leading-none text-shimmer">
-                    Reading & <br /> Writing
+                  <h2 className="text-3xl font-black mb-3 tracking-tighter uppercase italic leading-none text-shimmer">
+                    Reading & Writing
                   </h2>
-                  <p className="text-sm font-black text-indigo-400 uppercase tracking-widest mb-10">
+                  <p className="text-xs font-black text-indigo-400 uppercase tracking-widest">
                     {bankLoading ? "Loading questions..." : `${totalRwCount} questions`}
                   </p>
                 </div>
                 
                 <div className="flex items-center justify-between relative z-10 mt-auto">
-                  <span className="px-6 h-12 bg-white text-black hover:bg-gray-100 rounded-xl font-black uppercase text-[10px] tracking-widest flex items-center gap-2">
-                    Open <ChevronRight className="w-4 h-4" />
+                  <span className="px-5 h-10 bg-white text-black hover:bg-gray-100 rounded-lg font-black uppercase text-[10px] tracking-widest flex items-center gap-2">
+                    Choose topic <ChevronRight className="w-4 h-4" />
                   </span>
                 </div>
               </motion.div>
 
               {/* Math Card */}
               <motion.div 
-                whileHover={{ y: -8, scale: 1.01 }}
-                className="glass-3d p-16 flex flex-col justify-between min-h-[460px] cursor-pointer border-blue-500/10 hover:border-blue-500/40 transition-all relative overflow-hidden group"
+                whileHover={{ y: -2 }}
+                className="glass-3d p-7 sm:p-8 flex flex-col justify-between min-h-[260px] cursor-pointer border-blue-500/10 hover:border-blue-500/40 transition-all relative overflow-hidden group"
                 onClick={() => { setSelectedSection('Math'); setBankTopic('All'); setPhase('subtopics'); }}
               >
                 <div className="absolute top-0 right-0 w-64 h-64 bg-blue-500/5 blur-[100px] opacity-0 group-hover:opacity-100 transition-opacity" />
                 <div className="relative z-10">
-                  <div className="flex justify-between items-start mb-16">
-                    <div className="w-20 h-20 bg-blue-500/10 rounded-3xl flex items-center justify-center border border-blue-500/20 group-hover:bg-blue-500/20 transition-all duration-700">
-                      <Calculator className="w-10 h-10 text-blue-400 shadow-[0_0_30px_rgba(59,130,246,0.3)]" />
+                  <div className="flex justify-between items-start mb-8">
+                    <div className="w-14 h-14 bg-blue-500/10 rounded-2xl flex items-center justify-center border border-blue-500/20 group-hover:bg-blue-500/20 transition-all duration-700">
+                      <Calculator className="w-7 h-7 text-blue-400" />
                     </div>
                   </div>
-                  <h2 className="text-5xl font-black mb-4 tracking-tighter uppercase italic leading-none text-shimmer">
+                  <h2 className="text-3xl font-black mb-3 tracking-tighter uppercase italic leading-none text-shimmer">
                     Math
                   </h2>
-                  <p className="text-sm font-black text-blue-400 uppercase tracking-widest mb-10">
+                  <p className="text-xs font-black text-blue-400 uppercase tracking-widest">
                     {bankLoading ? "Loading questions..." : `${totalMathCount} questions`}
                   </p>
                 </div>
 
                 <div className="flex items-center justify-between relative z-10 mt-auto">
-                  <span className="px-6 h-12 bg-white text-black hover:bg-gray-100 rounded-xl font-black uppercase text-[10px] tracking-widest flex items-center gap-2">
-                    Open <ChevronRight className="w-4 h-4" />
+                  <span className="px-5 h-10 bg-white text-black hover:bg-gray-100 rounded-lg font-black uppercase text-[10px] tracking-widest flex items-center gap-2">
+                    Choose topic <ChevronRight className="w-4 h-4" />
                   </span>
                 </div>
               </motion.div>
@@ -757,7 +759,7 @@ export default function SATPractice() {
               </div>
             )}
 
-            <div className="max-w-none mx-auto w-full px-3 sm:px-6 pt-[4.5rem] pb-2 relative z-10 flex flex-col flex-1 overflow-hidden">
+            <div className="exam-workspace max-w-none mx-auto w-full px-3 sm:px-6 pt-[4.5rem] pb-2 relative z-10 flex flex-col flex-1 overflow-hidden">
               {/* Diagnostic Top bar */}
               <div className="flex items-center justify-between mb-2 shrink-0">
                 <Button 
@@ -821,7 +823,7 @@ export default function SATPractice() {
                 <div className="flex-1 overflow-hidden mb-2 flex">
                   <ResizablePanelGroup direction="horizontal" className="flex-1 w-full min-h-0">
                     <ResizablePanel defaultSize={50} minSize={25} maxSize={75} className="flex flex-col min-h-0">
-                      <div className="glass-3d rounded-xl p-5 sm:p-7 overflow-y-auto custom-scrollbar flex flex-col gap-5 h-full mr-1">
+                      <div className="glass-3d rounded-xl p-4 sm:p-5 overflow-y-auto custom-scrollbar flex flex-col gap-4 h-full mr-1">
                         <div className="flex items-center gap-2 mb-2 opacity-30">
                           <FileText className="w-4 h-4" />
                           <span className="text-[9px] font-black uppercase tracking-widest">Directions / Passage</span>
@@ -834,7 +836,7 @@ export default function SATPractice() {
 
                     <ResizablePanel defaultSize={50} minSize={25} maxSize={75} className="flex flex-col min-h-0">
                       <div className="flex flex-col gap-3 overflow-y-auto custom-scrollbar h-full pl-1">
-                        <div className="glass-3d rounded-xl p-5 sm:p-7 flex flex-col gap-4 mb-1">
+                        <div className="glass-3d rounded-xl p-4 sm:p-5 flex flex-col gap-4 mb-1">
                           {questions[currentIdx]?.imageUrl && (
                             <div className="my-2 p-6 bg-white rounded-2xl border border-slate-200 flex justify-center items-center max-w-md mx-auto shadow-sm">
                               <QuestionImage
@@ -989,7 +991,7 @@ export default function SATPractice() {
               ) : (
                 <div className="flex-1 overflow-hidden grid lg:grid-cols-2 gap-3 mb-2">
                   {/* Left Pane (Question text/graphics) */}
-                  <div className="glass-3d rounded-xl p-5 sm:p-7 overflow-y-auto custom-scrollbar flex flex-col gap-5">
+                  <div className="glass-3d rounded-xl p-4 sm:p-5 overflow-y-auto custom-scrollbar flex flex-col gap-4">
                     {questions[currentIdx]?.imageUrl && (
                       <div className="my-2 p-6 bg-white rounded-2xl border border-slate-200 flex justify-center items-center max-w-md mx-auto shadow-sm">
                         <QuestionImage

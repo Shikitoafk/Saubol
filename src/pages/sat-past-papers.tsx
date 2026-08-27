@@ -1507,7 +1507,7 @@ export default function SATPastPapers() {
               </div>
             )}
 
-            <div className="max-w-none mx-auto w-full px-3 sm:px-6 pt-[4.5rem] pb-2 relative z-10 flex flex-col flex-1 overflow-hidden">
+            <div className="exam-workspace max-w-none mx-auto w-full px-3 sm:px-6 pt-[4.5rem] pb-2 relative z-10 flex flex-col flex-1 overflow-hidden">
               
               {/* Header Details */}
               <div className="flex items-center justify-between mb-2 shrink-0">
@@ -1632,7 +1632,7 @@ export default function SATPastPapers() {
                 <div className="flex-1 overflow-hidden mb-6 flex">
                   <ResizablePanelGroup direction="horizontal" className="flex-1 w-full min-h-0">
                     <ResizablePanel defaultSize={50} minSize={25} maxSize={75} className="flex flex-col min-h-0">
-                      <div className="glass-3d rounded-xl p-5 sm:p-7 overflow-y-auto custom-scrollbar flex flex-col gap-5 h-full mr-1">
+                      <div className="glass-3d rounded-xl p-4 sm:p-5 overflow-y-auto custom-scrollbar flex flex-col gap-4 h-full mr-1">
                         <div className="flex items-center gap-2 mb-2 opacity-30">
                           <FileText className="w-4 h-4" />
                           <span className="text-[9px] font-black uppercase tracking-widest">Passage</span>
@@ -1645,7 +1645,7 @@ export default function SATPastPapers() {
 
                     <ResizablePanel defaultSize={50} minSize={25} maxSize={75} className="flex flex-col min-h-0">
                       <div className="flex flex-col gap-3 overflow-y-auto custom-scrollbar h-full pl-1">
-                        <div className="glass-3d rounded-xl p-5 sm:p-7 flex flex-col gap-4 mb-1">
+                        <div className="glass-3d rounded-xl p-4 sm:p-5 flex flex-col gap-4 mb-1">
                           {sessionQuestions[currentIdx]?.imageUrl && (
                             <div className="my-2 p-6 bg-white rounded-2xl border border-slate-200 flex justify-center items-center max-w-md mx-auto shadow-sm">
                               <QuestionImage src={sessionQuestions[currentIdx].imageUrl} className="max-h-[260px] object-contain" />
@@ -1663,7 +1663,7 @@ export default function SATPastPapers() {
               ) : (
                 // Full screen layout for questions without passage
                 <div className="flex-1 overflow-hidden grid lg:grid-cols-2 gap-3 mb-2">
-                  <div className="glass-3d rounded-xl p-5 sm:p-7 overflow-y-auto custom-scrollbar flex flex-col gap-5">
+                  <div className="glass-3d rounded-xl p-4 sm:p-5 overflow-y-auto custom-scrollbar flex flex-col gap-4">
                     {sessionQuestions[currentIdx]?.imageUrl && (
                       <div className="my-2 p-6 bg-white rounded-2xl border border-slate-200 flex justify-center items-center max-w-md mx-auto shadow-sm">
                         <QuestionImage src={sessionQuestions[currentIdx].imageUrl} className="max-h-[260px] object-contain" />

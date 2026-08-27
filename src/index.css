@@ -288,6 +288,33 @@ body::before {
   box-shadow: var(--glass-shadow-hover);
 }
 
+/* The test runner is a work surface, not a landing page. Dense, stable
+   panels make it possible to read a passage, choices, and navigation without
+   the distracting floating-card effect used elsewhere on the site. */
+.exam-workspace .glass-3d {
+  border-radius: 14px;
+  box-shadow: none;
+}
+
+.exam-workspace .glass-3d:hover {
+  transform: none;
+  box-shadow: none;
+}
+
+.exam-workspace button.glass-3d {
+  min-height: 52px;
+}
+
+@media (max-width: 767px) {
+  .exam-workspace {
+    overflow: visible !important;
+  }
+
+  .exam-workspace .glass-3d {
+    border-radius: 12px;
+  }
+}
+
 /* Shimmer Animation */
 @keyframes shimmer {
   0% { background-position: -200% 0; }
