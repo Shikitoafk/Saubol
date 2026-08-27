@@ -40,6 +40,7 @@ import {
   SATQuestion,
 } from "@/lib/sat-questions-service";
 import { renderMathText } from "@/lib/render-math";
+import { isEquivalentSATAnswer, sanitizeSATAnswerInput } from "@/lib/sat-answer-validation";
 import { motion, AnimatePresence } from "framer-motion";
 import { QuestionImage } from "@/components/question-image";
 import { QuestionPassage } from "@/components/question-passage";
@@ -312,9 +313,7 @@ export default function SATPractice() {
   const handleFreeResponseSubmit = () => {
     if (answerState || !freeResponseInput.trim()) return;
     const q = questions[currentIdx];
-    const userAns = freeResponseInput.trim().toLowerCase();
-    const correctAns = (q.correctAnswerText || "").trim().toLowerCase();
-    const correct = userAns === correctAns;
+    const correct = isEquivalentSATAnswer(freeResponseInput, q.correctAnswerText);
 
     setAnswerState({ selected: -1, correct, input: freeResponseInput });
     setSessionAnswers(prev => ({ ...prev, [q.id]: { correct } }));
@@ -872,7 +871,7 @@ export default function SATPractice() {
                                 <input
                                   type="text"
                                   value={freeResponseInput}
-                                  onChange={(e) => setFreeResponseInput(e.target.value)}
+                                  onChange={(e) => setFreeResponseInput(sanitizeSATAnswerInput(e.target.value))}
                                   disabled={!!answerState}
                                   placeholder="Type your answer here..."
                                   className="flex-1 px-6 h-16 bg-surface border border-line rounded-xl text-lg font-bold text-ink placeholder-white/20 focus:outline-none focus:border-indigo-500 transition-colors disabled:opacity-50"
@@ -1033,7 +1032,7 @@ export default function SATPractice() {
                             <input
                               type="text"
                               value={freeResponseInput}
-                              onChange={(e) => setFreeResponseInput(e.target.value)}
+                              onChange={(e) => setFreeResponseInput(sanitizeSATAnswerInput(e.target.value))}
                               disabled={!!answerState}
                               placeholder="Type your answer here..."
                               className="flex-1 px-6 h-16 bg-surface border border-line rounded-xl text-lg font-bold text-ink placeholder-white/20 focus:outline-none focus:border-indigo-500 transition-colors disabled:opacity-50"

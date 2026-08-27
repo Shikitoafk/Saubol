@@ -42,6 +42,7 @@ import {
   withTimeout
 } from "@/lib/sat-questions-service";
 import { renderMathText } from "@/lib/render-math";
+import { isEquivalentSATAnswer, sanitizeSATAnswerInput } from "@/lib/sat-answer-validation";
 import {
   loadSATTestSessions,
   saveSATAnswer,
@@ -521,9 +522,7 @@ export default function SATPastPapers() {
     // Check if empty
     const emptyAnswer = isQuestionAnswerEmpty(q);
     
-    const correctAns = (q.correctAnswerText || "").trim().toLowerCase();
-    const userAns = freeResponseInput.trim().toLowerCase();
-    const correct = emptyAnswer ? false : (userAns === correctAns);
+    const correct = emptyAnswer ? false : isEquivalentSATAnswer(freeResponseInput, q.correctAnswerText);
 
     setUserAnswers(prev => ({
       ...prev,
@@ -622,9 +621,7 @@ export default function SATPastPapers() {
         processed[q.id] = { ...ans, isCorrect: false, skipped: false };
       } else {
         if (q.isFreeResponse) {
-          const userText = (ans.text || "").trim().toLowerCase();
-          const correctText = (q.correctAnswerText || "").trim().toLowerCase();
-          processed[q.id] = { ...ans, isCorrect: userText === correctText, skipped: false };
+          processed[q.id] = { ...ans, isCorrect: isEquivalentSATAnswer(ans.text || "", q.correctAnswerText), skipped: false };
         } else {
           processed[q.id] = { ...ans, isCorrect: ans.selected === q.correctAnswer, skipped: false };
         }
@@ -828,7 +825,7 @@ export default function SATPastPapers() {
         const answer = userAnswers[question.id];
         if (!answer || isQuestionAnswerEmpty(question)) return total;
         const isCorrect = question.isFreeResponse
-          ? (answer.text || "").trim().toLowerCase() === (question.correctAnswerText || "").trim().toLowerCase()
+          ? isEquivalentSATAnswer(answer.text || "", question.correctAnswerText)
           : answer.selected === question.correctAnswer;
         return total + (isCorrect ? 1 : 0);
       }, 0);
@@ -2010,7 +2007,7 @@ export default function SATPastPapers() {
                 <input
                   type="text"
                   value={freeResponseInput}
-                  onChange={(e) => setFreeResponseInput(e.target.value)}
+                  onChange={(e) => setFreeResponseInput(sanitizeSATAnswerInput(e.target.value))}
                   disabled={answerConfirmed}
                   placeholder="Type answer here..."
                   className="flex-1 px-6 h-16 bg-surface border border-line rounded-xl text-lg font-bold text-ink focus:outline-none focus:border-indigo-500 disabled:opacity-50"
@@ -2101,7 +2098,7 @@ export default function SATPastPapers() {
                 type="text"
                 value={freeResponseInput}
                 onChange={(e) => {
-                  setFreeResponseInput(e.target.value);
+                  setFreeResponseInput(sanitizeSATAnswerInput(e.target.value));
                   handleExamOpenSubmit(e.target.value);
                 }}
                 placeholder="Type answer here..."
