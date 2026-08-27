@@ -29,6 +29,24 @@ const decodeImportedEntities = (value: string) => {
   return decoded;
 };
 
+// Legacy imports sometimes write a normal currency amount as `$130` instead
+// of the TeX-safe `$\\$130$`. Protect those literal dollar signs before the
+// inline-math pass, otherwise it can consume the surrounding English sentence
+// and render it in KaTeX's math font.
+const CURRENCY_DOLLAR = "\uE000";
+const protectCurrencyDollars = (value: string) => value.replace(
+  /\$(?=\d[\d,]*(?:\.\d+)?(?:[,.]?\s+[A-Za-z]))/g,
+  CURRENCY_DOLLAR,
+);
+
+const isLikelyInlineMath = (formula: string) => {
+  const withoutTextCommands = formula.replace(/\\text\{[^}]*\}/g, "");
+  if (/\\(?:[A-Za-z]+|[${}])/u.test(withoutTextCommands)) return true;
+  // Variables and operators are short. A regular English word means the
+  // delimiters came from malformed source text, not from TeX.
+  return !/\b[A-Za-z]{3,}\b/.test(withoutTextCommands);
+};
+
 // Gemini/PDF imports occasionally lose the `$...$` delimiters around a line
 // of TeX. Only wrap a short, standalone formula line; prose is never guessed
 // as mathematics, so normal passages stay untouched.
@@ -39,15 +57,27 @@ const wrapStandaloneMathLines = (value: string) => value
     const line = part.trim();
     const hasLatex = /\\(?:frac|sqrt|left|right|times|cdot|leq|geq|neq|approx|pm|text)\b/.test(line);
     const hasRelation = /(?:[≤≥<>]=?|=)/.test(line);
+    const hasPlainEnglishWord = /\b[A-Za-z]{3,}\b/.test(line.replace(/\\text\{[^}]*\}/g, ""));
     const looksLikeFormula = line.length > 0 && line.length <= 140 &&
       /^[\d\s.,()+\-−*/=<>≤≥A-Za-z\\{}_^|]+$/.test(line) &&
-      (hasLatex || (hasRelation && /[a-zA-Z\d]/.test(line)));
+      (hasLatex || (hasRelation && !hasPlainEnglishWord));
     return looksLikeFormula && !/\$/.test(line) ? `$${line}$` : part;
   })
   .join("");
 
+// `renderMathText` escapes all imported text before inserting HTML. Restore
+// only the entities that were introduced by that safety step inside a formula;
+// otherwise KaTeX sees `x &amp;gt; 0` and shows its red ParseError instead of an
+// inequality.
+const decodeMathEntities = (value: string) => value
+  .replace(/&amp;lt;|&lt;/gi, "<")
+  .replace(/&amp;gt;|&gt;/gi, ">")
+  .replace(/&amp;le;|&le;/gi, "≤")
+  .replace(/&amp;ge;|&ge;/gi, "≥")
+  .replace(/&amp;/gi, "&");
+
 const math = (value: string, displayMode: boolean) =>
-  katex.renderToString(value.trim(), {
+  katex.renderToString(decodeMathEntities(value).trim(), {
     displayMode,
     throwOnError: false,
     strict: "ignore",
@@ -61,7 +91,7 @@ const math = (value: string, displayMode: boolean) =>
 export function renderMathText(value: string | null | undefined): string {
   if (!value) return "";
   try {
-    let text = escapeHtml(wrapStandaloneMathLines(decodeImportedEntities(value)));
+    let text = escapeHtml(wrapStandaloneMathLines(protectCurrencyDollars(decodeImportedEntities(value))));
     text = text.replace(/\\\\?\[([\s\S]*?)\\\\?\]/g, (_, formula) => math(formula, true));
     text = text.replace(/\\\\?\(([\s\S]*?)\\\\?\)/g, (_, formula) => math(formula, false));
     text = text.replace(/\$\$([\s\S]*?)\$\$/g, (_, formula) => math(formula, true));
@@ -70,8 +100,10 @@ export function renderMathText(value: string | null | undefined): string {
     // `\$` is a literal dollar inside SAT currency formulas, e.g.
     // `$\$1,320$`. Treating that inner dollar as a delimiter used to split
     // the whole sentence and was the cause of the broken coupon-book screen.
-    text = text.replace(/\$((?:\\\$|[^$\n])+?)\$/g, (_, formula) => math(formula, false));
-    return text.replace(/\r?\n/g, "<br />");
+    text = text.replace(/\$((?:\\\$|[^$\n])+?)\$/g, (whole, formula) =>
+      isLikelyInlineMath(formula) ? math(formula, false) : whole,
+    );
+    return text.replaceAll(CURRENCY_DOLLAR, "$").replace(/\r?\n/g, "<br />");
   } catch (error) {
     console.warn("Could not render math", error);
     return escapeHtml(value).replace(/\r?\n/g, "<br />");

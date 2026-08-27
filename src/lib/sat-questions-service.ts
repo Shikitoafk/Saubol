@@ -1,5 +1,6 @@
 import { supabase } from "@/lib/supabase";
 import { SAT_TABLES } from "@/lib/sat-tables";
+import { renderMathText } from "@/lib/render-math";
 
 /**
  * SAT Questions Service — Supabase
@@ -221,6 +222,10 @@ function mapOpenRow(row: any): SATQuestion {
 function isRenderablePracticeQuestion(question: SATQuestion): boolean {
   if (!question.question.trim() || !question.rawCorrectAnswer?.trim()) return false;
   if (!question.isFreeResponse && (!isMCQAnswer(question.rawCorrectAnswer) || question.options.some((option) => !option.trim()))) return false;
+  // A malformed TeX source is data corruption, not a styling issue. Do not
+  // give the learner KaTeX's red error output while that row awaits recovery
+  // from the original PDF.
+  if ([question.passage, question.question, ...question.options].some((value) => renderMathText(value).includes("katex-error"))) return false;
   if (!question.requiresImage || question.imageUrl) return true;
 
   const text = `${question.question}\n${question.passage || ""}`;
