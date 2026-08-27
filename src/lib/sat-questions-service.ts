@@ -29,6 +29,8 @@ export interface SATQuestion {
   imageUrl?: string;
   isFreeResponse: boolean;
   hasKaTeX?: boolean;
+  /** The parser detected a visual that must be available to solve it. */
+  requiresImage?: boolean;
   wrongExplanations?: string[];
   source?: string;
   rawCorrectAnswer?: string;
@@ -137,8 +139,20 @@ function letterToIndex(letter: string): number {
   return map[letter?.trim().toUpperCase()] ?? 0;
 }
 
+function isMCQAnswer(value: unknown): boolean {
+  return /^[ABCD]$/i.test(String(value ?? "").trim());
+}
+
+function isTruthyImportFlag(value: unknown): boolean {
+  return /^(true|1|yes)$/i.test(String(value ?? "").trim());
+}
+
 /** Map a raw EBRW_MCQ / Math_MCQ row to the UI shape */
 function mapMCQRow(row: any, tablePrefix: string): SATQuestion {
+  const rawCorrectAnswer = String(row.correct_answer ?? "").trim();
+  // A few legacy imports placed Math grid-ins in the MCQ table. A numerical
+  // key must be treated as a free response, never silently graded as A.
+  const isFreeResponse = tablePrefix === "math" && rawCorrectAnswer !== "" && !isMCQAnswer(rawCorrectAnswer);
   return {
     // `id` is only a question number and repeats across imported test sources.
     // Use the database UUID whenever available so answers, review state and
@@ -146,23 +160,25 @@ function mapMCQRow(row: any, tablePrefix: string): SATQuestion {
     id: `${tablePrefix}-${row.uid ?? row.id}`,
     question: row.question ?? "",
     passage: row.passage || undefined,
-    options: [
+    options: isFreeResponse ? [] : [
       row.option_a ?? "",
       row.option_b ?? "",
       row.option_c ?? "",
       row.option_d ?? "",
     ],
-    correctAnswer: letterToIndex(row.correct_answer),
+    correctAnswer: isFreeResponse ? -1 : letterToIndex(rawCorrectAnswer),
+    correctAnswerText: isFreeResponse ? rawCorrectAnswer : undefined,
     explanation: row.explanation ?? "",
     difficulty: row.difficulty ?? "Medium",
     topic: row.topic ?? "",
     section: tablePrefix === "ebrw" ? "RW" : "Math",
     category: row.topic ?? "",
     imageUrl: resolveImageUrl(row.image_url),
-    isFreeResponse: false,
+    isFreeResponse,
     hasKaTeX: false,
+    requiresImage: isTruthyImportFlag(row.has_image),
     source: row.source ?? "",
-    rawCorrectAnswer: row.correct_answer ?? "",
+    rawCorrectAnswer,
     module: (row.module ?? "").toString().trim() || undefined,
     questionNumber: Number.isFinite(Number(row.question_number))
       ? Number(row.question_number)
@@ -188,6 +204,7 @@ function mapOpenRow(row: any): SATQuestion {
     imageUrl: resolveImageUrl(row.image_url),
     isFreeResponse: true,
     hasKaTeX: false,
+    requiresImage: isTruthyImportFlag(row.has_image),
     source: row.source ?? "",
     rawCorrectAnswer: row.correct_answer ?? "",
     module: (row.module ?? "").toString().trim() || undefined,
@@ -198,17 +215,28 @@ function mapOpenRow(row: any): SATQuestion {
   };
 }
 
-// Do not give a learner a question that explicitly depends on a table/graph
-// which was lost during import. Text-based tables are restored by
-// QuestionPassage; image-based questions remain valid only if their image URL
-// exists. This applies to the Question Bank and diagnostics, never silently to
-// the Past Papers catalogue.
+// Do not give a learner a question with a missing key, choice or required
+// visual. Graph references alone are not enough to reject a row: many fully
+// solvable algebra questions describe their graph in text.
 function isRenderablePracticeQuestion(question: SATQuestion): boolean {
+  if (!question.question.trim() || !question.rawCorrectAnswer?.trim()) return false;
+  if (!question.isFreeResponse && (!isMCQAnswer(question.rawCorrectAnswer) || question.options.some((option) => !option.trim()))) return false;
+  if (!question.requiresImage || question.imageUrl) return true;
+
   const text = `${question.question}\n${question.passage || ""}`;
-  const refersToVisual = /\b(?:the|this|given)\s+(?:table|graph|chart|figure|diagram)\b|\b(?:table|graph|chart|figure|diagram)\s+(?:shows|summarizes|gives|lists|represents)\b|\b(?:following\s+tables?|each\s+table)\b/i.test(text);
-  if (!refersToVisual || question.imageUrl) return true;
-  const hasTextTable = /Table\s*[—-]|—trees\s+\d+|Observed traits .*?flowering date|Fish abundance .*?station|Video game units sold|;[^\n]{1,180}—/is.test(text);
-  return hasTextTable;
+  return /(?:Graph data|Graph description|Table\s*[—:-]|Table of values|Observed traits .*?flowering date|Fish abundance .*?station|Video game units sold|;[^\n]{1,180}—|\|)/is.test(text);
+}
+
+function dedupePracticeQuestions(questions: SATQuestion[]): SATQuestion[] {
+  const seen = new Set<string>();
+  return questions.filter((question) => {
+    const key = [question.passage, question.question, ...question.options]
+      .map((value) => (value ?? "").replace(/\s+/g, " ").trim().toLowerCase())
+      .join("|");
+    if (seen.has(key)) return false;
+    seen.add(key);
+    return true;
+  });
 }
 
 /* ------------------------------------------------------------------ */
@@ -242,10 +270,10 @@ export async function fetchRWQuestions(options?: {
 
   const { data, error } = await query;
   if (error) throw new Error(`EBRW_MCQ fetch failed: ${error.message}`);
-  return (data ?? [])
+  return dedupePracticeQuestions((data ?? [])
     .map((r) => mapMCQRow(r, "ebrw"))
     .filter(isRenderablePracticeQuestion)
-    .filter(question => !isDerivedDomain || inferRWDomain(question.question) === options?.subtopic);
+    .filter(question => !isDerivedDomain || inferRWDomain(question.question) === options?.subtopic));
 }
 
 /**
@@ -270,7 +298,7 @@ export async function fetchMathMCQQuestions(options?: {
 
   const { data, error } = await query;
   if (error) throw new Error(`Math_MCQ fetch failed: ${error.message}`);
-  return (data ?? []).map((r) => mapMCQRow(r, "math")).filter(isRenderablePracticeQuestion);
+  return dedupePracticeQuestions((data ?? []).map((r) => mapMCQRow(r, "math")).filter(isRenderablePracticeQuestion));
 }
 
 /**
@@ -295,7 +323,7 @@ export async function fetchMathOpenQuestions(options?: {
 
   const { data, error } = await query;
   if (error) throw new Error(`Math_Open fetch failed: ${error.message}`);
-  return (data ?? []).map(mapOpenRow).filter(isRenderablePracticeQuestion);
+  return dedupePracticeQuestions((data ?? []).map(mapOpenRow).filter(isRenderablePracticeQuestion));
 }
 
 /**
