@@ -301,6 +301,12 @@ export default function SATPastPapers() {
   // Review states after test ends
   const [isReviewMode, setIsReviewMode] = useState(false);
 
+  useEffect(() => {
+    const root = document.documentElement;
+    root.classList.toggle("saubol-exam-focus", phase === "session");
+    return () => root.classList.remove("saubol-exam-focus");
+  }, [phase]);
+
   // Timer intervals
   useEffect(() => {
     let timer: NodeJS.Timeout | null = null;

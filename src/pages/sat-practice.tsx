@@ -222,6 +222,12 @@ export default function SATPractice() {
     fetchCountsAndProgress();
   }, []);
 
+  useEffect(() => {
+    const root = document.documentElement;
+    root.classList.toggle("saubol-exam-focus", phase === "quiz");
+    return () => root.classList.remove("saubol-exam-focus");
+  }, [phase]);
+
   // Timer simulation
   useEffect(() => {
     if (phase === "quiz") {

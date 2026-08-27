@@ -305,6 +305,18 @@ body::before {
   min-height: 52px;
 }
 
+/* During an actual attempt Saubol behaves like an exam application. The
+   ordinary site navigation returns as soon as the learner exits the session. */
+.saubol-exam-focus nav,
+.saubol-exam-focus footer {
+  display: none;
+}
+
+.saubol-exam-focus .exam-workspace {
+  padding-top: 0.75rem !important;
+  min-height: 100dvh;
+}
+
 @media (max-width: 767px) {
   .exam-workspace {
     overflow: visible !important;
@@ -312,6 +324,10 @@ body::before {
 
   .exam-workspace .glass-3d {
     border-radius: 12px;
+  }
+
+  .saubol-exam-focus .exam-workspace {
+    padding-top: 0.5rem !important;
   }
 }
 
