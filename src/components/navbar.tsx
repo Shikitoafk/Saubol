@@ -35,7 +35,7 @@ export function Navbar() {
 
         <div className="hidden items-center gap-4 sm:flex">
           {!loading && (user ? <>
-            <Link to="/dashboard" className="text-sm font-semibold text-ink-muted transition-colors hover:text-ink">Progress</Link>
+            <Link to="/sat/dashboard" className="text-sm font-semibold text-ink-muted transition-colors hover:text-ink">SAT progress</Link>
             <button onClick={() => signOut()} className="text-sm font-medium text-ink-muted transition-colors hover:text-ink">Sign out</button>
           </> : <Link to="/login" className="text-sm font-semibold text-ink-muted transition-colors hover:text-ink">Sign in</Link>)}
           <a href="https://t.me/shikitoafk" target="_blank" rel="noopener noreferrer" className="text-sm font-medium text-ink-muted transition-colors hover:text-ink">Contact</a>
@@ -48,6 +48,7 @@ export function Navbar() {
               <SheetHeader className="mt-8 text-left"><SheetTitle className="font-display text-2xl font-semibold text-ink">Saubol</SheetTitle></SheetHeader>
               <div className="mt-12 flex flex-col gap-6">
                 {links.map((link) => <Link key={link.href} to={link.href} className={cn("text-2xl", isActive(link.href) ? "font-semibold text-ink" : "text-ink-muted")}>{link.name}</Link>)}
+                {!loading && user && <Link to="/sat/dashboard" className="text-2xl text-ink-muted">SAT progress</Link>}
                 <a href="https://t.me/shikitoafk" target="_blank" rel="noopener noreferrer" className="mt-4 text-sm font-medium text-ink-muted">Contact us</a>
               </div>
             </SheetContent>
