@@ -1,121 +1,27 @@
 import { useNavigate } from "react-router-dom";
-import { ChevronRight, BookOpen, Brain, Sparkles, Layers3 } from "lucide-react";
+import { ArrowRight, Brain, ChartNoAxesColumnIncreasing, CheckCircle2, Clock3, FileText, Layers3, Sparkles, Target } from "lucide-react";
 import { Layout } from "@/components/layout";
-import { motion } from "framer-motion";
+import { Button } from "@/components/ui/button";
+
+type Destination = { title: string; eyebrow: string; description: string; action: string; href: string; icon: typeof FileText; accent: string };
+
+const destinations: Destination[] = [
+  { title: "Take a full test", eyebrow: "Past papers", description: "Sit a complete, eligible Digital SAT with timing, module routing, answer review, and a saved report.", action: "Choose a test", href: "/sat/past-papers", icon: FileText, accent: "bg-indigo-600 text-white hover:bg-indigo-500" },
+  { title: "Practice one skill", eyebrow: "Question bank", description: "Choose a Reading & Writing or Math topic, a difficulty level, and work through a focused set at your pace.", action: "Open question bank", href: "/sat/question-bank", icon: Brain, accent: "border border-line bg-card text-ink hover:bg-surface-2" },
+  { title: "Build core strength", eyebrow: "Collections", description: "Work through curated problem sets separately from full exams, so your practice stays intentional and easy to revisit.", action: "Browse collections", href: "/sat/collections", icon: Layers3, accent: "border border-line bg-card text-ink hover:bg-surface-2" },
+];
 
 export default function SatPrep() {
   const navigate = useNavigate();
-
-  return (
-    <Layout>
-      <div className="min-h-screen bg-canvas text-ink py-32 px-10 relative overflow-hidden font-sans">
-        {/* Background vignette & glow sphere */}
-        <div className="absolute inset-0 bg-vignette" />
-        <div 
-          className="absolute top-[-20%] right-[-10%] w-[600px] h-[600px] rounded-full opacity-30 animate-pulse" 
-          style={{ background: 'radial-gradient(circle, rgba(139, 92, 246, 0.1) 0%, transparent 70%)' }} 
-        />
-
-        <div className="max-w-[1300px] mx-auto relative z-10">
-          <header className="mb-20">
-            <div className="flex items-center gap-3 mb-6 opacity-60">
-              <Sparkles className="w-5 h-5 text-indigo-400" />
-              <span className="text-[10px] font-black tracking-[0.4em] uppercase text-indigo-400">Digital SAT Preparation</span>
-            </div>
-            
-            <h1 className="text-6xl md:text-8xl font-black italic tracking-tighter uppercase mb-6 leading-none text-shimmer">
-              SAT ARENA.
-            </h1>
-            <p className="text-sm text-ink-muted font-semibold max-w-xl leading-relaxed">
-              Prepare for the Digital SAT using adaptive tools, real exam timing, and granular topic diagnostics.
-            </p>
-          </header>
-
-          <div className="grid md:grid-cols-2 xl:grid-cols-3 gap-10">
-            {/* Card 1: Past Papers */}
-            <motion.div 
-              whileHover={{ y: -8, scale: 1.01 }}
-              className="glass-3d p-16 flex flex-col justify-between min-h-[460px] cursor-pointer border-indigo-500/10 hover:border-indigo-500/40 transition-all relative overflow-hidden group"
-              onClick={() => navigate("/sat/past-papers")}
-            >
-              <div className="absolute top-0 right-0 w-64 h-64 bg-indigo-500/5 blur-[100px] opacity-0 group-hover:opacity-100 transition-opacity" />
-              
-              <div className="relative z-10 flex-1 flex flex-col justify-between">
-                <div>
-                  <div className="w-20 h-20 bg-indigo-500/10 rounded-3xl flex items-center justify-center border border-indigo-500/20 group-hover:bg-indigo-500/20 transition-all duration-700 mb-16">
-                    <BookOpen className="w-10 h-10 text-indigo-400 shadow-[0_0_30px_rgba(99,102,241,0.3)]" />
-                  </div>
-                  
-                  <h2 className="text-5xl font-black mb-4 tracking-tighter uppercase italic leading-none text-shimmer">
-                    Past Papers
-                  </h2>
-                  <p className="text-ink-muted font-medium text-sm leading-relaxed max-w-sm">
-                    Solve real Digital SAT tests from concrete exam dates under true timed or untimed practice conditions.
-                  </p>
-                </div>
-                
-                <div className="flex items-center justify-between mt-auto">
-                  <span className="px-6 h-12 bg-white text-black hover:bg-gray-100 rounded-xl font-black uppercase text-[10px] tracking-widest flex items-center gap-2">
-                    Enter Arena <ChevronRight className="w-4 h-4" />
-                  </span>
-                </div>
-              </div>
-            </motion.div>
-
-            {/* Card 2: Question Bank */}
-            <motion.div 
-              whileHover={{ y: -8, scale: 1.01 }}
-              className="glass-3d p-16 flex flex-col justify-between min-h-[460px] cursor-pointer border-line hover:border-indigo-500/20 transition-all relative overflow-hidden group"
-              onClick={() => navigate("/sat/question-bank")}
-            >
-              <div className="absolute top-0 right-0 w-64 h-64 bg-surface blur-[100px] opacity-0 group-hover:opacity-100 transition-opacity" />
-              
-              <div className="relative z-10 flex-1 flex flex-col justify-between">
-                <div>
-                  <div className="flex justify-between items-start mb-16">
-                    <div className="w-20 h-20 bg-surface rounded-3xl flex items-center justify-center border border-line group-hover:bg-surface-2 transition-all duration-700">
-                      <Brain className="w-10 h-10 text-ink-muted shadow-[0_0_30px_rgba(255,255,255,0.1)] group-hover:text-indigo-400 group-hover:shadow-[0_0_30px_rgba(99,102,241,0.3)] transition-all" />
-                    </div>
-                    <span className="px-4 py-1.5 bg-emerald-500/10 rounded-full border border-emerald-500/20 text-[9px] font-black tracking-widest uppercase text-emerald-500">
-                      Available
-                    </span>
-                  </div>
-                  
-                  <h2 className="text-5xl font-black mb-4 tracking-tighter uppercase italic leading-none text-shimmer">
-                    Question Bank
-                  </h2>
-                  <p className="text-ink-muted font-medium text-sm leading-relaxed max-w-sm">
-                    Granular practice sorted by specific subtopic domains and difficulty levels with performance analytics.
-                  </p>
-                </div>
-                
-                <div className="flex items-center justify-between mt-auto">
-                  <span className="px-6 h-12 bg-surface border border-line text-ink-muted rounded-xl font-black uppercase text-[10px] tracking-widest flex items-center gap-2 group-hover:bg-white group-hover:text-black transition-all">
-                    Open Bank <ChevronRight className="w-4 h-4" />
-                  </span>
-                </div>
-              </div>
-            </motion.div>
-
-            <motion.div
-              whileHover={{ y: -8, scale: 1.01 }}
-              className="glass-3d p-16 flex flex-col justify-between min-h-[460px] cursor-pointer border-amber-500/20 hover:border-amber-500/40 transition-all relative overflow-hidden group"
-              onClick={() => navigate("/sat/collections")}
-            >
-              <div className="relative z-10 flex-1 flex flex-col justify-between">
-                <div>
-                  <div className="w-20 h-20 bg-amber-500/10 rounded-3xl flex items-center justify-center border border-amber-500/20 group-hover:bg-amber-500/20 transition-all duration-700 mb-16">
-                    <Layers3 className="w-10 h-10 text-amber-500" />
-                  </div>
-                  <h2 className="text-5xl font-black mb-4 tracking-tighter uppercase italic leading-none text-shimmer">Collections</h2>
-                  <p className="text-ink-muted font-medium text-sm leading-relaxed max-w-sm">Focused, verified practice sets by topic and difficulty — separate from full exams and the question bank.</p>
-                </div>
-                <div className="flex items-center justify-between mt-auto"><span className="px-6 h-12 bg-surface border border-line text-ink-muted rounded-xl font-black uppercase text-[10px] tracking-widest flex items-center gap-2 group-hover:bg-white group-hover:text-black transition-all">Browse sets <ChevronRight className="w-4 h-4" /></span></div>
-              </div>
-            </motion.div>
-          </div>
-        </div>
-      </div>
-    </Layout>
-  );
+  return <Layout><main className="min-h-screen bg-canvas text-ink"><div className="mx-auto max-w-6xl px-5 pb-16 pt-28 sm:px-8 sm:pt-32">
+    <section className="relative overflow-hidden rounded-[28px] border border-line bg-card px-6 py-10 shadow-sm sm:px-10 sm:py-14">
+      <div className="pointer-events-none absolute -right-24 -top-32 h-80 w-80 rounded-full bg-indigo-500/[0.10] blur-3xl" />
+      <div className="relative max-w-3xl"><div className="mb-5 inline-flex items-center gap-2 rounded-full border border-indigo-500/20 bg-indigo-500/[0.08] px-3 py-1.5 text-xs font-bold text-indigo-700 dark:text-indigo-300"><Sparkles className="h-3.5 w-3.5" /> Digital SAT preparation</div><h1 className="font-display text-4xl font-black tracking-tight sm:text-5xl md:text-6xl">Practice with a purpose.</h1><p className="mt-5 max-w-2xl text-base leading-relaxed text-ink-muted sm:text-lg">A focused place to test yourself, fix weak skills, and keep a real record of your work — without the noise.</p><div className="mt-8 flex flex-wrap gap-3"><Button onClick={() => navigate("/sat/past-papers")} className="h-12 rounded-xl bg-ink px-5 font-bold text-background hover:bg-ink/85">Take a full test <ArrowRight className="ml-2 h-4 w-4" /></Button><Button onClick={() => navigate("/sat/practice")} variant="outline" className="h-12 rounded-xl border-line bg-card px-5 font-bold text-ink hover:bg-surface-2">Practice a topic</Button></div></div>
+    </section>
+    <section className="mt-12" aria-labelledby="start-heading"><div className="flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between"><div><p className="text-xs font-black uppercase tracking-[0.15em] text-indigo-600 dark:text-indigo-300">Start here</p><h2 id="start-heading" className="mt-2 text-2xl font-black tracking-tight sm:text-3xl">What do you need today?</h2></div><p className="max-w-md text-sm leading-relaxed text-ink-muted">Pick the study mode that matches your goal. You can return to saved work from your SAT progress page.</p></div><div className="mt-6 grid gap-4 lg:grid-cols-3">{destinations.map((destination) => { const Icon = destination.icon; return <article key={destination.href} className="group flex min-h-[280px] flex-col rounded-2xl border border-line bg-card p-6 shadow-sm transition-shadow hover:shadow-md"><div className="flex items-start justify-between gap-4"><div className="flex h-11 w-11 items-center justify-center rounded-xl bg-indigo-500/10 text-indigo-600 dark:text-indigo-300"><Icon className="h-5 w-5" /></div><span className="text-[11px] font-black uppercase tracking-[0.12em] text-ink-subtle">{destination.eyebrow}</span></div><h3 className="mt-8 text-2xl font-black tracking-tight">{destination.title}</h3><p className="mt-3 text-sm leading-relaxed text-ink-muted">{destination.description}</p><button type="button" onClick={() => navigate(destination.href)} className={`mt-auto inline-flex h-11 w-fit items-center rounded-xl px-4 text-sm font-bold transition-colors ${destination.accent}`}>{destination.action} <ArrowRight className="ml-2 h-4 w-4 transition-transform group-hover:translate-x-0.5" /></button></article>; })}</div></section>
+    <section className="mt-12 grid gap-5 lg:grid-cols-[1.15fr_0.85fr]"><article className="rounded-2xl border border-line bg-card p-6 shadow-sm sm:p-7"><div className="flex items-start gap-4"><div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-emerald-500/10 text-emerald-600"><Target className="h-5 w-5" /></div><div><p className="text-xs font-black uppercase tracking-[0.15em] text-emerald-600">A simple way to improve</p><h2 className="mt-2 text-xl font-black tracking-tight">Turn one test into a plan.</h2></div></div><ol className="mt-6 grid gap-4 sm:grid-cols-3"><StudyStep number="01" title="Establish a baseline" description="Finish a full test when you want an honest snapshot." /><StudyStep number="02" title="Target one weak skill" description="Use filters instead of doing random questions." /><StudyStep number="03" title="Check the record" description="Use saved attempts to see what actually changed." /></ol></article><article className="rounded-2xl border border-line bg-card p-6 shadow-sm sm:p-7"><div className="flex h-11 w-11 items-center justify-center rounded-xl bg-amber-500/10 text-amber-600"><Clock3 className="h-5 w-5" /></div><h2 className="mt-5 text-xl font-black tracking-tight">Ready when you are.</h2><p className="mt-2 text-sm leading-relaxed text-ink-muted">Use practice mode when learning; use exam mode when you want the pressure of a real sitting.</p><Button onClick={() => navigate("/sat/dashboard")} variant="ghost" className="mt-5 h-10 px-0 font-bold text-indigo-600 hover:bg-transparent hover:text-indigo-700 dark:text-indigo-300"><ChartNoAxesColumnIncreasing className="mr-2 h-4 w-4" /> View SAT progress</Button></article></section>
+    <section className="mt-10 flex flex-col gap-4 border-t border-line pt-8 sm:flex-row sm:items-center sm:justify-between"><div className="flex items-center gap-3 text-sm text-ink-muted"><CheckCircle2 className="h-5 w-5 text-emerald-600" /><span>Your answers and completed test reports are saved to your account.</span></div><button type="button" onClick={() => navigate("/sat/dashboard")} className="inline-flex items-center text-sm font-bold text-indigo-600 hover:text-indigo-700 dark:text-indigo-300">Open SAT progress <ArrowRight className="ml-1 h-4 w-4" /></button></section>
+  </div></main></Layout>;
 }
+
+function StudyStep({ number, title, description }: { number: string; title: string; description: string }) { return <li className="rounded-xl bg-surface-2 p-4"><span className="text-xs font-black text-indigo-600 dark:text-indigo-300">{number}</span><h3 className="mt-4 font-bold">{title}</h3><p className="mt-1.5 text-sm leading-relaxed text-ink-muted">{description}</p></li>; }
