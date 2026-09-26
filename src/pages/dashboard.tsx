@@ -1,422 +1,72 @@
-import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { motion } from 'framer-motion';
-import { supabase } from '@/lib/supabase';
-import { Layout } from '@/components/layout';
-import {
-  Target,
-  Trophy,
-  Zap,
-  History,
-  TrendingUp,
-  User,
-  LogOut,
-  PenTool,
-  Brain,
-  Headphones,
-  Book,
-  Award,
-  ChevronRight,
-  Sparkles
-} from 'lucide-react';
+import { useEffect, useMemo, useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { ArrowRight, BookOpen, ChartNoAxesColumnIncreasing, CircleCheck, Flame, GraduationCap, Headphones, PencilLine, Trophy } from "lucide-react";
+import { Layout } from "@/components/layout";
 import { Button } from "@/components/ui/button";
-import {
-  AreaChart,
-  Area,
-  XAxis,
-  YAxis,
-  CartesianGrid,
-  Tooltip,
-  ResponsiveContainer
-} from 'recharts';
+import { supabase } from "@/lib/supabase";
+import { loadSATTestSessions, type SATTestSessionSummary } from "@/lib/progress-service";
 
-interface UserProgress {
-  total_questions: number;
-  correct_answers: number;
-  accuracy: number;
-  current_streak: number;
-  favorite_section: string;
-  recent_activity: any[];
-  daily_activity: any[];
-  ielts_activity: any[];
-  ielts_stats: {
-    writing: number;
-    listening: number;
-    reading: number;
-    overall: number;
-  };
-  leaderboard: LeaderboardEntry[];
-}
+type SATProgressRow = { questions_attempted: number | null; questions_correct: number | null };
+type IELTSProgressRow = { section: string | null; subsection: string | null; best_score: number | null; updated_at: string | null };
+type IeltsSession = { id: string; section: string | null; subsection: string | null; score: number | null; completed_at: string };
+type DashboardData = { satRows: SATProgressRow[]; satTests: SATTestSessionSummary[]; ieltsRows: IELTSProgressRow[]; ieltsSessions: IeltsSession[]; streak: number };
 
-interface LeaderboardEntry {
-  rank: number;
-  display_name: string;
-  questions_attempted: number;
-  questions_correct: number;
-  accuracy: number;
-  is_current_user: boolean;
-}
+const dateLabel = (iso: string) => new Intl.DateTimeFormat("en", { month: "short", day: "numeric", year: "numeric" }).format(new Date(iso));
 
 export default function Dashboard() {
-  const [user, setUser] = useState<any>(null);
-  const [progress, setProgress] = useState<UserProgress | null>(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
   const navigate = useNavigate();
+  const [loading, setLoading] = useState(true);
+  const [data, setData] = useState<DashboardData>({ satRows: [], satTests: [], ieltsRows: [], ieltsSessions: [], streak: 0 });
 
   useEffect(() => {
-    const getUserAndProgress = async () => {
-      try {
-        const { data: { session }, error: sessionError } = await supabase.auth.getSession();
-        console.log('Session:', session);
-        if (sessionError || !session) {
-          navigate('/login');
-          return;
-        }
-        setUser(session.user);
-
-        // Fetch SAT Progress
-        const { data: progressData, error: progressError } = await supabase
-          .from('sat_progress')
-          .select('*')
-          .eq('user_id', session.user.id);
-        
-        console.log('SAT Progress Data:', progressData);
-        if (progressError) console.error('SAT Fetch Error:', progressError);
-
-        // Fetch IELTS Progress
-        const { data: ieltsData, error: ieltsError } = await supabase
-          .from('ielts_progress')
-          .select('*')
-          .eq('user_id', session.user.id)
-          .order('updated_at', { ascending: false });
-
-        console.log('IELTS Progress Data:', ieltsData);
-        if (ieltsError) console.error('IELTS Fetch Error:', ieltsError);
-
-        // Fetch IELTS Sessions
-        const { data: ieltsSessions } = await supabase
-          .from('ielts_sessions')
-          .select('*')
-          .eq('user_id', session.user.id)
-          .order('completed_at', { ascending: false });
-
-        // Fetch Streak
-        const { data: streakData } = await supabase
-          .from('user_streaks')
-          .select('*')
-          .eq('user_id', session.user.id)
-          .maybeSingle();
-
-        const { data: leaderboardData, error: leaderboardError } = await supabase
-          .rpc('get_sat_leaderboard', { p_limit: 5 });
-        if (leaderboardError && !/get_sat_leaderboard/i.test(leaderboardError.message)) {
-          console.error('SAT leaderboard error:', leaderboardError);
-        }
-
-        const rawProgress = progressData || [];
-        const rawIelts = ieltsData || [];
-        const rawIeltsSessions = ieltsSessions || [];
-
-        let totalQuestions = 0;
-        let correctAnswers = 0;
-        rawProgress.forEach(row => {
-          totalQuestions += row.questions_attempted || 0;
-          correctAnswers += row.questions_correct || 0;
-        });
-        const accuracy = totalQuestions > 0 ? Math.round((correctAnswers / totalQuestions) * 100) : 0;
-
-        const last7Days = [...Array(7)].map((_, i) => {
-          const d = new Date();
-          d.setDate(d.getDate() - i);
-          return d.toISOString().split('T')[0];
-        }).reverse();
-
-        const dailyActivity = last7Days.map(dateStr => {
-          let count = 0;
-          rawProgress.forEach(p => {
-            if ((p.updated_at || "").startsWith(dateStr)) {
-              count += p.questions_attempted || 0;
-            }
-          });
-          return {
-            date: dateStr,
-            questions_answered: count
-          };
-        });
-
-        const getAvgBySkill = (skill: string) => {
-          const filtered = rawIelts.filter(d => d.section?.toLowerCase() === skill.toLowerCase());
-          if (filtered.length === 0) return 0;
-          const totalScores = filtered.reduce((acc, curr) => acc + Number(curr.best_score || 0), 0);
-          return Number((totalScores / filtered.length).toFixed(1));
-        };
-
-        const overallIelts = rawIelts.length > 0
-          ? Number((rawIelts.reduce((acc, curr) => acc + Number(curr.best_score || 0), 0) / rawIelts.length).toFixed(1))
-          : 0;
-
-        setProgress({
-          total_questions: totalQuestions,
-          correct_answers: correctAnswers,
-          accuracy,
-          current_streak: streakData?.current_streak || 0,
-          favorite_section: 'Writing',
-          recent_activity: rawProgress.slice(0, 5).map(d => ({
-            section: d.topic,
-            topic: d.subtopic || 'General',
-            correct: true,
-            date: d.updated_at
-          })),
-          daily_activity: dailyActivity,
-          ielts_activity: rawIeltsSessions.slice(0, 10).map(d => ({
-            test_name: d.subsection || d.section || "Practice",
-            score: Math.round(Number(d.score || 0) * 10), // Convert e.g. 7.5 to 75
-            skill: d.section,
-            completed_at: d.completed_at
-          })),
-          ielts_stats: {
-            writing: getAvgBySkill('writing'),
-            listening: getAvgBySkill('listening'),
-            reading: getAvgBySkill('reading'),
-            overall: overallIelts
-          },
-          leaderboard: (leaderboardData || []) as LeaderboardEntry[],
-        });
-        setLoading(false);
-      } catch (err: any) {
-        console.error('Dashboard Init Error:', err);
-        setError(err.message);
-        setLoading(false);
-      }
+    let active = true;
+    const load = async () => {
+      const { data: { session } } = await supabase.auth.getSession();
+      if (!session) { navigate("/login", { replace: true }); return; }
+      const [satTests, satResult, ieltsResult, ieltsSessionsResult, streakResult] = await Promise.all([
+        loadSATTestSessions(),
+        supabase.from("sat_progress").select("questions_attempted, questions_correct").eq("user_id", session.user.id),
+        supabase.from("ielts_progress").select("section, subsection, best_score, updated_at").eq("user_id", session.user.id).order("updated_at", { ascending: false }),
+        supabase.from("ielts_sessions").select("id, section, subsection, score, completed_at").eq("user_id", session.user.id).order("completed_at", { ascending: false }).limit(5),
+        supabase.from("user_streaks").select("current_streak").eq("user_id", session.user.id).maybeSingle(),
+      ]);
+      if (!active) return;
+      setData({
+        satRows: (satResult.data || []) as SATProgressRow[],
+        satTests,
+        ieltsRows: (ieltsResult.data || []) as IELTSProgressRow[],
+        ieltsSessions: (ieltsSessionsResult.data || []) as IeltsSession[],
+        streak: streakResult.data?.current_streak || 0,
+      });
+      setLoading(false);
     };
-    getUserAndProgress();
+    void load().catch((error) => { console.error("Progress dashboard load failed:", error); if (active) setLoading(false); });
+    return () => { active = false; };
   }, [navigate]);
 
-  if (loading) {
-    return (
-      <div className="min-h-screen bg-canvas flex items-center justify-center">
-        <div className="w-16 h-16 border-4 border-line border-t-white rounded-full animate-spin" />
-      </div>
-    );
-  }
+  const summary = useMemo(() => {
+    const attempted = data.satRows.reduce((total, row) => total + Number(row.questions_attempted || 0), 0);
+    const correct = data.satRows.reduce((total, row) => total + Number(row.questions_correct || 0), 0);
+    const satAccuracy = attempted ? Math.round((correct / attempted) * 100) : null;
+    const scores = data.ieltsRows.map((row) => Number(row.best_score || 0)).filter(Boolean);
+    const bestIelts = scores.length ? Math.max(...scores) : null;
+    return { attempted, correct, satAccuracy, bestIelts };
+  }, [data]);
 
-  if (error) {
-    return (
-      <div className="min-h-screen bg-canvas flex items-center justify-center p-10">
-        <div className="glass-3d p-10 text-center max-w-md border-rose-500/20">
-          <p className="text-rose-500 font-black uppercase tracking-widest mb-4">Tactical Error Detected</p>
-          <p className="text-ink-muted mb-8 font-medium">{error}</p>
-          <Button onClick={() => window.location.reload()} className="bg-white text-black hover:bg-gray-100 w-full h-12 font-black uppercase text-xs rounded-xl">Recalibrate System</Button>
-        </div>
-      </div>
-    );
-  }
+  if (loading) return <Layout><div className="flex min-h-[60vh] items-center justify-center"><div className="h-9 w-9 animate-spin rounded-full border-2 border-indigo-500/20 border-t-indigo-500" /></div></Layout>;
 
-  const container = {
-    hidden: { opacity: 0 },
-    show: {
-      opacity: 1,
-      transition: {
-        staggerChildren: 0.1
-      }
-    }
-  };
-  const currentLeaderboardEntry = progress?.leaderboard.find((entry) => entry.is_current_user);
-  const level = Math.max(1, Math.ceil((progress?.total_questions || 0) / 20));
+  return <Layout><main className="min-h-screen bg-canvas text-ink"><div className="mx-auto max-w-6xl px-5 pb-16 pt-28 sm:px-8 sm:pt-32">
+    <header className="flex flex-col gap-5 border-b border-line pb-8 sm:flex-row sm:items-end sm:justify-between"><div><p className="text-xs font-black uppercase tracking-[0.16em] text-indigo-600 dark:text-indigo-300">Your progress</p><h1 className="mt-2 text-4xl font-black tracking-tight sm:text-5xl">Keep the work visible.</h1><p className="mt-3 max-w-xl text-base leading-relaxed text-ink-muted">This page only uses results you have actually saved. No invented score, level, or ranking.</p></div><Button onClick={() => navigate("/sat")} className="h-11 w-fit rounded-xl bg-ink px-5 font-bold text-background hover:bg-ink/85">Continue studying <ArrowRight className="ml-2 h-4 w-4" /></Button></header>
 
-  const item = {
-    hidden: { opacity: 0, y: 20 },
-    show: { opacity: 1, y: 0, transition: { duration: 0.8, ease: "easeOut" as const } }
-  };
+    <section className="mt-7 grid gap-4 sm:grid-cols-3" aria-label="Study overview"><Metric icon={CircleCheck} label="SAT questions answered" value={String(summary.attempted)} detail={summary.satAccuracy === null ? "Start a set to build this record" : `${summary.satAccuracy}% correct overall`} /><Metric icon={Flame} label="Current streak" value={`${data.streak} day${data.streak === 1 ? "" : "s"}`} detail={data.streak ? "Keep it going today" : "Answer a question to begin"} /><Metric icon={Trophy} label="Best IELTS band" value={summary.bestIelts ? summary.bestIelts.toFixed(1) : "—"} detail={summary.bestIelts ? "Highest saved skill score" : "Finish an IELTS test to save a result"} /></section>
 
-  return (
-    <Layout>
-      <div className="min-h-screen bg-canvas text-ink selection:bg-surface-2 relative overflow-hidden font-sans">
-        {/* Deep Ambient Background */}
-        <div className="bg-vignette" />
-        <div className="bg-sphere top-[-20%] left-[-10%] opacity-40 animate-pulse" style={{ width: '1200px', height: '1200px', background: 'radial-gradient(circle, rgba(79, 70, 229, 0.1) 0%, transparent 70%)' }} />
-        <div className="bg-sphere bottom-[-10%] right-[-10%] opacity-30" style={{ width: '1000px', height: '1000px', background: 'radial-gradient(circle, rgba(59, 130, 246, 0.1) 0%, transparent 70%)' }} />
+    <section className="mt-8 grid gap-5 lg:grid-cols-2"><ProgressPanel icon={GraduationCap} eyebrow="Digital SAT" title="SAT practice" description={summary.attempted ? `${summary.correct} of ${summary.attempted} saved answers are correct. Completed full tests appear below.` : "Choose a topic for targeted practice or take a full past paper when you want a baseline."} primaryLabel={summary.attempted ? "Open SAT progress" : "Start SAT practice"} primaryAction={() => navigate(summary.attempted ? "/sat/dashboard" : "/sat/practice")} secondaryLabel="Past papers" secondaryAction={() => navigate("/sat/past-papers")} /><ProgressPanel icon={Headphones} eyebrow="English proficiency" title="IELTS practice" description={data.ieltsSessions.length ? `${data.ieltsSessions.length} recent saved result${data.ieltsSessions.length === 1 ? "" : "s"}. Continue with the next reading or listening test when you are ready.` : "Your IELTS results will be saved here after you finish a timed test while signed in."} primaryLabel="Explore IELTS" primaryAction={() => navigate("/ielts")} secondaryLabel="Writing checker" secondaryAction={() => navigate("/ielts/writing-checker")} /></section>
 
-        <motion.div 
-          variants={container}
-          initial="hidden"
-          animate="show"
-          className="max-w-[1400px] mx-auto px-10 py-32 relative z-10"
-        >
-          {/* Mission Control Header */}
-          <motion.div variants={item} className="flex flex-col md:flex-row md:items-end justify-between gap-12 mb-32">
-            <div>
-              <div className="flex items-center gap-3 mb-6 opacity-60">
-                <div className="w-2 h-2 rounded-full bg-blue-500 animate-ping" />
-                <span className="text-[10px] font-black tracking-[0.6em] uppercase text-blue-400">Tactical Oversight Unit</span>
-              </div>
-              <h2 className="text-7xl md:text-[140px] font-black tracking-tighter text-shimmer leading-[0.8] uppercase italic">
-                Mission <br /> Control.
-              </h2>
-            </div>
-            <div className="flex items-center gap-8 p-10 glass-3d border-line bg-surface">
-              <div className="w-20 h-20 bg-white rounded-3xl flex items-center justify-center shadow-[0_15px_40px_rgba(255,255,255,0.15)] relative overflow-hidden group">
-                <User className="w-10 h-10 text-black relative z-10" />
-                <div className="absolute inset-0 bg-gradient-to-tr from-indigo-500 to-blue-500 opacity-0 group-hover:opacity-100 transition-opacity" />
-              </div>
-              <div>
-                <p className="text-3xl font-black tracking-tighter uppercase">{user?.user_metadata?.full_name || 'Member'}</p>
-                <div className="flex items-center gap-3 mt-2">
-                   <div className="px-3 py-1 bg-indigo-600 rounded-full text-[8px] font-black uppercase tracking-widest">Level {level}</div>
-                   <p className="text-[10px] font-bold text-ink-subtle uppercase tracking-widest">{currentLeaderboardEntry ? `SAT Rank: #${currentLeaderboardEntry.rank}` : 'Solve SAT questions to enter ranking'}</p>
-                </div>
-              </div>
-            </div>
-          </motion.div>
-
-          {/* Core Performance Matrix */}
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 mb-32">
-            {[
-              { label: 'Intelligence', val: progress?.ielts_stats?.listening, icon: Headphones, color: 'text-blue-400', desc: 'Listening Depth' },
-              { label: 'Analytical', val: progress?.ielts_stats?.reading, icon: Book, color: 'text-emerald-400', desc: 'Reading Precision' },
-              { label: 'Strategic', val: progress?.ielts_stats?.writing, icon: PenTool, color: 'text-indigo-400', desc: 'Writing Complexity' },
-              { label: 'Command', val: progress?.ielts_stats?.overall, icon: Award, color: 'text-shimmer', desc: 'Total Efficiency', bg: 'bg-surface' }
-            ].map((stat, i) => (
-              <motion.div 
-                key={i} 
-                variants={item}
-                whileHover={{ scale: 1.05, translateY: -10 }}
-                className={`glass-3d p-12 group transition-all border-line hover:border-line-strong ${stat.bg || ''}`}
-              >
-                <div className="flex items-center justify-between mb-12">
-                  <span className={`text-[10px] font-black tracking-[0.4em] uppercase ${stat.color}`}>{stat.label}</span>
-                  <stat.icon className={`w-7 h-7 ${stat.color} group-hover:rotate-12 transition-transform`} />
-                </div>
-                <div className={`text-7xl font-black mb-4 ${stat.color} tracking-tighter`}>{stat.val || 0}</div>
-                <div className="h-1.5 w-full bg-surface rounded-full overflow-hidden mb-4">
-                   <motion.div 
-                    initial={{ width: 0 }}
-                    animate={{ width: `${(stat.val || 0) * 10}%` }}
-                    transition={{ duration: 1.5, delay: 0.5 }}
-                    className={`h-full bg-current ${stat.color}`} 
-                   />
-                </div>
-                <p className="text-[9px] font-black text-ink-subtle uppercase tracking-widest">{stat.desc}</p>
-              </motion.div>
-            ))}
-          </div>
-
-          <motion.section variants={item} className="glass-3d mb-24 overflow-hidden border-line">
-            <div className="flex items-center justify-between border-b border-line bg-surface px-8 py-6">
-              <div><h3 className="text-2xl font-black uppercase tracking-tight">SAT leaderboard</h3><p className="mt-1 text-[10px] font-bold uppercase tracking-widest text-ink-subtle">Ranked by correct answers, then total practice</p></div>
-              {currentLeaderboardEntry && <span className="rounded-full bg-indigo-500/10 px-4 py-2 text-xs font-black text-indigo-400">Your rank #{currentLeaderboardEntry.rank}</span>}
-            </div>
-            {progress?.leaderboard.length ? <div className="divide-y divide-white/5">{progress.leaderboard.map((entry) => <div key={`${entry.rank}-${entry.display_name}`} className={`flex items-center justify-between px-8 py-5 ${entry.is_current_user ? 'bg-indigo-500/5' : ''}`}>
-              <div className="flex items-center gap-5"><span className="w-9 text-center text-lg font-black text-indigo-400">#{entry.rank}</span><div><p className="font-black tracking-tight">{entry.display_name}{entry.is_current_user ? ' (you)' : ''}</p><p className="text-[10px] font-bold uppercase tracking-widest text-ink-subtle">{entry.questions_correct}/{entry.questions_attempted} correct · {entry.accuracy}%</p></div></div>
-              <span className="text-sm font-black text-ink-muted">{entry.questions_correct} pts</span>
-            </div>)}</div> : <div className="px-8 py-10 text-sm font-medium text-ink-muted">Solve an SAT question to become the first ranked student.</div>}
-          </motion.section>
-
-          {/* Tactical Analytics Visualizer */}
-          <motion.div variants={item} className="glass-3d p-20 mb-32 relative overflow-hidden group border-line bg-surface">
-            <div className="absolute inset-0 bg-gradient-to-r from-blue-600/[0.03] to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-1000" />
-            <div className="flex flex-col md:flex-row md:items-center justify-between gap-8 mb-24 relative z-10">
-              <div className="flex items-center gap-6">
-                <div className="w-16 h-16 bg-surface rounded-3xl flex items-center justify-center border border-line">
-                  <TrendingUp className="w-8 h-8 text-ink" />
-                </div>
-                <div>
-                  <h3 className="text-5xl font-black tracking-tighter uppercase">Visual Intel.</h3>
-                  <p className="text-xs font-bold text-ink-subtle uppercase tracking-widest mt-1">Growth trajectory over 7 cycles</p>
-                </div>
-              </div>
-              <div className="flex gap-4">
-                 {[1, 2, 3].map(i => <div key={i} className={`w-3 h-3 rounded-full ${i === 3 ? 'bg-blue-500' : 'bg-surface-2'}`} />)}
-              </div>
-            </div>
-            <div className="h-[500px] w-full relative z-10">
-              <ResponsiveContainer width="100%" height="100%">
-                <AreaChart data={progress?.daily_activity || []}>
-                  <defs>
-                    <linearGradient id="colorChart" x1="0" y1="0" x2="0" y2="1">
-                      <stop offset="5%" stopColor="#6366f1" stopOpacity={0.2} />
-                      <stop offset="95%" stopColor="#6366f1" stopOpacity={0} />
-                    </linearGradient>
-                  </defs>
-                  <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#111" />
-                  <XAxis dataKey="date" stroke="#222" fontSize={10} tickLine={false} axisLine={false} tick={{ dy: 20 }} />
-                  <YAxis stroke="#222" fontSize={10} tickLine={false} axisLine={false} tick={{ dx: -20 }} />
-                  <Tooltip
-                    contentStyle={{ background: '#0a0a0a', border: '1px solid #222', borderRadius: '24px', padding: '20px' }}
-                    itemStyle={{ color: '#fff', fontSize: '12px', fontWeight: 'bold' }}
-                    labelStyle={{ color: '#444', marginBottom: '8px', fontSize: '10px', textTransform: 'uppercase' }}
-                  />
-                  <Area type="monotone" dataKey="questions_answered" stroke="#6366f1" strokeWidth={5} fill="url(#colorChart)" animationDuration={2000} />
-                </AreaChart>
-              </ResponsiveContainer>
-            </div>
-          </motion.div>
-
-          {/* Activity Nexus */}
-          <div className="grid gap-12 lg:grid-cols-2">
-            {/* IELTS Nexus */}
-            <motion.div variants={item} className="glass-3d overflow-hidden border-line">
-              <div className="p-16 border-b border-line flex items-center justify-between bg-surface">
-                <div>
-                  <h3 className="text-3xl font-black tracking-tighter uppercase">IELTS Stream</h3>
-                  <p className="text-[10px] font-black text-indigo-400 uppercase tracking-widest mt-1">Live Evaluation History</p>
-                </div>
-                <Button variant="ghost" className="h-14 px-8 rounded-xl border border-line text-[10px] font-black tracking-widest uppercase hover:bg-surface" onClick={() => navigate('/ielts/writing-checker')}>New Intel</Button>
-              </div>
-              <div className="divide-y divide-white/5">
-                {(!progress?.ielts_activity || progress.ielts_activity.length === 0) ? (
-                  <div className="p-32 text-center opacity-10 text-[10px] font-black uppercase tracking-[0.8em]">Archive Empty</div>
-                ) : (
-                  progress.ielts_activity.map((item, i) => (
-                    <div key={i} className="p-12 flex items-center justify-between hover:bg-surface transition-all group cursor-pointer">
-                      <div className="flex items-center gap-10">
-                        <div className="text-4xl font-black text-[#111] group-hover:text-ink transition-colors">{(item.score / 10).toFixed(1)}</div>
-                        <div>
-                          <p className="text-xl font-black tracking-tight mb-1 uppercase italic">{item.test_name}</p>
-                          <p className="text-[10px] font-bold text-ink-subtle uppercase tracking-widest">{item.skill} · {new Date(item.completed_at).toLocaleDateString()}</p>
-                        </div>
-                      </div>
-                      <div className="w-12 h-12 rounded-full border border-line flex items-center justify-center group-hover:border-line-strong group-hover:bg-surface transition-all">
-                        <ChevronRight className="w-5 h-5 text-[#222] group-hover:text-ink" />
-                      </div>
-                    </div>
-                  ))
-                )}
-              </div>
-            </motion.div>
-
-            {/* SAT Nexus */}
-            <motion.div variants={item} className="glass-3d overflow-hidden border-line">
-              <div className="p-16 border-b border-line flex items-center justify-between bg-surface">
-                 <div>
-                  <h3 className="text-3xl font-black tracking-tighter uppercase">SAT Stream</h3>
-                  <p className="text-[10px] font-black text-blue-400 uppercase tracking-widest mt-1">Real-time Logic Log</p>
-                </div>
-                <Button variant="ghost" className="h-14 px-8 rounded-xl border border-line text-[10px] font-black tracking-widest uppercase hover:bg-surface" onClick={() => navigate('/sat')}>Engage Bank</Button>
-              </div>
-              <div className="divide-y divide-white/5">
-                {(!progress?.recent_activity || progress.recent_activity.length === 0) ? (
-                  <div className="p-32 text-center opacity-10 text-[10px] font-black uppercase tracking-[0.8em]">No Signals Detected</div>
-                ) : (
-                  progress.recent_activity.map((item, i) => (
-                    <div key={i} className="p-12 flex items-center justify-between hover:bg-surface transition-all group">
-                      <div className="flex items-center gap-10">
-                        <div className={`w-4 h-4 rounded-full ${item.correct ? 'bg-emerald-500 shadow-[0_0_20px_rgba(16,185,129,0.6)]' : 'bg-rose-500 shadow-[0_0_20px_rgba(244,63,94,0.6)]'}`} />
-                        <div>
-                          <p className="text-xl font-black tracking-tight mb-1 uppercase italic">{item.section}</p>
-                          <p className="text-[10px] font-bold text-ink-subtle uppercase tracking-widest">{item.topic} · {item.correct ? 'Valid Logic' : 'Failed Signal'}</p>
-                        </div>
-                      </div>
-                      <span className="text-[10px] font-black text-[#111] group-hover:text-ink transition-all">{new Date(item.date).toLocaleDateString()}</span>
-                    </div>
-                  ))
-                )}
-              </div>
-            </motion.div>
-          </div>
-        </motion.div>
-      </div>
-    </Layout>
-  );
+    <section className="mt-8 grid gap-5 lg:grid-cols-[1.15fr_0.85fr]"><article className="rounded-2xl border border-line bg-card shadow-sm"><div className="flex items-center justify-between gap-4 border-b border-line px-6 py-5"><div><p className="text-xs font-black uppercase tracking-[0.14em] text-indigo-600 dark:text-indigo-300">SAT reports</p><h2 className="mt-1 text-lg font-black">Recent completed tests</h2></div><button type="button" onClick={() => navigate("/sat/past-papers")} className="text-sm font-bold text-indigo-600 hover:text-indigo-700 dark:text-indigo-300">All past papers</button></div>{data.satTests.length ? <div className="divide-y divide-line">{data.satTests.slice(0, 4).map((test) => <div key={test.id} className="flex items-center justify-between gap-4 px-6 py-4"><div className="min-w-0"><p className="truncate font-bold">{test.test_period}{test.test_version ? ` · ${test.test_version}` : ""}</p><p className="mt-1 text-xs text-ink-muted">{dateLabel(test.completed_at)} · {test.questions_correct}/{test.total_questions} correct</p></div><strong className="shrink-0 text-lg">{test.score_percent}%</strong></div>)}</div> : <EmptyState icon={ChartNoAxesColumnIncreasing} text="Your completed SAT reports will appear here." action="Take a full test" onClick={() => navigate("/sat/past-papers")} />}</article>
+      <article className="rounded-2xl border border-line bg-card shadow-sm"><div className="border-b border-line px-6 py-5"><p className="text-xs font-black uppercase tracking-[0.14em] text-indigo-600 dark:text-indigo-300">IELTS results</p><h2 className="mt-1 text-lg font-black">Recent attempts</h2></div>{data.ieltsSessions.length ? <div className="divide-y divide-line">{data.ieltsSessions.map((session) => <div key={session.id} className="flex items-center justify-between gap-4 px-6 py-4"><div className="min-w-0"><p className="truncate font-bold">{session.subsection || session.section || "IELTS practice"}</p><p className="mt-1 text-xs text-ink-muted">{dateLabel(session.completed_at)}</p></div><strong className="shrink-0 text-lg">{Number(session.score || 0).toFixed(1)}</strong></div>)}</div> : <EmptyState icon={PencilLine} text="Finish an IELTS test to keep a result here." action="Explore IELTS" onClick={() => navigate("/ielts")} />}</article></section>
+  </div></main></Layout>;
 }
+
+function Metric({ icon: Icon, label, value, detail }: { icon: typeof CircleCheck; label: string; value: string; detail: string }) { return <article className="rounded-2xl border border-line bg-card p-5 shadow-sm"><div className="flex items-center justify-between"><p className="text-xs font-black uppercase tracking-[0.12em] text-ink-muted">{label}</p><Icon className="h-5 w-5 text-indigo-600 dark:text-indigo-300" /></div><p className="mt-5 text-3xl font-black tracking-tight">{value}</p><p className="mt-1 text-sm text-ink-muted">{detail}</p></article>; }
+function ProgressPanel({ icon: Icon, eyebrow, title, description, primaryLabel, primaryAction, secondaryLabel, secondaryAction }: { icon: typeof GraduationCap; eyebrow: string; title: string; description: string; primaryLabel: string; primaryAction: () => void; secondaryLabel: string; secondaryAction: () => void }) { return <article className="rounded-2xl border border-line bg-card p-6 shadow-sm sm:p-7"><div className="flex h-11 w-11 items-center justify-center rounded-xl bg-indigo-500/10 text-indigo-600 dark:text-indigo-300"><Icon className="h-5 w-5" /></div><p className="mt-6 text-xs font-black uppercase tracking-[0.15em] text-indigo-600 dark:text-indigo-300">{eyebrow}</p><h2 className="mt-2 text-2xl font-black tracking-tight">{title}</h2><p className="mt-3 min-h-12 text-sm leading-relaxed text-ink-muted">{description}</p><div className="mt-6 flex flex-wrap gap-3"><Button onClick={primaryAction} className="h-10 rounded-xl bg-ink px-4 font-bold text-background hover:bg-ink/85">{primaryLabel} <ArrowRight className="ml-2 h-4 w-4" /></Button><Button onClick={secondaryAction} variant="outline" className="h-10 rounded-xl border-line bg-card font-bold text-ink hover:bg-surface-2">{secondaryLabel}</Button></div></article>; }
+function EmptyState({ icon: Icon, text, action, onClick }: { icon: typeof PencilLine; text: string; action: string; onClick: () => void }) { return <div className="flex min-h-44 flex-col items-start justify-center px-6 py-6"><Icon className="h-5 w-5 text-ink-subtle" /><p className="mt-3 text-sm text-ink-muted">{text}</p><button type="button" onClick={onClick} className="mt-4 inline-flex items-center text-sm font-bold text-indigo-600 hover:text-indigo-700 dark:text-indigo-300">{action} <ArrowRight className="ml-1 h-4 w-4" /></button></div>; }
