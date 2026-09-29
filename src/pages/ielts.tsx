@@ -67,8 +67,8 @@ function registryToTestItem(entry: TestRegistryEntry): TestItem {
 const skills: { id: Skill; icon: typeof BookOpen; title: string; description: string; color: string; bg: string }[] = [
   { id: "reading", icon: BookOpen, title: "READING", description: "Learn skimming, scanning and detail techniques", color: "text-blue-400", bg: "bg-blue-400/5" },
   { id: "listening", icon: Headphones, title: "LISTENING", description: "Train your ear with section-by-section strategies", color: "text-emerald-400", bg: "bg-emerald-400/5" },
-  { id: "writing", icon: PenTool, title: "WRITING", description: "Original Task 1 and Task 2 prompts, timer and saved drafts", color: "text-indigo-400", bg: "bg-indigo-400/5" },
-  { id: "speaking", icon: MessageCircle, title: "SPEAKING", description: "Three-part practice with recording and self-review", color: "text-amber-400", bg: "bg-amber-400/5" },
+  { id: "writing", icon: PenTool, title: "WRITING", description: "Official sample tasks, timer and saved drafts", color: "text-indigo-400", bg: "bg-indigo-400/5" },
+  { id: "speaking", icon: MessageCircle, title: "SPEAKING", description: "Official sample tasks, recording and self-review", color: "text-amber-400", bg: "bg-amber-400/5" },
 ];
 
 const testTypes: { id: TestType; icon: typeof GraduationCap; title: string; description: string }[] = [
