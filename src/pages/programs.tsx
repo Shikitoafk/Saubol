@@ -1,227 +1,43 @@
-import { useState, useMemo } from "react";
-import { useQuery } from "@tanstack/react-query";
+import { useEffect, useMemo, useState } from "react";
+import { ExternalLink, MapPin, Search, SlidersHorizontal } from "lucide-react";
 import { Layout } from "@/components/layout";
-import { Input } from "@/components/ui/input";
-import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
-import { Search, MapPin, Brain, Loader2, ChevronDown, ChevronRight, Bookmark, BookmarkCheck, Sparkles, Zap, Globe, Target } from "lucide-react";
-import {
-  Sheet,
-  SheetContent,
-  SheetDescription,
-  SheetHeader,
-  SheetTitle,
-  SheetTrigger,
-} from "@/components/ui/sheet";
-import { ScrollArea } from "@/components/ui/scroll-area";
-import { supabase } from "@/lib/supabase";
-import { useAuth } from "@/hooks/useAuth";
-import { semanticSearch } from "@/lib/ai-search";
+import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
+import importedPrograms from "@/data/imported-programs.json";
 
-export interface Program {
-  id: string | number;
-  name: string;
-  details: string;
-  overview?: string;
-  format: string;
-  location: string;
-  price: string;
-  subject: string;
-  url?: string;
-  score?: number;
-}
-
-const SUBJECT_FILTERS = ["All", "Mixed", "STEM", "Medicine", "Humanities", "Engineering", "Business", "Art", "Computer Science"];
-const FORMAT_FILTERS = ["All", "Remote", "In-Person", "Both"];
-const PRICE_FILTERS = ["All", "Free", "Paid"];
-
-async function fetchPrograms(): Promise<Program[]> {
-  const { data, error } = await supabase.from("programs").select("*").order("name");
-  if (error) throw new Error(error.message);
-  return data ?? [];
-}
+type Program = (typeof importedPrograms)[number];
+const programs: Program[] = importedPrograms;
+const subjects = ["All subjects", ...Array.from(new Set(programs.map((program) => program.subject))).sort()];
+const formats = ["All formats", "In-Person", "Remote", "Both"];
+const prices = ["Any price", "Free", "Paid"];
 
 export default function Programs() {
-  const [searchQuery, setSearchQuery] = useState("");
-  const [selectedSubject, setSelectedSubject] = useState("All");
-  const [selectedFormat, setSelectedFormat] = useState("All");
-  const [selectedPrice, setSelectedPrice] = useState("All");
-  const [savedPrograms, setSavedPrograms] = useState<Set<string>>(new Set());
-  const [aiQuery, setAiQuery] = useState("");
-  const [aiResults, setAiResults] = useState<any[]>([]);
-  const [isAiSearching, setIsAiSearching] = useState(false);
-  
-  const { user } = useAuth();
-  const { data: programs = [], isLoading } = useQuery<Program[]>({ queryKey: ["programs"], queryFn: fetchPrograms });
+  const [query, setQuery] = useState("");
+  const [subject, setSubject] = useState(subjects[0]);
+  const [format, setFormat] = useState(formats[0]);
+  const [price, setPrice] = useState(prices[0]);
+  const [visibleCount, setVisibleCount] = useState(24);
 
-  const toggleBookmark = async (p: Program) => {
-    if (!user) return;
-    const isSaved = savedPrograms.has(p.name);
-    if (isSaved) {
-      await supabase.from("saved_programs").delete().eq("user_id", user.id).eq("program_name", p.name);
-      setSavedPrograms(prev => { const next = new Set(prev); next.delete(p.name); return next; });
-    } else {
-      await supabase.from("saved_programs").insert({ user_id: user.id, program_name: p.name, program_url: p.url || "" });
-      setSavedPrograms(prev => new Set(prev).add(p.name));
-    }
-  };
+  useEffect(() => { setVisibleCount(24); }, [query, subject, format, price]);
 
-  const handleAiSearch = async () => {
-    if (!aiQuery.trim()) return;
-    setIsAiSearching(true);
-    try {
-      const results = await semanticSearch(aiQuery, programs);
-      setAiResults(results);
-    } finally { setIsAiSearching(false); }
-  };
-
-  const filteredPrograms = useMemo(() => {
-    return (aiResults.length > 0 ? aiResults : programs).filter((p) => {
-      const matchesSearch = p.name.toLowerCase().includes(searchQuery.toLowerCase()) || p.details.toLowerCase().includes(searchQuery.toLowerCase());
-      const matchesSubject = selectedSubject === "All" || p.subject === selectedSubject;
-      const matchesFormat = selectedFormat === "All" || p.format === selectedFormat;
-      const matchesPrice = selectedPrice === "All" || p.price === selectedPrice;
-      return matchesSearch && matchesSubject && matchesFormat && matchesPrice;
+  const visible = useMemo(() => {
+    const search = query.trim().toLocaleLowerCase();
+    return programs.filter((program) => {
+      if (subject !== subjects[0] && program.subject !== subject) return false;
+      if (format !== formats[0] && program.format !== format) return false;
+      if (price !== prices[0] && program.price !== price) return false;
+      return !search || `${program.name} ${program.details} ${program.subject}`.toLocaleLowerCase().includes(search);
     });
-  }, [searchQuery, selectedSubject, selectedFormat, selectedPrice, programs, aiResults]);
+  }, [query, subject, format, price]);
 
-  return (
-    <Layout>
-      <div className="min-h-screen bg-canvas text-ink selection:bg-surface-2 relative overflow-hidden font-sans">
-        <div className="bg-vignette" />
-        <div className="bg-sphere top-[-10%] right-[-5%] opacity-30" />
-        
-        <div className="max-w-[1400px] mx-auto px-10 py-24 relative z-10">
-          {/* Header */}
-          <div className="mb-20">
-            <div className="flex items-center gap-3 mb-6 opacity-60">
-              <Globe className="w-5 h-5 text-indigo-400" />
-              <span className="text-[10px] font-black tracking-[0.4em] uppercase text-indigo-400">Global Opportunities</span>
-            </div>
-            <h1 className="text-6xl md:text-8xl font-black tracking-tighter text-shimmer leading-[0.85] mb-8 uppercase">
-              PROGRAMS <br /> & CAMPS.
-            </h1>
-            <p className="text-xl text-ink-muted font-medium max-w-2xl leading-relaxed">
-              Открой для себя лучшие летние школы, стажировки и исследовательские программы, которые выделят тебя среди тысяч абитуриентов.
-            </p>
-          </div>
-
-          <div className="flex flex-col lg:flex-row gap-12">
-            {/* Left Column: AI & Filters */}
-            <div className="lg:w-80 shrink-0 space-y-12">
-               {/* AI Matchmaker Card */}
-               <div className="glass-3d p-8 border-indigo-500/20 bg-indigo-500/5">
-                  <div className="flex items-center gap-2 mb-6">
-                    <Brain className="w-5 h-5 text-indigo-400" />
-                    <span className="text-[10px] font-black tracking-widest uppercase text-indigo-400">AI Matchmaker</span>
-                  </div>
-                  <p className="text-xs font-bold text-ink-muted uppercase tracking-widest leading-relaxed mb-8">Опиши свои интересы, и AI подберет идеальный лагерь.</p>
-                  <textarea 
-                    value={aiQuery}
-                    onChange={(e) => setAiQuery(e.target.value)}
-                    placeholder="e.g. I want a free STEM camp in USA..."
-                    className="w-full bg-surface border border-line rounded-xl p-4 text-xs font-medium focus:outline-none focus:border-indigo-500/50 transition-all h-32 mb-6 placeholder:text-ink-subtle"
-                  />
-                  <Button onClick={handleAiSearch} disabled={isAiSearching} className="w-full bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl h-12 font-black uppercase text-[10px] tracking-widest">
-                    {isAiSearching ? <Loader2 className="w-4 h-4 animate-spin" /> : "FIND MY PATH"}
-                  </Button>
-               </div>
-
-               {/* Standard Filters */}
-               <div className="space-y-10">
-                  <div>
-                    <h3 className="text-[10px] font-black text-ink-muted uppercase tracking-[0.3em] mb-6">Subject Area</h3>
-                    <div className="flex flex-wrap gap-2">
-                       {SUBJECT_FILTERS.map(f => (
-                         <button key={f} onClick={() => setSelectedSubject(f)} className={`px-4 py-2 rounded-lg text-[10px] font-black uppercase tracking-widest border transition-all ${selectedSubject === f ? 'bg-white text-black border-white' : 'bg-transparent border-line text-ink-muted hover:border-line-strong'}`}>{f}</button>
-                       ))}
-                    </div>
-                  </div>
-                  <div>
-                    <h3 className="text-[10px] font-black text-ink-muted uppercase tracking-[0.3em] mb-6">Format</h3>
-                    <div className="flex flex-wrap gap-2">
-                       {FORMAT_FILTERS.map(f => (
-                         <button key={f} onClick={() => setSelectedFormat(f)} className={`px-4 py-2 rounded-lg text-[10px] font-black uppercase tracking-widest border transition-all ${selectedFormat === f ? 'bg-white text-black border-white' : 'bg-transparent border-line text-ink-muted hover:border-line-strong'}`}>{f}</button>
-                       ))}
-                    </div>
-                  </div>
-                  <Button variant="ghost" onClick={() => { setSelectedSubject("All"); setSelectedFormat("All"); setAiResults([]); }} className="text-[10px] font-black uppercase tracking-widest text-indigo-400 p-0 hover:bg-transparent">Clear Filters</Button>
-               </div>
-            </div>
-
-            {/* Right Column: Grid */}
-            <div className="flex-1">
-               {isLoading ? (
-                 <div className="flex flex-col items-center py-32 opacity-20">
-                    <Loader2 className="w-12 h-12 animate-spin mb-6" />
-                    <span className="text-xs font-black uppercase tracking-[0.5em]">Fetching Opportunities</span>
-                 </div>
-               ) : (
-                 <div className="grid gap-8 md:grid-cols-2">
-                    {filteredPrograms.map((p) => (
-                      <div key={p.id} className="glass-3d p-10 flex flex-col group hover:border-line-strong transition-all">
-                         <div className="flex justify-between items-start mb-10">
-                            <div className="flex flex-wrap gap-2">
-                               <Badge className="bg-indigo-500/10 text-indigo-400 border-none text-[8px] font-black uppercase tracking-widest">{p.subject}</Badge>
-                               <Badge className={`${p.price === 'Free' ? 'bg-emerald-500/10 text-emerald-400' : 'bg-amber-500/10 text-amber-400'} border-none text-[8px] font-black uppercase tracking-widest`}>{p.price}</Badge>
-                               {p.score !== undefined && (
-                                 <Badge className="bg-surface-2 text-ink border-none text-[8px] font-black uppercase tracking-widest flex items-center gap-1">
-                                   <Sparkles className="w-2 h-2" /> Match: {Math.round(p.score * 100)}%
-                                 </Badge>
-                               )}
-                            </div>
-                            {user && (
-                              <button onClick={() => toggleBookmark(p)} className="text-[#222] hover:text-ink transition-colors">
-                                {savedPrograms.has(p.name) ? <BookmarkCheck className="w-5 h-5 text-indigo-400" /> : <Bookmark className="w-5 h-5" />}
-                              </button>
-                            )}
-                         </div>
-                         <h3 className="text-2xl font-black mb-4 tracking-tight group-hover:text-shimmer transition-all uppercase leading-tight">{p.name}</h3>
-                         <p className="text-xs font-medium text-ink-muted leading-relaxed mb-10 line-clamp-2">{p.details}</p>
-                         
-                         <div className="mt-auto pt-8 border-t border-line flex items-center justify-between">
-                            <div className="flex items-center gap-2 text-[9px] font-black text-ink-muted uppercase tracking-widest">
-                               <MapPin className="w-3 h-3" /> {p.location}
-                            </div>
-                            <Sheet>
-                               <SheetTrigger asChild>
-                                  <Button variant="ghost" className="text-[10px] font-black uppercase tracking-widest text-indigo-400 hover:text-ink hover:bg-transparent p-0">Details <ChevronRight className="w-4 h-4 ml-1" /></Button>
-                               </SheetTrigger>
-                               <SheetContent className="bg-canvas border-line text-ink">
-                                  <SheetHeader className="text-left py-10">
-                                     <div className="flex gap-2 mb-6">
-                                        <Badge className="bg-indigo-500/10 text-indigo-400">{p.subject}</Badge>
-                                        <Badge className="bg-surface text-ink">{p.price}</Badge>
-                                     </div>
-                                     <SheetTitle className="text-4xl font-black text-shimmer uppercase tracking-tighter mb-4">{p.name}</SheetTitle>
-                                     <SheetDescription className="text-ink-muted font-medium leading-relaxed">{p.details}</SheetDescription>
-                                  </SheetHeader>
-                                  <div className="space-y-12 py-10">
-                                     {p.overview && (
-                                       <div>
-                                          <h4 className="text-[10px] font-black uppercase tracking-[0.3em] text-ink-subtle mb-4">Program Overview</h4>
-                                          <p className="text-sm font-medium leading-relaxed text-ink-muted">{p.overview}</p>
-                                       </div>
-                                     )}
-                                     <div className="p-8 bg-surface rounded-2xl border border-line">
-                                        <div className="flex items-center gap-4 text-xs font-black uppercase tracking-widest">
-                                           <Target className="w-4 h-4 text-indigo-400" />
-                                           <span>Location: {p.location}</span>
-                                        </div>
-                                     </div>
-                                     <Button className="w-full bg-white text-black hover:bg-gray-200 h-16 rounded-xl font-black uppercase text-xs shadow-[0_15px_30px_rgba(255,255,255,0.1)]" onClick={() => p.url && window.open(p.url, '_blank')}>Visit Official Site</Button>
-                                  </div>
-                               </SheetContent>
-                            </Sheet>
-                         </div>
-                      </div>
-                    ))}
-                 </div>
-               )}
-            </div>
-          </div>
-        </div>
-      </div>
-    </Layout>
-  );
+  return <Layout><main className="min-h-screen bg-canvas text-ink"><div className="mx-auto max-w-6xl px-5 pb-20 pt-28 sm:px-8 sm:pt-32">
+    <header className="max-w-3xl"><p className="text-xs font-black uppercase tracking-[0.17em] text-indigo-600">Opportunities directory</p><h1 className="mt-3 text-4xl font-black tracking-tight sm:text-5xl">Find a program that fits.</h1><p className="mt-4 text-base leading-relaxed text-ink-muted">Explore {programs.length} programs from a shared directory. Each listing links to the program website so you can check eligibility, dates and cost before applying.</p></header>
+    <section className="mt-9 rounded-2xl border border-line bg-card p-5 shadow-sm" aria-label="Program filters"><div className="grid gap-4 md:grid-cols-[minmax(0,2fr)_repeat(3,minmax(0,1fr))]"><label className="block"><span className="mb-2 block text-xs font-bold text-ink-muted">Search</span><div className="relative"><Search className="absolute left-3 top-3.5 h-4 w-4 text-ink-subtle" /><input aria-label="Search programs" value={query} onChange={(event) => setQuery(event.target.value)} placeholder="Program, field or keyword" className="h-11 w-full rounded-xl border border-line bg-canvas pl-10 pr-3 text-sm outline-none focus:border-indigo-500" /></div></label><Filter label="Subject" value={subject} options={subjects} onChange={setSubject} /><Filter label="Format" value={format} options={formats} onChange={setFormat} /><Filter label="Price" value={price} options={prices} onChange={setPrice} /></div></section>
+    <div className="mt-7 flex flex-wrap items-center justify-between gap-3"><p className="text-sm font-semibold text-ink-muted">{visible.length} {visible.length === 1 ? "program" : "programs"} found</p><a href={programs[0]?.source} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1 text-sm font-semibold text-indigo-600 hover:underline">View source sheet <ExternalLink className="h-3.5 w-3.5" /></a></div>
+    {visible.length ? <><div className="mt-4 grid gap-4 md:grid-cols-2 lg:grid-cols-3">{visible.slice(0, visibleCount).map((program) => <ProgramCard key={program.id} program={program} />)}</div>{visibleCount < visible.length && <div className="mt-7 text-center"><button type="button" onClick={() => setVisibleCount((count) => count + 24)} className="rounded-xl border border-line bg-card px-6 py-3 text-sm font-bold hover:border-indigo-400">Show more programs ({Math.min(visibleCount, visible.length)} of {visible.length})</button></div>}</> : <div className="mt-4 rounded-2xl border border-line bg-card px-6 py-12 text-center"><SlidersHorizontal className="mx-auto h-6 w-6 text-ink-subtle" /><p className="mt-3 font-bold">No programs match those filters.</p><button type="button" onClick={() => { setQuery(""); setSubject(subjects[0]); setFormat(formats[0]); setPrice(prices[0]); }} className="mt-3 text-sm font-semibold text-indigo-600 hover:underline">Clear filters</button></div>}
+    <p className="mt-9 text-sm leading-relaxed text-ink-muted">Listings were imported from a community spreadsheet. Details can change; follow the program link for current admissions information.</p>
+  </div></main></Layout>;
 }
+
+function Filter({ label, value, options, onChange }: { label: string; value: string; options: string[]; onChange: (value: string) => void }) { return <label className="block"><span className="mb-2 block text-xs font-bold text-ink-muted">{label}</span><select value={value} onChange={(event) => onChange(event.target.value)} className="h-11 w-full rounded-xl border border-line bg-canvas px-3 text-sm outline-none focus:border-indigo-500">{options.map((option) => <option key={option} value={option}>{option}</option>)}</select></label>; }
+
+function ProgramCard({ program }: { program: Program }) { return <article className="flex min-h-64 flex-col rounded-2xl border border-line bg-card p-5 shadow-sm"><div className="flex flex-wrap gap-2 text-xs font-bold"><span className="rounded-full bg-indigo-500/10 px-3 py-1 text-indigo-700">{program.subject}</span><span className="rounded-full bg-surface-2 px-3 py-1 text-ink-muted">{program.price}</span></div><h2 className="mt-5 text-xl font-black tracking-tight">{program.name}</h2><p className="mt-2 text-sm font-semibold text-ink-muted">{program.details}</p><p className="mt-4 flex items-center gap-1 text-xs text-ink-subtle"><MapPin className="h-3.5 w-3.5" />Listed as {program.location} · {program.format}</p><div className="mt-auto flex items-center gap-4 pt-6"><Sheet><SheetTrigger className="text-sm font-bold text-indigo-600 hover:underline">Details</SheetTrigger><SheetContent className="overflow-y-auto border-line bg-card text-ink"><SheetHeader><SheetTitle className="text-2xl font-black text-ink">{program.name}</SheetTitle><SheetDescription className="text-base text-ink-muted">{program.details}</SheetDescription></SheetHeader><div className="mt-7 space-y-5 text-sm leading-relaxed"><p className="text-ink-muted">Source lists this as {program.subject}, {program.format}, {program.location}, {program.price.toLowerCase()}. This information has not been independently verified and may be outdated.</p><p className="text-xs text-ink-subtle">Imported from source row {program.sourceRow}. Check the linked site for current requirements, dates and price.</p><a href={program.url} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-2 rounded-xl bg-ink px-4 py-3 font-bold text-background">Open listed website <ExternalLink className="h-4 w-4" /></a></div></SheetContent></Sheet><a href={program.url} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1 text-sm font-bold text-ink hover:underline">Program link <ExternalLink className="h-3.5 w-3.5" /></a></div></article>; }

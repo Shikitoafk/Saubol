@@ -67,8 +67,8 @@ function registryToTestItem(entry: TestRegistryEntry): TestItem {
 const skills: { id: Skill; icon: typeof BookOpen; title: string; description: string; color: string; bg: string }[] = [
   { id: "reading", icon: BookOpen, title: "READING", description: "Learn skimming, scanning and detail techniques", color: "text-blue-400", bg: "bg-blue-400/5" },
   { id: "listening", icon: Headphones, title: "LISTENING", description: "Train your ear with section-by-section strategies", color: "text-emerald-400", bg: "bg-emerald-400/5" },
-  { id: "writing", icon: PenTool, title: "WRITING", description: "Master Task 1 & Task 2 with templates and examples", color: "text-indigo-400", bg: "bg-indigo-400/5" },
-  { id: "speaking", icon: MessageCircle, title: "SPEAKING", description: "Prepare for all 3 parts with sample answers", color: "text-amber-400", bg: "bg-amber-400/5" },
+  { id: "writing", icon: PenTool, title: "WRITING", description: "Original Task 1 and Task 2 prompts, timer and saved drafts", color: "text-indigo-400", bg: "bg-indigo-400/5" },
+  { id: "speaking", icon: MessageCircle, title: "SPEAKING", description: "Three-part practice with recording and self-review", color: "text-amber-400", bg: "bg-amber-400/5" },
 ];
 
 const testTypes: { id: TestType; icon: typeof GraduationCap; title: string; description: string }[] = [
@@ -131,7 +131,7 @@ const IELTSPrep = () => {
           variants={container}
           initial="hidden"
           animate="show"
-          className="max-w-[1400px] mx-auto px-10 py-32 relative z-10"
+          className="max-w-[1400px] mx-auto px-5 sm:px-10 py-24 sm:py-32 relative z-10"
         >
           {/* Header Section */}
           <motion.div variants={item} className="mb-24">
@@ -139,11 +139,11 @@ const IELTSPrep = () => {
               <GraduationCap className="w-6 h-6 text-indigo-400" />
               <span className="text-[11px] font-black tracking-[0.5em] uppercase text-indigo-400">Tactical Intelligence Hub</span>
             </div>
-            <h1 className="text-8xl md:text-[140px] font-black tracking-tighter text-shimmer leading-[0.8] mb-12 uppercase italic">
+            <h1 className="text-5xl sm:text-8xl md:text-[140px] font-black tracking-tighter text-shimmer leading-[0.9] mb-8 sm:mb-12 uppercase italic">
               IELTS <br /> MASTERY.
             </h1>
             <p className="text-2xl text-ink-muted font-medium max-w-2xl leading-tight">
-              Открой доступ к передовым методикам подготовки. Мы объединили официальные материалы Cambridge и AI-технологии для твоего успеха.
+              Практикуй Reading и Listening, пиши эссе по новым заданиям и тренируй Speaking с записью собственного ответа.
             </p>
           </motion.div>
 
@@ -194,7 +194,7 @@ const IELTSPrep = () => {
                   {skills.map((s) => (
                     <button
                       key={s.id}
-                      onClick={() => setSelectedSkill(s.id)}
+                      onClick={() => s.id === "writing" ? nav("/ielts/writing") : s.id === "speaking" ? nav("/ielts/speaking") : setSelectedSkill(s.id)}
                       className="glass-3d p-12 text-left group hover:scale-105 transition-all border-line hover:border-line-strong relative overflow-hidden"
                     >
                       <div className={`absolute top-0 right-0 w-32 h-32 ${s.bg} blur-3xl opacity-0 group-hover:opacity-100 transition-opacity`} />

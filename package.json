@@ -5,7 +5,7 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "vite build",
+    "build": "vite build --configLoader runner && node scripts/prune-sat-build.mjs",
     "build:registry": "python3 scripts/build_test_registry.py",
     "preview": "vite preview"
   },

@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import {
   Breadcrumb,
@@ -40,11 +40,25 @@ const IELTSWritingChecker = () => {
   const [isAnalyzing, setIsAnalyzing] = useState(false);
   const [taskImage, setTaskImage] = useState<string | null>(null);
   const [result, setResult] = useState<any>(null);
+  const [analysisError, setAnalysisError] = useState("");
+
+  useEffect(() => {
+    try {
+      const draft = sessionStorage.getItem("saubol:ielts:writing-checker-draft");
+      if (!draft) return;
+      sessionStorage.removeItem("saubol:ielts:writing-checker-draft");
+      const parsed = JSON.parse(draft) as { taskType?: TaskType; prompt?: string; essay?: string };
+      if (parsed.taskType === "task1" || parsed.taskType === "task2") setTaskType(parsed.taskType);
+      if (typeof parsed.prompt === "string") setPrompt(parsed.prompt);
+      if (typeof parsed.essay === "string") setEssay(parsed.essay);
+    } catch { /* Manual entry stays available. */ }
+  }, []);
 
   const handleAnalyze = async () => {
     if (!essay.trim()) return;
     setIsAnalyzing(true);
     setResult(null);
+    setAnalysisError("");
 
     try {
       const engine = new IELTSScoringEngine(taskType, prompt, essay, taskImage || undefined);
@@ -82,6 +96,7 @@ const IELTSWritingChecker = () => {
       }
     } catch (error) {
       console.error('Scoring error:', error);
+      setAnalysisError("Feedback is unavailable right now. Your writing remains on this page; please try again later.");
     } finally {
       setIsAnalyzing(false);
     }
@@ -166,7 +181,7 @@ const IELTSWritingChecker = () => {
               WRITING <br /> CHECKER.
             </h1>
             <p className="text-xl text-ink-muted font-medium max-w-2xl leading-relaxed print:text-sm print:text-gray-600">
-              Мгновенный разбор твоего эссе с помощью Gemini AI. Оценка по критериям IELTS, исправление ошибок и Band 9.0 версия твоего текста.
+              Разбор текста с помощью Gemini AI. Результат — приблизительная учебная оценка, а не официальный IELTS band.
             </p>
           </div>
 
@@ -232,7 +247,7 @@ const IELTSWritingChecker = () => {
               <div className="flex justify-between items-center pt-6 border-t border-line">
                 <div className="flex flex-col">
                   <span className="text-[10px] font-black text-[#333] uppercase tracking-widest">{essay.trim().split(/\s+/).filter(x => x).length} Words</span>
-                  <span className="text-[8px] font-black text-[#222] uppercase tracking-widest">Minimum 250 Recommended</span>
+                  <span className="text-[8px] font-black text-[#222] uppercase tracking-widest">Minimum {taskType === "task1" ? 150 : 250} words</span>
                 </div>
                 <Button
                   onClick={handleAnalyze}
@@ -242,6 +257,8 @@ const IELTSWritingChecker = () => {
                   {isAnalyzing ? <Loader2 className="w-4 h-4 animate-spin" /> : "Analyze Essay"}
                 </Button>
               </div>
+              <p className="text-xs leading-relaxed text-ink-muted">Clicking Analyze sends your prompt, essay and any uploaded image to Google Gemini for feedback. Do not include private information.</p>
+              {analysisError && <p role="alert" className="text-sm text-rose-600">{analysisError}</p>}
             </div>
           </div>
 
@@ -254,7 +271,7 @@ const IELTSWritingChecker = () => {
                     <div className="text-9xl font-black text-shimmer leading-none print:text-black print:text-7xl">{result.bandScore}</div>
                     <div>
                       <h3 className="text-4xl font-black tracking-tight mb-2 print:text-2xl print:text-black">OVERALL BAND</h3>
-                      <p className="text-xs font-black text-ink-subtle uppercase tracking-[0.3em] print:text-black">Official Scoring Estimation</p>
+                      <p className="text-xs font-black text-ink-subtle uppercase tracking-[0.3em] print:text-black">AI estimate · not an official IELTS score</p>
                     </div>
                  </div>
                  <Button onClick={downloadReport} className="bg-white text-black hover:bg-gray-200 rounded-xl px-10 h-16 font-black tracking-widest uppercase text-xs print:hidden">

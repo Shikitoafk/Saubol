@@ -13,32 +13,24 @@ type SeoEntry = {
 };
 
 const DEFAULT_SEO: SeoEntry = {
-  title: "Saubol | IELTS & SAT Practice",
+  title: "Saubol | IELTS Practice & Programs",
   description:
-    "Free IELTS practice tests and SAT question bank with filters by section, category, and difficulty.",
+    "Practice IELTS reading, listening, writing and speaking, and explore education programs.",
 };
 
 const SEO_BY_PATH: Record<string, SeoEntry> = {
   "/": {
-    title: "Saubol | IELTS & SAT Practice",
+    title: "Saubol | IELTS Practice & Programs",
     description:
-      "Free IELTS practice tests and SAT question bank for standardized test preparation.",
+      "IELTS practice for every skill and a sourced directory of education programs.",
   },
   "/ielts": {
     title: "IELTS Practice Tests | Saubol",
     description:
       "Practice IELTS reading and listening with prediction tests in a timed exam interface.",
   },
-  "/sat": {
-    title: "SAT Question Bank | Saubol",
-    description:
-      "Practice SAT questions with filters by section, category, and difficulty.",
-  },
-  "/sat/practice": {
-    title: "SAT Practice Questions | Saubol",
-    description:
-      "Train with SAT practice questions by section, category, and difficulty level.",
-  },
+  "/ielts/writing": { title: "IELTS Writing Practice | Saubol", description: "Original IELTS-style writing prompts with a timer and saved drafts." },
+  "/programs": { title: "Education Programs | Saubol", description: "Search sourced education programs by subject, format and cost." },
 };
 
 function getSeoByPath(pathname: string): SeoEntry {
@@ -49,12 +41,7 @@ function getSeoByPath(pathname: string): SeoEntry {
       description: "Open and practice IELTS tests with timing and a focused exam interface.",
     };
   }
-  if (pathname.startsWith("/sat/test/")) {
-    return {
-      title: "SAT Test Viewer | Saubol",
-      description: "Open SAT tests with a clean test environment and detailed questions.",
-    };
-  }
+  if (pathname.startsWith("/ielts/speaking")) return { title: "IELTS Speaking Practice | Saubol", description: "Three-part IELTS-style speaking practice with local recording and playback." };
   return DEFAULT_SEO;
 }
 
@@ -64,6 +51,7 @@ export function Layout({ children }: LayoutProps) {
   useEffect(() => {
     const seo = getSeoByPath(location.pathname);
     document.title = seo.title;
+    window.scrollTo({ top: 0, behavior: "auto" });
 
     const descriptionMeta = document.querySelector('meta[name="description"]');
     if (descriptionMeta) {
