@@ -10,13 +10,14 @@ export function Footer() {
             <span className="font-display text-xl font-semibold tracking-[-0.04em] text-ink">Saubol</span>
           </div>
           <p className="mt-4 max-w-sm text-sm leading-6 text-ink-muted">
-            Focused IELTS practice and opportunities for the next stage of your education.
+            Focused IELTS and SAT practice, plus opportunities for the next stage of your education.
           </p>
         </div>
         <div>
           <p className="text-sm font-semibold text-ink">Practice</p>
           <div className="mt-4 flex flex-col gap-3 text-sm text-ink-muted">
             <Link to="/ielts" className="hover:text-ink">IELTS</Link>
+            <Link to="/sat" className="hover:text-ink">SAT</Link>
             <Link to="/ielts/writing" className="hover:text-ink">Writing</Link>
             <Link to="/ielts/speaking" className="hover:text-ink">Speaking</Link>
             <Link to="/programs" className="hover:text-ink">Programs</Link>

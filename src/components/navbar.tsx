@@ -8,6 +8,7 @@ import { useAuth } from "@/hooks/useAuth";
 const links = [
   { name: "Home", href: "/" },
   { name: "IELTS", href: "/ielts" },
+  { name: "SAT", href: "/sat" },
   { name: "Programs", href: "/programs" },
 ];
 
